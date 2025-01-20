@@ -8,7 +8,7 @@ type PageProps = {
 
 export async function getData(page: number) {
   const res: Response = await fetch(
-    `http://localhost:3000/api/review?page=${page}`
+    `${process.env.BASE_URL}/api/review?page=${page}`
   );
 
   if (!res.ok) {

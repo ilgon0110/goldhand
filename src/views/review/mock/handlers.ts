@@ -10,7 +10,7 @@ export async function getData(page: number) {
   const apiUrl =
     process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
       ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.API_URL;
+      : "http://localhost:3000";
   const res: Response = await fetch(`${apiUrl}/api/review?page=${page}`);
 
   if (!res.ok) {

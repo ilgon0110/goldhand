@@ -2,11 +2,17 @@ import Image from "next/image";
 
 type ApplyButtonProps = {
   title: string;
+  buttonTitle: string;
   description: string;
   src: string;
 };
 
-export const ApplyButton = ({ title, description, src }: ApplyButtonProps) => {
+export const ApplyButton = ({
+  title,
+  buttonTitle,
+  description,
+  src,
+}: ApplyButtonProps) => {
   return (
     <div className="w-full border-2 border-slate-300 p-7 rounded-lg flex flex-col relative justify-between">
       <div className="flex flex-col gap-1">
@@ -16,10 +22,9 @@ export const ApplyButton = ({ title, description, src }: ApplyButtonProps) => {
         <span className="text-sm md:text-base break-keep">{description}</span>
       </div>
       <div className="flex flex-row relative w-full h-20 sm:h-28">
-        <button className="absolute left-0 bottom-0 bg-[#728146] rounded-md px-8 py-4 text-sm sm:text-base text-white hover:opacity-80">{`${title.substring(
-          0,
-          3
-        )} 신청하기`}</button>
+        <button className="max-w-[60%] absolute z-10 left-0 bottom-0 bg-[#728146] rounded-md px-8 py-4 text-sm sm:text-base text-white hover:opacity-80 break-keep">
+          {buttonTitle}
+        </button>
         <div className="max-w-[33%] w-[48px] h-[48px] sm:w-[100px] sm:h-[100px] absolute right-0 bottom-0">
           <Image
             src={src}

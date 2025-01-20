@@ -7,12 +7,14 @@ type PageProps = {
 };
 
 export async function getData(page: number) {
-  const res: Response = await fetch(
-    `${process.env.BASE_URL}/api/review?page=${page}`
-  );
+  const apiUrl =
+    process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
+      ? process.env.NEXT_PUBLIC_API_URL
+      : process.env.API_URL;
+  const res: Response = await fetch(`${apiUrl}/api/review?page=${page}`);
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    throw new Error("데이터 fetch 실패!!");
   }
 
   return res.json();

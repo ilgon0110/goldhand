@@ -1,3 +1,4 @@
+import { SectionTitle } from "@/src/shared/ui/sectionTitle";
 import { ApplyButton } from "./applyButton";
 
 export const ApplyList = () => {
@@ -23,16 +24,21 @@ export const ApplyList = () => {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row w-full gap-4">
-      {items.map((item, index) => (
-        <ApplyButton
-          key={index}
-          title={item.title}
-          buttonTitle={item.buttonTitle}
-          description={item.description}
-          src={item.src}
-        />
-      ))}
-    </div>
+    <section>
+      <div className="mb-6">
+        <SectionTitle title="신청하기" />
+      </div>
+      <div className="flex flex-col lg:flex-row w-full gap-2">
+        {items.map((item, index) => (
+          <ApplyButton
+            key={index}
+            title={item.title}
+            buttonTitle={item.buttonTitle}
+            description={item.description}
+            src={item.src}
+          />
+        ))}
+      </div>
+    </section>
   );
 };

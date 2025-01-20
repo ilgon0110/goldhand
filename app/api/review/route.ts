@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 export const dynamic = "force-dynamic"; // defaults to auto
 
 export async function GET(request: NextRequest) {
-  const useMock = process.env.USE_MOCK === "true";
+  const useMock = true;
   const { page } = loadSearchParams(request);
 
   if (useMock) {

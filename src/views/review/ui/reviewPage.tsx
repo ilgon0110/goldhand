@@ -20,7 +20,7 @@ export const ReviewPage = ({ data }: { data: IReviewData["data"] }) => {
 
   return (
     <div>
-      <SectionTitle title="이용 후기" />
+      <SectionTitle title="이용 후기" buttonTitle="" />
       <div className="w-full flex flex-row justify-between">
         <Select defaultValue="화성점">
           <SelectTrigger className="w-[180px] mt-4">

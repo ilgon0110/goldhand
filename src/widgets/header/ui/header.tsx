@@ -57,13 +57,17 @@ export const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const onChangeMobileMenuOpen = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
     <header className="bg-white">
       {/* <nav
         className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
         aria-label="Global"
       > */}
-      <NavigationMenu className="mx-auto flex max-w-7xl items-center justify-between h-14 px-8 list-none">
+      <NavigationMenu className="mx-auto flex max-w-7xl items-center justify-between h-14 px-8 list-none z-50">
         <div className="flex lg:flex-1">
           <Link href={URLS.HOME} className="-m-1.5 p-1.5">
             <span className="sr-only">고운황금손</span>
@@ -74,7 +78,7 @@ export const Header = () => {
         </div>
         <div className="hidden lg:flex pt-1 box-border items-center gap-2">
           <NavigationMenuItem>
-            <NavigationMenuLink href="#">
+            <NavigationMenuLink href={URLS.COMPANY}>
               <UlButton text="고운황금손" enText="Gold Baby" />
             </NavigationMenuLink>
           </NavigationMenuItem>
@@ -85,22 +89,16 @@ export const Header = () => {
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <NavigationMenuLink
-                  href="#"
+                  href={URLS.MANAGER.ABOUT}
                   className="text-sm leading-6 text-gray-900"
                 >
                   산후관리사란?
                 </NavigationMenuLink>
                 <NavigationMenuLink
-                  href="#"
+                  href={URLS.MANAGER.WORK}
                   className="text-sm leading-6 text-gray-900"
                 >
                   산후관리사가 하는 일
-                </NavigationMenuLink>
-                <NavigationMenuLink
-                  href="#"
-                  className="text-sm leading-6 text-gray-900"
-                >
-                  산후관리사 준수사항
                 </NavigationMenuLink>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -121,13 +119,13 @@ export const Header = () => {
                   href="#"
                   className="text-sm leading-6 text-gray-900"
                 >
-                  이용물품
+                  이용요금
                 </NavigationMenuLink>
                 <NavigationMenuLink
                   href="#"
                   className="text-sm leading-6 text-gray-900"
                 >
-                  정부바우처
+                  정부지원바우처
                 </NavigationMenuLink>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -138,7 +136,7 @@ export const Header = () => {
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuLink href="#">
+            <NavigationMenuLink href={URLS.RESERVATION}>
               <UlButton text="예약상담" enText="Board" />
             </NavigationMenuLink>
           </NavigationMenuItem>
@@ -150,6 +148,14 @@ export const Header = () => {
           <NavigationMenuItem>
             <NavigationMenuLink href="#">
               <UlButton text="오시는길" enText="Location" />
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              href={URLS.LOGIN}
+              className="px-12 py-2 rounded-full border border-[#0F2E16] absolute right-8 top-2"
+            >
+              로그인
             </NavigationMenuLink>
           </NavigationMenuItem>
         </div>
@@ -199,7 +205,9 @@ export const Header = () => {
                         </Link>
                       </div>
                     </DrawerTitle>
-                    <MoblieHeaderContent />
+                    <MoblieHeaderContent
+                      onChangeMobileMenuOpen={onChangeMobileMenuOpen}
+                    />
                   </div>
                 </div>
               </DrawerContent>
@@ -212,10 +220,25 @@ export const Header = () => {
   );
 };
 
-const MoblieHeaderContent = () => {
+const MoblieHeaderContent = ({
+  onChangeMobileMenuOpen,
+}: {
+  onChangeMobileMenuOpen: () => void;
+}) => {
   return (
     <div className="flex flex-col gap-4 lg:hidden">
-      <Link href="#" className="font-semibold leading-6 text-gray-900">
+      <Link
+        href={URLS.LOGIN}
+        className="font-semibold leading-6 text-gray-900"
+        onClick={onChangeMobileMenuOpen}
+      >
+        <UlButton text="로그인" enText="" />
+      </Link>
+      <Link
+        href={URLS.COMPANY}
+        className="font-semibold leading-6 text-gray-900"
+        onClick={onChangeMobileMenuOpen}
+      >
         <UlButton text="고운황금손" enText="Gold Baby" />
       </Link>
       <UlButton
@@ -225,22 +248,18 @@ const MoblieHeaderContent = () => {
         accordionChildren={
           <div className="w-full flex flex-col justify-center items-center gap-6 pt-6 text-base">
             <Link
-              href="#"
+              href={URLS.MANAGER.ABOUT}
               className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
             >
               산후관리사란?
             </Link>
             <Link
-              href="#"
+              href={URLS.MANAGER.WORK}
               className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
             >
               산후관리사가 하는 일
-            </Link>
-            <Link
-              href="#"
-              className="text-sm font-semibold leading-6 text-gray-900"
-            >
-              산후관리사 준수사항
             </Link>
           </div>
         }
@@ -254,37 +273,53 @@ const MoblieHeaderContent = () => {
             <Link
               href="#"
               className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
             >
               대여물품
             </Link>
             <Link
               href="#"
               className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
             >
               이용요금
             </Link>
             <Link
               href="#"
               className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
             >
               정부지원바우처
             </Link>
           </div>
         }
       />
-      <Link href="#" className="text-sm font-semibold leading-6 text-gray-900">
+      <Link
+        href="#"
+        className="text-sm font-semibold leading-6 text-gray-900"
+        onClick={onChangeMobileMenuOpen}
+      >
         <UlButton text="지점안내" enText="Franchisee" />
       </Link>
-      <Link href="#" className="text-sm font-semibold leading-6 text-gray-900">
+      <Link
+        href={URLS.RESERVATION}
+        className="text-sm font-semibold leading-6 text-gray-900"
+        onClick={onChangeMobileMenuOpen}
+      >
         <UlButton text="예약상담" enText="Board" />
       </Link>
       <Link
         href={URLS.REVIEW}
         className="text-sm font-semibold leading-6 text-gray-900"
+        onClick={onChangeMobileMenuOpen}
       >
         <UlButton text="이용후기" enText="Review" />
       </Link>
-      <Link href="#" className="text-sm font-semibold leading-6 text-gray-900">
+      <Link
+        href="#"
+        className="text-sm font-semibold leading-6 text-gray-900"
+        onClick={onChangeMobileMenuOpen}
+      >
         <UlButton text="오시는길" enText="Location" />
       </Link>
     </div>

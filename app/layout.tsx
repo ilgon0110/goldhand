@@ -5,6 +5,15 @@ import { ThemeProvider } from "@/src/app/providers/theme-provider";
 import { Header } from "@/src/widgets/header";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Footer } from "@/src/widgets/footer";
+import Script from "next/script";
+
+declare global {
+  interface Window {
+    naver: any;
+    kakao: any;
+  }
+}
 
 const inter = Inter({ subsets: ["latin"] });
 const pretendard = localFont({
@@ -46,20 +55,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${pretendard.className}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NuqsAdapter>
-            <Header />
-            {children}
-          </NuqsAdapter>
-        </ThemeProvider>
-      </body>
-    </html>
+    <>
+      <html lang="en">
+        <body className={`${pretendard.className}`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NuqsAdapter>
+              <Header />
+              {children}
+            </NuqsAdapter>
+            <Footer />
+          </ThemeProvider>
+          <Script
+            src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"
+            strategy="beforeInteractive"
+          />
+        </body>
+      </html>
+    </>
   );
 }

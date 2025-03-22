@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Row from "./row";
+import { SectionTitle } from "@/src/shared/ui/sectionTitle";
 
 export function SpotSheetList() {
   const [location, setLocation] = useState<string>("경기도");
@@ -30,9 +31,10 @@ export function SpotSheetList() {
 
   return (
     <div>
-      <div className="text-base md:text-lg lg:text-2xl">
-        <span className="text-[#728146] font-bold">고운황금손</span> 지점 소개
-      </div>
+      <SectionTitle
+        title="고운황금손 지점 소개"
+        buttonTitle="지점소개 바로가기"
+      />
       <button
         className="bg-[#728146] rounded-t-md px-7 py-2 text-base text-white hover:opacity-80 mt-9"
         onClick={() => onClickLocation("경기")}

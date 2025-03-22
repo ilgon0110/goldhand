@@ -67,14 +67,14 @@ export const ReviewCarousel = () => {
   ];
   return (
     <div className="w-full">
-      <div className="flex flex-row justify-between mb-6">
-        <SectionTitle title="이용 후기" />
-        <button className="underline decoration-[#728146] underline-offset-2 hover:opacity-80 text-slate">
-          전체보기
-        </button>
+      <div className="flex flex-col justify-center items-center gap-6 mb-12 whitespace-pre-wrap">
+        <SectionTitle
+          title={`소중한 산모님들이 남긴\n\n고운황금손 이용후기 입니다.`}
+          buttonTitle="이용후기 보러가기"
+        />
       </div>
       {/* 웹버전, width:640px 이상 */}
-      <div className="hidden sm:block">
+      <div className="hidden sm:block px-0 md:px-[16vw]">
         <Carousel
           opts={{
             align: "start",

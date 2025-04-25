@@ -4,11 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
   DrawerOverlay,
   DrawerPortal,
   DrawerTitle,
@@ -17,13 +13,9 @@ import {
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
-  navigationMenuTriggerStyle,
 } from "@/shared/ui/navigation-menu";
 import {
   Accordion,
@@ -33,10 +25,13 @@ import {
 } from "@/shared/ui/accordion";
 import { cn } from "@/lib/utils";
 import { forwardRef, useEffect, useState } from "react";
-import { URLS } from "../index";
+import { URLS, useAuthInit } from "../index";
+import { useAuthStore } from "@/src/shared/store";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { accessToken, hydrated } = useAuthStore();
+  useAuthInit();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -63,10 +58,6 @@ export const Header = () => {
 
   return (
     <header className="bg-white">
-      {/* <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
-        aria-label="Global"
-      > */}
       <NavigationMenu className="mx-auto flex max-w-7xl items-center justify-between h-14 px-8 list-none z-50">
         <div className="flex lg:flex-1">
           <Link href={URLS.HOME} className="-m-1.5 p-1.5">
@@ -135,11 +126,27 @@ export const Header = () => {
               <UlButton text="지점안내" enText="Franchisee" />
             </NavigationMenuLink>
           </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink href={URLS.RESERVATION}>
-              <UlButton text="예약상담" enText="Board" />
-            </NavigationMenuLink>
-          </NavigationMenuItem>
+          <NavigationMenu>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                <UlButton text="예약상담" enText="Consult" />
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <NavigationMenuLink
+                  href={URLS.RESERVATION.APPLY}
+                  className="text-sm leading-6 text-gray-900"
+                >
+                  상담신청
+                </NavigationMenuLink>
+                <NavigationMenuLink
+                  href={URLS.RESERVATION.LIST}
+                  className="text-sm leading-6 text-gray-900"
+                >
+                  신청목록
+                </NavigationMenuLink>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenu>
           <NavigationMenuItem>
             <NavigationMenuLink href={URLS.REVIEW}>
               <UlButton text="이용후기" enText="Review" />
@@ -155,7 +162,11 @@ export const Header = () => {
               href={URLS.LOGIN}
               className="px-12 py-2 rounded-full border border-[#0F2E16] absolute right-8 top-2"
             >
-              로그인
+              {!hydrated
+                ? "로딩중.."
+                : accessToken !== null
+                ? "마이페이지"
+                : "로그인"}
             </NavigationMenuLink>
           </NavigationMenuItem>
         </div>
@@ -301,13 +312,29 @@ const MoblieHeaderContent = ({
       >
         <UlButton text="지점안내" enText="Franchisee" />
       </Link>
-      <Link
-        href={URLS.RESERVATION}
-        className="text-sm font-semibold leading-6 text-gray-900"
-        onClick={onChangeMobileMenuOpen}
-      >
-        <UlButton text="예약상담" enText="Board" />
-      </Link>
+      <UlButton
+        text="예약상담"
+        enText="Consult"
+        isAccordion={true}
+        accordionChildren={
+          <div className="w-full flex flex-col justify-center items-center gap-4 py-3">
+            <Link
+              href={URLS.RESERVATION.APPLY}
+              className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
+            >
+              상담신청
+            </Link>
+            <Link
+              href={URLS.RESERVATION.LIST}
+              className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={onChangeMobileMenuOpen}
+            >
+              신청목록
+            </Link>
+          </div>
+        }
+      />
       <Link
         href={URLS.REVIEW}
         className="text-sm font-semibold leading-6 text-gray-900"

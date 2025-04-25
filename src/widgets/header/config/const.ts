@@ -8,6 +8,11 @@ export const URLS = {
     WORK: "/manager/work",
     POLICY: "/manager/policy",
   },
-  RESERVATION: "/reservation",
+  RESERVATION: {
+    APPLY: "/reservation",
+    LIST: "/reservation/list",
+  },
+
   LOGIN: "/login",
+  MYPAGE: "/mypage",
 };

@@ -3,14 +3,8 @@
 import { SectionTitle } from "@/src/shared/ui/sectionTitle";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import {
-  orderCardList,
-  FAQItemList,
-  OrderCard,
-  FAQItem,
-  ReservationCard,
-} from "../index";
-import { Checkbox } from "@/src/shared/ui/checkbox";
+import { orderCardList, FAQItemList, OrderCard, FAQItem } from "../index";
+import Link from "next/link";
 
 export const ReservationPage = () => {
   const waitingNumber = 35;
@@ -41,37 +35,36 @@ export const ReservationPage = () => {
               order={(index + 1).toString()}
               title={orderCard.title}
               content={orderCard.content}
-              children={
-                index === 0 ? (
-                  <div className="flex flex-row gap-6 md:gap-10">
-                    <div className="flex flex-row gap-2 items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -960 960 960"
-                        fill="#728146"
-                        className="w-6 h-6 md:w-12 md:h-12"
-                      >
-                        <path d="M776-487q-5-121-89-205t-205-89v-60q72 2 135.5 30.5T729-734q48 48 76.5 111.5T836-487h-60Zm-169 0q-5-50-40-84.5T482-611v-60q75 5 127.5 57T667-487h-60Zm188 367q-116 0-236.5-56T335-335Q232-438 176-558.5T120-795q0-19.29 12.86-32.14Q145.71-840 165-840h140q14 0 24 10t14 25l26.93 125.64Q372-665 369.5-653.5t-10.73 19.73L259-533q26 44 55 82t64 72q37 38 78 69.5t86 55.5l95-98q10-11 23.15-15 13.15-4 25.85-2l119 26q15 4 25 16.04 10 12.05 10 26.96v135q0 19.29-12.86 32.14Q814.29-120 795-120ZM229-588l81-82-23-110H180q2 42 13.5 88.5T229-588Zm369 363q41 19 89 31t93 14v-107l-103-21-79 83ZM229-588Zm369 363Z" />
-                      </svg>
-                      <div className="md:text-2xl">010-1234-5678</div>
+            >
+              {index === 0 ? (
+                <div className="flex flex-row gap-6 md:gap-10">
+                  <div className="flex flex-row gap-2 items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      fill="#728146"
+                      className="w-6 h-6 md:w-12 md:h-12"
+                    >
+                      <path d="M776-487q-5-121-89-205t-205-89v-60q72 2 135.5 30.5T729-734q48 48 76.5 111.5T836-487h-60Zm-169 0q-5-50-40-84.5T482-611v-60q75 5 127.5 57T667-487h-60Zm188 367q-116 0-236.5-56T335-335Q232-438 176-558.5T120-795q0-19.29 12.86-32.14Q145.71-840 165-840h140q14 0 24 10t14 25l26.93 125.64Q372-665 369.5-653.5t-10.73 19.73L259-533q26 44 55 82t64 72q37 38 78 69.5t86 55.5l95-98q10-11 23.15-15 13.15-4 25.85-2l119 26q15 4 25 16.04 10 12.05 10 26.96v135q0 19.29-12.86 32.14Q814.29-120 795-120ZM229-588l81-82-23-110H180q2 42 13.5 88.5T229-588Zm369 363q41 19 89 31t93 14v-107l-103-21-79 83ZM229-588Zm369 363Z" />
+                    </svg>
+                    <div className="md:text-2xl">010-1234-5678</div>
+                  </div>
+                  <div className="flex flex-row gap-2 items-center">
+                    <div className="w-6 h-6 md:w-12 md:h-12 relative">
+                      <Image
+                        src="/icon/kakaotalk.png"
+                        alt="Kakao"
+                        fill
+                        sizes="100vw"
+                      />
                     </div>
-                    <div className="flex flex-row gap-2 items-center">
-                      <div className="w-6 h-6 md:w-12 md:h-12 relative">
-                        <Image
-                          src="/icon/kakaotalk.png"
-                          alt="Kakao"
-                          fill
-                          sizes="100vw"
-                        />
-                      </div>
-                      <div className="md:text-2xl">
-                        <span className="font-bold">"고운황금손"</span> 검색
-                      </div>
+                    <div className="md:text-2xl">
+                      <span className="font-bold">{"고운황금손"}</span> 검색
                     </div>
                   </div>
-                ) : null
-              }
-            />
+                </div>
+              ) : null}
+            </OrderCard>
           ))}
         </div>
       </div>
@@ -95,43 +88,12 @@ export const ReservationPage = () => {
             <span className="font-bold text-[#0F2E16]">{waitingNumber}</span>
             명의 산모님들이 상담중입니다
           </div>
-          <button className="w-full mx-auto py-4 md:py-[2vw] flex justify-center items-center bg-[#728146] hover:bg-[#062E16] transition-all duration-300 ease-in-out rounded-full text-white text-base md:text-3xl">
-            예약상담 신청하기
-          </button>
-        </div>
-      </div>
-      <div className="mt-20 px-[10vw]">
-        <div className="flex items-center space-x-2">
-          <Checkbox id="secret" className="md:w-6 md:h-6 w-4 h-4" />
-          <label
-            htmlFor="secret"
-            className="text-base md:text-3xl font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          <Link
+            href="reservation/apply"
+            className="w-full mx-auto py-4 md:py-[2vw] flex justify-center items-center bg-[#728146] hover:bg-[#062E16] transition-all duration-300 ease-in-out rounded-full text-white text-base md:text-3xl"
           >
-            비밀글 안보기
-          </label>
-        </div>
-        <div className="space-y-4 pt-4">
-          <ReservationCard
-            title="쌍둥이 산후관리사님 상담 문의드립니다."
-            author="비회원"
-            createdAt="2021-10-10"
-            spot="화성동탄점"
-            isSecret={false}
-          />
-          <ReservationCard
-            title="쌍둥이 산후관리사님 상담 문의드립니다."
-            author="명량한 어피치님"
-            createdAt="2021-10-10"
-            spot="화성동탄점"
-            isSecret={false}
-          />
-          <ReservationCard
-            title="쌍둥이 산후관리사님 상담 문의드립니다."
-            author="비회원"
-            createdAt="2021-10-10"
-            spot="화성동탄점"
-            isSecret={true}
-          />
+            예약상담 신청하기
+          </Link>
         </div>
       </div>
     </div>

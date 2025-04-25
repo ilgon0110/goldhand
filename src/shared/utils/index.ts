@@ -1,3 +1,6 @@
+import { Timestamp } from "firebase/firestore";
+import { Bounce, toast } from "react-toastify";
+
 export function truncateString(str: string, maxLength: number = 50): string {
   return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
 }
@@ -20,6 +23,61 @@ export function getTodayDate(): string {
   return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
 }
 
+export function formatDateToYMD(timestamp: {
+  seconds: number;
+  nanoseconds: number;
+}): string {
+  const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0"); // 0~11 → 1~12
+  const day = `${date.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+export function formatDateToHMS(timestamp: {
+  seconds: number;
+  nanoseconds: number;
+}): string {
+  const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  const seconds = `${date.getSeconds()}`.padStart(2, "0");
+
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+export function getRelativeTimeFromTimestamp(timestamp: Timestamp): string {
+  const createdDate = new Date(timestamp.seconds * 1000);
+  const now = new Date();
+
+  // 시간 제거: 날짜만 비교하기 위해
+  const created = new Date(
+    createdDate.getFullYear(),
+    createdDate.getMonth(),
+    createdDate.getDate()
+  );
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const diffTime = today.getTime() - created.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffMonths = Math.floor(diffDays / 30);
+  const diffYears = Math.floor(diffDays / 365);
+
+  if (diffYears >= 1) {
+    return `${diffYears}년 전`;
+  } else if (diffMonths >= 1) {
+    return `${diffMonths}달 전`;
+  } else {
+    if (diffDays === 0) {
+      return "오늘";
+    } else if (diffDays === 1) {
+      return "어제";
+    } else {
+      return `${diffDays}일 전`;
+    }
+  }
+}
 export function truncateTextToSingleLine(element: HTMLElement, text: string) {
   // 1. 요소에 텍스트를 설정
   element.textContent = text;
@@ -49,4 +107,36 @@ export function truncateTextToSingleLine(element: HTMLElement, text: string) {
 
   // 최종 텍스트를 요소에 적용
   element.textContent = truncatedText;
+}
+
+export function typedJson<T>(body: T, init?: ResponseInit): Response {
+  return Response.json(body, init);
+}
+
+export function toastError(comment: string) {
+  return toast.error(comment, {
+    position: "top-center",
+    autoClose: 3000,
+    transition: Bounce,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
+export function toastSuccess(comment: string) {
+  return toast.success(comment, {
+    position: "top-center",
+    autoClose: 3000,
+    transition: Bounce,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+  });
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { searchParams } from "@/src/shared/searchParams";
 import {
   Pagination,
   PaginationContent,
@@ -10,23 +9,34 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/src/shared/ui/pagination";
-//import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useQueryState, parseAsInteger, useQueryStates } from "nuqs";
-import { useCallback } from "react";
 
 type ReviewPaginationProps = {
-  dataLength: number;
+  dataLength: number | undefined;
   maxColumnNumber: number;
+  consultParam: {
+    page: number;
+    hideSecret?: string;
+  };
+  setConsultParam: (params: {
+    page: number;
+    hideSecret?: string;
+    [key: string]: string | number | undefined;
+  }) => void;
 };
 
 export const ReservationPagination = ({
   dataLength,
   maxColumnNumber,
+  consultParam,
+  setConsultParam,
 }: ReviewPaginationProps) => {
-  const [{ page: pageParams }, setPageParams] = useQueryStates(searchParams, {
-    shallow: false,
-  });
-
+  // const [{ page: consultPageParams }] = useQueryStates(
+  //   consultParams,
+  //   {
+  //     shallow: false,
+  //   }
+  // );
+  if (!dataLength) dataLength = 0;
   const totalPages = Math.ceil(dataLength / maxColumnNumber);
 
   return (
@@ -39,8 +49,8 @@ export const ReservationPagination = ({
           <PaginationItem key={page}>
             <PaginationLink
               href={`#`}
-              isActive={page === pageParams}
-              onClick={() => setPageParams({ page })}
+              isActive={page === consultParam.page}
+              onClick={() => setConsultParam({ page })}
             >
               {page}
             </PaginationLink>

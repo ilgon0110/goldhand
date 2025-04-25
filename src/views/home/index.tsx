@@ -1,4 +1,3 @@
-import { ApplyList } from "@/src/widgets/goldHandApply";
 import { ImageSlideList } from "@/src/widgets/goldHandImageSlide";
 import { ReviewCarousel } from "@/src/widgets/goldHandReview";
 import { SponsorList } from "@/src/widgets/goldHandSponsor";

@@ -7,6 +7,7 @@ import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Footer } from "@/src/widgets/footer";
 import Script from "next/script";
+import { ToastContainer } from "react-toastify";
 
 declare global {
   interface Window {
@@ -69,11 +70,15 @@ export default function RootLayout({
               {children}
             </NuqsAdapter>
             <Footer />
+            <ToastContainer />
           </ThemeProvider>
           <Script
             src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"
             strategy="beforeInteractive"
           />
+          <Script
+            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          ></Script>
         </body>
       </html>
     </>

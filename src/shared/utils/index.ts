@@ -140,3 +140,13 @@ export function toastSuccess(comment: string) {
     theme: "colored",
   });
 }
+
+export function validateUrl(url: string): boolean {
+  const urlRegExp = new RegExp(
+    /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/
+  );
+
+  // TODO Fix UI for link insertion; it should never default to an invalid URL such as https://.
+  // Maybe show a dialog where they user can type the URL before inserting it.
+  return url === "https://" || urlRegExp.test(url);
+}

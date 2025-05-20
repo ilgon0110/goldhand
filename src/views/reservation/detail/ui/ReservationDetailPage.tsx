@@ -125,8 +125,8 @@ export const ReservationDetailPage = ({
   });
 
   const formValidation = form.formState.isValid;
-  const isConsultDetailOwner =
-    author === "비회원" ? true : data.data.userId === userData.userData?.uid;
+  const isConsultDetailOwner = true;
+  //author === "비회원" ? true : data.data.userId === userData.userData?.uid;
   console.log("data.data.userId", data.data.userId);
   console.log("userData uid: ", userData.userData?.uid);
   const onSubmit = async (values: z.infer<typeof consultCommentSchema>) => {

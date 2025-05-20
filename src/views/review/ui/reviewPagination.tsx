@@ -11,8 +11,7 @@ import {
   PaginationPrevious,
 } from "@/src/shared/ui/pagination";
 //import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useQueryState, parseAsInteger, useQueryStates } from "nuqs";
-import { useCallback } from "react";
+import { useQueryStates } from "nuqs";
 
 type ReviewPaginationProps = {
   dataLength: number;

@@ -1,6 +1,9 @@
+"use client";
+
 import LoadingBar from "@/src/shared/ui/loadingBar";
 import { ReviewFormPage } from "@/src/views/review";
 import { getUserData } from "@/src/views/signup";
+import { ImagesContext } from "@/src/widgets/editor/context/ImagesContext";
 import { Suspense } from "react";
 
 type PageProps = {
@@ -26,7 +29,7 @@ interface IUserData {
   } | null;
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
+export default function Page() {
   //const userData: IUserData = await getUserData();
   //const reviewDetailData = await getReviewDetailData({
   //  docId: searchParams.docId || "",
@@ -34,7 +37,9 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   return (
     <Suspense fallback={<LoadingBar />}>
-      <ReviewFormPage />
+      <ImagesContext>
+        <ReviewFormPage />
+      </ImagesContext>
     </Suspense>
   );
 }

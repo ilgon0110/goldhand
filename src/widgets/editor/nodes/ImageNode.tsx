@@ -49,6 +49,7 @@ export interface ImagePayload {
   src: string;
   width?: number;
   captionsEnabled?: boolean;
+  File?: File;
 }
 
 function isGoogleDocCheckboxImg(img: HTMLImageElement): boolean {
@@ -143,6 +144,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     element.setAttribute("alt", this.__altText);
     element.setAttribute("width", this.__width.toString());
     element.setAttribute("height", this.__height.toString());
+    element.setAttribute("id", this.getKey());
     return { element };
   }
 
@@ -219,7 +221,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   // View
-
   createDOM(config: EditorConfig): HTMLElement {
     const span = document.createElement("span");
     const theme = config.theme;

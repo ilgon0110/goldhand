@@ -103,7 +103,6 @@ export async function POST(req: Request) {
     // firebase auth에 로그인된 유저가 있는지 확인
     if (user) {
       try {
-        console.log("firebase auth user:", user);
         const accessToken = user.user.accessToken;
         console.log("accessToken:", accessToken);
         await setAuthCookie(accessToken);

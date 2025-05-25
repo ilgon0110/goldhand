@@ -13,6 +13,7 @@ import { COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect } from "react";
 
 import { INSERT_IMAGE_COMMAND } from "./ImagesPlugin";
+import { useImagesContext } from "../context/ImagesContext";
 
 const ACCEPTABLE_IMAGE_TYPES = [
   "image/",
@@ -24,6 +25,7 @@ const ACCEPTABLE_IMAGE_TYPES = [
 
 export default function DragDropPaste(): null {
   const [editor] = useLexicalComposerContext();
+
   useEffect(() => {
     return editor.registerCommand(
       DRAG_DROP_PASTE,
@@ -38,6 +40,7 @@ export default function DragDropPaste(): null {
               editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
                 altText: file.name,
                 src: result,
+                File: file,
               });
             }
           }

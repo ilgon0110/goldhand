@@ -1,15 +1,8 @@
 import { firebaseApp } from "@/src/shared/config/firebase";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import { getAuth } from "firebase/auth";
 import { getAuth as getAdminAuth } from "firebase-admin/auth";
-import {
-  getFirestore,
-  addDoc,
-  collection,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { getFirestore, setDoc, doc } from "firebase/firestore";
 import { cookies } from "next/headers";
 import { typedJson } from "@/src/shared/utils";
 

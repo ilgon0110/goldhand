@@ -9,7 +9,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/src/shared/ui/button";
 import Image from "next/image";
-import { useState, type JSX } from "react";
+import { Dispatch, SetStateAction, useState, type JSX } from "react";
 import * as React from "react";
 import Dropzone, { FileError, useDropzone } from "react-dropzone";
 
@@ -19,6 +19,7 @@ type Props = Readonly<{
   label: string;
   onChange: (files: FileList | null) => void;
   onSubmit: () => void;
+  setFile: Dispatch<SetStateAction<File | undefined>>;
 }>;
 
 export default function FileInput({
@@ -26,11 +27,16 @@ export default function FileInput({
   label,
   onChange,
   onSubmit,
+  setFile,
   "data-test-id": dataTestId,
 }: Props): JSX.Element {
   const [contentImageUrl, setContentImageUrl] = useState<string | null>(null);
 
   const onDrop = (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
+    const dataTransfer = new DataTransfer();
+    acceptedFiles.forEach((file) => dataTransfer.items.add(file));
+    onChange(dataTransfer.files);
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();
 
@@ -40,6 +46,8 @@ export default function FileInput({
       };
       //reader.readAsArrayBuffer(file);
       reader.readAsDataURL(file);
+      console.log("image onDrop", file);
+      setFile(file);
     });
   };
 
@@ -55,6 +63,7 @@ export default function FileInput({
       };
       //reader.readAsArrayBuffer(file);
       reader.readAsDataURL(file);
+      setFile(file);
     }
   };
 

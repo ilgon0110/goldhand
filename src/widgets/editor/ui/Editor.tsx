@@ -21,17 +21,29 @@ import { $createLinkNode } from "@lexical/link";
 import { $createListItemNode, $createListNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
+import { $generateHtmlFromNodes } from "@lexical/html";
 import {
   $createParagraphNode,
   $createTextNode,
   $getRoot,
   $isTextNode,
   DOMConversionMap,
+  DOMExportOutput,
+  DOMExportOutputMap,
   TextNode,
   EditorState,
+  LexicalEditor,
+  LexicalNode,
+  $nodesOfType,
 } from "lexical";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import { ToolbarPlugin } from "../plugins/ToolbarPlugin";
 import { ImagesPlugin } from "../plugins/ImagesPlugin";
@@ -53,6 +65,8 @@ import { ToolbarContext } from "../context/ToolbarState";
 import PlaygroundNodes from "../nodes/PlaygroundNodes";
 import EmojiPickerPlugin from "../plugins/EmojiPickerPlugin";
 import PlaygroundEditorTheme from "../theme/PlaygroundEditorTheme";
+import { ImagesContext, useImagesContext } from "../context/ImagesContext";
+import { ImageNode } from "../nodes/ImageNode";
 
 const skipCollaborationInit =
   // @ts-expect-error
@@ -62,10 +76,6 @@ const theme = {
   // Theme styling goes here
   //...
 };
-
-function onError(error: Error): void {
-  console.error(error);
-}
 
 function MyOnChangePlugin(props: {
   onChange: (editorState: EditorState) => void;
@@ -80,7 +90,11 @@ function MyOnChangePlugin(props: {
   return null;
 }
 
-const RichEditor = (): JSX.Element => {
+const RichEditor = ({
+  onEditorChange,
+}: {
+  onEditorChange: (editor: LexicalEditor) => void;
+}): JSX.Element => {
   const { historyState } = useSharedHistoryContext();
   const {
     settings: {
@@ -116,11 +130,28 @@ const RichEditor = (): JSX.Element => {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
-
+  const { setImages } = useImagesContext();
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
+  };
+
+  const onChangePlugin = () => {
+    onEditorChange(editor);
+    console.log("editor State", editor.getEditorState());
+    //editor에서 삭제된 ImageNode의 key를 찾아서 ImageContext 업데이트
+    const currentImageNodeKeys = new Set<string>();
+    editor.getEditorState()._nodeMap.forEach((node: LexicalNode) => {
+      if (node.getType() === "image") {
+        currentImageNodeKeys.add(node.getKey());
+      }
+    });
+
+    setImages((prevImages) => {
+      if (!prevImages) return prevImages;
+      return prevImages.filter((image) => currentImageNodeKeys.has(image.key));
+    });
   };
 
   useEffect(() => {
@@ -152,7 +183,7 @@ const RichEditor = (): JSX.Element => {
         editor={activeEditor}
         setIsLinkEditMode={setIsLinkEditMode}
       />
-      <MyOnChangePlugin onChange={() => console.log(editor.getEditorState())} />
+      <MyOnChangePlugin onChange={onChangePlugin} />
       <div className={`editor-container`}>
         <DragDropPaste />
         {/* <AutoFocusPlugin /> */}
@@ -204,7 +235,11 @@ const RichEditor = (): JSX.Element => {
   );
 };
 
-export const Editor = (): JSX.Element => {
+export const Editor = ({
+  onEditorChange,
+}: {
+  onEditorChange: (editor: LexicalEditor) => void;
+}): JSX.Element => {
   function $prepopulatedRichText() {
     const root = $getRoot();
     if (root.getFirstChild() === null) {
@@ -339,7 +374,9 @@ export const Editor = (): JSX.Element => {
     namespace: "Playground",
     nodes: [...PlaygroundNodes],
     theme: PlaygroundEditorTheme,
-    onError,
+    onError: (error: Error) => {
+      console.error("Lexical error", error);
+    },
   };
 
   return (
@@ -347,7 +384,7 @@ export const Editor = (): JSX.Element => {
       <LexicalComposer initialConfig={initialConfig}>
         <SharedHistoryContext>
           <ToolbarContext>
-            <RichEditor />
+            <RichEditor onEditorChange={onEditorChange} />
           </ToolbarContext>
         </SharedHistoryContext>
       </LexicalComposer>

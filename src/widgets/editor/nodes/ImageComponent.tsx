@@ -85,6 +85,7 @@ function isSVG(src: string): boolean {
 }
 
 function LazyImage({
+  nodeKey,
   altText,
   className,
   imageRef,
@@ -94,6 +95,7 @@ function LazyImage({
   maxWidth,
   onError,
 }: {
+  nodeKey: NodeKey;
   altText: string;
   className: string | null;
   height: "inherit" | number;
@@ -175,6 +177,7 @@ function LazyImage({
 
   return (
     <img
+      id={nodeKey}
       className={className || undefined}
       src={src}
       alt={altText}
@@ -457,6 +460,7 @@ export default function ImageComponent({
                   : null
               }
               src={src}
+              nodeKey={nodeKey}
               altText={altText}
               imageRef={imageRef}
               width={width}

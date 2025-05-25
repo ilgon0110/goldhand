@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -40,6 +42,8 @@ import {
 } from "../nodes/ImageNode";
 import FileInput from "../ui/FileInput";
 import TextInput from "../ui/TextInput";
+import { useImagesContext } from "../context/ImagesContext";
+import dynamic from "next/dynamic";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -53,6 +57,7 @@ export function InsertImageUploadedDialogBody({
 }) {
   const [src, setSrc] = useState("");
   const [altText, setAltText] = useState("");
+  const [file, setFile] = useState<File>();
 
   const isDisabled = src === "";
 
@@ -71,8 +76,7 @@ export function InsertImageUploadedDialogBody({
 
   const onSubmit = () => {
     if (src) {
-      onClick({ altText, src });
-      console.log("onSubmit");
+      onClick({ altText, src, File: file });
     }
   };
 
@@ -84,6 +88,7 @@ export function InsertImageUploadedDialogBody({
         accept="image/*"
         data-test-id="image-modal-file-upload"
         onSubmit={onSubmit}
+        setFile={setFile}
       />
       <TextInput
         label="이미지 설명"
@@ -133,7 +138,8 @@ export function ImagesPlugin({
   captionsEnabled?: boolean;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-
+  const { images, setImages } = useImagesContext();
+  console.log("plugin images", images);
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
       throw new Error("ImagesPlugin: ImageNode not registered");
@@ -147,6 +153,14 @@ export function ImagesPlugin({
           $insertNodes([imageNode]);
           if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
             $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
+          }
+
+          // image Context에 이미지 File로 추가
+          if (payload.File != undefined && payload.File != null) {
+            setImages((prev) => {
+              if (!prev) return [{ file: payload.File!, key: imageNode.__key }];
+              return [...prev, { file: payload.File!, key: imageNode.__key }];
+            });
           }
 
           return true;
@@ -236,6 +250,7 @@ function $onDrop(event: DragEvent, editor: LexicalEditor): boolean {
   if (!data) {
     return false;
   }
+
   event.preventDefault();
   if (canDropImage(event)) {
     const range = getDragSelection(event);

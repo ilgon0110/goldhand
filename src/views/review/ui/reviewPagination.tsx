@@ -1,6 +1,5 @@
 "use client";
 
-import { searchParams } from "@/src/shared/searchParams";
 import {
   Pagination,
   PaginationContent,
@@ -10,39 +9,29 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/src/shared/ui/pagination";
-//import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useQueryStates } from "nuqs";
 
 type ReviewPaginationProps = {
-  dataLength: number;
+  dataLength: number | undefined;
   maxColumnNumber: number;
+  reviewParam: {
+    page: number;
+  };
+  setReviewParam: (params: { page: number }) => void;
 };
 
 export const ReviewPagination = ({
   dataLength,
   maxColumnNumber,
+  reviewParam,
+  setReviewParam,
 }: ReviewPaginationProps) => {
-  const [{ page: pageParams }, setPageParams] = useQueryStates(searchParams, {
-    shallow: false,
-  });
-
-  //   const router = useRouter();
-  //   const pathname = usePathname();
-  //   const searchParams = useSearchParams();
-  //   const pageParams = searchParams.get("page");
-
-  //   // Get a new searchParams string by merging the current
-  //   // searchParams with a provided key/value pair
-  //   const createQueryString = useCallback(
-  //     (name: string, value: string) => {
-  //       const params = new URLSearchParams(searchParams.toString());
-  //       params.set(name, value);
-
-  //       return params.toString();
-  //     },
-  //     [searchParams]
-  //   );
-
+  // const [{ page: consultPageParams }] = useQueryStates(
+  //   consultParams,
+  //   {
+  //     shallow: false,
+  //   }
+  // );
+  if (!dataLength) dataLength = 0;
   const totalPages = Math.ceil(dataLength / maxColumnNumber);
 
   return (
@@ -55,8 +44,8 @@ export const ReviewPagination = ({
           <PaginationItem key={page}>
             <PaginationLink
               href={`#`}
-              isActive={page === pageParams}
-              onClick={() => setPageParams({ page })}
+              isActive={page === reviewParam.page}
+              onClick={() => setReviewParam({ page })}
             >
               {page}
             </PaginationLink>

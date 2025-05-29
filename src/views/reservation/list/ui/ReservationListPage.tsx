@@ -7,6 +7,7 @@ import {
   ReservationCard,
   ReservationPagination,
 } from "@/src/views/reservation";
+import { WidgetPagination } from "@/src/widgets/Pagination";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Timestamp } from "firebase/firestore";
 import { useQueryStates } from "nuqs";
@@ -46,6 +47,10 @@ export const ReservationListPage = ({ data }: ReservationListPageProps) => {
     });
   };
 
+  const onChangePage = (page: number) => {
+    setConsultParam({ page });
+  };
+
   console.log("data", data);
 
   return (
@@ -80,11 +85,17 @@ export const ReservationListPage = ({ data }: ReservationListPageProps) => {
           );
         })}
       </div>
-      <ReservationPagination
+      {/* <ReservationPagination
         dataLength={data.totalDataLength}
         maxColumnNumber={10}
         consultParam={consultParam}
         setConsultParam={setConsultParam}
+      /> */}
+      <WidgetPagination
+        totalDataLength={data.totalDataLength}
+        maxColumnNumber={10}
+        targetPage={consultParam.page}
+        onChangePage={onChangePage}
       />
     </div>
   );

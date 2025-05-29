@@ -16,10 +16,34 @@ import { ReviewCard } from "@/src/widgets/goldHandReview";
 import { useState } from "react";
 import { Button } from "@/src/shared/ui/button";
 import { useRouter } from "next/navigation";
+import { consultCommentSchema } from "../../reservation/detail/config/consultCommentSchema";
+import { reviewParams } from "@/src/shared/searchParams";
+import { useQueryStates } from "nuqs";
+import { WidgetPagination } from "@/src/widgets/Pagination";
 
-export const ReviewPage = ({ data }: { data: IReviewData["data"] }) => {
+export const ReviewPage = ({
+  data,
+  isLogin,
+}: {
+  data: IReviewData;
+  isLogin: boolean;
+}) => {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"CARD" | "TABLE">("CARD");
+  const [reviewParam, setReviewParam] = useQueryStates(reviewParams, {
+    shallow: false,
+  });
+  console.log("review data", data);
+  const generateReviewThumbnailSrc = (htmlString: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, "text/html");
+    const imgElement = doc.querySelector("img");
+    return imgElement ? imgElement.getAttribute("src") : null;
+  };
+
+  const onChangePage = (page: number) => {
+    setReviewParam({ page });
+  };
 
   return (
     <div>
@@ -76,7 +100,13 @@ export const ReviewPage = ({ data }: { data: IReviewData["data"] }) => {
             </button>
           </div>
         </div>
-        <Button onClick={() => router.push("/review/form")}>후기 남기기</Button>
+        <Button
+          onClick={() => router.push("/review/form")}
+          disabled={!isLogin}
+          className={cn("", !isLogin && "hover:cursor-not-allowed opacity-20")}
+        >
+          {isLogin ? "후기 남기기" : "로그인 후 작성 가능"}
+        </Button>
       </div>
       <section
         className={cn(
@@ -86,20 +116,32 @@ export const ReviewPage = ({ data }: { data: IReviewData["data"] }) => {
             : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         )}
       >
-        {data.map((review) => (
+        {data.reviewData.map((review) => (
           <ReviewCard
             key={review.id}
             title={review.title}
-            author={review.author}
-            created_at={review.created_at}
-            description={review.content}
-            thumbnail={review.thumbnail}
+            author={review.name}
+            createdAt={review.createdAt}
+            description={review.htmlString}
+            thumbnail={generateReviewThumbnailSrc(review.htmlString)}
             viewMode={viewMode}
+            onClick={() => router.push(`/review/${review.id}`)}
           />
         ))}
       </section>
       <section className="mt-6">
-        <ReviewPagination dataLength={10} maxColumnNumber={3} />
+        {/* <ReviewPagination
+          dataLength={data.totalDataLength}
+          maxColumnNumber={10}
+          reviewParam={reviewParam}
+          setReviewParam={setReviewParam}
+        /> */}
+        <WidgetPagination
+          totalDataLength={data.totalDataLength}
+          maxColumnNumber={10}
+          targetPage={reviewParam.page}
+          onChangePage={onChangePage}
+        />
       </section>
     </div>
   );

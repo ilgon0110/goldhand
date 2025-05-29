@@ -21,7 +21,7 @@ import {
 } from "@/src/shared/ui/form";
 import { Button } from "@/src/shared/ui/button";
 import { useForm } from "react-hook-form";
-import { commentEditSchema } from "../config/commentEditSchema";
+import { commentEditSchema } from "../../../views/reservation/detail/config/commentEditSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -42,6 +42,8 @@ type CommentProps = {
   content: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  mutateUpdateComment: (commentId: string, comment: string) => Promise<any>;
+  mutateDeleteComment: (commentId: string) => Promise<any>;
 };
 
 export const Comment = ({
@@ -51,10 +53,9 @@ export const Comment = ({
   content,
   createdAt,
   updatedAt,
+  mutateUpdateComment,
+  mutateDeleteComment,
 }: CommentProps) => {
-  console.log("Comment isCommentOwner", isCommentOwner);
-  console.log("Comment createdAt", createdAt);
-  console.log("Comment updatedAt", updatedAt);
   const isUpdated = createdAt.toMillis() !== updatedAt.toMillis();
   const [isEditMode, setIsEditMode] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
@@ -79,20 +80,20 @@ export const Comment = ({
     // 삭제 로직 시작
     try {
       setIsDeleteSubmitting(true);
-
-      const result = await (
-        await fetch("/api/consultDetail/comment/delete", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            docId,
-            commentId,
-          }),
-        })
-      ).json();
-
+      const result = await (await mutateDeleteComment(commentId)).json();
+      // const result = await (
+      //   await fetch("/api/consultDetail/comment/delete", {
+      //     method: "DELETE",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       docId,
+      //       commentId,
+      //     }),
+      //   })
+      // ).json();
+      console.log("result:", result);
       if (result.response === "ok") {
         toastSuccess("댓글 삭제 완료!");
       } else {
@@ -111,15 +112,18 @@ export const Comment = ({
 
     // 수정 로직 시작
     const result = await (
-      await fetch("/api/consultDetail/comment/update", {
-        method: "POST",
-        body: JSON.stringify({
-          docId,
-          commentId,
-          comment: values.editComment,
-        }),
-      })
+      await mutateUpdateComment(commentId, values.editComment)
     ).json();
+    // const result = await (
+    //   await fetch("/api/consultDetail/comment/update", {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       docId,
+    //       commentId,
+    //       comment: values.editComment,
+    //     }),
+    //   })
+    // ).json();
 
     if (result.response === "ok") {
       toastSuccess("댓글 수정 완료!");

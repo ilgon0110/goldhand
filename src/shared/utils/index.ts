@@ -23,10 +23,7 @@ export function getTodayDate(): string {
   return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
 }
 
-export function formatDateToYMD(timestamp: {
-  seconds: number;
-  nanoseconds: number;
-}): string {
+export function formatDateToYMD(timestamp: Timestamp): string {
   const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0"); // 0~11 → 1~12
@@ -149,4 +146,25 @@ export function validateUrl(url: string): boolean {
   // TODO Fix UI for link insertion; it should never default to an invalid URL such as https://.
   // Maybe show a dialog where they user can type the URL before inserting it.
   return url === "https://" || urlRegExp.test(url);
+}
+
+export function generateThumbnailUrl(htmlString: string): string | null {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  const imgElement = doc.querySelector("img");
+
+  if (imgElement && imgElement instanceof HTMLImageElement) {
+    return imgElement.src;
+  }
+
+  return null;
+}
+
+export function generateDescription(htmlString: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  const textContent = doc.body.textContent || "";
+
+  // 줄바꿈과 공백을 제거하고, 최대 100자까지 잘라냅니다.
+  return textContent.replace(/\s+/g, " ").trim().slice(0, 100);
 }

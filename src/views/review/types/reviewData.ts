@@ -1,14 +1,19 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface IReviewData {
-  status: string;
+  response: "ok" | "ng";
   message: string;
-  data: {
-    id: string;
-    author: string;
-    created_at: string;
-    updated_at: string;
-    title: string;
-    thumbnail: string | null;
-    content: string;
-    spotSheet: string;
-  }[];
+  reviewData:
+    | {
+        id: string;
+        createdAt: Timestamp;
+        name: string;
+        userId: string;
+        title: string;
+        updatedAt: Timestamp;
+        htmlString: string;
+        franchisee: string;
+      }[]
+    | [];
+  totalDataLength: number;
 }

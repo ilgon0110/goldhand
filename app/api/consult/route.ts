@@ -45,10 +45,8 @@ interface ResponseBody {
 
 export async function GET(req: Request) {
   const { page, hideSecret } = loadConsultParams(req);
-  console.log("page", page);
-  console.log("hideSecret", hideSecret);
-  const PAGE_SIZE = 3;
-  const preloadCount = 3;
+  const PAGE_SIZE = 10;
+  const preloadCount = 1;
 
   const totalToFetch = PAGE_SIZE * preloadCount;
   const startAtIndex = (page - 1) * PAGE_SIZE;
@@ -73,11 +71,11 @@ export async function GET(req: Request) {
     let paginatedQuery = baseQuery;
 
     if (startAtIndex > 0) {
-      const startAfterDoc = filteredSnap.docs[startAtIndex - 1];
-      if (startAfterDoc) {
+      const startAtDoc = filteredSnap.docs[startAtIndex];
+      if (startAtDoc) {
         paginatedQuery = query(
           paginatedQuery,
-          startAfter(startAfterDoc),
+          startAt(startAtDoc),
           limit(totalToFetch)
         );
       } else {

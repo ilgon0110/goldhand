@@ -18,7 +18,12 @@ export const consultDetailParams = {
   docId: parseAsString,
 };
 
+export const reviewParams = {
+  page: parseAsFloat.withDefault(1),
+};
+
 export const loadConsultDetailParams = createLoader(consultDetailParams);
 export const loadConsultParams = createLoader(consultParams);
 export const loadSearchParams = createLoader(searchParams);
 export const loadLoginParams = createLoader(loginParams);
+export const loadReviewParams = createLoader(reviewParams);

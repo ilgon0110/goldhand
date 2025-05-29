@@ -1,5 +1,4 @@
 import { firebaseApp } from "@/src/shared/config/firebase";
-import { set } from "date-fns";
 import {
   collection,
   query,
@@ -10,6 +9,11 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+
+type CommentProps = {
+  docId: string;
+  collectionName: "consults" | "reviews";
+};
 
 type Comment = {
   id: string;
@@ -25,7 +29,10 @@ type UseCommentsResult = {
   error: FirestoreError | null;
 };
 
-export function useComments(docId: string): UseCommentsResult {
+export function useComments({
+  docId,
+  collectionName,
+}: CommentProps): UseCommentsResult {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | null>(null);
@@ -35,7 +42,7 @@ export function useComments(docId: string): UseCommentsResult {
   useEffect(() => {
     if (!docId) return;
     setLoading(true);
-    const commentsRef = collection(db, "consults", docId, "comments");
+    const commentsRef = collection(db, collectionName, docId, "comments");
     const q = query(commentsRef, orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(

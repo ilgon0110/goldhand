@@ -186,7 +186,7 @@ export const ReviewFormPage = () => {
                           );
                           // 3초 후에 페이지 이동
                           setTimeout(() => {
-                            router.replace(`/review/list/${data.docId}`);
+                            router.replace(`/review/${data.docId}`);
                           }, 3000);
                         } else if (data.response === "expired") {
                           toastError(
@@ -293,7 +293,7 @@ export const ReviewFormPage = () => {
               </FormItem>
             )}
           />
-          <Editor onEditorChange={onEditorChange} />
+          <Editor onEditorChange={onEditorChange} editable={true} />
           <div className="flex w-full justify-between">
             <ReCAPTCHA
               ref={recaptchaRef}

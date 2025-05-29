@@ -12,7 +12,7 @@ import type {
   LexicalEditor,
   NodeKey,
 } from "lexical";
-import type { JSX } from "react";
+import type { JSX, LegacyRef } from "react";
 
 import "./ImageNode.css";
 
@@ -176,27 +176,94 @@ function LazyImage({
   const imageStyle = calculateDimensions();
 
   return (
-    <img
+    <SkeletonImage
       id={nodeKey}
       className={className || undefined}
       src={src}
-      alt={altText}
-      ref={imageRef}
-      style={imageStyle}
+      altText={altText}
+      imageRef={imageRef}
+      imageStyle={imageStyle}
       onError={onError}
-      draggable="false"
-      onLoad={(e) => {
-        if (isSVGImage) {
-          const img = e.currentTarget;
-          setDimensions({
-            height: img.naturalHeight,
-            width: img.naturalWidth,
-          });
-        }
-      }}
+      setDimensions={setDimensions}
+      isSVGImage={isSVGImage}
     />
   );
 }
+
+interface SkeletonImageProps {
+  id: NodeKey;
+  className?: string;
+  src: string;
+  altText: string;
+  imageRef: LegacyRef<HTMLImageElement> | undefined;
+  imageStyle: {
+    height: number | "inherit";
+    maxWidth: number;
+    width: number | "inherit";
+  };
+  onError: () => void;
+  setDimensions: (
+    value: React.SetStateAction<{
+      width: number;
+      height: number;
+    } | null>
+  ) => void;
+  isSVGImage: boolean;
+}
+
+const SkeletonImage = ({
+  id,
+  className,
+  src,
+  altText,
+  imageRef,
+  imageStyle,
+  onError,
+  setDimensions,
+  isSVGImage = false,
+}: SkeletonImageProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  return (
+    <div className={`relative`}>
+      {isLoading && (
+        <div
+          style={{
+            width: imageStyle.width,
+            height: imageStyle.height,
+            maxWidth: imageStyle.maxWidth,
+            position: "absolute",
+            top: 0,
+            inset: 0,
+          }}
+          className="absolute inset-0 bg-gray-400 animate-pulse rounded-md"
+        />
+      )}
+      <img
+        id={id}
+        className={className || undefined}
+        src={src}
+        alt={altText}
+        ref={imageRef}
+        style={imageStyle}
+        onError={onError}
+        draggable="false"
+        onLoad={(e) => {
+          setIsLoading(false);
+          if (isSVGImage) {
+            const img = e.currentTarget;
+            setDimensions({
+              height: img.naturalHeight,
+              width: img.naturalWidth,
+            });
+          } else {
+            // Skeleton loading for non-SVG images
+          }
+        }}
+      />
+    </div>
+  );
+};
 
 function BrokenImage(): JSX.Element {
   return (
@@ -471,7 +538,7 @@ export default function ImageComponent({
           )}
         </div>
         {showCaption && (
-          <div className="image-caption-container">
+          <div id={nodeKey} className="image-caption-container">
             <LexicalNestedComposer initialEditor={caption}>
               <AutoFocusPlugin />
               <LinkPlugin />

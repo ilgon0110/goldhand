@@ -1,24 +1,27 @@
-import { truncateString } from "@/src/shared/utils";
+import { formatDateToYMD, truncateString } from "@/src/shared/utils";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import TruncateText from "@/src/shared/ui/TruncateText";
+import { Timestamp } from "firebase/firestore";
 
 type ReviewCardProps = {
   title: string;
   author: string;
-  created_at: string;
+  createdAt: Timestamp;
   description: string;
   thumbnail: string | null;
   viewMode?: "CARD" | "TABLE";
+  onClick: () => void;
 };
 
 export const ReviewCard = ({
   title,
   author,
-  created_at,
+  createdAt,
   description,
   thumbnail,
   viewMode,
+  onClick,
 }: ReviewCardProps) => {
   return (
     <>
@@ -27,11 +30,12 @@ export const ReviewCard = ({
         className={cn(
           "relative border-2 border-slate-200 hover:border-slate-500 transition-all duration-300 rounded-md h-[266px]",
           viewMode === undefined
-            ? "hidden sm:flex flex-1 flex-col"
+            ? "hidden sm:flex flex-1 flex-col overflow-hidden"
             : viewMode === "CARD"
             ? "flex flex-col overflow-hidden"
             : "hidden"
         )}
+        onClick={onClick}
       >
         {!!thumbnail ? (
           <>
@@ -53,7 +57,7 @@ export const ReviewCard = ({
                 <TruncateText text={author} maxLines={1} />
               </span>
               <span className="text-gray-500 text-sm">
-                <TruncateText text={created_at} maxLines={1} />
+                <TruncateText text={formatDateToYMD(createdAt)} maxLines={1} />
               </span>
             </div>
           </>
@@ -67,7 +71,7 @@ export const ReviewCard = ({
                 <TruncateText text={author} maxLines={1} />
               </span>
               <span className="text-gray-500 text-sm">
-                <TruncateText text={created_at} maxLines={1} />
+                <TruncateText text={formatDateToYMD(createdAt)} maxLines={1} />
               </span>
             </div>
             <div className="text-gray-800 text-start text-sm mt-2">
@@ -108,7 +112,10 @@ export const ReviewCard = ({
                   <TruncateText text={author} maxLines={1} />
                 </span>
                 <span className="text-gray-500 text-sm">
-                  <TruncateText text={created_at} maxLines={1} />
+                  <TruncateText
+                    text={formatDateToYMD(createdAt)}
+                    maxLines={1}
+                  />
                 </span>
               </div>
               <div className="text-gray-800 text-start text-sm mt-2">
@@ -126,7 +133,7 @@ export const ReviewCard = ({
                 <TruncateText text={author} maxLines={1} />
               </span>
               <span className="text-gray-500">
-                <TruncateText text={created_at} maxLines={1} />
+                <TruncateText text={formatDateToYMD(createdAt)} maxLines={1} />
               </span>
             </div>
             <div className="text-gray-800 text-start text-sm mt-2">

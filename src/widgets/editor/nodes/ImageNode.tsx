@@ -7,6 +7,7 @@
  */
 
 import type {
+  DOMChildConversion,
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
@@ -25,6 +26,7 @@ import { HashtagNode } from "@lexical/hashtag";
 import { LinkNode } from "@lexical/link";
 import {
   $applyNodeReplacement,
+  $createTextNode,
   createEditor,
   DecoratorNode,
   LineBreakNode,
@@ -68,7 +70,23 @@ function $convertImageElement(domNode: Node): null | DOMConversionOutput {
   }
   const { alt: altText, src, width, height } = img;
   const node = $createImageNode({ altText, height, src, width });
+
   return { node };
+}
+
+function getCaptionSpanById(id: string) {
+  // 예: dynamicId = "1" 또는 "abc123"
+  const containerDiv = document.querySelector(
+    `div.image-caption-container#${CSS.escape(id)}`
+  );
+  console.log("containerDiv", containerDiv);
+  if (!containerDiv) return null;
+
+  const captionSpan = containerDiv.querySelector(
+    'span[data-lexical-text="true"]'
+  );
+  console.log("captionSpan", captionSpan);
+  return captionSpan;
 }
 
 export type SerializedImageNode = Spread<
@@ -139,13 +157,35 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   exportDOM(): DOMExportOutput {
+    const container = document.createElement("div");
     const element = document.createElement("img");
     element.setAttribute("src", this.__src);
     element.setAttribute("alt", this.__altText);
     element.setAttribute("width", this.__width.toString());
     element.setAttribute("height", this.__height.toString());
     element.setAttribute("id", this.getKey());
-    return { element };
+    container.appendChild(element);
+
+    const captionElement = document.createElement("span");
+    this.__caption.getEditorState().read(() => {
+      // const captionSpan = document.querySelector(
+      //   ".image-caption-container span[data-lexical-text='true']"
+      // );
+      const captionSpan = getCaptionSpanById(this.getKey());
+
+      if (captionSpan) {
+        const captionText = captionSpan?.textContent || "";
+        captionElement.setAttribute("data-lexical-caption", captionText || "");
+        captionElement.setAttribute(
+          "style",
+          "position: absolute; bottom: -16px; left: 0;"
+        );
+        captionElement.textContent = captionText;
+        container.appendChild(captionElement);
+      }
+    });
+
+    return { element: container };
   }
 
   static importDOM(): DOMConversionMap | null {

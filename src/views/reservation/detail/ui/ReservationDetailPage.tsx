@@ -22,9 +22,8 @@ import { Textarea } from "@/src/shared/ui/textarea";
 import { Button } from "@/src/shared/ui/button";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
-import Image from "next/image";
 import { Label } from "@/src/shared/ui/label";
-import { useComments } from "../hooks/useComments";
+import { Comment, useComments } from "@/widgets/Comment";
 import {
   Dialog,
   DialogContent,
@@ -44,7 +43,6 @@ import {
 } from "@/src/shared/ui/alert-dialog";
 import { Input } from "@/src/shared/ui/input";
 import { useRouter } from "next/navigation";
-import { Comment } from "./Comment";
 
 type ReservationDetailPageProps = {
   data: {
@@ -107,7 +105,10 @@ export const ReservationDetailPage = ({
   console.log("ReservationDetailPage data", data);
   const router = useRouter();
   const author = data.data.userId ? data.data.name : "비회원";
-  const { comments, loading: isCommentSubmitting } = useComments(docId);
+  const { comments, loading: isCommentSubmitting } = useComments({
+    docId,
+    collectionName: "consults",
+  });
   const [updateButtonName, setUpdateButtonName] = useState<"EDIT" | "DELETE">(
     "EDIT"
   );
@@ -285,6 +286,30 @@ export const ReservationDetailPage = ({
     }
   };
 
+  const mutateDeleteComment = async (commentId: string) => {
+    return await fetch("/api/consultDetail/comment/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        docId,
+        commentId,
+      }),
+    });
+  };
+
+  const mutateUpdateComment = async (commentId: string, comment: string) => {
+    return await fetch("/api/consultDetail/comment/update", {
+      method: "POST",
+      body: JSON.stringify({
+        docId,
+        commentId,
+        comment,
+      }),
+    });
+  };
+
   if (data.response === "ng") {
     throw new Error(data.message);
   }
@@ -405,6 +430,8 @@ export const ReservationDetailPage = ({
                 content={item.comment}
                 createdAt={item.createdAt}
                 updatedAt={item.updatedAt}
+                mutateUpdateComment={mutateUpdateComment}
+                mutateDeleteComment={mutateDeleteComment}
               />
             );
           })}

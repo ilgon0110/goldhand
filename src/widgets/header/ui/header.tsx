@@ -217,6 +217,8 @@ export const Header = () => {
                       </div>
                     </DrawerTitle>
                     <MoblieHeaderContent
+                      hydrated={hydrated}
+                      accessToken={accessToken}
                       onChangeMobileMenuOpen={onChangeMobileMenuOpen}
                     />
                   </div>
@@ -232,8 +234,12 @@ export const Header = () => {
 };
 
 const MoblieHeaderContent = ({
+  hydrated,
+  accessToken,
   onChangeMobileMenuOpen,
 }: {
+  hydrated: boolean;
+  accessToken: string | null;
   onChangeMobileMenuOpen: () => void;
 }) => {
   return (
@@ -243,7 +249,16 @@ const MoblieHeaderContent = ({
         className="font-semibold leading-6 text-gray-900"
         onClick={onChangeMobileMenuOpen}
       >
-        <UlButton text="로그인" enText="" />
+        <UlButton
+          text={
+            !hydrated
+              ? "로딩중.."
+              : accessToken !== null
+              ? "마이페이지"
+              : "로그인"
+          }
+          enText=""
+        />
       </Link>
       <Link
         href={URLS.COMPANY}

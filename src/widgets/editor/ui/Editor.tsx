@@ -21,7 +21,7 @@ import { $createLinkNode } from "@lexical/link";
 import { $createListItemNode, $createListNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
-import { $generateHtmlFromNodes } from "@lexical/html";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import {
   $createParagraphNode,
   $createTextNode,
@@ -35,6 +35,7 @@ import {
   LexicalEditor,
   LexicalNode,
   $nodesOfType,
+  $insertNodes,
 } from "lexical";
 import * as React from "react";
 import {
@@ -67,6 +68,8 @@ import EmojiPickerPlugin from "../plugins/EmojiPickerPlugin";
 import PlaygroundEditorTheme from "../theme/PlaygroundEditorTheme";
 import { ImagesContext, useImagesContext } from "../context/ImagesContext";
 import { ImageNode } from "../nodes/ImageNode";
+import { ExtendedTextNode } from "../nodes/ExtendTextNode";
+import { cn } from "@/lib/utils";
 
 const skipCollaborationInit =
   // @ts-expect-error
@@ -87,12 +90,17 @@ function MyOnChangePlugin(props: {
       onChange(editorState);
     });
   }, [onChange, editor]);
+
   return null;
 }
 
 const RichEditor = ({
+  editable,
+  htmlString,
   onEditorChange,
 }: {
+  editable: boolean;
+  htmlString?: string;
   onEditorChange: (editor: LexicalEditor) => void;
 }): JSX.Element => {
   const { historyState } = useSharedHistoryContext();
@@ -131,6 +139,21 @@ const RichEditor = ({
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
   const { setImages } = useImagesContext();
+
+  useEffect(() => {
+    editor.update(() => {
+      if (htmlString) {
+        console.log("htmlString mount", htmlString);
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(htmlString, "text/html");
+        const nodes = $generateNodesFromDOM(editor, dom);
+
+        $getRoot().select();
+        $insertNodes(nodes);
+      }
+    });
+  }, []);
+
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
@@ -139,8 +162,13 @@ const RichEditor = ({
 
   const onChangePlugin = () => {
     onEditorChange(editor);
-    console.log("editor State", editor.getEditorState());
-    //editor에서 삭제된 ImageNode의 key를 찾아서 ImageContext 업데이트
+    // console.log("editor State", editor.getEditorState());
+    // editor.update(() => {
+    //   const htmlString = $generateHtmlFromNodes(editor, null);
+    //   console.log("htmlString", htmlString);
+    // });
+
+    // editor에서 삭제된 ImageNode의 key를 찾아서 ImageContext 업데이트
     const currentImageNodeKeys = new Set<string>();
     editor.getEditorState()._nodeMap.forEach((node: LexicalNode) => {
       if (node.getType() === "image") {
@@ -172,13 +200,22 @@ const RichEditor = ({
   }, [isSmallWidthViewport]);
 
   return (
-    <div className="border border-slate-200 mt-6 rounded-md h-[500px] overflow-scroll relative">
-      <ToolbarPlugin
-        editor={editor}
-        activeEditor={activeEditor}
-        setActiveEditor={setActiveEditor}
-        setIsLinkEditMode={setIsLinkEditMode}
-      />
+    <div
+      className={cn(
+        "mt-6 relative",
+        editable
+          ? "h-[500px] overflow-scroll border border-slate-200 rounded-md"
+          : "h-fit"
+      )}
+    >
+      {editable && (
+        <ToolbarPlugin
+          editor={editor}
+          activeEditor={activeEditor}
+          setActiveEditor={setActiveEditor}
+          setIsLinkEditMode={setIsLinkEditMode}
+        />
+      )}
       <ShortcutsPlugin
         editor={activeEditor}
         setIsLinkEditMode={setIsLinkEditMode}
@@ -236,9 +273,13 @@ const RichEditor = ({
 };
 
 export const Editor = ({
+  htmlString,
   onEditorChange,
+  editable,
 }: {
+  htmlString?: string;
   onEditorChange: (editor: LexicalEditor) => void;
+  editable: boolean;
 }): JSX.Element => {
   function $prepopulatedRichText() {
     const root = $getRoot();
@@ -321,7 +362,6 @@ export const Editor = ({
       root.append(paragraph4);
     }
   }
-
   function buildImportMap(): DOMConversionMap {
     const importMap: DOMConversionMap = {};
 
@@ -372,11 +412,20 @@ export const Editor = ({
     editorState: null,
     html: { import: buildImportMap() },
     namespace: "Playground",
-    nodes: [...PlaygroundNodes],
+    nodes: [
+      ...PlaygroundNodes,
+      ExtendedTextNode,
+      {
+        replace: TextNode,
+        with: (node: TextNode) => new ExtendedTextNode(node.__text),
+        withKlass: ExtendedTextNode,
+      },
+    ],
     theme: PlaygroundEditorTheme,
     onError: (error: Error) => {
       console.error("Lexical error", error);
     },
+    editable: editable,
   };
 
   return (
@@ -384,7 +433,11 @@ export const Editor = ({
       <LexicalComposer initialConfig={initialConfig}>
         <SharedHistoryContext>
           <ToolbarContext>
-            <RichEditor onEditorChange={onEditorChange} />
+            <RichEditor
+              editable={editable}
+              htmlString={htmlString}
+              onEditorChange={onEditorChange}
+            />
           </ToolbarContext>
         </SharedHistoryContext>
       </LexicalComposer>

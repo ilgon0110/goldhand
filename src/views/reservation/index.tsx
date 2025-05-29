@@ -9,4 +9,4 @@ export { getReservationListData } from "./list/api/loader";
 export { ReservationPagination } from "./list/ui/ReservationPagination";
 export { ReservationDetailPage } from "./detail/ui/ReservationDetailPage";
 export { getConsultDetailData } from "./detail/api/loader";
-export { Comment } from "./detail/ui/Comment";
+export { Comment } from "../../widgets/Comment/ui/Comment";

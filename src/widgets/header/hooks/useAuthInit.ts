@@ -8,8 +8,13 @@ export const useAuthInit = () => {
   useEffect(() => {
     console.log("useAuthInit");
     const fetchToken = async () => {
+      const apiUrl =
+        process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
+          ? process.env.NEXT_PUBLIC_API_URL
+          : "http://localhost:3000";
+
       try {
-        const res = await fetch("http://127.0.0.1:3000/api/auth/header", {
+        const res = await fetch(`${apiUrl}/api/auth/header`, {
           credentials: "include",
           cache: "no-store",
         });

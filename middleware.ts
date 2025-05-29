@@ -23,7 +23,12 @@ export async function middleware(request: NextRequest) {
     return res;
   }
 
-  const response = await fetch("http://127.0.0.1:3000/api/auth/refresh", {
+  const apiUrl =
+    process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
+      ? process.env.NEXT_PUBLIC_API_URL
+      : "http://127.0.0.1:3000";
+
+  const response = await fetch(`${apiUrl}/api/auth/refresh`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

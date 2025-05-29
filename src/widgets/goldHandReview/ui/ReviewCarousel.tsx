@@ -1,4 +1,10 @@
-import { getTodayDate } from "@/src/shared/utils";
+"use client";
+
+import {
+  generateDescription,
+  generateThumbnailUrl,
+  getTodayDate,
+} from "@/src/shared/utils";
 import { ReviewCard } from "../index";
 
 import {
@@ -9,6 +15,8 @@ import {
   CarouselPrevious,
 } from "@/src/shared/ui/carousel";
 import { SectionTitle } from "@/src/shared/ui/sectionTitle";
+import { IReviewData } from "@/src/views/review";
+import { useRouter } from "next/navigation";
 
 type ReviewCarouselProps = {
   title: string;
@@ -18,53 +26,13 @@ type ReviewCarouselProps = {
   thumbnail: string | null;
 };
 
-export const ReviewCarousel = () => {
-  const items: ReviewCarouselProps[] = [
-    {
-      title: "문은숙 선생님 감사합니다",
-      author: "김은숙",
-      created_at: getTodayDate(),
-      description:
-        "저는 어떤 일을 시작하거나, 결정할때 안좋은 경험을 겪게될것만 생각하면 아무일도 못한다라는 생각으로 살던 사람인데, 아이를 임신하니 그 생각이 싹 무너지면서 산후도우미에 대한 안좋은 뉴스들",
-      thumbnail: null,
-    },
-    {
-      title: "문은숙 선생님 감사합니다",
-      author: "김은숙",
-      created_at: getTodayDate(),
-      description: "ㄱㅅ",
-      thumbnail: "/review_thumbnail.png",
-    },
-    {
-      title: "문은숙 선생님 감사합니다",
-      author: "김은숙",
-      created_at: getTodayDate(),
-      description:
-        "저는 어떤 일을 시작하거나, 결정할때 안좋은 경험을 겪게될것만 생각하면 아무일도 못한다라는 생각으로 살던 사람인데, 아이를 임신하니 그 생각이 싹 무너지면서 산후도우미에 대한 안좋은 뉴스들",
-      thumbnail: null,
-    },
-    {
-      title: "문은숙 선생님 감사합니다",
-      author: "김은숙",
-      created_at: getTodayDate(),
-      description: "ㄱㅅ",
-      thumbnail: null,
-    },
-    {
-      title: "문은숙 선생님 감사합니다",
-      author: "김은숙",
-      created_at: getTodayDate(),
-      description: "ㄱㅅ",
-      thumbnail: "/review_thumbnail.png",
-    },
-    {
-      title: "문은숙 선생님 감사합니다",
-      author: "김은숙",
-      created_at: getTodayDate(),
-      description: "ㄱㅅ",
-      thumbnail: null,
-    },
-  ];
+export const ReviewCarousel = ({
+  data,
+}: {
+  data: IReviewData["reviewData"];
+}) => {
+  const router = useRouter();
+
   return (
     <div className="w-full">
       <div className="flex flex-col justify-center items-center gap-6 mb-12 whitespace-pre-wrap">
@@ -83,10 +51,19 @@ export const ReviewCarousel = () => {
           orientation="horizontal"
         >
           <CarouselContent>
-            {items.map((item, index) => (
-              <CarouselItem key={index} className="basis-1/1 sm:basis-1/3">
+            {data?.map((item) => (
+              <CarouselItem key={item.id} className="basis-1/1 sm:basis-1/3">
                 <div className="px-1 flex flex-row">
-                  <ReviewCard key={index} {...item} />
+                  <ReviewCard
+                    title={item.title}
+                    author={item.name}
+                    createdAt={item.createdAt}
+                    description={generateDescription(item.htmlString)}
+                    thumbnail={generateThumbnailUrl(item.htmlString)}
+                    onClick={() => {
+                      router.push(`/review/${item.id}`);
+                    }}
+                  />
                 </div>
               </CarouselItem>
             ))}
@@ -97,9 +74,18 @@ export const ReviewCarousel = () => {
       </div>
       {/* 모바일버전, width:640px 미만 */}
       <div className="flex flex-col sm:hidden gap-3">
-        {items.slice(0, 3).map((item, index) => (
-          <div key={index} className="px-1 flex flex-row max-h-32">
-            <ReviewCard {...item} />
+        {data.map((item) => (
+          <div key={item.id} className="px-1 flex flex-row max-h-32">
+            <ReviewCard
+              title={item.title}
+              author={item.name}
+              createdAt={item.createdAt}
+              description={item.htmlString}
+              thumbnail={null}
+              onClick={() => {
+                router.push(`/review/${item.id}`);
+              }}
+            />
           </div>
         ))}
       </div>

@@ -4,11 +4,13 @@ import { SponsorList } from "@/src/widgets/goldHandSponsor";
 import { SpotSheetList } from "@/src/widgets/goldHandSpotSheet";
 import { MainTitle } from "@/src/widgets/goldHandMainTitle/ui/MainTitle";
 import { PriceList } from "@/src/widgets/pricewidgets";
+import { getReviewListData, IReviewData } from "../review";
 
-export function HomePage() {
+export async function HomePage() {
+  const data: IReviewData = await getReviewListData(1);
   return (
     <>
-      <section className="px-4 md:px-9 mt-9">
+      <section>
         <ImageSlideList />
       </section>
       <section className="my-10 md:my-32">
@@ -16,7 +18,7 @@ export function HomePage() {
       </section>
       <section className="px-4 md:px-9 space-y-10 md:space-y-32">
         <SpotSheetList />
-        <ReviewCarousel />
+        <ReviewCarousel data={data.reviewData} />
         <SponsorList />
         <article className="md:px-[10vw]">
           <PriceList />

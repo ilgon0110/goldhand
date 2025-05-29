@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   // webpack: (config, options) => {
   //   config.module.rules.push({
   //     test: /\.mjs/,
@@ -9,6 +9,16 @@ const nextConfig = {
   //   });
   //   return config;
   // },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -1,9 +1,4 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/shared/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
 
 type FAQItemProps = {
   title: string;
@@ -12,14 +7,12 @@ type FAQItemProps = {
 
 export const FAQItem = ({ title, content }: FAQItemProps) => {
   return (
-    <Accordion type="single" collapsible>
+    <Accordion collapsible type="single">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="flex justify-start items-center relative text-lg md:text-2xl font-medium">
+        <AccordionTrigger className="relative flex items-center justify-start text-lg font-medium md:text-2xl">
           {title}
         </AccordionTrigger>
-        <AccordionContent className="mt-2 text-sm md:text-xl">
-          {content}
-        </AccordionContent>
+        <AccordionContent className="mt-2 text-sm md:text-xl">{content}</AccordionContent>
       </AccordionItem>
     </Accordion>
   );

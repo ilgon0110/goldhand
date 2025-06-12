@@ -6,15 +6,18 @@
  *
  */
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/src/shared/ui/button";
-import Image from "next/image";
-import { Dispatch, SetStateAction, useState, type JSX } from "react";
-import * as React from "react";
-import Dropzone, { FileError, useDropzone } from "react-dropzone";
+import Image from 'next/image';
+import type { Dispatch, SetStateAction } from 'react';
+import { type JSX, useState } from 'react';
+import * as React from 'react';
+import type { FileError } from 'react-dropzone';
+import Dropzone from 'react-dropzone';
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/src/shared/ui/button';
 
 type Props = Readonly<{
-  "data-test-id"?: string;
+  'data-test-id'?: string;
   accept?: string;
   label: string;
   onChange: (files: FileList | null) => void;
@@ -28,16 +31,16 @@ export default function FileInput({
   onChange,
   onSubmit,
   setFile,
-  "data-test-id": dataTestId,
+  'data-test-id': dataTestId,
 }: Props): JSX.Element {
   const [contentImageUrl, setContentImageUrl] = useState<string | null>(null);
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
     const dataTransfer = new DataTransfer();
-    acceptedFiles.forEach((file) => dataTransfer.items.add(file));
+    acceptedFiles.forEach(file => dataTransfer.items.add(file));
     onChange(dataTransfer.files);
-    acceptedFiles.forEach((file) => {
+    acceptedFiles.forEach(file => {
       const reader = new FileReader();
 
       reader.onload = () => {
@@ -46,7 +49,7 @@ export default function FileInput({
       };
       //reader.readAsArrayBuffer(file);
       reader.readAsDataURL(file);
-      console.log("image onDrop", file);
+      console.log('image onDrop', file);
       setFile(file);
     });
   };
@@ -71,94 +74,73 @@ export default function FileInput({
     e.preventDefault();
     const files = e.dataTransfer.items;
 
-    const hasOnlyImages = Array.from(files).every(
-      (item) => item.kind === "file" && item.type.startsWith("image/")
-    );
+    const hasOnlyImages = Array.from(files).every(item => item.kind === 'file' && item.type.startsWith('image/'));
 
-    e.dataTransfer.dropEffect = hasOnlyImages ? "copy" : "none";
+    e.dataTransfer.dropEffect = hasOnlyImages ? 'copy' : 'none';
   };
 
-  const imageValidator = (
-    file: File
-  ): FileError | readonly FileError[] | null => {
+  const imageValidator = (file: File): FileError | readonly FileError[] | null => {
     const maxSize = 10 * 1024 * 1024; // 10MB
-    const validTypes = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "image/gif",
-      "image/webp",
-    ];
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
     if (file.size > maxSize) {
       return {
-        code: "file-too-large",
-        message: `파일이 너무 큽니다. ${
-          maxSize / 1024 / 1024
-        }MB 이하의 파일을 업로드 해주세요.`,
+        code: 'file-too-large',
+        message: `파일이 너무 큽니다. ${maxSize / 1024 / 1024}MB 이하의 파일을 업로드 해주세요.`,
       };
     }
     if (!validTypes.includes(file.type)) {
       return {
-        code: "file-invalid-type",
-        message: `지원하지 않는 파일 형식입니다. ${validTypes.join(
-          ", "
-        )} 형식의 파일을 업로드 해주세요.`,
+        code: 'file-invalid-type',
+        message: `지원하지 않는 파일 형식입니다. ${validTypes.join(', ')} 형식의 파일을 업로드 해주세요.`,
       };
     }
     return null;
   };
   return (
     <Dropzone
-      onDrop={onDrop}
-      onDragOver={onDragOver}
       accept={{
-        "image/png": [],
-        "image/jpeg": [],
-        "image/jpg": [],
-        "image/gif": [],
-        "image/webp": [],
+        'image/png': [],
+        'image/jpeg': [],
+        'image/jpg': [],
+        'image/gif': [],
+        'image/webp': [],
       }}
       validator={imageValidator}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       {({ getRootProps, getInputProps, isDragActive, isDragAccept }) => (
         <section className="w-full">
           <div
             {...getRootProps()}
             className={cn(
-              "flex flex-col justify-center gap-4 items-center w-full h-[200px] transition-all ease-in-out duration-200 hover:cursor-pointer",
-              isDragActive &&
-                isDragAccept &&
-                "border-2 border-dashed border-blue-300 bg-blue-100"
+              'flex h-[200px] w-full flex-col items-center justify-center gap-4 transition-all duration-200 ease-in-out hover:cursor-pointer',
+              isDragActive && isDragAccept && 'border-2 border-dashed border-blue-300 bg-blue-100',
             )}
           >
-            <input
-              {...getInputProps()}
-              accept={accept}
-              onChange={(e) => onChangeInput(e)}
-              data-test-id={dataTestId}
-            />
+            <input {...getInputProps()} accept={accept} data-test-id={dataTestId} onChange={e => onChangeInput(e)} />
             {contentImageUrl ? (
               <Image
                 alt="이미지 미리보기"
-                src={contentImageUrl}
-                width={0}
                 height={0}
-                style={{
-                  objectFit: "contain",
-                  width: "auto",
-                  maxWidth: "250px",
-                  height: "150px",
-                }}
                 sizes="100vw"
+                src={contentImageUrl}
+                style={{
+                  objectFit: 'contain',
+                  width: 'auto',
+                  maxWidth: '250px',
+                  height: '150px',
+                }}
+                width={0}
               />
             ) : (
               <div className="flex flex-col items-center justify-center text-slate-400">
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
                   height="48px"
                   viewBox="0 -960 960 960"
                   width="48px"
-                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path d="M480-480ZM216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h312v72H216v528h528v-312h72v312q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm48-144h432L552-480 444-336l-72-96-108 144Zm408-312v-72h-72v-72h72v-72h72v72h72v72h-72v72h-72Z" />
                 </svg>
@@ -169,7 +151,7 @@ export default function FileInput({
               <Button
                 className="mx-16"
                 data-test-id="image-modal-file-upload-btn"
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
                   e.stopPropagation();
                   onSubmit();

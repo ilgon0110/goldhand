@@ -1,1 +1,1 @@
-export { MainTitle } from "./ui/MainTitle";
+export { MainTitle } from './ui/MainTitle';

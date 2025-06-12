@@ -1,9 +1,8 @@
-import { Gowun_Dodum } from "next/font/google";
-import localFont from "next/font/local";
+import { Gowun_Dodum } from 'next/font/google';
 
 export const gowunDodumFont = Gowun_Dodum({
-  subsets: ["latin"],
-  weight: "400",
+  subsets: ['latin'],
+  weight: '400',
 });
 
 // export const gowunFont = localFont({

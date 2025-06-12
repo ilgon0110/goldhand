@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Pagination,
@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/src/shared/ui/pagination";
+} from '@/src/shared/ui/pagination';
 
 type ReviewPaginationProps = {
   dataLength: number | undefined;
@@ -40,13 +40,9 @@ export const ReviewPagination = ({
         <PaginationItem>
           <PaginationPrevious href="#" />
         </PaginationItem>
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <PaginationItem key={page}>
-            <PaginationLink
-              href={`#`}
-              isActive={page === reviewParam.page}
-              onClick={() => setReviewParam({ page })}
-            >
+            <PaginationLink href={`#`} isActive={page === reviewParam.page} onClick={() => setReviewParam({ page })}>
               {page}
             </PaginationLink>
           </PaginationItem>

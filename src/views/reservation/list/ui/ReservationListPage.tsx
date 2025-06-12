@@ -1,16 +1,14 @@
-"use client";
+'use client';
 
-import { consultParams } from "@/src/shared/searchParams";
-import { Checkbox } from "@/src/shared/ui/checkbox";
-import { formatDateToYMD } from "@/src/shared/utils";
-import {
-  ReservationCard,
-  ReservationPagination,
-} from "@/src/views/reservation";
-import { WidgetPagination } from "@/src/widgets/Pagination";
-import { CheckedState } from "@radix-ui/react-checkbox";
-import { Timestamp } from "firebase/firestore";
-import { useQueryStates } from "nuqs";
+import type { CheckedState } from '@radix-ui/react-checkbox';
+import type { Timestamp } from 'firebase/firestore';
+import { useQueryStates } from 'nuqs';
+
+import { consultParams } from '@/src/shared/searchParams';
+import { Checkbox } from '@/src/shared/ui/checkbox';
+import { formatDateToYMD } from '@/src/shared/utils';
+import { ReservationCard } from '@/src/views/reservation';
+import { WidgetPagination } from '@/src/widgets/Pagination';
 
 type ReservationListPageProps = {
   data: {
@@ -51,36 +49,36 @@ export const ReservationListPage = ({ data }: ReservationListPageProps) => {
     setConsultParam({ page });
   };
 
-  console.log("data", data);
+  console.log('data', data);
 
   return (
     <div>
       <div className="flex items-center space-x-2">
         <Checkbox
+          className="h-4 w-4 md:h-6 md:w-6"
+          defaultChecked={consultParam.hideSecret === 'true'}
           id="secret"
-          className="md:w-6 md:h-6 w-4 h-4"
-          defaultChecked={consultParam.hideSecret === "true"}
-          onCheckedChange={(check) => toggleHideSecret(check)}
+          onCheckedChange={check => toggleHideSecret(check)}
         />
         <label
-          htmlFor="secret"
           className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          htmlFor="secret"
         >
           비밀글 안보기
         </label>
       </div>
       <div className="space-y-4 pt-4">
-        {data.consultData?.map((item) => {
+        {data.consultData?.map(item => {
           return (
             <ReservationCard
-              key={item.id}
-              docId={item.id}
-              title={item.title}
-              author={item.userId ? "회원" : "비회원"}
-              createdAt={formatDateToYMD(item.createdAt)}
-              spot={item.franchisee}
-              isSecret={item.secret}
+              author={item.userId ? '회원' : '비회원'}
               content={item.content}
+              createdAt={formatDateToYMD(item.createdAt)}
+              docId={item.id}
+              isSecret={item.secret}
+              key={item.id}
+              spot={item.franchisee}
+              title={item.title}
             />
           );
         })}
@@ -92,9 +90,9 @@ export const ReservationListPage = ({ data }: ReservationListPageProps) => {
         setConsultParam={setConsultParam}
       /> */}
       <WidgetPagination
-        totalDataLength={data.totalDataLength}
         maxColumnNumber={10}
         targetPage={consultParam.page}
+        totalDataLength={data.totalDataLength}
         onChangePage={onChangePage}
       />
     </div>

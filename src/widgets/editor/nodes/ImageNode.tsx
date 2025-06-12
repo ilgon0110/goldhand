@@ -6,8 +6,9 @@
  *
  */
 
+import { HashtagNode } from '@lexical/hashtag';
+import { LinkNode } from '@lexical/link';
 import type {
-  DOMChildConversion,
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
@@ -19,27 +20,23 @@ import type {
   SerializedEditor,
   SerializedLexicalNode,
   Spread,
-} from "lexical";
-import type { JSX } from "react";
-
-import { HashtagNode } from "@lexical/hashtag";
-import { LinkNode } from "@lexical/link";
+} from 'lexical';
 import {
   $applyNodeReplacement,
-  $createTextNode,
   createEditor,
   DecoratorNode,
   LineBreakNode,
   ParagraphNode,
   RootNode,
   TextNode,
-} from "lexical";
-import * as React from "react";
+} from 'lexical';
+import type { JSX } from 'react';
+import * as React from 'react';
 
-import { EmojiNode } from "./EmojiNode";
-import { KeywordNode } from "./KeywordNode";
+import { EmojiNode } from './EmojiNode';
+import { KeywordNode } from './KeywordNode';
 
-const ImageComponent = React.lazy(() => import("./ImageComponent"));
+const ImageComponent = React.lazy(() => import('./ImageComponent'));
 
 export interface ImagePayload {
   altText: string;
@@ -57,15 +54,15 @@ export interface ImagePayload {
 function isGoogleDocCheckboxImg(img: HTMLImageElement): boolean {
   return (
     img.parentElement != null &&
-    img.parentElement.tagName === "LI" &&
+    img.parentElement.tagName === 'LI' &&
     img.previousSibling === null &&
-    img.getAttribute("aria-roledescription") === "checkbox"
+    img.getAttribute('aria-roledescription') === 'checkbox'
   );
 }
 
-function $convertImageElement(domNode: Node): null | DOMConversionOutput {
+function $convertImageElement(domNode: Node): DOMConversionOutput | null {
   const img = domNode as HTMLImageElement;
-  if (img.src.startsWith("file:///") || isGoogleDocCheckboxImg(img)) {
+  if (img.src.startsWith('file:///') || isGoogleDocCheckboxImg(img)) {
     return null;
   }
   const { alt: altText, src, width, height } = img;
@@ -76,16 +73,12 @@ function $convertImageElement(domNode: Node): null | DOMConversionOutput {
 
 function getCaptionSpanById(id: string) {
   // 예: dynamicId = "1" 또는 "abc123"
-  const containerDiv = document.querySelector(
-    `div.image-caption-container#${CSS.escape(id)}`
-  );
-  console.log("containerDiv", containerDiv);
+  const containerDiv = document.querySelector(`div.image-caption-container#${CSS.escape(id)}`);
+  console.log('containerDiv', containerDiv);
   if (!containerDiv) return null;
 
-  const captionSpan = containerDiv.querySelector(
-    'span[data-lexical-text="true"]'
-  );
-  console.log("captionSpan", captionSpan);
+  const captionSpan = containerDiv.querySelector('span[data-lexical-text="true"]');
+  console.log('captionSpan', captionSpan);
   return captionSpan;
 }
 
@@ -105,8 +98,8 @@ export type SerializedImageNode = Spread<
 export class ImageNode extends DecoratorNode<JSX.Element> {
   __src: string;
   __altText: string;
-  __width: "inherit" | number;
-  __height: "inherit" | number;
+  __width: number | 'inherit';
+  __height: number | 'inherit';
   __maxWidth: number;
   __showCaption: boolean;
   __caption: LexicalEditor;
@@ -114,7 +107,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   __captionsEnabled: boolean;
 
   static getType(): string {
-    return "image";
+    return 'image';
   }
 
   static clone(node: ImageNode): ImageNode {
@@ -127,13 +120,12 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       node.__showCaption,
       node.__caption,
       node.__captionsEnabled,
-      node.__key
+      node.__key,
     );
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, width, maxWidth, src, showCaption } =
-      serializedNode;
+    const { altText, height, width, maxWidth, src, showCaption } = serializedNode;
     return $createImageNode({
       altText,
       height,
@@ -157,16 +149,16 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   exportDOM(): DOMExportOutput {
-    const container = document.createElement("div");
-    const element = document.createElement("img");
-    element.setAttribute("src", this.__src);
-    element.setAttribute("alt", this.__altText);
-    element.setAttribute("width", this.__width.toString());
-    element.setAttribute("height", this.__height.toString());
-    element.setAttribute("id", this.getKey());
+    const container = document.createElement('div');
+    const element = document.createElement('img');
+    element.setAttribute('src', this.__src);
+    element.setAttribute('alt', this.__altText);
+    element.setAttribute('width', this.__width.toString());
+    element.setAttribute('height', this.__height.toString());
+    element.setAttribute('id', this.getKey());
     container.appendChild(element);
 
-    const captionElement = document.createElement("span");
+    const captionElement = document.createElement('span');
     this.__caption.getEditorState().read(() => {
       // const captionSpan = document.querySelector(
       //   ".image-caption-container span[data-lexical-text='true']"
@@ -174,12 +166,9 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       const captionSpan = getCaptionSpanById(this.getKey());
 
       if (captionSpan) {
-        const captionText = captionSpan?.textContent || "";
-        captionElement.setAttribute("data-lexical-caption", captionText || "");
-        captionElement.setAttribute(
-          "style",
-          "position: absolute; bottom: -16px; left: 0;"
-        );
+        const captionText = captionSpan?.textContent || '';
+        captionElement.setAttribute('data-lexical-caption', captionText || '');
+        captionElement.setAttribute('style', 'position: absolute; bottom: -16px; left: 0;');
         captionElement.textContent = captionText;
         container.appendChild(captionElement);
       }
@@ -201,34 +190,25 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     src: string,
     altText: string,
     maxWidth: number,
-    width?: "inherit" | number,
-    height?: "inherit" | number,
+    width?: number | 'inherit',
+    height?: number | 'inherit',
     showCaption?: boolean,
     caption?: LexicalEditor,
     captionsEnabled?: boolean,
-    key?: NodeKey
+    key?: NodeKey,
   ) {
     super(key);
     this.__src = src;
     this.__altText = altText;
     this.__maxWidth = maxWidth;
-    this.__width = width || "inherit";
-    this.__height = height || "inherit";
+    this.__width = width || 'inherit';
+    this.__height = height || 'inherit';
     this.__showCaption = showCaption || false;
     this.__caption =
       caption ||
       createEditor({
-        namespace: "Playground/ImageNodeCaption",
-        nodes: [
-          RootNode,
-          TextNode,
-          LineBreakNode,
-          ParagraphNode,
-          LinkNode,
-          EmojiNode,
-          HashtagNode,
-          KeywordNode,
-        ],
+        namespace: 'Playground/ImageNodeCaption',
+        nodes: [RootNode, TextNode, LineBreakNode, ParagraphNode, LinkNode, EmojiNode, HashtagNode, KeywordNode],
       });
     this.__captionsEnabled = captionsEnabled || captionsEnabled === undefined;
   }
@@ -238,18 +218,15 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       ...super.exportJSON(),
       altText: this.getAltText(),
       caption: this.__caption.toJSON(),
-      height: this.__height === "inherit" ? 0 : this.__height,
+      height: this.__height === 'inherit' ? 0 : this.__height,
       maxWidth: this.__maxWidth,
       showCaption: this.__showCaption,
       src: this.getSrc(),
-      width: this.__width === "inherit" ? 0 : this.__width,
+      width: this.__width === 'inherit' ? 0 : this.__width,
     };
   }
 
-  setWidthAndHeight(
-    width: "inherit" | number,
-    height: "inherit" | number
-  ): void {
+  setWidthAndHeight(width: number | 'inherit', height: number | 'inherit'): void {
     const writable = this.getWritable();
     writable.__width = width;
     writable.__height = height;
@@ -262,7 +239,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   // View
   createDOM(config: EditorConfig): HTMLElement {
-    const span = document.createElement("span");
+    const span = document.createElement('span');
     const theme = config.theme;
     const className = theme.image;
     if (className !== undefined) {
@@ -286,16 +263,16 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     return (
       <ImageComponent
-        src={this.__src}
         altText={this.__altText}
-        width={this.__width}
+        caption={this.__caption}
+        captionsEnabled={this.__captionsEnabled}
         height={this.__height}
         maxWidth={this.__maxWidth}
         nodeKey={this.getKey()}
-        showCaption={this.__showCaption}
-        caption={this.__caption}
-        captionsEnabled={this.__captionsEnabled}
         resizable={true}
+        showCaption={this.__showCaption}
+        src={this.__src}
+        width={this.__width}
       />
     );
   }
@@ -313,22 +290,10 @@ export function $createImageNode({
   key,
 }: ImagePayload): ImageNode {
   return $applyNodeReplacement(
-    new ImageNode(
-      src,
-      altText,
-      maxWidth,
-      width,
-      height,
-      showCaption,
-      caption,
-      captionsEnabled,
-      key
-    )
+    new ImageNode(src, altText, maxWidth, width, height, showCaption, caption, captionsEnabled, key),
   );
 }
 
-export function $isImageNode(
-  node: LexicalNode | null | undefined
-): node is ImageNode {
+export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
   return node instanceof ImageNode;
 }

@@ -1,2 +1,2 @@
-export { ReviewCarousel } from "./ui/ReviewCarousel";
-export { ReviewCard } from "./ui/reviewCard";
+export { ReviewCard } from './ui/reviewCard';
+export { ReviewCarousel } from './ui/ReviewCarousel';

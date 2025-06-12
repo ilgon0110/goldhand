@@ -1,2 +1,2 @@
-export { formSchema } from "./config/formSchema";
-export { ReservationFormPage } from "./ui/ReservationFormPage";
+export { formSchema } from './config/formSchema';
+export { ReservationFormPage } from './ui/ReservationFormPage';

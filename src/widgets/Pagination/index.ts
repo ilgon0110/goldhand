@@ -1,1 +1,1 @@
-export { WidgetPagination } from "./ui/Pagination";
+export { WidgetPagination } from './ui/Pagination';

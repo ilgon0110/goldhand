@@ -5,40 +5,38 @@ type PriceCardProps = {
   checkList: string[];
 };
 
-export const PriceCard = ({
-  title,
-  description,
-  priceList,
-  checkList,
-}: PriceCardProps) => {
+export const PriceCard = ({ title, description, priceList, checkList }: PriceCardProps) => {
+  function formatPricePerShare(input: string): string {
+    const [price, unit] = input.split('/');
+    if (!price || !unit) return input; // 형식이 올바르지 않은 경우 원본 반환
+
+    const trimmedPrice = price.trim();
+    const trimmedUnit = unit.trim();
+
+    return `${trimmedPrice}원 / ${trimmedUnit}`;
+  }
+
   return (
-    <div className="w-full md:max-w-[50vw] h-[1019px] border border-slate-200 relative shadow-xl rounded-xl md:rounded-[32px] p-6 md:p-8 flex flex-col">
-      <span className="text-3xl text-[#0F2E16] font-bold">{title}</span>
-      <span className="text-xl mt-4">{description}</span>
-      <div className="flex flex-col gap-6 text-[#0F2E16] font-bold text-2xl md:text-5xl mt-8">
-        {priceList.map((price) => (
-          <span key={price}>{price}</span>
-        ))}
-      </div>
-      <div className="flex flex-col gap-6 mt-10">
-        {checkList.map((price) => (
-          <span key={price} className="flex flex-row gap-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#0F2E16"
-            >
+    <div className="relative flex h-fit w-full flex-col rounded border border-slate-200 p-6 pb-8 shadow-xl md:max-w-[50vw] md:p-8">
+      <span className="text-xl font-bold text-[#0F2E16] lg:text-3xl">{title}</span>
+      {description.length > 0 && <span className="mt-4 text-base lg:text-lg">{description}</span>}
+      {priceList.length > 0 && (
+        <div className="mt-8 flex flex-col gap-6 text-2xl font-bold text-[#0F2E16]">
+          {priceList.map(price => (
+            <span key={price}>{formatPricePerShare(price)}</span>
+          ))}
+        </div>
+      )}
+      <div className="mt-10 flex flex-col gap-6">
+        {checkList.map(price => (
+          <span className="flex flex-row gap-4" key={price}>
+            <svg fill="#0F2E16" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
               <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
             </svg>
             {price}
           </span>
         ))}
       </div>
-      <button className="w-[96%] h-16 rounded bg-[#0F2E16] text-white absolute bottom-11 left-1/2 -translate-x-1/2">
-        자세히 알아보기
-      </button>
     </div>
   );
 };

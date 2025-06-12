@@ -1,18 +1,12 @@
-import { firebaseApp } from "@/src/shared/config/firebase";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  FirestoreError,
-  getFirestore,
-  Timestamp,
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
+import type { FirestoreError, Timestamp } from 'firebase/firestore';
+import { collection, getFirestore, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+
+import { firebaseApp } from '@/src/shared/config/firebase';
 
 type CommentProps = {
   docId: string;
-  collectionName: "consults" | "reviews";
+  collectionName: 'consults' | 'reviews';
 };
 
 type Comment = {
@@ -29,10 +23,7 @@ type UseCommentsResult = {
   error: FirestoreError | null;
 };
 
-export function useComments({
-  docId,
-  collectionName,
-}: CommentProps): UseCommentsResult {
+export function useComments({ docId, collectionName }: CommentProps): UseCommentsResult {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | null>(null);
@@ -42,13 +33,13 @@ export function useComments({
   useEffect(() => {
     if (!docId) return;
     setLoading(true);
-    const commentsRef = collection(db, collectionName, docId, "comments");
-    const q = query(commentsRef, orderBy("createdAt", "desc"));
+    const commentsRef = collection(db, collectionName, docId, 'comments');
+    const q = query(commentsRef, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(
       q,
-      (snapshot) => {
-        const updated = snapshot.docs.map((doc) => ({
+      snapshot => {
+        const updated = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         })) as Comment[];
@@ -57,10 +48,10 @@ export function useComments({
         setLoading(false);
         setError(null);
       },
-      (err) => {
+      err => {
         setError(err);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();

@@ -3,9 +3,9 @@ export const LoadingSpinnerIcon = () => {
     <div role="status">
       <svg
         aria-hidden="true"
-        className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-        viewBox="0 0 100 101"
+        className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
         fill="none"
+        viewBox="0 0 100 101"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path

@@ -1,1 +1,1 @@
-export { SpotSheetList } from "./ui/SpotSheetList";
+export { FranchiseeSheetList } from './ui/FranchiseeSheetList';

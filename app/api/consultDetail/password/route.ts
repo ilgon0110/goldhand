@@ -1,120 +1,112 @@
-import { firebaseApp } from "@/src/shared/config/firebase";
-import { typedJson } from "@/src/shared/utils";
-import bcrypt from "bcryptjs";
-import { doc, getDoc, getFirestore, Timestamp } from "firebase/firestore";
-import { NextRequest } from "next/server";
+import bcrypt from 'bcryptjs';
+import { doc, getDoc, getFirestore, Timestamp } from 'firebase/firestore';
+import type { NextRequest } from 'next/server';
 
-interface ConsultData {
-  bornDate: Date | null;
-  content: string;
-  createAt: Timestamp;
-  franchisee: string;
-  location: string;
-  name: string;
-  password: string | null;
-  phoneNumber: string;
-  secret: boolean;
-  title: string;
-  updatedAt: Timestamp;
-  userId: string | null;
-}
+import { firebaseApp } from '@/src/shared/config/firebase';
+import type { ConsultDetailData } from '@/src/shared/types';
+import { typedJson } from '@/src/shared/utils';
 
-interface ResponseBody {
-  response: "ok" | "ng" | "expired" | "unAuthorized";
+interface IResponseBody {
+  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: ConsultData;
+  data: ConsultDetailData;
 }
 
-const defaultData = {
+const defaultData: ConsultDetailData = {
   bornDate: null,
-  content: "",
-  createAt: Timestamp.now(),
-  franchisee: "",
-  location: "",
-  name: "",
+  content: '',
+  createdAt: Timestamp.now(),
+  franchisee: '',
+  location: '',
+  name: '',
   password: null,
-  phoneNumber: "",
+  phoneNumber: '',
   secret: false,
-  title: "",
+  title: '',
   updatedAt: Timestamp.now(),
   userId: null,
+  comments: null,
 };
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const docId = searchParams.get("docId");
-  const password = searchParams.get("password");
-  console.log("secretDocId", docId);
-  console.log("password", password);
+  const docId = searchParams.get('docId');
+  const password = searchParams.get('password');
+  console.log('secretDocId', docId);
+  console.log('password', password);
 
   if (!docId) {
-    return typedJson<ResponseBody>(
+    return typedJson<IResponseBody>(
       {
-        response: "ng",
-        message: "docId is required",
+        response: 'ng',
+        message: 'docId is required',
         data: defaultData,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
   try {
     const app = firebaseApp;
     const db = getFirestore(app);
-    const consultDocRef = doc(db, "consults", docId);
+    const consultDocRef = doc(db, 'consults', docId);
     const docSnap = await getDoc(consultDocRef);
 
     if (!docSnap.exists()) {
-      return typedJson<ResponseBody>(
+      return typedJson<IResponseBody>(
         {
-          response: "ng",
-          message: "no such document",
+          response: 'ng',
+          message: 'no such document',
           data: defaultData,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    const data = docSnap.data() as ConsultData;
+    const data = docSnap.data() as ConsultDetailData;
 
     if (password === null) {
-      return typedJson<ResponseBody>(
+      return typedJson<IResponseBody>(
         {
-          response: "unAuthorized",
-          message: "password is required",
+          response: 'unAuthorized',
+          message: 'password is required',
           data: defaultData,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const isMatch = await bcrypt.compare(password, data.password || "");
+    const isMatch = await bcrypt.compare(password, data.password || '');
 
     if (!isMatch) {
-      return typedJson<ResponseBody>(
+      return typedJson<IResponseBody>(
         {
-          response: "unAuthorized",
-          message: "비밀번호가 틀립니다.",
+          response: 'unAuthorized',
+          message: '비밀번호가 틀립니다.',
           data: defaultData,
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const responseData: ResponseBody = {
-      response: "ok",
-      message: "ok",
+    const responseData: IResponseBody = {
+      response: 'ok',
+      message: 'ok',
       data: { ...data },
     };
-    return typedJson<ResponseBody>(responseData, { status: 200 });
+    return typedJson<IResponseBody>(responseData, { status: 200 });
   } catch (error) {
-    console.error("Error getting document:", error);
-    return typedJson<ResponseBody>(
+    console.error('Error getting document:', error);
+    const errorCode =
+      error != null && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
+        ? error.code
+        : 'unknown_error';
+    return typedJson<IResponseBody>(
       {
-        response: "ng",
-        message: "Error getting document",
+        response: 'ng',
+        message: errorCode,
         data: defaultData,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

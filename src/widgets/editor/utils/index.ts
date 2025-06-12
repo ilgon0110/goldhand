@@ -5,36 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { $createCodeNode } from "@lexical/code";
-import {
-  INSERT_CHECK_LIST_COMMAND,
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-} from "@lexical/list";
-import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
-import {
-  $createHeadingNode,
-  $createQuoteNode,
-  $isHeadingNode,
-  $isQuoteNode,
-  HeadingTagType,
-} from "@lexical/rich-text";
-import { $patchStyleText, $setBlocksType } from "@lexical/selection";
-import { $isTableSelection } from "@lexical/table";
-import { $getNearestBlockElementAncestorOrThrow } from "@lexical/utils";
-import {
-  $createParagraphNode,
-  $getSelection,
-  $isRangeSelection,
-  $isTextNode,
-  LexicalEditor,
-} from "lexical";
+import { $createCodeNode } from '@lexical/code';
+import { INSERT_CHECK_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
+import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode';
+import type { HeadingTagType } from '@lexical/rich-text';
+import { $createHeadingNode, $createQuoteNode, $isHeadingNode, $isQuoteNode } from '@lexical/rich-text';
+import { $patchStyleText, $setBlocksType } from '@lexical/selection';
+import { $isTableSelection } from '@lexical/table';
+import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils';
+import type { LexicalEditor } from 'lexical';
+import { $createParagraphNode, $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
 
-import {
-  DEFAULT_FONT_SIZE,
-  MAX_ALLOWED_FONT_SIZE,
-  MIN_ALLOWED_FONT_SIZE,
-} from "../context/ToolbarState";
+import { DEFAULT_FONT_SIZE, MAX_ALLOWED_FONT_SIZE, MIN_ALLOWED_FONT_SIZE } from '../context/ToolbarState';
 
 // eslint-disable-next-line no-shadow
 export enum UpdateFontSizeType {
@@ -48,10 +30,7 @@ export enum UpdateFontSizeType {
  * @param updateType - The type of change, either increment or decrement
  * @returns the next font size
  */
-export const calculateNextFontSize = (
-  currentFontSize: number,
-  updateType: UpdateFontSizeType | null
-) => {
+export const calculateNextFontSize = (currentFontSize: number, updateType: UpdateFontSizeType | null) => {
   if (!updateType) {
     return currentFontSize;
   }
@@ -116,17 +95,14 @@ export const calculateNextFontSize = (
 export const updateFontSizeInSelection = (
   editor: LexicalEditor,
   newFontSize: string | null,
-  updateType: UpdateFontSizeType | null
+  updateType: UpdateFontSizeType | null,
 ) => {
   const getNextFontSize = (prevFontSize: string | null): string => {
     if (!prevFontSize) {
       prevFontSize = `${DEFAULT_FONT_SIZE}px`;
     }
     prevFontSize = prevFontSize.slice(0, -2);
-    const nextFontSize = calculateNextFontSize(
-      Number(prevFontSize),
-      updateType
-    );
+    const nextFontSize = calculateNextFontSize(Number(prevFontSize), updateType);
     return `${nextFontSize}px`;
   };
 
@@ -135,21 +111,17 @@ export const updateFontSizeInSelection = (
       const selection = $getSelection();
       if (selection !== null) {
         $patchStyleText(selection, {
-          "font-size": newFontSize || getNextFontSize,
+          'font-size': newFontSize || getNextFontSize,
         });
       }
     }
   });
 };
 
-export const updateFontSize = (
-  editor: LexicalEditor,
-  updateType: UpdateFontSizeType,
-  inputValue: string
-) => {
-  if (inputValue !== "") {
+export const updateFontSize = (editor: LexicalEditor, updateType: UpdateFontSizeType, inputValue: string) => {
+  if (inputValue !== '') {
     const nextFontSize = calculateNextFontSize(Number(inputValue), updateType);
-    updateFontSizeInSelection(editor, String(nextFontSize) + "px", null);
+    updateFontSizeInSelection(editor, String(nextFontSize) + 'px', null);
   } else {
     updateFontSizeInSelection(editor, null, updateType);
   }
@@ -162,11 +134,7 @@ export const formatParagraph = (editor: LexicalEditor) => {
   });
 };
 
-export const formatHeading = (
-  editor: LexicalEditor,
-  blockType: string,
-  headingSize: HeadingTagType
-) => {
+export const formatHeading = (editor: LexicalEditor, blockType: string, headingSize: HeadingTagType) => {
   if (blockType !== headingSize) {
     editor.update(() => {
       const selection = $getSelection();
@@ -176,7 +144,7 @@ export const formatHeading = (
 };
 
 export const formatBulletList = (editor: LexicalEditor, blockType: string) => {
-  if (blockType !== "bullet") {
+  if (blockType !== 'bullet') {
     editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
   } else {
     formatParagraph(editor);
@@ -184,18 +152,15 @@ export const formatBulletList = (editor: LexicalEditor, blockType: string) => {
 };
 
 export const formatCheckList = (editor: LexicalEditor, blockType: string) => {
-  if (blockType !== "check") {
+  if (blockType !== 'check') {
     editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
   } else {
     formatParagraph(editor);
   }
 };
 
-export const formatNumberedList = (
-  editor: LexicalEditor,
-  blockType: string
-) => {
-  if (blockType !== "number") {
+export const formatNumberedList = (editor: LexicalEditor, blockType: string) => {
+  if (blockType !== 'number') {
     editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
   } else {
     formatParagraph(editor);
@@ -203,7 +168,7 @@ export const formatNumberedList = (
 };
 
 export const formatQuote = (editor: LexicalEditor, blockType: string) => {
-  if (blockType !== "quote") {
+  if (blockType !== 'quote') {
     editor.update(() => {
       const selection = $getSelection();
       $setBlocksType(selection, () => $createQuoteNode());
@@ -212,7 +177,7 @@ export const formatQuote = (editor: LexicalEditor, blockType: string) => {
 };
 
 export const formatCode = (editor: LexicalEditor, blockType: string) => {
-  if (blockType !== "code") {
+  if (blockType !== 'code') {
     editor.update(() => {
       let selection = $getSelection();
       if (!selection) {
@@ -271,16 +236,15 @@ export const clearFormatting = (editor: LexicalEditor) => {
             textNode = extractedTextNode;
           }
 
-          if (textNode.__style !== "") {
-            textNode.setStyle("");
+          if (textNode.__style !== '') {
+            textNode.setStyle('');
           }
           if (textNode.__format !== 0) {
             textNode.setFormat(0);
           }
-          const nearestBlockElement =
-            $getNearestBlockElementAncestorOrThrow(textNode);
+          const nearestBlockElement = $getNearestBlockElementAncestorOrThrow(textNode);
           if (nearestBlockElement.__format !== 0) {
-            nearestBlockElement.setFormat("");
+            nearestBlockElement.setFormat('');
           }
           if (nearestBlockElement.__indent !== 0) {
             nearestBlockElement.setIndent(0);
@@ -289,27 +253,21 @@ export const clearFormatting = (editor: LexicalEditor) => {
         } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
           node.replace($createParagraphNode(), true);
         } else if ($isDecoratorBlockNode(node)) {
-          node.setFormat("");
+          node.setFormat('');
         }
       });
     }
   });
 };
 
-const SUPPORTED_URL_PROTOCOLS = new Set([
-  "http:",
-  "https:",
-  "mailto:",
-  "sms:",
-  "tel:",
-]);
+const SUPPORTED_URL_PROTOCOLS = new Set(['http:', 'https:', 'mailto:', 'sms:', 'tel:']);
 
 export function sanitizeUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
     // eslint-disable-next-line no-script-url
     if (!SUPPORTED_URL_PROTOCOLS.has(parsedUrl.protocol)) {
-      return "about:blank";
+      return 'about:blank';
     }
   } catch {
     return url;
@@ -332,13 +290,13 @@ export function setFloatingElemPositionForLinkEditor(
   floatingElem: HTMLElement,
   anchorElem: HTMLElement,
   verticalGap: number = VERTICAL_GAP,
-  horizontalOffset: number = HORIZONTAL_OFFSET
+  horizontalOffset: number = HORIZONTAL_OFFSET,
 ): void {
   const scrollerElem = anchorElem.parentElement;
 
   if (targetRect === null || !scrollerElem) {
-    floatingElem.style.opacity = "0";
-    floatingElem.style.transform = "translate(-10000px, -10000px)";
+    floatingElem.style.opacity = '0';
+    floatingElem.style.transform = 'translate(-10000px, -10000px)';
     return;
   }
 
@@ -360,7 +318,7 @@ export function setFloatingElemPositionForLinkEditor(
   top -= anchorElementRect.top;
   left -= anchorElementRect.left;
 
-  floatingElem.style.opacity = "1";
+  floatingElem.style.opacity = '1';
   floatingElem.style.transform = `translate(${left}px, ${top}px)`;
 }
 
@@ -371,12 +329,10 @@ export function setFloatingElemPositionForLinkEditor(
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { $isAtNodeEnd } from "@lexical/selection";
-import { ElementNode, RangeSelection, TextNode } from "lexical";
+import { $isAtNodeEnd } from '@lexical/selection';
+import type { ElementNode, RangeSelection, TextNode } from 'lexical';
 
-export function getSelectedNode(
-  selection: RangeSelection
-): TextNode | ElementNode {
+export function getSelectedNode(selection: RangeSelection): ElementNode | TextNode {
   const anchor = selection.anchor;
   const focus = selection.focus;
   const anchorNode = selection.anchor.getNode();

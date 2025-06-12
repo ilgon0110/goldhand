@@ -1,3 +1,3 @@
-import { CompanyPage } from "@/src/views/company";
+import { CompanyPage } from '@/src/views/company';
 
 export default CompanyPage;

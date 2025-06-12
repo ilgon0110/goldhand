@@ -14,8 +14,6 @@ export async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken");
 
-  console.log("middleware");
-
   if (!accessToken) {
     const res = NextResponse.next();
     res.headers.set("accessToken", "");
@@ -45,6 +43,8 @@ export async function middleware(request: NextRequest) {
     if (url.pathname === "/signup") {
       return NextResponse.redirect("http://127.0.0.1:3000/login");
     }
+
+    return res;
   }
 
   if (url.pathname === "/reservation/apply") {
@@ -61,9 +61,6 @@ export async function middleware(request: NextRequest) {
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: [
-    "/",
-    "/home",
-    "/home/:path*",
     "/login",
     "/login/:path*",
     "/signup",

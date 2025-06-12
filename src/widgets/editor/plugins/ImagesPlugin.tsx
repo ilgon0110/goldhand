@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -8,10 +8,9 @@
  *
  */
 
-import type { JSX } from "react";
-
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { $wrapNodeInElement, mergeRegister } from '@lexical/utils';
+import type { LexicalCommand, LexicalEditor } from 'lexical';
 import {
   $createParagraphNode,
   $createRangeSelection,
@@ -29,45 +28,34 @@ import {
   DROP_COMMAND,
   getDOMSelectionFromTarget,
   isHTMLElement,
-  LexicalCommand,
-  LexicalEditor,
-} from "lexical";
-import { useEffect, useRef, useState } from "react";
+} from 'lexical';
+import type { JSX } from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  $createImageNode,
-  $isImageNode,
-  ImageNode,
-  ImagePayload,
-} from "../nodes/ImageNode";
-import FileInput from "../ui/FileInput";
-import TextInput from "../ui/TextInput";
-import { useImagesContext } from "../context/ImagesContext";
-import dynamic from "next/dynamic";
+import { useImagesContext } from '../context/ImagesContext';
+import type { ImagePayload } from '../nodes/ImageNode';
+import { $createImageNode, $isImageNode, ImageNode } from '../nodes/ImageNode';
+import FileInput from '../ui/FileInput';
+import TextInput from '../ui/TextInput';
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
-export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
-  createCommand("INSERT_IMAGE_COMMAND");
+export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> = createCommand('INSERT_IMAGE_COMMAND');
 
-export function InsertImageUploadedDialogBody({
-  onClick,
-}: {
-  onClick: (payload: InsertImagePayload) => void;
-}) {
-  const [src, setSrc] = useState("");
-  const [altText, setAltText] = useState("");
+export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
+  const [src, setSrc] = useState('');
+  const [altText, setAltText] = useState('');
   const [file, setFile] = useState<File>();
 
-  const isDisabled = src === "";
+  const isDisabled = src === '';
 
   const loadImage = (files: FileList | null) => {
     const reader = new FileReader();
     reader.onload = function () {
-      if (typeof reader.result === "string") {
+      if (typeof reader.result === 'string') {
         setSrc(reader.result);
       }
-      return "";
+      return '';
     };
     if (files !== null) {
       reader.readAsDataURL(files[0]);
@@ -81,21 +69,21 @@ export function InsertImageUploadedDialogBody({
   };
 
   return (
-    <div className="min-w-[300px] h-[300px] flex flex-col items-center justify-center p-4 gap-4">
+    <div className="flex h-[300px] min-w-[300px] flex-col items-center justify-center gap-4 p-4">
       <FileInput
-        label="Image Upload"
-        onChange={loadImage}
         accept="image/*"
         data-test-id="image-modal-file-upload"
-        onSubmit={onSubmit}
+        label="Image Upload"
         setFile={setFile}
+        onChange={loadImage}
+        onSubmit={onSubmit}
       />
       <TextInput
+        data-test-id="image-modal-alt-text-input"
         label="이미지 설명"
         placeholder="이미지 설명을 입력하세요"
-        onChange={setAltText}
         value={altText}
-        data-test-id="image-modal-alt-text-input"
+        onChange={setAltText}
       />
       {/* <TextInput
         label="Alt Text"
@@ -132,23 +120,19 @@ export function InsertImageDialog({
   return <InsertImageUploadedDialogBody onClick={onClick} />;
 }
 
-export function ImagesPlugin({
-  captionsEnabled,
-}: {
-  captionsEnabled?: boolean;
-}): JSX.Element | null {
+export function ImagesPlugin({ captionsEnabled }: { captionsEnabled?: boolean }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const { images, setImages } = useImagesContext();
-  console.log("plugin images", images);
+  console.log('plugin images', images);
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
-      throw new Error("ImagesPlugin: ImageNode not registered");
+      throw new Error('ImagesPlugin: ImageNode not registered');
     }
 
     return mergeRegister(
       editor.registerCommand<InsertImagePayload>(
         INSERT_IMAGE_COMMAND,
-        (payload) => {
+        payload => {
           const imageNode = $createImageNode(payload);
           $insertNodes([imageNode]);
           if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
@@ -157,7 +141,7 @@ export function ImagesPlugin({
 
           // image Context에 이미지 File로 추가
           if (payload.File != undefined && payload.File != null) {
-            setImages((prev) => {
+            setImages(prev => {
               if (!prev) return [{ file: payload.File!, key: imageNode.__key }];
               return [...prev, { file: payload.File!, key: imageNode.__key }];
             });
@@ -165,38 +149,37 @@ export function ImagesPlugin({
 
           return true;
         },
-        COMMAND_PRIORITY_EDITOR
+        COMMAND_PRIORITY_EDITOR,
       ),
       editor.registerCommand<DragEvent>(
         DRAGSTART_COMMAND,
-        (event) => {
+        event => {
           return $onDragStart(event);
         },
-        COMMAND_PRIORITY_HIGH
+        COMMAND_PRIORITY_HIGH,
       ),
       editor.registerCommand<DragEvent>(
         DRAGOVER_COMMAND,
-        (event) => {
+        event => {
           return $onDragover(event);
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<DragEvent>(
         DROP_COMMAND,
-        (event) => {
+        event => {
           return $onDrop(event, editor);
         },
-        COMMAND_PRIORITY_HIGH
-      )
+        COMMAND_PRIORITY_HIGH,
+      ),
     );
   }, [captionsEnabled, editor]);
 
   return null;
 }
 
-const TRANSPARENT_IMAGE =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-const img = document.createElement("img");
+const TRANSPARENT_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const img = document.createElement('img');
 img.src = TRANSPARENT_IMAGE;
 
 function $onDragStart(event: DragEvent): boolean {
@@ -208,10 +191,10 @@ function $onDragStart(event: DragEvent): boolean {
   if (!dataTransfer) {
     return false;
   }
-  dataTransfer.setData("text/plain", "_");
+  dataTransfer.setData('text/plain', '_');
   dataTransfer.setDragImage(img, 0, 0);
   dataTransfer.setData(
-    "application/x-lexical-drag",
+    'application/x-lexical-drag',
     JSON.stringify({
       data: {
         altText: node.__altText,
@@ -223,8 +206,8 @@ function $onDragStart(event: DragEvent): boolean {
         src: node.__src,
         width: node.__width,
       },
-      type: "image",
-    })
+      type: 'image',
+    }),
   );
 
   return true;
@@ -275,13 +258,13 @@ function $getImageNodeInSelection(): ImageNode | null {
   return $isImageNode(node) ? node : null;
 }
 
-function getDragImageData(event: DragEvent): null | InsertImagePayload {
-  const dragData = event.dataTransfer?.getData("application/x-lexical-drag");
+function getDragImageData(event: DragEvent): InsertImagePayload | null {
+  const dragData = event.dataTransfer?.getData('application/x-lexical-drag');
   if (!dragData) {
     return null;
   }
   const { type, data } = JSON.parse(dragData);
-  if (type !== "image") {
+  if (type !== 'image') {
     return null;
   }
 
@@ -299,9 +282,9 @@ function canDropImage(event: DragEvent): boolean {
   const target = event.target;
   return !!(
     isHTMLElement(target) &&
-    !target.closest("code, span.editor-image") &&
+    !target.closest('code, span.editor-image') &&
     isHTMLElement(target.parentElement) &&
-    target.parentElement.closest("div.ContentEditable__root")
+    target.parentElement.closest('div.ContentEditable__root')
   );
 }
 

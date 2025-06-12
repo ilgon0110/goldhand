@@ -6,33 +6,29 @@
  *
  */
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
   LexicalTypeaheadMenuPlugin,
   MenuOption,
   useBasicTypeaheadTriggerMatch,
-} from "@lexical/react/LexicalTypeaheadMenuPlugin";
-import {
-  $createTextNode,
-  $getSelection,
-  $isRangeSelection,
-  TextNode,
-} from "lexical";
-import * as React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import * as ReactDOM from "react-dom";
+} from '@lexical/react/LexicalTypeaheadMenuPlugin';
+import type { TextNode } from 'lexical';
+import { $createTextNode, $getSelection, $isRangeSelection } from 'lexical';
+import * as React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import * as ReactDOM from 'react-dom';
 
 class EmojiOption extends MenuOption {
   title: string;
   emoji: string;
-  keywords: Array<string>;
+  keywords: string[];
 
   constructor(
     title: string,
     emoji: string,
     options: {
-      keywords?: Array<string>;
-    }
+      keywords?: string[];
+    },
   ) {
     super(title);
     this.title = title;
@@ -53,21 +49,21 @@ function EmojiMenuItem({
   onMouseEnter: () => void;
   option: EmojiOption;
 }) {
-  let className = "item";
+  let className = 'item';
   if (isSelected) {
-    className += " selected";
+    className += ' selected';
   }
   return (
     <li
-      key={option.key}
-      tabIndex={-1}
+      aria-selected={isSelected}
       className={className}
+      id={'typeahead-item-' + index}
+      key={option.key}
       ref={option.setRefElement}
       role="option"
-      aria-selected={isSelected}
-      id={"typeahead-item-" + index}
-      onMouseEnter={onMouseEnter}
+      tabIndex={-1}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
     >
       <span className="text">
         {option.emoji} {option.title}
@@ -80,8 +76,8 @@ type Emoji = {
   emoji: string;
   description: string;
   category: string;
-  aliases: Array<string>;
-  tags: Array<string>;
+  aliases: string[];
+  tags: string[];
   unicode_version: string;
   ios_version: string;
   skin_tones?: boolean;
@@ -92,10 +88,10 @@ const MAX_EMOJI_SUGGESTION_COUNT = 10;
 export default function EmojiPickerPlugin() {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
-  const [emojis, setEmojis] = useState<Array<Emoji>>([]);
+  const [emojis, setEmojis] = useState<Emoji[]>([]);
 
   useEffect(() => {
-    import("../utils/emoji-list").then((file) => setEmojis(file.default));
+    import('../utils/emoji-list').then(file => setEmojis(file.default));
   }, []);
 
   const emojiOptions = useMemo(
@@ -105,26 +101,23 @@ export default function EmojiPickerPlugin() {
             ({ emoji, aliases, tags }) =>
               new EmojiOption(aliases[0], emoji, {
                 keywords: [...aliases, ...tags],
-              })
+              }),
           )
         : [],
-    [emojis]
+    [emojis],
   );
 
-  const checkForTriggerMatch = useBasicTypeaheadTriggerMatch(":", {
+  const checkForTriggerMatch = useBasicTypeaheadTriggerMatch(':', {
     minLength: 0,
-    punctuation: "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>:;", // allow _ and -
+    punctuation: '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\[\\]\\\\/!%\'"~=<>:;', // allow _ and -
   });
 
-  const options: Array<EmojiOption> = useMemo(() => {
+  const options: EmojiOption[] = useMemo(() => {
     return emojiOptions
       .filter((option: EmojiOption) => {
         return queryString != null
-          ? new RegExp(queryString, "gi").exec(option.title) ||
-            option.keywords != null
-            ? option.keywords.some((keyword: string) =>
-                new RegExp(queryString, "gi").exec(keyword)
-              )
+          ? new RegExp(queryString, 'gi').exec(option.title) || option.keywords != null
+            ? option.keywords.some((keyword: string) => new RegExp(queryString, 'gi').exec(keyword))
             : false
           : emojiOptions;
       })
@@ -132,11 +125,7 @@ export default function EmojiPickerPlugin() {
   }, [emojiOptions, queryString]);
 
   const onSelectOption = useCallback(
-    (
-      selectedOption: EmojiOption,
-      nodeToRemove: TextNode | null,
-      closeMenu: () => void
-    ) => {
+    (selectedOption: EmojiOption, nodeToRemove: TextNode | null, closeMenu: () => void) => {
       editor.update(() => {
         const selection = $getSelection();
 
@@ -153,19 +142,12 @@ export default function EmojiPickerPlugin() {
         closeMenu();
       });
     },
-    [editor]
+    [editor],
   );
 
   return (
     <LexicalTypeaheadMenuPlugin
-      onQueryChange={setQueryString}
-      onSelectOption={onSelectOption}
-      triggerFn={checkForTriggerMatch}
-      options={options}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
-      ) => {
+      menuRenderFn={(anchorElementRef, { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }) => {
         if (anchorElementRef.current == null || options.length === 0) {
           return null;
         }
@@ -176,9 +158,10 @@ export default function EmojiPickerPlugin() {
                 <ul>
                   {options.map((option: EmojiOption, index) => (
                     <EmojiMenuItem
-                      key={option.key}
                       index={index}
                       isSelected={selectedIndex === index}
+                      key={option.key}
+                      option={option}
                       onClick={() => {
                         setHighlightedIndex(index);
                         selectOptionAndCleanUp(option);
@@ -186,15 +169,18 @@ export default function EmojiPickerPlugin() {
                       onMouseEnter={() => {
                         setHighlightedIndex(index);
                       }}
-                      option={option}
                     />
                   ))}
                 </ul>
               </div>,
-              anchorElementRef.current
+              anchorElementRef.current,
             )
           : null;
       }}
+      options={options}
+      triggerFn={checkForTriggerMatch}
+      onQueryChange={setQueryString}
+      onSelectOption={onSelectOption}
     />
   );
 }

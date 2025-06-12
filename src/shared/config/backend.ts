@@ -1,1 +1,1 @@
-export const mockJsonBaseUrl = "http://localhost:3001";
+export const mockJsonBaseUrl = 'http://localhost:3001';

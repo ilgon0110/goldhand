@@ -1,90 +1,29 @@
-"use client";
+'use client';
 
-import { SectionTitle } from "@/src/shared/ui/sectionTitle";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/shared/ui/form";
-import { Input } from "@/shared/ui/input";
-import { Button } from "@/shared/ui/button";
-import { cn } from "@/lib/utils";
-import { formSchema } from "@/src/views/reservation/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Checkbox } from "@/src/shared/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/shared/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/shared/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/src/shared/ui/calendar";
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import { Textarea } from "@/src/shared/ui/textarea";
-import { createRef, useEffect, useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toastError, toastSuccess } from "@/src/shared/utils";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createRef, useEffect, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { useForm } from 'react-hook-form';
+import type { z } from 'zod';
 
-interface IUserData {
-  response: "ok" | "ng" | "unAuthorized";
-  message: string;
-  accessToken: string | null;
-  userData: {
-    phoneNumber: string;
-    email: string;
-    provider: string;
-    point: number;
-    uid: string;
-    grade: string;
-    createdAt: { seconds: number; nanoseconds: number };
-    nickname: string;
-    name: string;
-    updatedAt: { seconds: number; nanoseconds: number };
-  } | null;
-}
-
-interface IConsultDetailData {
-  response: string;
-  message: string;
-  data: {
-    bornDate: string | null;
-    content: string;
-    createdAt: Date;
-    franchisee: string;
-    location: string;
-    name: string;
-    password: string | null;
-    phoneNumber: string;
-    secret: false;
-    title: string;
-    updatedAt: Date;
-    userId: string | null;
-    comments:
-      | {
-          id: string;
-          userId: string;
-          createdAt: Date;
-          updatedAt: Date;
-          comment: string;
-        }[]
-      | null;
-  };
-}
+import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import { franchiseeList } from '@/src/shared/config';
+import type { IConsultDetailData, IUserData } from '@/src/shared/types';
+import { Calendar } from '@/src/shared/ui/calendar';
+import { Checkbox } from '@/src/shared/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
+import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
+import { Textarea } from '@/src/shared/ui/textarea';
+import { toastError, toastSuccess } from '@/src/shared/utils';
+import { formSchema } from '@/src/views/reservation/form';
 
 export const ReservationFormPage = ({
   userData,
@@ -93,54 +32,46 @@ export const ReservationFormPage = ({
   userData: IUserData;
   consultDetailData: IConsultDetailData;
 }) => {
-  console.log("form consultDetailData:", consultDetailData);
-  console.log("form userData:", userData);
+  console.log('form consultDetailData:', consultDetailData);
+  console.log('form userData:', userData);
   const searchParams = useSearchParams();
-  const docId = searchParams.get("docId");
+  const docId = searchParams.get('docId');
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: consultDetailData.data.title || "",
-      name: userData?.userData?.name || consultDetailData.data.name || "",
+      title: consultDetailData.data.title || '',
+      name: userData?.userData?.name || consultDetailData.data.name || '',
       password: undefined,
       secret: consultDetailData.data.secret || false,
-      franchisee: consultDetailData.data.franchisee || "",
-      phoneNumber:
-        userData?.userData?.phoneNumber ||
-        consultDetailData.data.phoneNumber ||
-        "",
-      bornDate: consultDetailData.data.bornDate
-        ? new Date(consultDetailData.data.bornDate)
-        : undefined,
-      location: consultDetailData.data.location || "",
-      content: consultDetailData.data.content || "",
+      franchisee: consultDetailData.data.franchisee || '',
+      phoneNumber: userData?.userData?.phoneNumber || consultDetailData.data.phoneNumber || '',
+      bornDate: consultDetailData.data.bornDate ? new Date(consultDetailData.data.bornDate) : undefined,
+      location: consultDetailData.data.location || '',
+      content: consultDetailData.data.content || '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
   const formValidation = form.formState.isValid;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log("formError:", form.formState.errors);
+  console.log('formError:', form.formState.errors);
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!formValidation) return;
 
     try {
       setIsSubmitting(true);
 
-      console.log("values:", values);
+      console.log('values:', values);
       const recaptchaToken = await recaptchaRef.current?.executeAsync();
-      console.log("recaptcha token:", recaptchaToken);
+      console.log('recaptcha token:', recaptchaToken);
 
       // POST 요청
-      const apiUrl =
-        consultDetailData.response === "ok"
-          ? "/api/consultDetail/update"
-          : "/api/createConsultPost";
+      const apiUrl = consultDetailData.response === 'ok' ? '/api/consultDetail/update' : '/api/createConsultPost';
       const response = await fetch(apiUrl, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...values,
@@ -151,27 +82,21 @@ export const ReservationFormPage = ({
       });
 
       const data = await response.json();
-      console.log("form response data:", data);
-      if (data.message === "expired") {
-        toastError("로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.");
+      console.log('form response data:', data);
+      if (data.message === 'expired') {
+        toastError('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
         return;
       }
 
-      if (data.response === "ok") {
-        toastSuccess(
-          "상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다."
-        );
+      if (data.response === 'ok') {
+        toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
         // 3초 후에 페이지 이동
         setTimeout(() => {
-          router.replace(
-            `/reservation/list/${data.docId || docId}?password=${
-              values.password
-            }`
-          );
+          router.replace(`/reservation/list/${data.docId || docId}?password=${values.password}`);
         }, 3000);
       }
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error('Error:', error);
       toastError(`상담 신청에 실패했습니다.\n${error.message}`);
     } finally {
       setIsSubmitting(false);
@@ -179,8 +104,7 @@ export const ReservationFormPage = ({
     }
   };
 
-  const isMember =
-    userData.userData != null || userData.response === "unAuthorized";
+  const isMember = userData.userData != null || userData.response === 'unAuthorized';
 
   useEffect(() => {
     form.trigger();
@@ -190,25 +114,20 @@ export const ReservationFormPage = ({
 
   return (
     <div>
-      <SectionTitle title="고운황금손 상담신청" buttonTitle="" />
+      <SectionTitle buttonTitle="" title="고운황금손 상담신청" onClickButtonTitle={() => {}} />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
+            defaultValue={userData.userData?.name || consultDetailData.data.name || ''}
             name="name"
-            defaultValue={
-              userData.userData?.name || consultDetailData.data.name || ""
-            }
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
                   이름 <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="상담받으실 분의 성함을 입력해주세요."
-                    {...field}
-                  />
+                  <Input placeholder="상담받으실 분의 성함을 입력해주세요." {...field} />
                 </FormControl>
                 <FormDescription></FormDescription>
                 <FormMessage>{form.formState.errors.name?.message}</FormMessage>
@@ -217,12 +136,8 @@ export const ReservationFormPage = ({
           />
           <FormField
             control={form.control}
+            defaultValue={userData.userData?.phoneNumber || consultDetailData.data.phoneNumber || ''}
             name="phoneNumber"
-            defaultValue={
-              userData.userData?.phoneNumber ||
-              consultDetailData.data.phoneNumber ||
-              ""
-            }
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -232,8 +147,8 @@ export const ReservationFormPage = ({
                   <Input
                     placeholder="휴대폰번호를 입력해주세요. (예: 01012345678)"
                     {...field}
-                    minLength={6}
                     maxLength={12}
+                    minLength={6}
                   />
                 </FormControl>
                 <FormDescription></FormDescription>
@@ -244,23 +159,18 @@ export const ReservationFormPage = ({
           {!isMember && (
             <FormField
               control={form.control}
-              name="password"
               defaultValue={undefined}
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
                     비밀번호 <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="게시글 수정, 삭제를 위한 비밀번호를 입력해주세요."
-                      {...field}
-                    />
+                    <Input placeholder="게시글 수정, 삭제를 위한 비밀번호를 입력해주세요." {...field} />
                   </FormControl>
                   <FormDescription></FormDescription>
-                  <FormMessage>
-                    {form.formState.errors.password?.message}
-                  </FormMessage>
+                  <FormMessage>{form.formState.errors.password?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -275,14 +185,11 @@ export const ReservationFormPage = ({
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
+                        className={cn('w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
+                        variant={'outline'}
                       >
                         {field.value ? (
-                          format(field.value, "PPP", { locale: ko })
+                          format(field.value, 'PPP', { locale: ko })
                         ) : (
                           <span>출산 예정일을 선택해주세요.</span>
                         )}
@@ -290,14 +197,14 @@ export const ReservationFormPage = ({
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent align="start" className="w-auto p-0">
                     <Calendar
+                      disabled={date => date < new Date('1900-01-01')}
+                      initialFocus
+                      locale={ko}
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) => date < new Date("1900-01-01")}
-                      initialFocus
-                      locale={ko}
                     />
                   </PopoverContent>
                 </Popover>
@@ -314,35 +221,32 @@ export const ReservationFormPage = ({
                 <FormLabel>
                   대리점 <span className="text-red-500">*</span>
                 </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={
-                    consultDetailData.data.franchisee || field.value
-                  }
-                >
+                <Select defaultValue={consultDetailData.data.franchisee || field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="상담받으실 대리점을 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="화성동탄점">화성동탄점</SelectItem>
-                    <SelectItem value="수원점">수원점</SelectItem>
-                    <SelectItem value="용인점">용인점</SelectItem>
+                    {franchiseeList.map(franchisee => {
+                      return (
+                        <SelectItem key={franchisee} value={franchisee}>
+                          {franchisee}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
-                <FormDescription className="text-xs">
-                  선택하신 대리점의 점장이 직접 상담해드려요.
-                </FormDescription>
+                <FormDescription className="text-xs">선택하신 대리점의 점장이 직접 상담해드려요.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="w-full h-[1px] bg-slate-200" />
+          <div className="h-[1px] w-full bg-slate-200" />
           <FormField
             control={form.control}
+            defaultValue={consultDetailData.data.title || ''}
             name="title"
-            defaultValue={consultDetailData.data.title || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -352,16 +256,14 @@ export const ReservationFormPage = ({
                   <Input placeholder="제목을 입력해주세요." {...field} />
                 </FormControl>
                 <FormDescription></FormDescription>
-                <FormMessage>
-                  {form.formState.errors.title?.message}
-                </FormMessage>
+                <FormMessage>{form.formState.errors.title?.message}</FormMessage>
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
+            defaultValue={consultDetailData.data.location || ''}
             name="location"
-            defaultValue={consultDetailData.data.location || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -371,9 +273,7 @@ export const ReservationFormPage = ({
                   <Input placeholder="OO시 OO동까지 작성해주세요." {...field} />
                 </FormControl>
                 <FormDescription></FormDescription>
-                <FormMessage>
-                  {form.formState.errors.location?.message}
-                </FormMessage>
+                <FormMessage>{form.formState.errors.location?.message}</FormMessage>
               </FormItem>
             )}
           />
@@ -387,8 +287,8 @@ export const ReservationFormPage = ({
                 </FormLabel>
                 <FormControl>
                   <Textarea
+                    className="h-40 resize-none text-sm"
                     placeholder="상담하고 싶은 내용을 입력해주세요."
-                    className="resize-none text-sm h-40"
                     {...field}
                   />
                 </FormControl>
@@ -406,34 +306,30 @@ export const ReservationFormPage = ({
                   <FormControl>
                     <Checkbox
                       checked={field.value}
-                      onCheckedChange={field.onChange}
                       defaultChecked={consultDetailData.data.secret || false}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <FormLabel>비밀글</FormLabel>
                 </FormItem>
               )}
             />
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-              size="invisible"
-            />
+            <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!} size="invisible" />
             <Button
-              type="submit"
-              disabled={!formValidation}
               className={cn(
-                "duration-300 transition-all ease-in-out",
-                formValidation ? "" : "cursor-not-allowed opacity-20"
+                'transition-all duration-300 ease-in-out',
+                formValidation ? '' : 'cursor-not-allowed opacity-20',
               )}
+              disabled={!formValidation}
+              type="submit"
             >
               {isSubmitting ? (
                 <div role="status">
                   <svg
                     aria-hidden="true"
-                    className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                    viewBox="0 0 100 101"
+                    className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                     fill="none"
+                    viewBox="0 0 100 101"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
@@ -448,7 +344,7 @@ export const ReservationFormPage = ({
                   <span className="sr-only">Loading...</span>
                 </div>
               ) : (
-                "상담 신청하기"
+                '상담 신청하기'
               )}
             </Button>
           </div>

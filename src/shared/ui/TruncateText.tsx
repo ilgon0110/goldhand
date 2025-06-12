@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 
 interface TruncateTextProps {
   text: string;
@@ -8,11 +8,7 @@ interface TruncateTextProps {
   className?: string; // 추가 스타일링을 위한 클래스
 }
 
-const TruncateText: React.FC<TruncateTextProps> = ({
-  text,
-  maxLines,
-  className,
-}) => {
+const TruncateText: React.FC<TruncateTextProps> = ({ text, maxLines, className }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [truncatedText, setTruncatedText] = useState<string>(text);
 
@@ -26,9 +22,7 @@ const TruncateText: React.FC<TruncateTextProps> = ({
       container.textContent = text;
 
       // container의 높이를 기준으로 자르기 시작
-      const lineHeight = parseFloat(
-        getComputedStyle(container).lineHeight || "0"
-      );
+      const lineHeight = parseFloat(getComputedStyle(container).lineHeight || '0');
       const maxHeight = lineHeight * maxLines;
 
       if (container.scrollHeight <= maxHeight) {
@@ -44,14 +38,14 @@ const TruncateText: React.FC<TruncateTextProps> = ({
 
       while (start < end) {
         const middle = Math.floor((start + end) / 2);
-        container.textContent = text.slice(0, middle) + "...";
+        container.textContent = text.slice(0, middle) + '...';
 
         if (container.scrollHeight > maxHeight) {
           // 초과하면 텍스트를 더 줄임
           end = middle;
         } else {
           // 초과하지 않으면 더 늘림
-          result = text.slice(0, middle) + "...";
+          result = text.slice(0, middle) + '...';
           start = middle + 1;
         }
       }
@@ -62,18 +56,18 @@ const TruncateText: React.FC<TruncateTextProps> = ({
     truncate();
 
     // 윈도우 리사이즈 시에도 다시 계산
-    window.addEventListener("resize", truncate);
-    return () => window.removeEventListener("resize", truncate);
+    window.addEventListener('resize', truncate);
+    return () => window.removeEventListener('resize', truncate);
   }, [text, maxLines]);
 
   return (
     <div
-      ref={containerRef}
       className={className}
+      ref={containerRef}
       style={{
-        display: "-webkit-box",
-        WebkitBoxOrient: "vertical",
-        overflow: "hidden",
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden',
         WebkitLineClamp: maxLines,
       }}
     >

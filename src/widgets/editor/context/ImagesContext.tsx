@@ -6,42 +6,28 @@
  *
  */
 
-import type { SettingName } from "../config/appSetting";
-import type { JSX } from "react";
-
-import * as React from "react";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import type { JSX, ReactNode } from 'react';
+import * as React from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
 type ImagesContextShape = {
   images: ImagesContextFile[] | null;
   setImages: React.Dispatch<React.SetStateAction<ImagesContextFile[] | null>>;
 };
 
-const Context: React.Context<ImagesContextShape> =
-  createContext<ImagesContextShape>({
-    images: null,
-    setImages: () => {
-      return;
-    },
-  });
+const Context: React.Context<ImagesContextShape> = createContext<ImagesContextShape>({
+  images: null,
+  setImages: () => {
+    return;
+  },
+});
 
 interface ImagesContextFile {
   file: File;
   key: string;
 }
 
-export const ImagesContext = ({
-  children,
-}: {
-  children: ReactNode;
-}): JSX.Element => {
+export const ImagesContext = ({ children }: { children: ReactNode }): JSX.Element => {
   const [images, setImages] = useState<ImagesContextFile[] | null>(null);
 
   const contextValue = useMemo(() => {

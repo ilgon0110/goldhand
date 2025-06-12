@@ -1,14 +1,12 @@
-import {
-  $applyNodeReplacement,
-  $isTextNode,
+import type {
   DOMConversion,
   DOMConversionMap,
   DOMConversionOutput,
-  NodeKey,
-  TextNode,
-  SerializedTextNode,
   LexicalNode,
-} from "lexical";
+  NodeKey,
+  SerializedTextNode,
+} from 'lexical';
+import { $applyNodeReplacement, $isTextNode, TextNode } from 'lexical';
 
 export class ExtendedTextNode extends TextNode {
   constructor(text: string, key?: NodeKey) {
@@ -16,7 +14,7 @@ export class ExtendedTextNode extends TextNode {
   }
 
   static getType(): string {
-    return "extended-text";
+    return 'extended-text';
   }
 
   static clone(node: ExtendedTextNode): ExtendedTextNode {
@@ -59,26 +57,24 @@ export class ExtendedTextNode extends TextNode {
   }
 
   isSimpleText() {
-    return this.__type === "extended-text" && this.__mode === 0;
+    return this.__type === 'extended-text' && this.__mode === 0;
   }
 
   // no need to add exportJSON here, since we are not adding any new properties
 }
 
-export function $createExtendedTextNode(text: string = ""): ExtendedTextNode {
+export function $createExtendedTextNode(text: string = ''): ExtendedTextNode {
   return $applyNodeReplacement(new ExtendedTextNode(text));
 }
 
-export function $isExtendedTextNode(
-  node: LexicalNode | null | undefined
-): node is ExtendedTextNode {
+export function $isExtendedTextNode(node: LexicalNode | null | undefined): node is ExtendedTextNode {
   return node instanceof ExtendedTextNode;
 }
 
 function patchStyleConversion(
-  originalDOMConverter?: (node: HTMLElement) => DOMConversion | null
+  originalDOMConverter?: (node: HTMLElement) => DOMConversion | null,
 ): (node: HTMLElement) => DOMConversionOutput | null {
-  return (node) => {
+  return node => {
     const original = originalDOMConverter?.(node);
     if (!original) {
       return null;
@@ -102,7 +98,7 @@ function patchStyleConversion(
     return {
       ...originalOutput,
       forChild: (lexicalNode, parent) => {
-        const originalForChild = originalOutput?.forChild ?? ((x) => x);
+        const originalForChild = originalOutput?.forChild ?? (x => x);
         const result = originalForChild(lexicalNode, parent);
         if ($isTextNode(result)) {
           const style = [
@@ -116,8 +112,8 @@ function patchStyleConversion(
             left ? `left: ${left}` : null,
             bottom ? `bottom: ${bottom}` : null,
           ]
-            .filter((value) => value != null)
-            .join("; ");
+            .filter(value => value != null)
+            .join('; ');
           if (style.length) {
             return result.setStyle(style);
           }

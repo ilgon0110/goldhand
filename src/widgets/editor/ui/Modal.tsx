@@ -6,12 +6,11 @@
  *
  */
 
-import type { JSX } from "react";
-
-import { isDOMNode } from "lexical";
-import * as React from "react";
-import { ReactNode, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+import { isDOMNode } from 'lexical';
+import type { JSX, ReactNode } from 'react';
+import * as React from 'react';
+import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 function PortalImpl({
   onClose,
@@ -35,18 +34,13 @@ function PortalImpl({
   useEffect(() => {
     let modalOverlayElement: HTMLElement | null = null;
     const handler = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         onClose();
       }
     };
     const clickOutsideHandler = (event: MouseEvent) => {
       const target = event.target;
-      if (
-        modalRef.current !== null &&
-        isDOMNode(target) &&
-        !modalRef.current.contains(target) &&
-        closeOnClickOutside
-      ) {
+      if (modalRef.current !== null && isDOMNode(target) && !modalRef.current.contains(target) && closeOnClickOutside) {
         onClose();
       }
     };
@@ -54,16 +48,16 @@ function PortalImpl({
     if (modelElement !== null) {
       modalOverlayElement = modelElement.parentElement;
       if (modalOverlayElement !== null) {
-        modalOverlayElement.addEventListener("click", clickOutsideHandler);
+        modalOverlayElement.addEventListener('click', clickOutsideHandler);
       }
     }
 
-    window.addEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
 
     return () => {
-      window.removeEventListener("keydown", handler);
+      window.removeEventListener('keydown', handler);
       if (modalOverlayElement !== null) {
-        modalOverlayElement?.removeEventListener("click", clickOutsideHandler);
+        modalOverlayElement?.removeEventListener('click', clickOutsideHandler);
       }
     };
   }, [closeOnClickOutside, onClose]);
@@ -74,16 +68,14 @@ function PortalImpl({
       role="dialog"
     >
       <div
-        className="relative flex flex-col min-w-[300px] min-h-[100px] p-5 bg-white shadow-[0_0_20px_0_#444] rounded-[10px]"
-        tabIndex={-1}
+        className="relative flex min-h-[100px] min-w-[300px] flex-col rounded-[10px] bg-white p-5 shadow-[0_0_20px_0_#444]"
         ref={modalRef}
+        tabIndex={-1}
       >
-        <h2 className="m-0 pb-[10px] border-b border-[#ccc] text-[#444]">
-          {title}
-        </h2>
+        <h2 className="m-0 border-b border-[#ccc] pb-[10px] text-[#444]">{title}</h2>
         <button
-          className="absolute right-[20px] w-[30px] h-[30px] flex items-center justify-center text-center cursor-pointer bg-[#eee] rounded-[20px] hover:bg-[#ddd] border-0"
           aria-label="Close modal"
+          className="absolute right-[20px] flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[20px] border-0 bg-[#eee] text-center hover:bg-[#ddd]"
           type="button"
           onClick={onClose}
         >
@@ -107,13 +99,9 @@ export default function Modal({
   title: string;
 }): JSX.Element {
   return createPortal(
-    <PortalImpl
-      onClose={onClose}
-      title={title}
-      closeOnClickOutside={closeOnClickOutside}
-    >
+    <PortalImpl closeOnClickOutside={closeOnClickOutside} title={title} onClose={onClose}>
       {children}
     </PortalImpl>,
-    document.body
+    document.body,
   );
 }

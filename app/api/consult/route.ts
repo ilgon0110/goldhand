@@ -1,45 +1,24 @@
-import { firebaseApp } from "@/src/shared/config/firebase";
-import { loadConsultParams } from "@/src/shared/searchParams";
-import { typedJson } from "@/src/shared/utils";
-import { getAuth } from "firebase/auth";
+import type { FirestoreDataConverter } from 'firebase/firestore';
 import {
   collection,
-  doc,
-  getDoc,
+  getCountFromServer,
   getDocs,
   getFirestore,
-  QuerySnapshot,
-  query,
-  orderBy,
   limit,
+  orderBy,
+  query,
   startAt,
-  startAfter,
-  getCountFromServer,
-  FirestoreDataConverter,
-  Timestamp,
   where,
-} from "firebase/firestore";
-import { NextRequest } from "next/server";
-import { title } from "process";
+} from 'firebase/firestore';
 
-interface ConsultData {
-  bornDate: Date | null;
-  content: string;
-  createAt: Timestamp;
-  franchisee: string;
-  location: string;
-  name: string;
-  password: string | null;
-  phoneNumber: string;
-  secret: boolean;
-  title: string;
-  updatedAt: Timestamp;
-  userId: string | null;
-}
+import { firebaseApp } from '@/src/shared/config/firebase';
+import { loadConsultParams } from '@/src/shared/searchParams';
+import type { ConsultDetailData } from '@/src/shared/types';
+import { typedJson } from '@/src/shared/utils';
 
-interface ResponseBody {
+interface IResponseBody {
   message: string;
-  consultData: ConsultData[];
+  consultData: ConsultDetailData[];
   totalDataLength: number;
 }
 
@@ -53,31 +32,24 @@ export async function GET(req: Request) {
   try {
     const app = firebaseApp;
     const db = getFirestore(app);
-    const consultDocRef = collection(db, "consults").withConverter(
-      consultConverter
-    );
+    const consultDocRef = collection(db, 'consults').withConverter(consultConverter);
 
     // 쿼리 베이스 설정
-    let baseQuery = query(
+    const baseQuery = query(
       consultDocRef,
-      orderBy("createdAt", "desc"),
-      ...(hideSecret === "true" ? [where("secret", "==", false)] : [])
+      orderBy('createdAt', 'desc'),
+      ...(hideSecret === 'true' ? [where('secret', '==', false)] : []),
     );
 
     // 먼저 전체 필터링된 데이터 수를 가져오기 (페이지네이션 계산용)
     const filteredSnap = await getDocs(baseQuery);
-    const totalDataLength = (await getCountFromServer(consultDocRef)).data()
-      .count;
+    const totalDataLength = (await getCountFromServer(consultDocRef)).data().count;
     let paginatedQuery = baseQuery;
 
     if (startAtIndex > 0) {
       const startAtDoc = filteredSnap.docs[startAtIndex];
       if (startAtDoc) {
-        paginatedQuery = query(
-          paginatedQuery,
-          startAt(startAtDoc),
-          limit(totalToFetch)
-        );
+        paginatedQuery = query(paginatedQuery, startAt(startAtDoc), limit(totalToFetch));
       } else {
         paginatedQuery = query(paginatedQuery, limit(totalToFetch));
       }
@@ -86,36 +58,33 @@ export async function GET(req: Request) {
     }
 
     const snapShot = await getDocs(paginatedQuery);
-    const consults = snapShot.docs.map((doc) => ({
+    const consults = snapShot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    return typedJson<ResponseBody>(
-      { message: "ok", consultData: consults, totalDataLength },
-      { status: 200 }
-    );
+    return typedJson<IResponseBody>({ message: 'ok', consultData: consults, totalDataLength }, { status: 200 });
   } catch (error: any) {
-    console.error("Error getting document:", error);
-    return typedJson<ResponseBody>(
+    console.error('Error getting document:', error);
+    return typedJson<IResponseBody>(
       {
-        message: "Error getting document",
+        message: 'Error getting document',
         consultData: [],
         totalDataLength: 0,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-const consultConverter: FirestoreDataConverter<ConsultData> = {
-  toFirestore(data: ConsultData) {
+const consultConverter: FirestoreDataConverter<ConsultDetailData> = {
+  toFirestore(data: ConsultDetailData) {
     return data;
   },
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options);
     return {
       ...data,
-    } as ConsultData;
+    } as ConsultDetailData;
   },
 };

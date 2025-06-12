@@ -1,29 +1,34 @@
-"use client";
-import { useAuthStore } from "@/src/shared/store";
-import { useEffect } from "react";
+'use client';
+import { useEffect } from 'react';
+
+import { useAuthStore } from '@/src/shared/store';
 
 export const useAuthInit = () => {
   const { accessToken, setAccessToken, setHydrated } = useAuthStore();
 
   useEffect(() => {
-    console.log("useAuthInit");
+    console.log('useAuthInit');
     const fetchToken = async () => {
       const apiUrl =
-        process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
+        process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
           ? process.env.NEXT_PUBLIC_API_URL
-          : "http://localhost:3000";
+          : 'http://127.0.0.1:3000';
 
       try {
         const res = await fetch(`${apiUrl}/api/auth/header`, {
-          credentials: "include",
-          cache: "no-store",
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          cache: 'no-store',
         });
         if (res.ok) {
           const data = await res.json();
           setAccessToken(data.accessToken ?? null);
         }
       } catch (err) {
-        console.error("Failed to fetch token:", err);
+        console.error('Failed to fetch token:', err);
         setAccessToken(null);
       } finally {
         setHydrated(true);

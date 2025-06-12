@@ -1,1 +1,1 @@
-export { SponsorList } from "./ui/SponsorList";
+export { SponsorList } from './ui/SponsorList';

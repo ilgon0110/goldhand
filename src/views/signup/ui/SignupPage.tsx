@@ -1,52 +1,25 @@
-"use client";
+'use client';
 
-import { SectionTitle } from "@/src/shared/ui/sectionTitle";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/shared/ui/form";
-import { Input } from "@/shared/ui/input";
-import { Button } from "@/shared/ui/button";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signInWithPhoneNumber,
-  UserCredential,
-  deleteUser,
-} from "firebase/auth";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
-import { useRecaptcha } from "../hooks/useRecaptcha";
-import { PhoneAuthProvider, linkWithCredential } from "firebase/auth";
-import { toastError, toastSuccess } from "@/src/shared/utils";
-import { useRouter } from "next/navigation";
-import { formSchema } from "../config/formSchema";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { UserCredential } from 'firebase/auth';
+import { deleteUser, getAuth, signInWithEmailAndPassword, signInWithPhoneNumber } from 'firebase/auth';
+import { linkWithCredential, PhoneAuthProvider } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import type { z } from 'zod';
 
-interface IUserData {
-  response: string;
-  message: string;
-  accessToken: string | null;
-  userData: {
-    phoneNumber: string;
-    email: string;
-    provider: string;
-    point: number;
-    uid: string;
-    grade: string;
-    createdAt: { seconds: number; nanoseconds: number };
-    nickname: string;
-    name: string;
-    updatedAt: { seconds: number; nanoseconds: number };
-  } | null;
-}
+import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import { useAuthState } from '@/src/shared/hooks/useAuthState';
+import type { IUserData } from '@/src/shared/types';
+import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { toastError, toastSuccess } from '@/src/shared/utils';
+
+import { formSchema } from '../config/formSchema';
+import { useRecaptcha } from '../hooks/useRecaptcha';
 
 interface SignUpResponse {
   response: string;
@@ -58,32 +31,33 @@ interface SignUpResponse {
 
 export const SignupPage = ({ userData }: { userData: IUserData }) => {
   const router = useRouter();
-  const auth = getAuth();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
-  const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState("");
-  const [SmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState("");
+  const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState('');
+  const [SmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
   const [isSendingSms, setIsSendingSms] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const auth = getAuth();
+  const { user: currentUser } = useAuthState();
   const confirmationResultRef = useRef<any>(null);
-  const { initializeRecaptcha } = useRecaptcha("sign-in-button");
+  const { initializeRecaptcha } = useRecaptcha('sign-in-button');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: userData?.userData?.name || "",
-      nickname: userData?.userData?.nickname || "",
-      phoneNumber: userData?.userData?.phoneNumber || "",
-      email: userData?.userData?.email || "",
+      name: userData?.userData?.name || '',
+      nickname: userData?.userData?.nickname || '',
+      phoneNumber: userData?.userData?.phoneNumber || '',
+      email: userData?.userData?.email || '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
   const formValidation = form.formState.isValid;
   const phoneNumberError = !!form.formState.errors.phoneNumber;
   const authCodeError = !!form.formState.errors.authCode;
 
-  console.log("formValidation: ", formValidation);
-  console.log("phoneNumberError: ", phoneNumberError);
+  console.log('formValidation: ', formValidation);
+  console.log('phoneNumberError: ', phoneNumberError);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!formValidation) return;
@@ -91,38 +65,38 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
 
     try {
       setIsSubmitting(true);
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        credentials: "include",
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...values }),
       });
       if (!res.ok) {
-        throw new Error("회원가입 실패");
+        throw new Error('회원가입 실패');
       }
       const result = await res.json();
-      if (result.response === "ok") {
-        toastSuccess("회원가입 성공!\n잠시 후 메인 페이지로 이동합니다.");
+      if (result.response === 'ok') {
+        toastSuccess('회원가입 성공!\n잠시 후 메인 페이지로 이동합니다.');
         setTimeout(() => {
-          router.replace("/");
+          router.replace('/');
         }, 3000);
       } else {
-        toastError("회원가입 실패\n다시 시도해주세요.");
+        toastError('회원가입 실패\n다시 시도해주세요.');
         setTimeout(() => {
           router.refresh();
         }, 3000);
       }
     } catch (error: any) {
-      console.error("Error during form submission:", error);
+      console.error('Error during form submission:', error);
       toastError(`회원가입 중 오류가 발생했습니다.\n${error.message}`);
       router.refresh();
     } finally {
       setIsSubmitting(false);
     }
 
-    console.log("values: ", values);
+    console.log('values: ', values);
   };
 
   const handleSignInPhoneNumber = useCallback(
@@ -136,24 +110,20 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
         }
         const appVerifier = window.recaptchaVerifier;
         if (!appVerifier) {
-          throw new Error("RecaptchaVerifier is not initialized");
+          throw new Error('RecaptchaVerifier is not initialized');
         }
 
-        const confirmationResult = await signInWithPhoneNumber(
-          auth,
-          phoneNumber,
-          appVerifier
-        );
+        const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
         if (confirmationResult) {
-          console.log("SMS sent successfully");
-          setSendSmsSuccessMessage("인증번호가 발송되었습니다.");
+          console.log('SMS sent successfully');
+          setSendSmsSuccessMessage('인증번호가 발송되었습니다.');
           confirmationResultRef.current = confirmationResult;
         }
       } catch (error) {
-        console.error("Error during signInWithPhoneNumber:", error);
-        form.setError("phoneNumber", {
-          type: "manual",
-          message: "인증번호 발송에 실패했습니다. 다시 시도해주세요.",
+        console.error('Error during signInWithPhoneNumber:', error);
+        form.setError('phoneNumber', {
+          type: 'manual',
+          message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
         });
 
         initializeRecaptcha();
@@ -161,12 +131,10 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
         setIsSendingSms(false);
       }
     },
-    [form]
+    [form],
   );
 
-  const handleAuthClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handleAuthClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     setIsAuthCodeOpen(true);
     // 인증번호 발송 버튼 클릭 시
@@ -182,7 +150,7 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
       const confirmationResult = confirmationResultRef.current;
 
       if (!confirmationResult) {
-        console.error("No confirmation result found.");
+        console.error('No confirmation result found.');
         return;
       }
 
@@ -191,67 +159,59 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
         if (user) {
           // 인증코드 확인 후, 전화번호를 현재 로그인된 계정에 연결
           try {
-            if (userData.userData && auth.currentUser) {
+            if (userData.userData && currentUser) {
               // ✅ 1. 전화번호 인증 -> 로그인됨 (새로운 유저)
-              const phoneCredential = PhoneAuthProvider.credential(
-                confirmationResult.verificationId,
-                authCode
-              );
+              const phoneCredential = PhoneAuthProvider.credential(confirmationResult.verificationId, authCode);
 
               // ✅ 2. 전화번호 유저 삭제
-              await deleteUser(auth.currentUser);
+              await deleteUser(currentUser);
 
               // ✅ 3. 다시 이메일 유저 로그인
               const emailUser = await signInWithEmailAndPassword(
                 auth,
                 userData.userData.email,
-                process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!
+                process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!,
               );
 
               // ✅ 4. 이메일 유저에 전화번호 연결
-              const linkedResult = await linkWithCredential(
-                emailUser.user,
-                phoneCredential
-              );
+              const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
 
               if (linkedResult) {
-                setSmsConfirmSuccessMessage("인증코드가 확인되었습니다.");
-                console.log("🔗 계정 연결 성공");
+                setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
+                console.log('🔗 계정 연결 성공');
               }
             } else {
-              form.setError("authCode", {
-                type: "manual",
-                message:
-                  "전화번호 인증 계정이 조회되지 않습니다. 처음부터 다시 시도해주세요.",
+              form.setError('authCode', {
+                type: 'manual',
+                message: '전화번호 인증 계정이 조회되지 않습니다. 처음부터 다시 시도해주세요.',
               });
             }
           } catch (error: any) {
-            console.error("Error linking phone number:", error);
-            form.setError("authCode", {
-              type: "manual",
-              message:
-                "이메일과 전화번호 연동에 실패했습니다. 처음부터 다시 시도해주세요.",
+            console.error('Error linking phone number:', error);
+            form.setError('authCode', {
+              type: 'manual',
+              message: '이메일과 전화번호 연동에 실패했습니다. 처음부터 다시 시도해주세요.',
             });
           }
         }
       } catch (error: any) {
-        console.error("Error confirming SMS code:", error);
-        if (error.code === "auth/invalid-verification-code") {
-          form.setError("authCode", {
-            type: "manual",
-            message: "인증코드가 일치하지 않습니다.",
+        console.error('Error confirming SMS code:', error);
+        if (error.code === 'auth/invalid-verification-code') {
+          form.setError('authCode', {
+            type: 'manual',
+            message: '인증코드가 일치하지 않습니다.',
           });
         } else {
-          form.setError("authCode", {
-            type: "manual",
-            message: "알 수 없는 오류가 발생했습니다.",
+          form.setError('authCode', {
+            type: 'manual',
+            message: '알 수 없는 오류가 발생했습니다.',
           });
         }
       } finally {
         setIsConfirming(false);
       }
     },
-    [form, confirmationResultRef]
+    [form, confirmationResultRef],
   );
 
   useEffect(() => {
@@ -261,14 +221,14 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
   console.log(form.formState.errors);
   return (
     <div>
-      <SectionTitle title="고운황금손 회원가입" buttonTitle="" />
-      <button id="sign-in-button" className="hidden" />
+      <SectionTitle buttonTitle="" title="고운황금손 회원가입" onClickButtonTitle={() => {}} />
+      <button className="hidden" id="sign-in-button" />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
+            defaultValue={userData?.userData?.name || ''}
             name="name"
-            defaultValue={userData?.userData?.name || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>이름</FormLabel>
@@ -282,8 +242,8 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
           />
           <FormField
             control={form.control}
+            defaultValue={userData?.userData?.nickname || ''}
             name="nickname"
-            defaultValue={userData?.userData?.nickname || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>닉네임</FormLabel>
@@ -297,8 +257,8 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
           />
           <FormField
             control={form.control}
+            defaultValue={userData?.userData?.phoneNumber || ''}
             name="phoneNumber"
-            defaultValue={userData?.userData?.phoneNumber || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>휴대폰번호</FormLabel>
@@ -307,26 +267,26 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
                     <Input
                       placeholder="휴대폰번호를 입력해주세요. (예:01012345678)"
                       {...field}
-                      required
-                      minLength={6}
                       maxLength={12}
+                      minLength={6}
+                      required
                     />
                     <Button
-                      onClick={(e) => handleAuthClick(e)}
-                      disabled={phoneNumberError}
                       className={cn(
-                        "transition-all duration-300 ease-in-out",
-                        phoneNumberError && "opacity-20 cursor-not-allowed",
-                        sendSmsSuccessMessage && "bg-green-500"
+                        'transition-all duration-300 ease-in-out',
+                        phoneNumberError && 'cursor-not-allowed opacity-20',
+                        sendSmsSuccessMessage && 'bg-green-500',
                       )}
+                      disabled={phoneNumberError}
+                      onClick={e => handleAuthClick(e)}
                     >
                       {isSendingSms ? (
                         <div role="status">
                           <svg
                             aria-hidden="true"
-                            className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                            viewBox="0 0 100 101"
+                            className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                             fill="none"
+                            viewBox="0 0 100 101"
                             xmlns="http://www.w3.org/2000/svg"
                           >
                             <path
@@ -340,10 +300,10 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
                           </svg>
                           <span className="sr-only">Loading...</span>
                         </div>
-                      ) : sendSmsSuccessMessage != "" ? (
-                        "인증번호 발송완료"
+                      ) : sendSmsSuccessMessage != '' ? (
+                        '인증번호 발송완료'
                       ) : (
-                        "인증받기"
+                        '인증받기'
                       )}
                     </Button>
                   </div>
@@ -356,35 +316,30 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
           {isAuthCodeOpen && (
             <FormField
               control={form.control}
+              defaultValue={''}
               name="authCode"
-              defaultValue={""}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>인증코드</FormLabel>
                   <FormControl>
                     <div className="flex flex-row gap-6">
-                      <Input
-                        placeholder="수신받은 인증코드를 입력해주세요."
-                        {...field}
-                        minLength={6}
-                        maxLength={6}
-                      />
+                      <Input placeholder="수신받은 인증코드를 입력해주세요." {...field} maxLength={6} minLength={6} />
                       <Button
-                        onClick={(e) => handleAuthConfirmClick(e)}
-                        disabled={authCodeError}
                         className={cn(
-                          "transition-all duration-300 ease-in-out",
-                          authCodeError && "opacity-20 cursor-not-allowed",
-                          SmsConfirmSuccessMessage && "bg-green-500"
+                          'transition-all duration-300 ease-in-out',
+                          authCodeError && 'cursor-not-allowed opacity-20',
+                          SmsConfirmSuccessMessage && 'bg-green-500',
                         )}
+                        disabled={authCodeError}
+                        onClick={e => handleAuthConfirmClick(e)}
                       >
                         {isConfirming ? (
                           <div role="status">
                             <svg
                               aria-hidden="true"
-                              className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                              viewBox="0 0 100 101"
+                              className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                               fill="none"
+                              viewBox="0 0 100 101"
                               xmlns="http://www.w3.org/2000/svg"
                             >
                               <path
@@ -398,10 +353,10 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
                             </svg>
                             <span className="sr-only">Loading...</span>
                           </div>
-                        ) : SmsConfirmSuccessMessage == "" ? (
-                          "인증하기"
+                        ) : SmsConfirmSuccessMessage == '' ? (
+                          '인증하기'
                         ) : (
-                          "인증확인"
+                          '인증확인'
                         )}
                       </Button>
                     </div>
@@ -414,8 +369,8 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
           )}
           <FormField
             control={form.control}
+            defaultValue={userData?.userData?.email || ''}
             name="email"
-            defaultValue={userData?.userData?.email || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>이메일</FormLabel>
@@ -428,20 +383,20 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
             )}
           />
           <Button
-            type="submit"
-            disabled={!formValidation}
             className={cn(
-              "duration-300 transition-all ease-in-out",
-              formValidation ? "" : "cursor-not-allowed opacity-20"
+              'transition-all duration-300 ease-in-out',
+              formValidation ? '' : 'cursor-not-allowed opacity-20',
             )}
+            disabled={!formValidation}
+            type="submit"
           >
             {isSubmitting ? (
               <div role="status">
                 <svg
                   aria-hidden="true"
-                  className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                  viewBox="0 0 100 101"
+                  className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                   fill="none"
+                  viewBox="0 0 100 101"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
@@ -456,7 +411,7 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
                 <span className="sr-only">Loading...</span>
               </div>
             ) : (
-              "회원가입"
+              '회원가입'
             )}
           </Button>
         </form>

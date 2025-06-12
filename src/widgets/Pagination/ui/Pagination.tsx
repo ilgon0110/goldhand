@@ -1,4 +1,6 @@
-"use client";
+'use client';
+
+import { useState } from 'react';
 
 import {
   Pagination,
@@ -8,8 +10,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/src/shared/ui/pagination";
-import { useState } from "react";
+} from '@/src/shared/ui/pagination';
 
 type ReviewPaginationProps = {
   totalDataLength: number | undefined;
@@ -29,13 +30,10 @@ export const WidgetPagination = ({
   const [paginationArr, setPaginationArr] = useState(
     Array.from(
       {
-        length:
-          totalPages > MAXIMUM_NUMBER_OF_PAGES
-            ? MAXIMUM_NUMBER_OF_PAGES
-            : totalPages,
+        length: totalPages > MAXIMUM_NUMBER_OF_PAGES ? MAXIMUM_NUMBER_OF_PAGES : totalPages,
       },
-      (_, i) => i + 1
-    )
+      (_, i) => i + 1,
+    ),
   );
 
   const onClickPrevious = () => {
@@ -43,12 +41,9 @@ export const WidgetPagination = ({
     if (nowStartPageNumber > MAXIMUM_NUMBER_OF_PAGES) {
       const newArr = Array.from(
         {
-          length:
-            nowStartPageNumber - 1 > MAXIMUM_NUMBER_OF_PAGES
-              ? MAXIMUM_NUMBER_OF_PAGES
-              : nowStartPageNumber - 1,
+          length: nowStartPageNumber - 1 > MAXIMUM_NUMBER_OF_PAGES ? MAXIMUM_NUMBER_OF_PAGES : nowStartPageNumber - 1,
         },
-        (_, i) => nowStartPageNumber - i - 1
+        (_, i) => nowStartPageNumber - i - 1,
       ).reverse();
       setPaginationArr(newArr);
       onChangePage(nowStartPageNumber - 1);
@@ -65,7 +60,7 @@ export const WidgetPagination = ({
               ? MAXIMUM_NUMBER_OF_PAGES
               : totalPages - nowEndPageNumber,
         },
-        (_, i) => nowEndPageNumber + i + 1
+        (_, i) => nowEndPageNumber + i + 1,
       );
       setPaginationArr(newArr);
       onChangePage(nowEndPageNumber + 1);
@@ -80,13 +75,9 @@ export const WidgetPagination = ({
             <PaginationPrevious href="#" onClick={onClickPrevious} />
           </PaginationItem>
         )}
-        {paginationArr.map((page) => (
+        {paginationArr.map(page => (
           <PaginationItem key={page}>
-            <PaginationLink
-              href={`#`}
-              isActive={page === targetPage}
-              onClick={() => onChangePage(page)}
-            >
+            <PaginationLink href={`#`} isActive={page === targetPage} onClick={() => onChangePage(page)}>
               {page}
             </PaginationLink>
           </PaginationItem>
@@ -97,11 +88,7 @@ export const WidgetPagination = ({
               <PaginationEllipsis />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink
-                href={`#`}
-                isActive={targetPage === totalPages}
-                onClick={() => onChangePage(totalPages)}
-              >
+              <PaginationLink href={`#`} isActive={targetPage === totalPages} onClick={() => onChangePage(totalPages)}>
                 {totalPages}
               </PaginationLink>
             </PaginationItem>

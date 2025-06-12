@@ -1,1 +1,1 @@
-export { ApplyList } from "./ui/applyList";
+export { ApplyList } from './ui/applyList';

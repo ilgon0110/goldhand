@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Pagination,
@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/src/shared/ui/pagination";
+} from '@/src/shared/ui/pagination';
 
 type ReviewPaginationProps = {
   dataLength: number | undefined;
@@ -17,11 +17,7 @@ type ReviewPaginationProps = {
     page: number;
     hideSecret?: string;
   };
-  setConsultParam: (params: {
-    page: number;
-    hideSecret?: string;
-    [key: string]: string | number | undefined;
-  }) => void;
+  setConsultParam: (params: { page: number; hideSecret?: string; [key: string]: number | string | undefined }) => void;
 };
 
 export const ReservationPagination = ({
@@ -45,13 +41,9 @@ export const ReservationPagination = ({
         <PaginationItem>
           <PaginationPrevious href="#" />
         </PaginationItem>
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <PaginationItem key={page}>
-            <PaginationLink
-              href={`#`}
-              isActive={page === consultParam.page}
-              onClick={() => setConsultParam({ page })}
-            >
+            <PaginationLink href={`#`} isActive={page === consultParam.page} onClick={() => setConsultParam({ page })}>
               {page}
             </PaginationLink>
           </PaginationItem>

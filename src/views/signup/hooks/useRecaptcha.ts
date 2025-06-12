@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useCallback } from "react";
-import { RecaptchaVerifier, getAuth, ConfirmationResult } from "firebase/auth";
-import { firebaseApp } from "@/src/shared/config/firebase";
+import type { ConfirmationResult } from 'firebase/auth';
+import { getAuth, RecaptchaVerifier } from 'firebase/auth';
+import { useCallback, useEffect, useRef } from 'react';
+
+import { firebaseApp } from '@/src/shared/config/firebase';
 
 declare global {
   interface Window {
@@ -11,36 +13,36 @@ declare global {
   }
 }
 
-export function useRecaptcha(containerId: string = "recaptcha-container") {
+export function useRecaptcha(containerId: string = 'recaptcha-container') {
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
   // 초기화 함수
   const initializeRecaptcha = useCallback(() => {
     const app = firebaseApp;
     const auth = getAuth();
-    auth.languageCode = "ko";
+    auth.languageCode = 'ko';
 
     if (!window.recaptchaVerifier) {
       try {
         const verifier = new RecaptchaVerifier(auth, containerId, {
-          size: "invisible", // 또는 'normal'
+          size: 'invisible', // 또는 'normal'
           callback: (response: string) => {
-            console.log("reCAPTCHA solved:", response);
+            console.log('reCAPTCHA solved:', response);
           },
-          "expired-callback": () => {
-            console.warn("reCAPTCHA expired. Resetting...");
+          'expired-callback': () => {
+            console.warn('reCAPTCHA expired. Resetting...');
             verifier.clear();
           },
         });
 
-        verifier.render().then((widgetId) => {
-          console.log("reCAPTCHA rendered with widgetId:", widgetId);
+        verifier.render().then(widgetId => {
+          console.log('reCAPTCHA rendered with widgetId:', widgetId);
         });
 
         window.recaptchaVerifier = verifier;
         recaptchaRef.current = verifier;
       } catch (error) {
-        console.error("reCAPTCHA initialization error:", error);
+        console.error('reCAPTCHA initialization error:', error);
       }
     }
   }, [containerId]);
@@ -54,7 +56,7 @@ export function useRecaptcha(containerId: string = "recaptcha-container") {
         recaptchaRef.current.clear();
         recaptchaRef.current = null;
         window.recaptchaVerifier = null;
-        console.log("reCAPTCHA cleared on unmount");
+        console.log('reCAPTCHA cleared on unmount');
       }
     };
   }, [initializeRecaptcha]);

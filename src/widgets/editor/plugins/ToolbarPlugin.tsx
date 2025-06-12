@@ -5,40 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/shared/ui/popover";
-import type { JSX } from "react";
-
-import {
-  $isCodeNode,
-  CODE_LANGUAGE_FRIENDLY_NAME_MAP,
-  CODE_LANGUAGE_MAP,
-  getLanguageFriendlyName,
-} from "@lexical/code";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import { $isListNode, ListNode } from "@lexical/list";
-import { INSERT_EMBED_COMMAND } from "@lexical/react/LexicalAutoEmbedPlugin";
-import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
-import { $isHeadingNode } from "@lexical/rich-text";
-import {
-  $getSelectionStyleValueForProperty,
-  $isParentElementRTL,
-  $patchStyleText,
-} from "@lexical/selection";
-import { $isTableNode, $isTableSelection } from "@lexical/table";
+import { $isCodeNode, CODE_LANGUAGE_MAP } from '@lexical/code';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { $isListNode, ListNode } from '@lexical/list';
+import { $isHeadingNode } from '@lexical/rich-text';
+import { $getSelectionStyleValueForProperty, $isParentElementRTL, $patchStyleText } from '@lexical/selection';
+import { $isTableNode, $isTableSelection } from '@lexical/table';
 import {
   $findMatchingParent,
   $getNearestNodeOfType,
   $isEditorIsNestedEditor,
   IS_APPLE,
   mergeRegister,
-} from "@lexical/utils";
+} from '@lexical/utils';
+import type { ElementFormatType, LexicalEditor, NodeKey } from 'lexical';
 import {
   $getNodeByKey,
-  $getRoot,
   $getSelection,
   $isElementNode,
   $isRangeSelection,
@@ -46,30 +28,23 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
-  ElementFormatType,
-  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   HISTORIC_TAG,
-  INDENT_CONTENT_COMMAND,
-  LexicalEditor,
-  NodeKey,
-  OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
-} from "lexical";
-import { Dispatch, useCallback, useEffect, useState } from "react";
-import * as React from "react";
+} from 'lexical';
+import type { Dispatch, JSX } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import * as React from 'react';
 
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
+
+import { SHORTCUTS } from '../config/shortcuts';
+import { blockTypeToBlockName, useToolbarState } from '../context/ToolbarState';
+import useModal from '../hooks/useModal';
+import DropDown, { DropDownItem } from '../ui/DropDown';
 import {
-  INSERT_IMAGE_COMMAND,
-  InsertImageDialog,
-  InsertImagePayload,
-} from "./ImagesPlugin";
-import DropDown, { DropDownItem } from "../ui/DropDown";
-import { blockTypeToBlockName, useToolbarState } from "../context/ToolbarState";
-import {
-  clearFormatting,
   formatBulletList,
   formatCheckList,
   formatCode,
@@ -79,10 +54,10 @@ import {
   formatQuote,
   getSelectedNode,
   sanitizeUrl,
-} from "../utils";
-import { SHORTCUTS } from "../config/shortcuts";
-import useModal from "../hooks/useModal";
-import FontSize from "./FontSize";
+} from '../utils';
+import FontSize from './FontSize';
+import type { InsertImagePayload } from './ImagesPlugin';
+import { INSERT_IMAGE_COMMAND, InsertImageDialog } from './ImagesPlugin';
 
 const LowPriority = 1;
 
@@ -91,68 +66,68 @@ function Divider() {
 }
 
 const rootTypeToRootName = {
-  root: "Root",
-  table: "Table",
+  root: 'Root',
+  table: 'Table',
 };
 
 const FONT_SIZE_OPTIONS: [string, string][] = [
-  ["10px", "10px"],
-  ["11px", "11px"],
-  ["12px", "12px"],
-  ["13px", "13px"],
-  ["14px", "14px"],
-  ["15px", "15px"],
-  ["16px", "16px"],
-  ["17px", "17px"],
-  ["18px", "18px"],
-  ["19px", "19px"],
-  ["20px", "20px"],
+  ['10px', '10px'],
+  ['11px', '11px'],
+  ['12px', '12px'],
+  ['13px', '13px'],
+  ['14px', '14px'],
+  ['15px', '15px'],
+  ['16px', '16px'],
+  ['17px', '17px'],
+  ['18px', '18px'],
+  ['19px', '19px'],
+  ['20px', '20px'],
 ];
 
 const ELEMENT_FORMAT_OPTIONS: {
-  [key in Exclude<ElementFormatType, "">]: {
+  [key in Exclude<ElementFormatType, ''>]: {
     icon: string;
     iconRTL: string;
     name: string;
   };
 } = {
   center: {
-    icon: "center-align",
-    iconRTL: "center-align",
-    name: "Center Align",
+    icon: 'center-align',
+    iconRTL: 'center-align',
+    name: 'Center Align',
   },
   end: {
-    icon: "right-align",
-    iconRTL: "left-align",
-    name: "End Align",
+    icon: 'right-align',
+    iconRTL: 'left-align',
+    name: 'End Align',
   },
   justify: {
-    icon: "justify-align",
-    iconRTL: "justify-align",
-    name: "Justify Align",
+    icon: 'justify-align',
+    iconRTL: 'justify-align',
+    name: 'Justify Align',
   },
   left: {
-    icon: "left-align",
-    iconRTL: "left-align",
-    name: "Left Align",
+    icon: 'left-align',
+    iconRTL: 'left-align',
+    name: 'Left Align',
   },
   right: {
-    icon: "right-align",
-    iconRTL: "right-align",
-    name: "Right Align",
+    icon: 'right-align',
+    iconRTL: 'right-align',
+    name: 'Right Align',
   },
   start: {
-    icon: "left-align",
-    iconRTL: "right-align",
-    name: "Start Align",
+    icon: 'left-align',
+    iconRTL: 'right-align',
+    name: 'Start Align',
   },
 };
 
 function dropDownActiveClass(active: boolean) {
   if (active) {
-    return "active dropdown-item-active";
+    return 'active dropdown-item-active';
   } else {
-    return "";
+    return '';
   }
 }
 
@@ -169,16 +144,14 @@ function BlockFormatDropDown({
 }): JSX.Element {
   return (
     <DropDown
-      disabled={disabled}
-      buttonClassName="toolbar-item block-controls"
-      buttonIconClassName={"icon block-type " + blockType}
-      buttonLabel={blockTypeToBlockName[blockType]}
       buttonAriaLabel="Formatting options for text style"
+      buttonClassName="toolbar-item block-controls"
+      buttonIconClassName={'icon block-type ' + blockType}
+      buttonLabel={blockTypeToBlockName[blockType]}
+      disabled={disabled}
     >
       <DropDownItem
-        className={
-          "item wide " + dropDownActiveClass(blockType === "paragraph")
-        }
+        className={'item wide ' + dropDownActiveClass(blockType === 'paragraph')}
         onClick={() => formatParagraph(editor)}
       >
         <div className="icon-text-container">
@@ -188,8 +161,8 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.NORMAL}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "h1")}
-        onClick={() => formatHeading(editor, blockType, "h1")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'h1')}
+        onClick={() => formatHeading(editor, blockType, 'h1')}
       >
         <div className="icon-text-container">
           <i className="icon h1" />
@@ -198,8 +171,8 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.HEADING1}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "h2")}
-        onClick={() => formatHeading(editor, blockType, "h2")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'h2')}
+        onClick={() => formatHeading(editor, blockType, 'h2')}
       >
         <div className="icon-text-container">
           <i className="icon h2" />
@@ -208,8 +181,8 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.HEADING2}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "h3")}
-        onClick={() => formatHeading(editor, blockType, "h3")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'h3')}
+        onClick={() => formatHeading(editor, blockType, 'h3')}
       >
         <div className="icon-text-container">
           <i className="icon h3" />
@@ -218,7 +191,7 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.HEADING3}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "bullet")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'bullet')}
         onClick={() => formatBulletList(editor, blockType)}
       >
         <div className="icon-text-container">
@@ -228,7 +201,7 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.BULLET_LIST}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "number")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'number')}
         onClick={() => formatNumberedList(editor, blockType)}
       >
         <div className="icon-text-container">
@@ -238,7 +211,7 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.NUMBERED_LIST}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "check")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'check')}
         onClick={() => formatCheckList(editor, blockType)}
       >
         <div className="icon-text-container">
@@ -248,7 +221,7 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.CHECK_LIST}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "quote")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'quote')}
         onClick={() => formatQuote(editor, blockType)}
       >
         <div className="icon-text-container">
@@ -258,7 +231,7 @@ function BlockFormatDropDown({
         <span className="shortcut">{SHORTCUTS.QUOTE}</span>
       </DropDownItem>
       <DropDownItem
-        className={"item wide " + dropDownActiveClass(blockType === "code")}
+        className={'item wide ' + dropDownActiveClass(blockType === 'code')}
         onClick={() => formatCode(editor, blockType)}
       >
         <div className="icon-text-container">
@@ -282,9 +255,7 @@ export function ToolbarPlugin({
   setActiveEditor: Dispatch<LexicalEditor>;
   setIsLinkEditMode: Dispatch<boolean>;
 }) {
-  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
-    null
-  );
+  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
   const [modal, showModal] = useModal();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const { toolbarState, updateToolbarState } = useToolbarState();
@@ -295,20 +266,18 @@ export function ToolbarPlugin({
       if (activeEditor !== editor && $isEditorIsNestedEditor(activeEditor)) {
         const rootElement = activeEditor.getRootElement();
         updateToolbarState(
-          "isImageCaption",
-          !!rootElement?.parentElement?.classList.contains(
-            "image-caption-container"
-          )
+          'isImageCaption',
+          !!rootElement?.parentElement?.classList.contains('image-caption-container'),
         );
       } else {
-        updateToolbarState("isImageCaption", false);
+        updateToolbarState('isImageCaption', false);
       }
 
       const anchorNode = selection.anchor.getNode();
       let element =
-        anchorNode.getKey() === "root"
+        anchorNode.getKey() === 'root'
           ? anchorNode
-          : $findMatchingParent(anchorNode, (e) => {
+          : $findMatchingParent(anchorNode, e => {
               const parent = e.getParent();
               return parent !== null && $isRootOrShadowRoot(parent);
             });
@@ -320,110 +289,74 @@ export function ToolbarPlugin({
       const elementKey = element.getKey();
       const elementDOM = activeEditor.getElementByKey(elementKey);
 
-      updateToolbarState("isRTL", $isParentElementRTL(selection));
+      updateToolbarState('isRTL', $isParentElementRTL(selection));
 
       // Update links
       const node = getSelectedNode(selection);
       const parent = node.getParent();
       const isLink = $isLinkNode(parent) || $isLinkNode(node);
-      updateToolbarState("isLink", isLink);
+      updateToolbarState('isLink', isLink);
 
       const tableNode = $findMatchingParent(node, $isTableNode);
       if ($isTableNode(tableNode)) {
-        updateToolbarState("rootType", "table");
+        updateToolbarState('rootType', 'table');
       } else {
-        updateToolbarState("rootType", "root");
+        updateToolbarState('rootType', 'root');
       }
 
       if (elementDOM !== null) {
         setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
-          const parentList = $getNearestNodeOfType<ListNode>(
-            anchorNode,
-            ListNode
-          );
-          const type = parentList
-            ? parentList.getListType()
-            : element.getListType();
+          const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+          const type = parentList ? parentList.getListType() : element.getListType();
 
-          updateToolbarState("blockType", type);
+          updateToolbarState('blockType', type);
         } else {
-          const type = $isHeadingNode(element)
-            ? element.getTag()
-            : element.getType();
+          const type = $isHeadingNode(element) ? element.getTag() : element.getType();
           if (type in blockTypeToBlockName) {
-            updateToolbarState(
-              "blockType",
-              type as keyof typeof blockTypeToBlockName
-            );
+            updateToolbarState('blockType', type as keyof typeof blockTypeToBlockName);
           }
           if ($isCodeNode(element)) {
-            const language =
-              element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
-            updateToolbarState(
-              "codeLanguage",
-              language ? CODE_LANGUAGE_MAP[language] || language : ""
-            );
+            const language = element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
+            updateToolbarState('codeLanguage', language ? CODE_LANGUAGE_MAP[language] || language : '');
             return;
           }
         }
       }
       // Handle buttons
-      updateToolbarState(
-        "fontColor",
-        $getSelectionStyleValueForProperty(selection, "color", "#000")
-      );
-      updateToolbarState(
-        "bgColor",
-        $getSelectionStyleValueForProperty(
-          selection,
-          "background-color",
-          "#fff"
-        )
-      );
-      updateToolbarState(
-        "fontFamily",
-        $getSelectionStyleValueForProperty(selection, "font-family", "Arial")
-      );
+      updateToolbarState('fontColor', $getSelectionStyleValueForProperty(selection, 'color', '#000'));
+      updateToolbarState('bgColor', $getSelectionStyleValueForProperty(selection, 'background-color', '#fff'));
+      updateToolbarState('fontFamily', $getSelectionStyleValueForProperty(selection, 'font-family', 'Arial'));
       let matchingParent;
       if ($isLinkNode(parent)) {
         // If node is a link, we need to fetch the parent paragraph node to set format
-        matchingParent = $findMatchingParent(
-          node,
-          (parentNode) => $isElementNode(parentNode) && !parentNode.isInline()
-        );
+        matchingParent = $findMatchingParent(node, parentNode => $isElementNode(parentNode) && !parentNode.isInline());
       }
 
       // If matchingParent is a valid node, pass it's format type
       updateToolbarState(
-        "elementFormat",
+        'elementFormat',
         $isElementNode(matchingParent)
           ? matchingParent.getFormatType()
           : $isElementNode(node)
-          ? node.getFormatType()
-          : parent?.getFormatType() || "left"
+            ? node.getFormatType()
+            : parent?.getFormatType() || 'left',
       );
     }
     if ($isRangeSelection(selection) || $isTableSelection(selection)) {
       // Update text format
-      updateToolbarState("isBold", selection.hasFormat("bold"));
-      updateToolbarState("isItalic", selection.hasFormat("italic"));
-      updateToolbarState("isUnderline", selection.hasFormat("underline"));
-      updateToolbarState(
-        "isStrikethrough",
-        selection.hasFormat("strikethrough")
-      );
-      updateToolbarState("isSubscript", selection.hasFormat("subscript"));
-      updateToolbarState("isSuperscript", selection.hasFormat("superscript"));
-      updateToolbarState("isHighlight", selection.hasFormat("highlight"));
-      updateToolbarState("isCode", selection.hasFormat("code"));
-      updateToolbarState(
-        "fontSize",
-        $getSelectionStyleValueForProperty(selection, "font-size", "15px")
-      );
-      updateToolbarState("isLowercase", selection.hasFormat("lowercase"));
-      updateToolbarState("isUppercase", selection.hasFormat("uppercase"));
-      updateToolbarState("isCapitalize", selection.hasFormat("capitalize"));
+      updateToolbarState('isBold', selection.hasFormat('bold'));
+      updateToolbarState('isItalic', selection.hasFormat('italic'));
+      updateToolbarState('isUnderline', selection.hasFormat('underline'));
+      updateToolbarState('isStrikethrough', selection.hasFormat('strikethrough'));
+      updateToolbarState('isSubscript', selection.hasFormat('subscript'));
+      updateToolbarState('isSuperscript', selection.hasFormat('superscript'));
+      updateToolbarState('isHighlight', selection.hasFormat('highlight'));
+      updateToolbarState('isCode', selection.hasFormat('code'));
+      updateToolbarState('fontSize', $getSelectionStyleValueForProperty(selection, 'font-size', '15px'));
+      updateToolbarState('isLowercase', selection.hasFormat('lowercase'));
+      updateToolbarState('isUppercase', selection.hasFormat('uppercase'));
+      updateToolbarState('isCapitalize', selection.hasFormat('capitalize'));
     }
   }, [activeEditor, editor, updateToolbarState]);
 
@@ -435,7 +368,7 @@ export function ToolbarPlugin({
         $updateToolbar();
         return false;
       },
-      COMMAND_PRIORITY_CRITICAL
+      COMMAND_PRIORITY_CRITICAL,
     );
   }, [editor, $updateToolbar, setActiveEditor]);
 
@@ -447,7 +380,7 @@ export function ToolbarPlugin({
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerEditableListener((editable) => {
+      editor.registerEditableListener(editable => {
         setIsEditable(editable);
       }),
       activeEditor.registerUpdateListener(({ editorState }) => {
@@ -457,20 +390,20 @@ export function ToolbarPlugin({
       }),
       activeEditor.registerCommand<boolean>(
         CAN_UNDO_COMMAND,
-        (payload) => {
-          updateToolbarState("canUndo", payload);
+        payload => {
+          updateToolbarState('canUndo', payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
+        COMMAND_PRIORITY_CRITICAL,
       ),
       activeEditor.registerCommand<boolean>(
         CAN_REDO_COMMAND,
-        (payload) => {
-          updateToolbarState("canRedo", payload);
+        payload => {
+          updateToolbarState('canRedo', payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
-      )
+        COMMAND_PRIORITY_CRITICAL,
+      ),
     );
   }, [$updateToolbar, activeEditor, editor, updateToolbarState]);
 
@@ -489,20 +422,20 @@ export function ToolbarPlugin({
       }),
       activeEditor.registerCommand<boolean>(
         CAN_UNDO_COMMAND,
-        (payload) => {
-          updateToolbarState("canUndo", payload);
+        payload => {
+          updateToolbarState('canUndo', payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
+        COMMAND_PRIORITY_CRITICAL,
       ),
       activeEditor.registerCommand<boolean>(
         CAN_REDO_COMMAND,
-        (payload) => {
-          updateToolbarState("canRedo", payload);
+        payload => {
+          updateToolbarState('canRedo', payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
-      )
+        COMMAND_PRIORITY_CRITICAL,
+      ),
     );
   }, [editor, $updateToolbar]);
 
@@ -515,33 +448,30 @@ export function ToolbarPlugin({
             $patchStyleText(selection, styles);
           }
         },
-        skipHistoryStack ? { tag: HISTORIC_TAG } : {}
+        skipHistoryStack ? { tag: HISTORIC_TAG } : {},
       );
     },
-    [activeEditor]
+    [activeEditor],
   );
 
   const onFontColorSelect = useCallback(
     (value: string, skipHistoryStack: boolean) => {
       applyStyleText({ color: value }, skipHistoryStack);
     },
-    [applyStyleText]
+    [applyStyleText],
   );
 
   const onBgColorSelect = useCallback(
     (value: string, skipHistoryStack: boolean) => {
-      applyStyleText({ "background-color": value }, skipHistoryStack);
+      applyStyleText({ 'background-color': value }, skipHistoryStack);
     },
-    [applyStyleText]
+    [applyStyleText],
   );
 
   const insertLink = useCallback(() => {
     if (!toolbarState.isLink) {
       setIsLinkEditMode(true);
-      activeEditor.dispatchCommand(
-        TOGGLE_LINK_COMMAND,
-        sanitizeUrl("https://")
-      );
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
     } else {
       setIsLinkEditMode(false);
       activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
@@ -559,7 +489,7 @@ export function ToolbarPlugin({
         }
       });
     },
-    [activeEditor, selectedElementKey]
+    [activeEditor, selectedElementKey],
   );
   const insertGifOnClick = (payload: InsertImagePayload) => {
     activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
@@ -573,112 +503,98 @@ export function ToolbarPlugin({
     setImageModalOpen(open);
   }, []);
   return (
-    <div className="toolbar top-0 sticky z-10 shadow-sm">
+    <div className="toolbar sticky top-0 z-10 shadow-sm">
       <button
+        aria-label="Undo"
+        className="toolbar-item spaced"
         disabled={!toolbarState.canUndo || !isEditable}
+        title={IS_APPLE ? 'Undo (⌘Z)' : 'Undo (Ctrl+Z)'}
+        type="button"
         onClick={() => {
           activeEditor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
-        title={IS_APPLE ? "Undo (⌘Z)" : "Undo (Ctrl+Z)"}
-        type="button"
-        className="toolbar-item spaced"
-        aria-label="Undo"
       >
         <i className="format undo" />
       </button>
       <button
+        aria-label="Redo"
+        className="toolbar-item"
         disabled={!toolbarState.canRedo || !isEditable}
         onClick={() => {
           activeEditor.dispatchCommand(REDO_COMMAND, undefined);
         }}
-        className="toolbar-item"
-        aria-label="Redo"
       >
         <i className="format redo" />
       </button>
       <Divider />
-      {toolbarState.blockType in blockTypeToBlockName &&
-        activeEditor === editor && (
-          <>
-            <BlockFormatDropDown
-              disabled={!isEditable}
-              blockType={toolbarState.blockType}
-              rootType={toolbarState.rootType}
-              editor={activeEditor}
-            />
-            <Divider />
-          </>
-        )}
+      {toolbarState.blockType in blockTypeToBlockName && activeEditor === editor && (
+        <>
+          <BlockFormatDropDown
+            blockType={toolbarState.blockType}
+            disabled={!isEditable}
+            editor={activeEditor}
+            rootType={toolbarState.rootType}
+          />
+          <Divider />
+        </>
+      )}
       <>
-        <FontSize
-          selectionFontSize={toolbarState.fontSize.slice(0, -2)}
-          editor={activeEditor}
-          disabled={!isEditable}
-        />
+        <FontSize disabled={!isEditable} editor={activeEditor} selectionFontSize={toolbarState.fontSize.slice(0, -2)} />
       </>
       <Divider />
       <button
+        aria-label={`Format text as bold. Shortcut: ${SHORTCUTS.BOLD}`}
+        className={'toolbar-item spaced ' + (toolbarState.isBold ? 'active' : '')}
         disabled={!isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-        }}
-        className={
-          "toolbar-item spaced " + (toolbarState.isBold ? "active" : "")
-        }
         title={`Bold (${SHORTCUTS.BOLD})`}
         type="button"
-        aria-label={`Format text as bold. Shortcut: ${SHORTCUTS.BOLD}`}
+        onClick={() => {
+          activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
+        }}
       >
         <i className="format bold" />
       </button>
       <button
+        aria-label={`Format text as italics. Shortcut: ${SHORTCUTS.ITALIC}`}
+        className={'toolbar-item spaced ' + (toolbarState.isItalic ? 'active' : '')}
         disabled={!isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-        }}
-        className={
-          "toolbar-item spaced " + (toolbarState.isItalic ? "active" : "")
-        }
         title={`Italic (${SHORTCUTS.ITALIC})`}
         type="button"
-        aria-label={`Format text as italics. Shortcut: ${SHORTCUTS.ITALIC}`}
+        onClick={() => {
+          activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
+        }}
       >
         <i className="format italic" />
       </button>
       <button
+        aria-label={`Format text to underlined. Shortcut: ${SHORTCUTS.UNDERLINE}`}
+        className={'toolbar-item spaced ' + (toolbarState.isUnderline ? 'active' : '')}
         disabled={!isEditable}
-        onClick={() => {
-          activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-        }}
-        className={
-          "toolbar-item spaced " + (toolbarState.isUnderline ? "active" : "")
-        }
         title={`Underline (${SHORTCUTS.UNDERLINE})`}
         type="button"
-        aria-label={`Format text to underlined. Shortcut: ${SHORTCUTS.UNDERLINE}`}
+        onClick={() => {
+          activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
+        }}
       >
         <i className="format underline" />
       </button>
       <Divider />
       <Popover open={imageModalOpen} onOpenChange={onChangeImageModalOpen}>
         <PopoverTrigger asChild>
-          <button className="toolbar-item" aria-label="Add Image">
+          <button aria-label="Add Image" className="toolbar-item">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
               height="20px"
               viewBox="0 -960 960 960"
               width="20px"
-              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M480-480ZM216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h312v72H216v528h528v-312h72v312q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm48-144h432L552-480 444-336l-72-96-108 144Zm408-312v-72h-72v-72h72v-72h72v72h72v72h-72v72h-72Z" />
             </svg>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <InsertImageDialog
-            activeEditor={editor}
-            onClose={() => onChangeImageModalOpen(false)}
-          />
+        <PopoverContent align="start" className="w-auto p-0">
+          <InsertImageDialog activeEditor={editor} onClose={() => onChangeImageModalOpen(false)} />
         </PopoverContent>
       </Popover>
     </div>

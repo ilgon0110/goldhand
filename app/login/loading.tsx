@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import LoadingBar from "@/src/shared/ui/loadingBar";
-import React from "react";
+import React from 'react';
+
+import LoadingBar from '@/src/shared/ui/loadingBar';
 
 const Loading = () => {
   return <LoadingBar />;

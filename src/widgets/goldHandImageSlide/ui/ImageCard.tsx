@@ -1,5 +1,6 @@
-import { CarouselItem } from "@/src/shared/ui/carousel";
-import Image from "next/image";
+import Image from 'next/image';
+
+import { CarouselItem } from '@/src/shared/ui/carousel';
 
 type ImageCardProps = {
   src: string;
@@ -8,12 +9,12 @@ type ImageCardProps = {
 
 export function ImageCard({ src, alt }: ImageCardProps) {
   return (
-    <CarouselItem className="w-full h-full relative">
+    <CarouselItem className="relative h-full w-full">
       <Image
-        src={src}
         alt={alt}
         fill
-        style={{ objectFit: "cover" }}
+        src={src}
+        style={{ objectFit: 'cover' }}
         //(max-width: 640px) 33vw, (max-width: 768px) 50vw,
         sizes="100vw"
       />
@@ -21,4 +22,4 @@ export function ImageCard({ src, alt }: ImageCardProps) {
   );
 }
 
-ImageCard.displayName = "ImageCard";
+ImageCard.displayName = 'ImageCard';

@@ -6,19 +6,12 @@
  *
  */
 
-import { LexicalEditor } from "lexical";
-import * as React from "react";
+import type { LexicalEditor } from 'lexical';
+import * as React from 'react';
 
-import {
-  MAX_ALLOWED_FONT_SIZE,
-  MIN_ALLOWED_FONT_SIZE,
-} from "../context/ToolbarState";
-import { SHORTCUTS } from "../config/shortcuts";
-import {
-  updateFontSize,
-  updateFontSizeInSelection,
-  UpdateFontSizeType,
-} from "../utils";
+import { SHORTCUTS } from '../config/shortcuts';
+import { MAX_ALLOWED_FONT_SIZE, MIN_ALLOWED_FONT_SIZE } from '../context/ToolbarState';
+import { updateFontSize, updateFontSizeInSelection, UpdateFontSizeType } from '../utils';
 
 export function parseAllowedFontSize(input: string): string {
   const match = input.match(/^(\d+(?:\.\d+)?)px$/);
@@ -28,7 +21,7 @@ export function parseAllowedFontSize(input: string): string {
       return input;
     }
   }
-  return "";
+  return '';
 }
 
 export default function FontSize({
@@ -46,16 +39,16 @@ export default function FontSize({
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const inputValueNumber = Number(inputValue);
 
-    if (e.key === "Tab") {
+    if (e.key === 'Tab') {
       return;
     }
-    if (["e", "E", "+", "-"].includes(e.key) || isNaN(inputValueNumber)) {
+    if (['e', 'E', '+', '-'].includes(e.key) || isNaN(inputValueNumber)) {
       e.preventDefault();
-      setInputValue("");
+      setInputValue('');
       return;
     }
     setInputChangeFlag(true);
-    if (e.key === "Enter" || e.key === "Escape") {
+    if (e.key === 'Enter' || e.key === 'Escape') {
       e.preventDefault();
 
       updateFontSizeByInputValue(inputValueNumber);
@@ -63,7 +56,7 @@ export default function FontSize({
   };
 
   const handleInputBlur = () => {
-    if (inputValue !== "" && inputChangeFlag) {
+    if (inputValue !== '' && inputChangeFlag) {
       const inputValueNumber = Number(inputValue);
       updateFontSizeByInputValue(inputValueNumber);
     }
@@ -78,7 +71,7 @@ export default function FontSize({
     }
 
     setInputValue(String(updatedFontSize));
-    updateFontSizeInSelection(editor, String(updatedFontSize) + "px", null);
+    updateFontSizeInSelection(editor, String(updatedFontSize) + 'px', null);
     setInputChangeFlag(false);
   };
 
@@ -89,48 +82,36 @@ export default function FontSize({
   return (
     <>
       <button
-        type="button"
-        disabled={
-          disabled ||
-          (selectionFontSize !== "" &&
-            Number(inputValue) <= MIN_ALLOWED_FONT_SIZE)
-        }
-        onClick={() =>
-          updateFontSize(editor, UpdateFontSizeType.decrement, inputValue)
-        }
-        className="toolbar-item font-decrement"
         aria-label="Decrease font size"
+        className="toolbar-item font-decrement"
+        disabled={disabled || (selectionFontSize !== '' && Number(inputValue) <= MIN_ALLOWED_FONT_SIZE)}
         title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}
+        type="button"
+        onClick={() => updateFontSize(editor, UpdateFontSizeType.decrement, inputValue)}
       >
         <i className="format minus-icon" />
       </button>
 
       <input
-        type="number"
-        title="Font size"
-        value={inputValue}
+        className="toolbar-item font-size-input flex w-6 items-center justify-center bg-transparent text-center"
         disabled={disabled}
-        className="toolbar-item font-size-input bg-transparent flex justify-center items-center text-center w-6"
-        min={MIN_ALLOWED_FONT_SIZE}
         max={MAX_ALLOWED_FONT_SIZE}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyPress}
+        min={MIN_ALLOWED_FONT_SIZE}
+        title="Font size"
+        type="number"
+        value={inputValue}
         onBlur={handleInputBlur}
+        onChange={e => setInputValue(e.target.value)}
+        onKeyDown={handleKeyPress}
       />
 
       <button
-        type="button"
-        disabled={
-          disabled ||
-          (selectionFontSize !== "" &&
-            Number(inputValue) >= MAX_ALLOWED_FONT_SIZE)
-        }
-        onClick={() =>
-          updateFontSize(editor, UpdateFontSizeType.increment, inputValue)
-        }
-        className="toolbar-item font-increment"
         aria-label="Increase font size"
+        className="toolbar-item font-increment"
+        disabled={disabled || (selectionFontSize !== '' && Number(inputValue) >= MAX_ALLOWED_FONT_SIZE)}
         title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}
+        type="button"
+        onClick={() => updateFontSize(editor, UpdateFontSizeType.increment, inputValue)}
       >
         <i className="format add-icon" />
       </button>

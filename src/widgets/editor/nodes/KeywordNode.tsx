@@ -6,15 +6,14 @@
  *
  */
 
-import type { EditorConfig, LexicalNode, SerializedTextNode } from "lexical";
-
-import { $applyNodeReplacement, TextNode } from "lexical";
+import type { EditorConfig, LexicalNode, SerializedTextNode } from 'lexical';
+import { $applyNodeReplacement, TextNode } from 'lexical';
 
 export type SerializedKeywordNode = SerializedTextNode;
 
 export class KeywordNode extends TextNode {
   static getType(): string {
-    return "keyword";
+    return 'keyword';
   }
 
   static clone(node: KeywordNode): KeywordNode {
@@ -27,8 +26,8 @@ export class KeywordNode extends TextNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config);
-    dom.style.cursor = "default";
-    dom.className = "keyword";
+    dom.style.cursor = 'default';
+    dom.className = 'keyword';
     return dom;
   }
 
@@ -45,7 +44,7 @@ export class KeywordNode extends TextNode {
   }
 }
 
-export function $createKeywordNode(keyword: string = ""): KeywordNode {
+export function $createKeywordNode(keyword: string = ''): KeywordNode {
   return $applyNodeReplacement(new KeywordNode(keyword));
 }
 

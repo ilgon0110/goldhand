@@ -1,65 +1,49 @@
-"use client";
+'use client';
 
-import {
-  generateDescription,
-  generateThumbnailUrl,
-  getTodayDate,
-} from "@/src/shared/utils";
-import { ReviewCard } from "../index";
+import { useRouter } from 'next/navigation';
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/src/shared/ui/carousel";
-import { SectionTitle } from "@/src/shared/ui/sectionTitle";
-import { IReviewData } from "@/src/views/review";
-import { useRouter } from "next/navigation";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
+import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { generateReviewDescription, generateThumbnailUrl } from '@/src/shared/utils';
+import type { IReviewData } from '@/src/views/review';
 
-type ReviewCarouselProps = {
-  title: string;
-  author: string;
-  created_at: string;
-  description: string;
-  thumbnail: string | null;
-};
+import { ReviewCard } from '../index';
 
-export const ReviewCarousel = ({
-  data,
-}: {
-  data: IReviewData["reviewData"];
-}) => {
+export const ReviewCarousel = ({ data }: { data: IReviewData['reviewData'] }) => {
   const router = useRouter();
+  const onClickButtonTitle = () => {
+    router.push('/review');
+  };
 
   return (
     <div className="w-full">
-      <div className="flex flex-col justify-center items-center gap-6 mb-12 whitespace-pre-wrap">
+      <div className="mb-12 flex flex-col items-center justify-center gap-6 whitespace-pre-wrap">
         <SectionTitle
-          title={`소중한 산모님들이 남긴\n\n고운황금손 이용후기 입니다.`}
           buttonTitle="이용후기 보러가기"
+          title={`소중한 산모님들이 남긴\n\n고운황금손 이용후기 입니다.`}
+          onClickButtonTitle={onClickButtonTitle}
         />
       </div>
       {/* 웹버전, width:640px 이상 */}
-      <div className="hidden sm:block px-0 md:px-[16vw]">
+      <div className="hidden px-0 sm:block md:px-[16vw]">
         <Carousel
-          opts={{
-            align: "start",
-          }}
           className="w-full"
+          opts={{
+            align: 'start',
+          }}
           orientation="horizontal"
         >
           <CarouselContent>
-            {data?.map((item) => (
-              <CarouselItem key={item.id} className="basis-1/1 sm:basis-1/3">
-                <div className="px-1 flex flex-row">
+            {data?.map(item => (
+              <CarouselItem className="basis-1/1 sm:basis-1/3" key={item.id}>
+                <div className="flex flex-row px-1">
                   <ReviewCard
-                    title={item.title}
                     author={item.name}
                     createdAt={item.createdAt}
-                    description={generateDescription(item.htmlString)}
+                    description={generateReviewDescription(item.htmlString)}
+                    franchisee={item.franchisee}
                     thumbnail={generateThumbnailUrl(item.htmlString)}
+                    title={item.title}
                     onClick={() => {
                       router.push(`/review/${item.id}`);
                     }}
@@ -73,15 +57,16 @@ export const ReviewCarousel = ({
         </Carousel>
       </div>
       {/* 모바일버전, width:640px 미만 */}
-      <div className="flex flex-col sm:hidden gap-3">
-        {data.map((item) => (
-          <div key={item.id} className="px-1 flex flex-row max-h-32">
+      <div className="flex flex-col gap-3 sm:hidden">
+        {data.slice(0, 3).map(item => (
+          <div className="flex max-h-32 flex-row px-1" key={item.id}>
             <ReviewCard
-              title={item.title}
               author={item.name}
               createdAt={item.createdAt}
-              description={item.htmlString}
+              description={generateReviewDescription(item.htmlString)}
+              franchisee={item.franchisee}
               thumbnail={null}
+              title={item.title}
               onClick={() => {
                 router.push(`/review/${item.id}`);
               }}

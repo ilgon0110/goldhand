@@ -1,2 +1,2 @@
-export { LoginPage } from "./ui/loginPage";
-export { getLoginData } from "./api/loader";
+export { getLoginData } from './api/loader';
+export { LoginPage } from './ui/loginPage';

@@ -1,3 +1,2 @@
-export { Header } from "./ui/header";
-export { useAuthInit } from "./hooks/useAuthInit";
-export { URLS } from "./config/const";
+export { URLS } from './config/const';
+export { Header } from './ui/header';

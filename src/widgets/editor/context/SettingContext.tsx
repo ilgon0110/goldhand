@@ -6,20 +6,12 @@
  *
  */
 
-import type { SettingName } from "../config/appSetting";
-import type { JSX } from "react";
+import type { JSX, ReactNode } from 'react';
+import * as React from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-import * as React from "react";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
-
-import { DEFAULT_SETTINGS, INITIAL_SETTINGS } from "../config/appSetting";
+import type { SettingName } from '../config/appSetting';
+import { DEFAULT_SETTINGS, INITIAL_SETTINGS } from '../config/appSetting';
 
 type SettingsContextShape = {
   setOption: (name: SettingName, value: boolean) => void;
@@ -33,15 +25,11 @@ const Context: React.Context<SettingsContextShape> = createContext({
   settings: INITIAL_SETTINGS,
 });
 
-export const SettingsContext = ({
-  children,
-}: {
-  children: ReactNode;
-}): JSX.Element => {
+export const SettingsContext = ({ children }: { children: ReactNode }): JSX.Element => {
   const [settings, setSettings] = useState(INITIAL_SETTINGS);
 
   const setOption = useCallback((setting: SettingName, value: boolean) => {
-    setSettings((options) => ({
+    setSettings(options => ({
       ...options,
       [setting]: value,
     }));
@@ -59,7 +47,7 @@ export const useSettings = (): SettingsContextShape => {
   return useContext(Context);
 };
 
-function setURLParam(param: SettingName, value: null | boolean) {
+function setURLParam(param: SettingName, value: boolean | null) {
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
   if (value !== DEFAULT_SETTINGS[param]) {
@@ -68,5 +56,5 @@ function setURLParam(param: SettingName, value: null | boolean) {
     params.delete(param);
   }
   url.search = params.toString();
-  window.history.pushState(null, "", url.toString());
+  window.history.pushState(null, '', url.toString());
 }

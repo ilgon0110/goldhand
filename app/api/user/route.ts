@@ -1,105 +1,105 @@
-import { getAuth } from "firebase/auth";
-import { firebaseApp } from "@/src/shared/config/firebase";
-import { cookies } from "next/headers";
-import { typedJson } from "@/src/shared/utils";
-import { doc, DocumentData, getDoc, getFirestore } from "firebase/firestore";
-import { getAuth as getAdminAuth, UserRecord } from "firebase-admin/auth";
+import { getAuth } from 'firebase/auth';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { cookies } from 'next/headers';
 
-interface ResponseBody {
-  response: "ok" | "ng" | "unAuthorized";
+import { firebaseApp } from '@/src/shared/config/firebase';
+import type { UserDetailData } from '@/src/shared/types';
+import { typedJson } from '@/src/shared/utils';
+
+interface IResponseBody {
+  response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
   accessToken: string | null;
-  userData: DocumentData | null;
+  userData: UserDetailData | null;
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   // 현재 로그인된 유저의 uid를 가져온다.
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken");
-  const app = firebaseApp;
-  const auth = getAuth();
-  const db = getFirestore(app);
+  const accessToken = cookieStore.get('accessToken');
 
   if (!accessToken) {
-    return typedJson<ResponseBody>(
+    return typedJson<IResponseBody>(
       {
-        response: "ng",
-        message: "로그인 토큰이 존재하지 않습니다.",
+        response: 'ng',
+        message: '로그인 토큰이 존재하지 않습니다.',
         accessToken: null,
         userData: null,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
   try {
     const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;
-    console.log("uid:", uid);
+    console.log('uid:', uid);
 
     if (uid === undefined) {
-      return typedJson<ResponseBody>(
+      return typedJson<IResponseBody>(
         {
-          response: "ng",
-          message: "사용자 식별 아이디가 존재하지 않습니다.",
+          response: 'ng',
+          message: '사용자 식별 아이디가 존재하지 않습니다.',
           accessToken: null,
           userData: null,
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
+    const app = firebaseApp;
+    const auth = getAuth();
+    const db = getFirestore(app);
 
-    const userDocRef = doc(db, "users", uid);
+    const userDocRef = doc(db, 'users', uid);
     const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-      console.log("User data:", userData);
+      const userData = userDocSnap.data() as UserDetailData;
 
-      return typedJson<ResponseBody>(
+      return typedJson<IResponseBody>(
         {
-          response: "ok",
-          message: "로그인 정보 확인",
+          response: 'ok',
+          message: '로그인 정보 확인',
           accessToken: accessToken.value,
           userData: { ...userData, uid },
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
-    return typedJson<ResponseBody>(
+    return typedJson<IResponseBody>(
       {
-        response: "ng",
-        message: "해당 uid를 가진 유저가 존재하지 않습니다.",
+        response: 'ng',
+        message: '해당 uid를 가진 유저가 존재하지 않습니다.',
         accessToken: accessToken.value,
         userData: null,
       },
-      { status: 404 }
+      { status: 404 },
     );
-  } catch (error: any) {
-    console.log("api/user errorCode:", error.code);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
 
-    if (error.code === "auth/id-token-expired") {
-      console.log("토큰 만료됨");
-      return typedJson<ResponseBody>(
+    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+      return typedJson<IResponseBody>(
         {
-          response: "unAuthorized",
-          message: "토큰 만료됨",
+          response: 'unAuthorized',
+          message: error.code,
           accessToken: null,
           userData: null,
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    return typedJson<ResponseBody>(
+    return typedJson<IResponseBody>(
       {
-        response: "ng",
-        message: "해당 토큰을 가진 유저가 존재하지 않습니다.",
+        response: 'ng',
+        message: '해당 토큰을 가진 유저가 존재하지 않습니다.',
         accessToken: null,
         userData: null,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 }

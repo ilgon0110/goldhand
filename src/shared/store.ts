@@ -1,5 +1,4 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from 'zustand';
 
 interface AuthState {
   accessToken: string | null;
@@ -10,11 +9,11 @@ interface AuthState {
   setHydrated: (hydrated: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>(set => ({
   accessToken: null,
   naverUserId: null,
   hydrated: false,
-  setAccessToken: (token) => set({ accessToken: token }),
-  setNaverUserId: (naverUserId) => set({ naverUserId: naverUserId }),
-  setHydrated: (hydrated) => set({ hydrated: hydrated }),
+  setAccessToken: token => set({ accessToken: token }),
+  setNaverUserId: naverUserId => set({ naverUserId: naverUserId }),
+  setHydrated: hydrated => set({ hydrated: hydrated }),
 }));

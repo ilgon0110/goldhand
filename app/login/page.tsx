@@ -1,15 +1,10 @@
-import LoadingBar from "@/src/shared/ui/loadingBar";
-import { getLoginData, LoginPage } from "@/src/views/login";
-import { Suspense } from "react";
+import { Suspense } from 'react';
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string };
-}) {
-  const loginData = await getLoginData("naver");
+import LoadingBar from '@/src/shared/ui/loadingBar';
+import { getLoginData, LoginPage } from '@/src/views/login';
 
-  console.log("loginData1: ", loginData);
+export default async function Page({ searchParams }: { searchParams?: { [key: string]: string } }) {
+  const loginData = await getLoginData('naver');
 
   return (
     <Suspense fallback={<LoadingBar />}>

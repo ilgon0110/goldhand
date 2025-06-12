@@ -1,36 +1,13 @@
-"use client";
+'use client';
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/shared/ui/form";
-import { formatDateToYMD, toastError, toastSuccess } from "@/src/shared/utils";
-import { Timestamp } from "firebase/firestore";
-import { useForm } from "react-hook-form";
-import {
-  consultCommentSchema,
-  detailPasswordFormSchema,
-} from "../config/consultCommentSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Textarea } from "@/src/shared/ui/textarea";
-import { Button } from "@/src/shared/ui/button";
-import { cn } from "@/lib/utils";
-import { useCallback, useState } from "react";
-import { Label } from "@/src/shared/ui/label";
-import { Comment, useComments } from "@/widgets/Comment";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/shared/ui/dialog";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import type { z } from 'zod';
+
+import { cn } from '@/lib/utils';
+import type { IConsultDetailData, IUserData } from '@/src/shared/types';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,127 +17,84 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/src/shared/ui/alert-dialog";
-import { Input } from "@/src/shared/ui/input";
-import { useRouter } from "next/navigation";
+} from '@/src/shared/ui/alert-dialog';
+import { Button } from '@/src/shared/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
+import { Input } from '@/src/shared/ui/input';
+import { Label } from '@/src/shared/ui/label';
+import { Textarea } from '@/src/shared/ui/textarea';
+import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
+import { Comment, useComments } from '@/widgets/Comment';
+
+import { consultCommentSchema, detailPasswordFormSchema } from '../config/consultCommentSchema';
 
 type ReservationDetailPageProps = {
-  data: {
-    response: string;
-    message: string;
-    data: {
-      bornDate: string | null;
-      content: string;
-      createdAt: Timestamp;
-      franchisee: string;
-      location: string;
-      name: string;
-      password: string | null;
-      phoneNumber: string;
-      secret: false;
-      title: string;
-      updatedAt: Timestamp;
-      userId: string | null;
-      comments:
-        | {
-            id: string;
-            userId: string;
-            createdAt: Timestamp;
-            updatedAt: Timestamp;
-            comment: string;
-          }[]
-        | null;
-    };
-  };
+  data: IConsultDetailData;
   docId: string;
   userData: IUserData;
 };
 
-interface IUserData {
-  response: "ok" | "ng" | "unAuthorized";
-  message: string;
-  accessToken: string | null;
-  userData: {
-    uid: string;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
-    email: string;
-    grade: string;
-    name: string;
-    nickname: string;
-    phoneNumber: string;
-  } | null;
-}
-
 interface ResponsePost {
-  response: "ok" | "ng" | "expired" | "unAuthorized";
+  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
 }
 
-export const ReservationDetailPage = ({
-  data,
-  docId,
-  userData,
-}: ReservationDetailPageProps) => {
-  console.log("ReservationDetailPage data", data);
+export const ReservationDetailPage = ({ data, docId, userData }: ReservationDetailPageProps) => {
+  console.log('ReservationDetailPage data', data);
   const router = useRouter();
-  const author = data.data.userId ? data.data.name : "비회원";
+  const author = data.data.userId ? data.data.name : '비회원';
   const { comments, loading: isCommentSubmitting } = useComments({
     docId,
-    collectionName: "consults",
+    collectionName: 'consults',
   });
-  const [updateButtonName, setUpdateButtonName] = useState<"EDIT" | "DELETE">(
-    "EDIT"
-  );
+  const [updateButtonName, setUpdateButtonName] = useState<'DELETE' | 'EDIT'>('EDIT');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 
-  console.log("comments", comments);
+  console.log('comments', comments);
   const form = useForm<z.infer<typeof consultCommentSchema>>({
     resolver: zodResolver(consultCommentSchema),
     defaultValues: {
-      comment: "",
+      comment: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const formValidation = form.formState.isValid;
   const isConsultDetailOwner = true;
   //author === "비회원" ? true : data.data.userId === userData.userData?.uid;
-  console.log("data.data.userId", data.data.userId);
-  console.log("userData uid: ", userData.userData?.uid);
+  console.log('data.data.userId', data.data.userId);
+  console.log('userData uid: ', userData.userData?.uid);
   const onSubmit = async (values: z.infer<typeof consultCommentSchema>) => {
     if (!formValidation) return;
     const { comment } = values;
 
     try {
-      const response = await fetch("/api/consultDetail/comment", {
-        method: "POST",
+      const response = await fetch('/api/consultDetail/comment', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
         body: JSON.stringify({
           docId,
           comment,
         }),
       });
       const data: ResponsePost = await response.json();
-      if (data.response === "ok") {
-        toastSuccess("댓글이 작성되었습니다.");
+      if (data.response === 'ok') {
+        toastSuccess('댓글이 작성되었습니다.');
         form.reset();
-      } else if (
-        data.response === "unAuthorized" ||
-        data.response === "expired"
-      ) {
-        toastError("로그인 후 이용해주세요.");
+      } else if (data.response === 'unAuthorized' || data.response === 'expired') {
+        toastError('로그인 후 이용해주세요.');
         form.reset();
       } else {
-        toastError("댓글 작성 중 알 수 없는 오류가 발생하였습니다.");
+        toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.');
       }
     } catch (error: any) {
-      toastError("댓글 작성 중 알 수 없는 오류가 발생하였습니다.");
+      toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.');
     } finally {
     }
   };
@@ -169,73 +103,64 @@ export const ReservationDetailPage = ({
   const passwordForm = useForm<z.infer<typeof detailPasswordFormSchema>>({
     resolver: zodResolver(detailPasswordFormSchema),
     defaultValues: {
-      password: "",
+      password: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
-  const onPasswordSubmit = async (
-    values: z.infer<typeof detailPasswordFormSchema>
-  ) => {
+  const onPasswordSubmit = async (values: z.infer<typeof detailPasswordFormSchema>) => {
     const { password } = values;
 
     try {
       setIsPasswordSubmitting(true);
-      const res = await fetch(
-        `/api/consultDetail/password?docId=${docId}&password=${password}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(`/api/consultDetail/password?docId=${docId}&password=${password}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       const data = await res.json();
-      console.log("data", data);
-      if (data.response === "ok") {
+      console.log('data', data);
+      if (data.response === 'ok') {
         // 수정하기 버튼 클릭 시
-        if (updateButtonName === "EDIT") {
+        if (updateButtonName === 'EDIT') {
           router.push(`/reservation/form?docId=${docId}&password=${password}`);
           return;
         }
         // 삭제하기 버튼 클릭 시
         setAlertDialogOpen(true);
-      } else if (data.response === "unAuthorized") {
-        toastError("비밀번호가 틀립니다.");
+      } else if (data.response === 'unAuthorized') {
+        toastError('비밀번호가 틀립니다.');
         passwordForm.reset();
-      } else if (data.response === "expired") {
-        toastError("로그인 후 이용해주세요.");
+      } else if (data.response === 'expired') {
+        toastError('로그인 후 이용해주세요.');
         passwordForm.reset();
       }
     } catch (error) {
-      console.error("Error during form submission:", error);
-      toastError("비밀번호 검증 중 서버 오류가 발생하였습니다.");
+      console.error('Error during form submission:', error);
+      toastError('비밀번호 검증 중 서버 오류가 발생하였습니다.');
     } finally {
       setIsPasswordSubmitting(false);
     }
   };
 
-  const handleEditClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     // 비회원의 경우 비밀번호 검증
     e.stopPropagation();
-    setUpdateButtonName("EDIT");
-    if (author === "비회원") {
+    setUpdateButtonName('EDIT');
+    if (author === '비회원') {
       setDialogOpen(true);
     } else {
       // 수정 Form으로 이동
-      router.push(`/reservation/form?docId=${docId}&password=${""}`);
+      router.push(`/reservation/form?docId=${docId}&password=${''}`);
     }
   };
 
-  const handleDeleteClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     // 비회원의 경우 비밀번호 검증
     e.stopPropagation();
-    setUpdateButtonName("DELETE");
-    if (author === "비회원") {
+    setUpdateButtonName('DELETE');
+    if (author === '비회원') {
       setDialogOpen(true);
     } else {
       // 삭제 API 호출
@@ -250,36 +175,36 @@ export const ReservationDetailPage = ({
         setDialogOpen(false);
       }
     },
-    [setAlertDialogOpen, setDialogOpen]
+    [setAlertDialogOpen, setDialogOpen],
   );
 
   const handleDeleteActionClick = async () => {
     try {
       setIsDeleteSubmitting(true);
       const res = await fetch(`/api/consultDetail/delete`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           docId,
           userId: data.data.userId,
-          password: passwordForm.getValues("password"),
+          password: passwordForm.getValues('password'),
         }),
       });
       const responseData = await res.json();
-      console.log("responseData", responseData);
-      if (responseData.response === "ok") {
-        toastSuccess("게시글이 삭제되었습니다.");
-        router.push("/reservation/list");
-      } else if (data.response === "unAuthorized") {
-        toastError("비밀번호가 틀립니다.");
-      } else if (data.response === "expired") {
-        toastError("로그인 후 이용해주세요.");
+      console.log('responseData', responseData);
+      if (responseData.response === 'ok') {
+        toastSuccess('게시글이 삭제되었습니다.');
+        router.push('/reservation/list');
+      } else if (data.response === 'unAuthorized') {
+        toastError('비밀번호가 틀립니다.');
+      } else if (data.response === 'expired') {
+        toastError('로그인 후 이용해주세요.');
       }
     } catch (error) {
-      console.error("Error during form submission:", error);
-      toastError("게시글 삭제 중 서버 오류가 발생하였습니다.");
+      console.error('Error during form submission:', error);
+      toastError('게시글 삭제 중 서버 오류가 발생하였습니다.');
     } finally {
       setIsDeleteSubmitting(false);
       setAlertDialogOpen(false);
@@ -287,10 +212,10 @@ export const ReservationDetailPage = ({
   };
 
   const mutateDeleteComment = async (commentId: string) => {
-    return await fetch("/api/consultDetail/comment/delete", {
-      method: "DELETE",
+    return await fetch('/api/consultDetail/comment/delete', {
+      method: 'DELETE',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         docId,
@@ -300,8 +225,8 @@ export const ReservationDetailPage = ({
   };
 
   const mutateUpdateComment = async (commentId: string, comment: string) => {
-    return await fetch("/api/consultDetail/comment/update", {
-      method: "POST",
+    return await fetch('/api/consultDetail/comment/update', {
+      method: 'POST',
       body: JSON.stringify({
         docId,
         commentId,
@@ -310,46 +235,42 @@ export const ReservationDetailPage = ({
     });
   };
 
-  if (data.response === "ng") {
+  if (data.response === 'ng') {
     throw new Error(data.message);
   }
 
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <div className="flex flex-col gap-2 relative">
-          <h3 className="md:text-3xl text-xl font-bold">{data.data.title}</h3>
+        <div className="relative flex flex-col gap-2">
+          <h3 className="text-xl font-bold md:text-3xl">{data.data.title}</h3>
           <div className="flex flex-row gap-2">
             <span className="text-slate-500">{data.data.franchisee}</span>
             <span>{author}</span>
             <span>{formatDateToYMD(data.data.createdAt)}</span>
           </div>
         </div>
-        <div className="w-full h-[1px] bg-slate-300 my-4" />
-        <div className="w-full relative">
-          <div className="flex flex-col mb-4 gap-1 relative">
+        <div className="my-4 h-[1px] w-full bg-slate-300" />
+        <div className="relative w-full">
+          <div className="relative mb-4 flex flex-col gap-1">
             <span className="text-xl font-bold">출산 예정일</span>
-            <span className="text-slate-500">
-              {data.data.bornDate
-                ? formatToYYYYMMDD(data.data.bornDate)
-                : "없음"}
-            </span>
+            <span className="text-slate-500">{data.data.bornDate ? formatToYYYYMMDD(data.data.bornDate) : '없음'}</span>
           </div>
-          <div className="flex flex-col mb-4 gap-1">
+          <div className="mb-4 flex flex-col gap-1">
             <span className="text-xl font-bold">상담내용</span>
             <p>{data.data.content}</p>
           </div>
         </div>
-        <div className="w-full h-[1px] bg-slate-300 mt-4 mb-4" />
+        <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />
         {isConsultDetailOwner && (
-          <div className="w-full flex justify-end space-x-4">
+          <div className="flex w-full justify-end space-x-4">
             <Button
-              onClick={(e) => handleEditClick(e)}
-              className="bg-transparent text-primary border border-primary transition-all duration-300 hover:bg-primary hover:text-white"
+              className="border border-primary bg-transparent text-primary transition-all duration-300 hover:bg-primary hover:text-white"
+              onClick={e => handleEditClick(e)}
             >
               수정하기
             </Button>
-            <Button variant="destructive" onClick={(e) => handleDeleteClick(e)}>
+            <Button variant="destructive" onClick={e => handleDeleteClick(e)}>
               삭제하기
             </Button>
           </div>
@@ -357,14 +278,11 @@ export const ReservationDetailPage = ({
 
         {/* 댓글 입력란 */}
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-2 mt-4"
-          >
+          <form className="mt-4 space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
+              defaultValue={''}
               name="comment"
-              defaultValue={""}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>댓글 남기기</FormLabel>
@@ -372,28 +290,26 @@ export const ReservationDetailPage = ({
                     <Textarea placeholder="댓글을 입력하세요." {...field} />
                   </FormControl>
                   <FormDescription></FormDescription>
-                  <FormMessage>
-                    {form.formState.errors.comment?.message}
-                  </FormMessage>
+                  <FormMessage>{form.formState.errors.comment?.message}</FormMessage>
                 </FormItem>
               )}
             />
-            <div className="w-full flex justify-end">
+            <div className="flex w-full justify-end">
               <Button
-                type="submit"
-                disabled={!formValidation}
                 className={cn(
-                  "duration-300 transition-all",
-                  formValidation ? "" : "hover:cursor-not-allowed opacity-20"
+                  'transition-all duration-300',
+                  formValidation ? '' : 'opacity-20 hover:cursor-not-allowed',
                 )}
+                disabled={!formValidation}
+                type="submit"
               >
                 {isCommentSubmitting ? (
                   <div role="status">
                     <svg
                       aria-hidden="true"
-                      className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                      viewBox="0 0 100 101"
+                      className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                       fill="none"
+                      viewBox="0 0 100 101"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
@@ -408,7 +324,7 @@ export const ReservationDetailPage = ({
                     <span className="sr-only">Loading...</span>
                   </div>
                 ) : (
-                  "댓글달기"
+                  '댓글달기'
                 )}
               </Button>
             </div>
@@ -416,22 +332,22 @@ export const ReservationDetailPage = ({
         </Form>
 
         {/* 댓글들 */}
-        <Label className="text-lg font-bold mt-10">{`댓글 (${
-          comments != null ? comments.length : "댓글이 없습니다"
+        <Label className="mt-10 text-lg font-bold">{`댓글 (${
+          comments != null ? comments.length : '댓글이 없습니다'
         })`}</Label>
         <div className="mt-2 space-y-4">
-          {comments?.map((item) => {
+          {comments?.map(item => {
             return (
               <Comment
-                key={item.id}
-                docId={docId}
                 commentId={item.id}
-                isCommentOwner={item.userId === userData.userData?.uid}
                 content={item.comment}
                 createdAt={item.createdAt}
-                updatedAt={item.updatedAt}
-                mutateUpdateComment={mutateUpdateComment}
+                docId={docId}
+                isCommentOwner={item.userId === userData.userData?.uid}
+                key={item.id}
                 mutateDeleteComment={mutateDeleteComment}
+                mutateUpdateComment={mutateUpdateComment}
+                updatedAt={item.updatedAt}
               />
             );
           })}
@@ -444,19 +360,16 @@ export const ReservationDetailPage = ({
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <Form {...passwordForm}>
-            <form
-              onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
-              className="space-y-6"
-            >
+            <form className="space-y-6" onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
               <FormField
                 control={passwordForm.control}
-                name="password"
                 defaultValue=""
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="" {...field} />
+                      <Input placeholder="" type="password" {...field} />
                     </FormControl>
                     <FormDescription></FormDescription>
                   </FormItem>
@@ -467,9 +380,9 @@ export const ReservationDetailPage = ({
                   <div role="status">
                     <svg
                       aria-hidden="true"
-                      className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                      viewBox="0 0 100 101"
+                      className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                       fill="none"
+                      viewBox="0 0 100 101"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
@@ -484,7 +397,7 @@ export const ReservationDetailPage = ({
                     <span className="sr-only">Loading...</span>
                   </div>
                 ) : (
-                  "확인"
+                  '확인'
                 )}
               </Button>
             </form>
@@ -493,16 +406,11 @@ export const ReservationDetailPage = ({
       </Dialog>
 
       {/* 삭제 확인 알림 */}
-      <AlertDialog
-        open={alertDialogOpen}
-        onOpenChange={(open) => handleAlertDialogOpen(open)}
-      >
+      <AlertDialog open={alertDialogOpen} onOpenChange={open => handleAlertDialogOpen(open)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>게시글을 삭제하시겠습니까?</AlertDialogTitle>
-            <AlertDialogDescription>
-              삭제된 게시글은 복구할 수 없습니다.
-            </AlertDialogDescription>
+            <AlertDialogDescription>삭제된 게시글은 복구할 수 없습니다.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소하기</AlertDialogCancel>
@@ -511,9 +419,9 @@ export const ReservationDetailPage = ({
                 <div role="status">
                   <svg
                     aria-hidden="true"
-                    className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
-                    viewBox="0 0 100 101"
+                    className="h-6 w-6 animate-spin fill-green-500 text-gray-200 dark:text-gray-600"
                     fill="none"
+                    viewBox="0 0 100 101"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
@@ -528,7 +436,7 @@ export const ReservationDetailPage = ({
                   <span className="sr-only">Loading...</span>
                 </div>
               ) : (
-                "삭제하기"
+                '삭제하기'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -542,8 +450,8 @@ function formatToYYYYMMDD(dateInput: string | Date): string {
   const date = new Date(dateInput);
 
   const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based
-  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 0-based
+  const day = date.getDate().toString().padStart(2, '0');
 
   return `${year}-${month}-${day}`;
 }

@@ -1,4 +1,4 @@
-import { parseAsFloat, createLoader, parseAsString } from "nuqs/server";
+import { createLoader, parseAsFloat, parseAsString } from 'nuqs/server';
 
 // Describe your search params, and reuse this in useQueryStates / createSerializer:
 export const searchParams = {
@@ -10,7 +10,7 @@ export const loginParams = {
 };
 
 export const consultParams = {
-  hideSecret: parseAsString.withDefault("false"),
+  hideSecret: parseAsString.withDefault('false'),
   page: parseAsFloat.withDefault(1),
 };
 
@@ -19,6 +19,7 @@ export const consultDetailParams = {
 };
 
 export const reviewParams = {
+  franchisee: parseAsString.withDefault('전체'),
   page: parseAsFloat.withDefault(1),
 };
 

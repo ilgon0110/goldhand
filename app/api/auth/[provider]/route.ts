@@ -25,17 +25,18 @@ interface IResponsePostBody {
 }
 
 export async function GET() {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken');
 
-  if (accessToken === undefined) {
+  console.log('GET accessToken:', accessToken);
+  if (accessToken === null || accessToken?.value === 'undefined') {
     return typedJson<IResponseGetBody>(
       {
         response: 'unAuthorized',
         message: '로그인되지 않았습니다.',
         accessToken: null,
       },
-      { status: 401 },
+      { status: 200 },
     );
   }
 

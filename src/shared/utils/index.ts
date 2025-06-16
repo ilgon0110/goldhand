@@ -186,3 +186,49 @@ export function generateReviewDescription(htmlString: string): string {
   // Normalize whitespace (replace multiple spaces/newlines with single space)
   return result.replace(/\s+/g, ' ').trim();
 }
+
+interface IEnv {
+  apikey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  optionalValue?: string;
+}
+
+function getOptionalEnv<T = string>(envName: string): T | undefined {
+  const value = process.env[envName];
+
+  if (value === null) {
+    return undefined;
+  }
+
+  return value as T;
+}
+
+function getRequiredEnv<T = string>(envName: string): T {
+  const value = process.env[envName];
+
+  if (value === null) {
+    throw new Error(`Environment variable ${envName} is not defined.`);
+  }
+
+  if (value === undefined) {
+    throw new Error(`Environment variable ${envName} is undefined.`);
+  }
+
+  return value as T;
+}
+
+export function getEnv(): IEnv {
+  return {
+    apikey: getRequiredEnv<IEnv['apikey']>('NEXT_PUBLIC_FIREBASE_API_KEY'),
+    authDomain: getRequiredEnv<IEnv['authDomain']>('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+    projectId: getRequiredEnv<IEnv['projectId']>('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+    storageBucket: getRequiredEnv<IEnv['storageBucket']>('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+    messagingSenderId: getRequiredEnv<IEnv['messagingSenderId']>('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+    appId: getRequiredEnv<IEnv['appId']>('NEXT_PUBLIC_FIREBASE_APP_ID'),
+    optionalValue: getOptionalEnv<IEnv['optionalValue']>('NEXT_PUBLIC_FIREBASE_OPTIONAL_VALUE'),
+  };
+}

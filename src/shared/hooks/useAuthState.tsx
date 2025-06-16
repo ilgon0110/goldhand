@@ -1,3 +1,5 @@
+'use client';
+
 import type { User } from 'firebase/auth';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -14,7 +16,6 @@ export function useAuthState() {
     pending: true,
     user: null,
   });
-
   const auth = getAuth(firebaseApp);
 
   useEffect(() => {

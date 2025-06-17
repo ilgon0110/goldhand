@@ -29,7 +29,7 @@ export async function GET() {
   const accessToken = cookieStore.get('accessToken');
 
   console.log('GET accessToken:', accessToken);
-  if (accessToken === null || accessToken?.value === 'undefined') {
+  if (accessToken == null || accessToken?.value === 'undefined' || accessToken.value === '') {
     return typedJson<IResponseGetBody>(
       {
         response: 'unAuthorized',
@@ -61,7 +61,7 @@ export async function GET() {
           message: '토큰이 만료되었습니다.',
           accessToken: null,
         },
-        { status: 401 },
+        { status: 200 },
       );
     }
 
@@ -76,6 +76,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const { access_token } = await req.json();
+  console.log('POST access_token:', access_token);
+
   const adminAuth = getAdminAuth(firebaseAdminApp);
   // naver ACCESS_TOKEN을 이용하여 사용자 정보를 가져온다.
   if (typeof access_token === 'string') {
@@ -90,12 +92,13 @@ export async function POST(req: Request) {
     const email = userData.response.email;
     const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
 
+    console.log('auth/post user:', user);
     // firebase auth에 로그인된 유저가 있는지 확인
     if (user) {
       try {
-        const customToken = await adminAuth.createCustomToken(user.user.uid);
         const accessToken = user.user.accessToken;
-        await setAuthCookie(accessToken);
+        console.log('user accessToken:', accessToken);
+        // await setAuthCookie(accessToken);
 
         return typedJson<IResponsePostBody>(
           {
@@ -104,7 +107,6 @@ export async function POST(req: Request) {
             redirectTo: '/',
             user,
             accessToken,
-            customToken,
             email: user.user.email,
           },
           { status: 200 },
@@ -116,7 +118,7 @@ export async function POST(req: Request) {
         if (typeof error === 'object' && error != null && 'code' in error && error.code === 'auth/user-not-found') {
           try {
             const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-            await setAuthCookie(newUser.user.stsTokenManager.accessToken);
+            //await setAuthCookie(newUser.user.stsTokenManager.accessToken);
             console.log('"newUser:"', newUser.user.uid);
             await saveUserProfile(newUser.user.uid, email);
 
@@ -225,12 +227,13 @@ async function saveUserProfile(uid: string, email: string) {
   });
 }
 
-async function setAuthCookie(token: string) {
+async function setAuthCookie(token: string, res: Response) {
   const cookieStore = await cookies();
   cookieStore.set('accessToken', token, {
     httpOnly: true,
     path: '/',
-    maxAge: 60 * 60 * 24 * 7,
+    //maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60, // 1 day
     sameSite: 'strict',
   });
 }

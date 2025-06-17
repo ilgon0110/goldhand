@@ -44,19 +44,40 @@ export async function GET() {
       { status: 403 },
     );
   }
-  const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
-  const uid = decodedToken.uid;
-  console.log('uid:', uid);
 
-  if (uid === undefined) {
-    return typedJson<IResponseBody>(
-      {
-        response: 'ng',
-        message: '사용자 식별 아이디가 존재하지 않습니다.',
-        data: defaultData,
-      },
-      { status: 403 },
-    );
+  let uid;
+  try {
+    console.log('accessToken:', accessToken.value);
+    const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
+    uid = decodedToken.uid;
+
+    if (uid === undefined) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '사용자 식별 아이디가 존재하지 않습니다.',
+          data: defaultData,
+        },
+        { status: 403 },
+      );
+    }
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    if (error != null && typeof error == 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+      return typedJson<IResponseBody>(
+        {
+          response: 'expired',
+          message: '로그인 토큰이 만료되었습니다.',
+          data: defaultData,
+        },
+        { status: 403 },
+      );
+    }
+    return typedJson<IResponseBody>({
+      response: 'ng',
+      message: '로그인 토큰 검증 중 오류가 발생했습니다.',
+      data: defaultData,
+    });
   }
 
   try {

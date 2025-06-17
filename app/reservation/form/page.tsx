@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 
+import { getUserData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { getConsultDetailData } from '@/src/views/reservation';
 import { ReservationFormPage } from '@/src/views/reservation/form';
-import { getUserData } from '@/src/views/signup';
 
 type TPageProps = {
   params: { slug: string };

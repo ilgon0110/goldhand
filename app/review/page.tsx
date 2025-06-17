@@ -1,10 +1,10 @@
 import type { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 
+import { getUserData } from '@/src/shared/api/getUserData';
 import { loadReviewParams } from '@/src/shared/searchParams';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { getReviewListData, ReviewPage } from '@/src/views/review';
-import { getUserData } from '@/src/views/signup';
 
 type TPageProps = {
   searchParams: Promise<SearchParams>;

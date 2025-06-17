@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { cookies } from "next/headers";
+import { cookies } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 interface ResponseBody {
-  response: "ok" | "ng" | "unAuthorized";
+  response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
   accessToken: string | null;
 }
@@ -12,43 +12,41 @@ interface ResponseBody {
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken");
+  const accessToken = cookieStore.get('accessToken');
 
   if (!accessToken) {
     const res = NextResponse.next();
-    res.headers.set("accessToken", "");
+    res.headers.set('accessToken', '');
 
     return res;
   }
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
-      ? process.env.NEXT_PUBLIC_API_URL
-      : "http://127.0.0.1:3000";
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:3000';
 
-  const response = await fetch(`${apiUrl}/api/auth/refresh`, {
-    method: "POST",
+  const response = await fetch(`${apiUrl}/api/auth/middleware`, {
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Cookie: `accessToken=${accessToken.value}`,
     },
-    credentials: "include",
+    credentials: 'include',
   });
 
   if (!response.ok) {
     console.log('"middleware : response not ok"');
     const res = NextResponse.next();
-    res.headers.set("accessTokens", "");
+    res.headers.set('accessTokens', '');
 
-    if (url.pathname === "/signup") {
-      return NextResponse.redirect("http://127.0.0.1:3000/login");
+    if (url.pathname === '/signup') {
+      return NextResponse.redirect('http://127.0.0.1:3000/login');
     }
 
     return res;
   }
 
-  if (url.pathname === "/reservation/apply") {
-    return NextResponse.redirect("http://127.0.0.1:3000/reservation/form");
+  if (url.pathname === '/reservation/apply') {
+    return NextResponse.redirect('http://127.0.0.1:3000/reservation/form');
   }
 
   const res = NextResponse.next();
@@ -60,12 +58,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: [
-    "/login",
-    "/login/:path*",
-    "/signup",
-    "/signup/:path*",
-    "/reservation",
-    "/reservation/:path*",
-  ],
+  matcher: ['/login', '/login/:path*', '/signup', '/signup/:path*', '/reservation', '/reservation/:path*'],
 };

@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 
+import { getUserData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { getReviewDetailData } from '@/src/views/review';
 import { ReviewDetailPage } from '@/src/views/review/form/ui/ReviewDetailPage';
-import { getUserData } from '@/src/views/signup';
 
 type TPageProps = {
   params: { docId: string };

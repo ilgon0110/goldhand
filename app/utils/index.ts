@@ -8,11 +8,13 @@ export async function fetcher<T>(path: string, options: RequestInit = {}): Promi
     process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:3000';
 
   const response = await fetch(`${apiUrl}${path}`, {
+    method: options.method || 'GET',
     cache: 'no-store',
     headers: {
-      'Content-Type': 'application/json',
       ...options.headers,
+      'Content-Type': 'application/json',
     },
+    body: options.body,
   });
 
   // API 요청이 성공한 경우
@@ -35,10 +37,10 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];
 
-  if (accessToken === null) {
-    throw new Error('로그인이 필요합니다.');
-  }
-
+  // if (accessToken === null) {
+  //   throw new Error('로그인이 필요합니다.');
+  // }
+  console.log('authFetcher accessToken:', accessToken);
   return fetcher<T>(path, {
     ...options,
     headers: {

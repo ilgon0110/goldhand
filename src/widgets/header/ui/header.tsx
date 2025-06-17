@@ -108,7 +108,7 @@ export const Header = () => {
             </NavigationMenuItem>
           </NavigationMenu>
           <NavigationMenuItem>
-            <NavigationMenuLink href="#">
+            <NavigationMenuLink href={URLS.FRANCHISEE}>
               <UlButton enText="Franchisee" text="지점안내" />
             </NavigationMenuLink>
           </NavigationMenuItem>
@@ -264,7 +264,11 @@ const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpe
         isAccordion={true}
         text="이용안내"
       />
-      <Link className="text-sm font-semibold leading-6 text-gray-900" href="#" onClick={onChangeMobileMenuOpen}>
+      <Link
+        className="text-sm font-semibold leading-6 text-gray-900"
+        href={URLS.FRANCHISEE}
+        onClick={onChangeMobileMenuOpen}
+      >
         <UlButton enText="Franchisee" text="지점안내" />
       </Link>
       <UlButton

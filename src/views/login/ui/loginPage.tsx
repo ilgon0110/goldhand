@@ -8,14 +8,14 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+//import { toastError, toastSuccess } from '@/src/shared/utils';
 import useNaverInit from '@/src/views/login/hooks/useNaverInit';
 
-interface ResponseGetBody {
-  message: string;
-  accessToken: string | null;
-}
+import { naverLoginAction } from '../hooks/naverLoginAction';
 
-export const LoginPage = ({ data }: { data: ResponseGetBody }) => {
+//import { useNaverLoginMutation } from '../hooks/useNaverLoginMutation';
+
+export const LoginPage = () => {
   useNaverInit();
   const auth = getAuth(firebaseApp);
   const router = useRouter();
@@ -30,31 +30,20 @@ export const LoginPage = ({ data }: { data: ResponseGetBody }) => {
 
     if (access_token === undefined) return;
     setIsLoading(true);
+
     const fetchPost = async () => {
       try {
-        const postData = await (
-          await fetch('/api/auth/naver', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ access_token }),
-          })
-        ).json();
+        // 쿠키 저장을 위해 server action 사용
+        const postData = await naverLoginAction(access_token);
 
-        // 반환받은 JWT를 사용하여 Client-side에서 Firebase 인증
-        // if (postData?.customToken) {
-        //   console.log("postData.customToken:", postData.customToken);
-        //   await signInWithCustomToken(auth, postData.customToken);
-        // }
-
+        // Client side에서 이메일 로그인
         if (postData.email) {
           await signInWithEmailAndPassword(auth, postData.email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
         }
 
-        if (postData?.redirectTo) {
+        if (postData.redirectTo) {
           startTransition(() => {
-            router.replace(postData.redirectTo);
+            router.replace(postData.redirectTo!);
           });
         }
       } catch (error) {
@@ -64,7 +53,6 @@ export const LoginPage = ({ data }: { data: ResponseGetBody }) => {
       }
     };
     fetchPost();
-    return () => {};
   }, [params]);
 
   const handleNaverLoginClick = () => {
@@ -74,41 +62,20 @@ export const LoginPage = ({ data }: { data: ResponseGetBody }) => {
 
   const onClickButtonTitle = () => {};
 
-  if (isLoading)
-    return (
-      <div className="flex flex-col items-center">
-        <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={onClickButtonTitle} />
-        <div>
-          <GridLoadingSpinner text="로그인중..." />
-        </div>
-      </div>
-    );
-
-  if (isPending) {
-    return (
-      <div className="flex flex-col items-center">
-        <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={onClickButtonTitle} />
-        <div>
-          <GridLoadingSpinner text="회원가입 유무 확인중..." />
-        </div>
-      </div>
-    );
-  }
-
-  if (data?.message === 'unAuthorized') {
-    return (
-      <div className="flex flex-col items-center">
-        <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={onClickButtonTitle} />
-        <div>회원가입 인증 실패!</div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col items-center">
       <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={onClickButtonTitle} />
+      {isLoading && <GridLoadingSpinner text="로그인중..." />}
+      {isPending && <GridLoadingSpinner text="회원가입 유무 확인중..." />}
       <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
-        <Button color="yellow" iconSrc="/icon/kakaotalk.png" title="카카오로 로그인하기" onClick={() => {}} />
+        <Button
+          className="opacity-20"
+          color="yellow"
+          disabled
+          iconSrc="/icon/kakaotalk.png"
+          title="카카오로 로그인하기"
+          onClick={() => {}}
+        />
         <button className="hidden" id="naverIdLogin" ref={naverRef} />
         <Button color="green" iconSrc="/icon/naver.png" title="네이버로 로그인하기" onClick={handleNaverLoginClick} />
       </div>
@@ -116,14 +83,14 @@ export const LoginPage = ({ data }: { data: ResponseGetBody }) => {
   );
 };
 
-type ButtonProps = {
+type TButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   title: string;
   iconSrc: string;
   color: 'green' | 'yellow';
   onClick: () => void;
 };
 
-const Button = ({ title, iconSrc, color, onClick }: ButtonProps) => {
+const Button = ({ title, iconSrc, color, onClick, ...props }: TButtonProps) => {
   const colorVariants = {
     green: 'bg-[#2DB400] hover:bg-green-600 text-white',
     yellow: 'bg-[#FFEB3B] hover:bg-yellow-300 text-black',
@@ -132,6 +99,7 @@ const Button = ({ title, iconSrc, color, onClick }: ButtonProps) => {
     <button
       className={`${colorVariants[color]} flex h-14 w-full flex-row items-center justify-center gap-2 rounded-full`}
       onClick={onClick}
+      {...props}
     >
       <Image alt="icon" height={24} src={iconSrc} width={24} />
       {title}

@@ -34,7 +34,6 @@ export async function GET() {
   try {
     const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;
-    console.log('uid:', uid);
 
     if (uid === undefined) {
       return typedJson<IResponseBody>(

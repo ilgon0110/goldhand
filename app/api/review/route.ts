@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { loadReviewParams } from '@/src/shared/searchParams';
 import type { ReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -30,20 +31,13 @@ export async function GET(req: Request) {
 
   const totalToFetch = PAGE_SIZE * preloadCount;
   const startAtIndex = (page - 1) * PAGE_SIZE;
-  console.log(
-    'totalToFetch, startAtIndex, page, PAGE_SIZE, preloadCount',
-    totalToFetch,
-    startAtIndex,
-    page,
-    PAGE_SIZE,
-    preloadCount,
-  );
 
   try {
     const app = firebaseApp;
+    const adminApp = firebaseAdminApp;
     const db = getFirestore(app);
+    //const adminDB = getAdminFirestore(adminApp); // Use admin firestore for server-side operations
     const reviewDocRef = collection(db, 'reviews').withConverter(converter);
-
     // 쿼리 베이스 설정
     const baseQuery = query(
       reviewDocRef,

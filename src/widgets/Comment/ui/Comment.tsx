@@ -86,7 +86,7 @@ export const Comment = ({
       if (result.response === 'ok') {
         toastSuccess('댓글 삭제 완료!');
       } else {
-        toastSuccess('댓글 삭제 실패!');
+        toastError('댓글 삭제 실패!');
       }
     } catch (error) {
       toastError('댓글 삭제 중 오류가 발생하였습니다.');

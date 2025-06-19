@@ -29,18 +29,18 @@ import { Comment, useComments } from '@/widgets/Comment';
 
 import { consultCommentSchema, detailPasswordFormSchema } from '../config/consultCommentSchema';
 
-type ReservationDetailPageProps = {
+type TReservationDetailPageProps = {
   data: IConsultDetailData;
   docId: string;
   userData: IUserData;
 };
 
-interface ResponsePost {
+interface IResponsePost {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
 }
 
-export const ReservationDetailPage = ({ data, docId, userData }: ReservationDetailPageProps) => {
+export const ReservationDetailPage = ({ data, docId, userData }: TReservationDetailPageProps) => {
   console.log('ReservationDetailPage data', data);
   const router = useRouter();
   const author = data.data.userId ? data.data.name : '비회원';
@@ -63,7 +63,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: ReservationDeta
   });
 
   const formValidation = form.formState.isValid;
-  const isConsultDetailOwner = true;
+  const isConsultDetailOwner = data.data.userId ? data.data.userId === userData.userData?.uid : true;
   //author === "비회원" ? true : data.data.userId === userData.userData?.uid;
   console.log('data.data.userId', data.data.userId);
   console.log('userData uid: ', userData.userData?.uid);
@@ -83,7 +83,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: ReservationDeta
           comment,
         }),
       });
-      const data: ResponsePost = await response.json();
+      const data: IResponsePost = await response.json();
       if (data.response === 'ok') {
         toastSuccess('댓글이 작성되었습니다.');
         form.reset();

@@ -32,9 +32,11 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const docId = searchParams.get('docId');
   const password = searchParams.get('password');
+  const userId = searchParams.get('userId') || null;
 
   console.log('consultDetail docId', docId);
   console.log('consultDetail password', password);
+  console.log('consultDetail userId', userId);
   if (!docId) {
     return typedJson<IResponseBody>(
       {
@@ -65,27 +67,42 @@ export async function GET(request: NextRequest) {
     const data = docSnap.data() as ConsultDetailData;
 
     if (data.secret) {
-      if (password === null || password === undefined) {
-        return typedJson<IResponseBody>(
-          {
-            response: 'ng',
-            message: '비밀번호가 필요합니다.',
-            data: defaultData,
-          },
-          { status: 403 },
-        );
+      // 비밀글&비회원
+      if (data.userId == null) {
+        if (password == null) {
+          return typedJson<IResponseBody>(
+            {
+              response: 'ng',
+              message: '비밀번호가 필요합니다.',
+              data: defaultData,
+            },
+            { status: 403 },
+          );
+        }
+        const isMatch = await bcrypt.compare(password, data.password || '');
+        if (!isMatch) {
+          return typedJson<IResponseBody>(
+            {
+              response: 'ng',
+              message: '비밀번호가 틀립니다.',
+              data: defaultData,
+            },
+            { status: 403 },
+          );
+        }
       }
-
-      const isMatch = await bcrypt.compare(password, data.password || '');
-      if (!isMatch) {
-        return typedJson<IResponseBody>(
-          {
-            response: 'ng',
-            message: '비밀번호가 틀립니다.',
-            data: defaultData,
-          },
-          { status: 403 },
-        );
+      // 비밀글&회원
+      else {
+        if (userId !== data.userId) {
+          return typedJson<IResponseBody>(
+            {
+              response: 'unAuthorized',
+              message: '해당 사용자가 작성한 글이 아닙니다.',
+              data: defaultData,
+            },
+            { status: 403 },
+          );
+        }
       }
     }
 

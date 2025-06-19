@@ -26,7 +26,11 @@ export async function naverLoginAction(access_token: string): Promise<IResponse>
 
     if (postData.accessToken) {
       // Set the access token in cookies
-      cookies().set('accessToken', postData.accessToken);
+      cookies().set('accessToken', postData.accessToken, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7, // 7 days,
+        sameSite: 'strict',
+      });
     }
 
     return postData;

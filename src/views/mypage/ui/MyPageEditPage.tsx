@@ -1,12 +1,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { getAuth } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IUserData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
@@ -15,11 +17,11 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { myPageFormSchema } from '../config/mypageFormSchema';
 
-type MyPageEditPageProps = {
+type TMyPageEditPageProps = {
   userData: IUserData;
 };
 
-export const MyPageEditPage = ({ userData }: MyPageEditPageProps) => {
+export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof myPageFormSchema>>({
@@ -38,6 +40,10 @@ export const MyPageEditPage = ({ userData }: MyPageEditPageProps) => {
     if (!formValidation) return;
     try {
       setIsSubmitting(true);
+      const auth = getAuth(firebaseApp);
+      console.log('user uid', auth.currentUser?.uid);
+      console.log('userData uid', userData.userData?.uid);
+      console.log('isSame?', auth.currentUser?.uid === userData.userData?.uid);
       const response = await (
         await fetch('/api/mypage/update', {
           method: 'POST',
@@ -46,7 +52,7 @@ export const MyPageEditPage = ({ userData }: MyPageEditPageProps) => {
           },
           body: JSON.stringify({
             ...values,
-            uid: userData.userData?.uid,
+            userId: userData.userData?.uid,
           }),
         })
       ).json();
@@ -55,9 +61,12 @@ export const MyPageEditPage = ({ userData }: MyPageEditPageProps) => {
         setIsSubmitting(false);
         setTimeout(() => {
           router.push('/mypage');
-        }, 3000);
+        }, 1000);
+      } else {
+        toastError(response.message || '정보 수정에 실패했습니다. 다시 시도해주세요.');
+        setIsSubmitting(false);
       }
-    } catch (error: any) {
+    } catch (error) {
       toastError('정보 수정에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);

@@ -68,7 +68,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     if (error.code === 'auth/id-token-expired') {
       console.log('토큰 만료됨');
-      return typedJson<IResponseBody>({ response: 'ng', message: 'expired' }, { status: 401 });
+      return typedJson<IResponseBody>({ response: 'expired', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
 
     console.error('Error verifying token:', error);

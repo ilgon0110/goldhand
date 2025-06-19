@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +27,7 @@ import { toastError } from '@/src/shared/utils';
 
 import { detailFormSchema } from '../list/config/detailFormSchema';
 
-type ReservationCardProps = {
+type TReservationCardProps = {
   docId: string;
   title: string;
   author: string;
@@ -34,9 +35,19 @@ type ReservationCardProps = {
   spot: string;
   isSecret: boolean;
   content: string;
+  dataUserId: string | null; // 추가된 부분: 데이터의 userId
 };
 
-export const ReservationCard = ({ docId, title, author, createdAt, spot, isSecret, content }: ReservationCardProps) => {
+export const ReservationCard = ({
+  docId,
+  title,
+  author,
+  createdAt,
+  spot,
+  isSecret,
+  content,
+  dataUserId,
+}: TReservationCardProps) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof detailFormSchema>>({
     resolver: zodResolver(detailFormSchema),
@@ -49,6 +60,7 @@ export const ReservationCard = ({ docId, title, author, createdAt, spot, isSecre
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+  const { user } = useAuthState();
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -57,7 +69,7 @@ export const ReservationCard = ({ docId, title, author, createdAt, spot, isSecre
       return;
     }
 
-    if (isSecret && author !== '비회원') {
+    if (isSecret && author !== '비회원' && dataUserId !== user?.uid) {
       setIsAlertDialogOpen(true);
       return;
     }

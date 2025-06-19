@@ -2,12 +2,6 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-interface ResponseBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
-  message: string;
-  accessToken: string | null;
-}
-
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -24,7 +18,7 @@ export async function middleware(request: NextRequest) {
   const apiUrl =
     process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:3000';
 
-  const response = await fetch(`${apiUrl}/api/auth/middleware`, {
+  const response = await fetch(`${apiUrl}/api/user`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +35,6 @@ export async function middleware(request: NextRequest) {
     if (url.pathname === '/signup') {
       return NextResponse.redirect('http://127.0.0.1:3000/login');
     }
-
     return res;
   }
 

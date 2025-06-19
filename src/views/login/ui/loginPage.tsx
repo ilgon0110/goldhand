@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 
+import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
@@ -67,18 +68,20 @@ export const LoginPage = () => {
       <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={onClickButtonTitle} />
       {isLoading && <GridLoadingSpinner text="로그인중..." />}
       {isPending && <GridLoadingSpinner text="회원가입 유무 확인중..." />}
-      <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
-        <Button
-          className="opacity-20"
-          color="yellow"
-          disabled
-          iconSrc="/icon/kakaotalk.png"
-          title="카카오로 로그인하기"
-          onClick={() => {}}
-        />
-        <button className="hidden" id="naverIdLogin" ref={naverRef} />
-        <Button color="green" iconSrc="/icon/naver.png" title="네이버로 로그인하기" onClick={handleNaverLoginClick} />
-      </div>
+      {!isLoading && !isPending && (
+        <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
+          <Button
+            className="cursor-not-allowed opacity-40"
+            color="yellow"
+            disabled
+            iconSrc="/icon/kakaotalk.png"
+            title="카카오로 로그인하기(준비중)"
+            onClick={() => {}}
+          />
+          <button className="hidden" id="naverIdLogin" ref={naverRef} />
+          <Button color="green" iconSrc="/icon/naver.png" title="네이버로 로그인하기" onClick={handleNaverLoginClick} />
+        </div>
+      )}
     </div>
   );
 };
@@ -97,9 +100,12 @@ const Button = ({ title, iconSrc, color, onClick, ...props }: TButtonProps) => {
   };
   return (
     <button
-      className={`${colorVariants[color]} flex h-14 w-full flex-row items-center justify-center gap-2 rounded-full`}
-      onClick={onClick}
       {...props}
+      className={cn(
+        `${colorVariants[color]} flex h-14 w-full flex-row items-center justify-center gap-2 rounded-full`,
+        props.className,
+      )}
+      onClick={onClick}
     >
       <Image alt="icon" height={24} src={iconSrc} width={24} />
       {title}

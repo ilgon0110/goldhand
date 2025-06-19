@@ -1,45 +1,27 @@
-import { getAuth } from 'firebase/auth';
 import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { UserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
-
-interface IMyPageUpdatePost {
-  uid: string;
-  name: string;
-  nickname: string;
-  phoneNumber: string;
-  email: string;
-}
-
-interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
-  message: string;
-}
+import type { IMyPageUpdatePost, IResponseBody } from '@/src/views/mypage/types';
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IMyPageUpdatePost;
-  const { uid, name, nickname, phoneNumber, email } = body;
+  const { userId, name, nickname, phoneNumber, email } = body;
 
-  if (!uid) {
-    return typedJson<IResponseBody>({ response: 'ng', message: 'uid is required' }, { status: 400 });
+  if (!userId) {
+    return typedJson<IResponseBody>({ response: 'ng', message: 'userId is required' }, { status: 400 });
   }
 
   // Update logic here...
   try {
     const app = firebaseApp;
-    const auth = getAuth();
     const db = getFirestore(app);
 
-    const userDocRef = doc(db, 'users', uid);
+    const userDocRef = doc(db, 'users', userId);
     const userDocSnap = await getDoc(userDocRef);
 
     if (!userDocSnap.exists()) {
-      const userData = userDocSnap.data() as UserDetailData;
-      console.log('User data:', userData);
-
       return typedJson<IResponseBody>(
         {
           response: 'unAuthorized',
@@ -52,6 +34,7 @@ export async function POST(req: NextRequest) {
     // Update user data
     try {
       await updateDoc(userDocRef, {
+        ...userDocSnap.data(),
         name,
         nickname,
         phoneNumber,

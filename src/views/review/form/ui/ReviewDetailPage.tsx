@@ -164,6 +164,7 @@ export const ReviewDetailPage = ({ data, docId, userData }: ReviewDetailPageProp
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        userId: userData.userData?.uid,
         docId,
         commentId,
       }),

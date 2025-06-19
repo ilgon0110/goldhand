@@ -5,6 +5,7 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 import { typedJson } from '@/src/shared/utils';
 
 interface ICommentPost {
+  userId: string;
   docId: string;
   commentId: string;
   comment: string;
@@ -17,7 +18,7 @@ interface IResponseBody {
 
 export async function DELETE(req: NextRequest) {
   const body = (await req.json()) as ICommentPost;
-  const { docId, commentId } = body;
+  const { userId, docId, commentId } = body;
 
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
@@ -41,6 +42,16 @@ export async function DELETE(req: NextRequest) {
           message: '해당 commentId를 가진 댓글이 존재하지 않습니다.',
         },
         { status: 404 },
+      );
+    }
+
+    if (commentDocSnap.data().userId !== userId) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '해당 댓글을 삭제할 권한이 없습니다.',
+        },
+        { status: 403 },
       );
     }
 

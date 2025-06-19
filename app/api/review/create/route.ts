@@ -70,6 +70,7 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
   const app = firebaseApp;
   const db = getFirestore(app);
 
+  console.log('userId', uid);
   try {
     await setDoc(doc(db, 'reviews', docId), {
       title,

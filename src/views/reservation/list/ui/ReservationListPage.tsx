@@ -10,7 +10,7 @@ import { formatDateToYMD } from '@/src/shared/utils';
 import { ReservationCard } from '@/src/views/reservation';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
-type ReservationListPageProps = {
+type TReservationListPageProps = {
   data: {
     message: string;
     consultData:
@@ -34,7 +34,7 @@ type ReservationListPageProps = {
   };
 };
 
-export const ReservationListPage = ({ data }: ReservationListPageProps) => {
+export const ReservationListPage = ({ data }: TReservationListPageProps) => {
   const [consultParam, setConsultParam] = useQueryStates(consultParams, {
     shallow: false,
   });
@@ -74,6 +74,7 @@ export const ReservationListPage = ({ data }: ReservationListPageProps) => {
               author={item.userId ? '회원' : '비회원'}
               content={item.content}
               createdAt={formatDateToYMD(item.createdAt)}
+              dataUserId={item.userId}
               docId={item.id}
               isSecret={item.secret}
               key={item.id}

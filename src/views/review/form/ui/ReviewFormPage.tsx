@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { $generateHtmlFromNodes } from '@lexical/html';
+import type { UploadMetadata } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import type { LexicalEditor } from 'lexical';
 import { useRouter } from 'next/navigation';
@@ -83,12 +84,17 @@ export const ReviewFormPage = () => {
         if (images != null && images.length > 0) {
           console.log('이미지 있음, 업로드 시작');
           console.log('images', images);
+
           for (const image of images) {
-            const imageRef = ref(storage, `reviews/${user.uid}/${docId}/${image.key}`);
-            const metadata = {
+            console.log('userID', user.uid);
+            const metadata: UploadMetadata = {
               contentType: image.file.type,
+              customMetadata: {
+                userId: user.uid,
+              },
             };
 
+            const imageRef = ref(storage, `reviews/${user.uid}/${docId}/${image.key}`);
             const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
             console.log('uploadTask', uploadTask);
             uploadTask.on(

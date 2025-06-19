@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { doc, getDoc, getFirestore, Timestamp } from 'firebase/firestore';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -32,6 +33,9 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const docId = searchParams.get('docId');
   const password = searchParams.get('password');
+
+  const cookieStore = cookies();
+  const accessToken = cookieStore.get('accessToken');
   console.log('secretDocId', docId);
   console.log('password', password);
 
@@ -64,28 +68,31 @@ export async function GET(request: NextRequest) {
 
     const data = docSnap.data() as ConsultDetailData;
 
-    if (password === null) {
-      return typedJson<IResponseBody>(
-        {
-          response: 'unAuthorized',
-          message: 'password is required',
-          data: defaultData,
-        },
-        { status: 400 },
-      );
-    }
+    // 비회원 - 비밀번호 검증
+    if (data.userId == null) {
+      if (password === null) {
+        return typedJson<IResponseBody>(
+          {
+            response: 'unAuthorized',
+            message: 'password is required',
+            data: defaultData,
+          },
+          { status: 400 },
+        );
+      }
 
-    const isMatch = await bcrypt.compare(password, data.password || '');
+      const isMatch = await bcrypt.compare(password, data.password || '');
 
-    if (!isMatch) {
-      return typedJson<IResponseBody>(
-        {
-          response: 'unAuthorized',
-          message: '비밀번호가 틀립니다.',
-          data: defaultData,
-        },
-        { status: 403 },
-      );
+      if (!isMatch) {
+        return typedJson<IResponseBody>(
+          {
+            response: 'unAuthorized',
+            message: '비밀번호가 틀립니다.',
+            data: defaultData,
+          },
+          { status: 403 },
+        );
+      }
     }
 
     const responseData: IResponseBody = {

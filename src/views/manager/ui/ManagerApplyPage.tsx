@@ -2,8 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { createRef, useEffect, useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useEffect, useState } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -21,6 +21,7 @@ import { managerApplySchema } from '../config/managerApplySchema';
 
 export const ManagerApplyPage = () => {
   const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const form = useForm<z.infer<typeof managerApplySchema>>({
     resolver: zodResolver(managerApplySchema),
     defaultValues: {
@@ -36,10 +37,11 @@ export const ManagerApplyPage = () => {
 
   const onSubmit = async (values: z.infer<typeof managerApplySchema>) => {
     if (!formValidation) return;
+    if (!executeRecaptcha) return;
 
     try {
       setIsSubmitting(true);
-      const recaptchaToken = await recaptchaRef.current?.executeAsync();
+      const recaptchaToken = await executeRecaptcha('join');
 
       // POST 요청
       const response = await fetch('/api/manager/apply', {
@@ -71,7 +73,6 @@ export const ManagerApplyPage = () => {
       toastError(`관리사 신청에 실패했습니다.\n${error.message}`);
     } finally {
       setIsSubmitting(false);
-      recaptchaRef.current?.reset();
     }
   };
 
@@ -79,7 +80,7 @@ export const ManagerApplyPage = () => {
     form.trigger();
   }, []);
 
-  const recaptchaRef = createRef<ReCAPTCHA>();
+  //const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   return (
     <div>
@@ -210,7 +211,6 @@ export const ManagerApplyPage = () => {
             )}
           />
           <div className="flex w-full justify-between">
-            <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!} size="invisible" />
             <Button
               className={cn(
                 'transition-all duration-300 ease-in-out',

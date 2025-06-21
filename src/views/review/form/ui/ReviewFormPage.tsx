@@ -6,8 +6,7 @@ import type { UploadMetadata } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import type { LexicalEditor } from 'lexical';
 import { useRouter } from 'next/navigation';
-import { createRef, useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import type { z } from 'zod';
@@ -36,7 +35,7 @@ import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 import { reviewFormSchema } from '../config/reviewFormSchema';
 
-interface ReviewPostData {
+interface IReviewPostData {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
   docId?: string;
@@ -57,7 +56,6 @@ export const ReviewFormPage = () => {
   });
   const formValidation = form.formState.isValid;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const recaptchaRef = createRef<ReCAPTCHA>();
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
   const [imageProgress, setImagesProgress] = useState<{
@@ -142,7 +140,7 @@ export const ReviewFormPage = () => {
     downloadedImages: { key: string; url: string }[] | null,
   ) => {
     try {
-      const data: ReviewPostData = await (
+      const data: IReviewPostData = await (
         await fetch('/api/review/create', {
           method: 'POST',
           headers: {
@@ -255,7 +253,6 @@ export const ReviewFormPage = () => {
           />
           <Editor editable={true} onEditorChange={onEditorChange} />
           <div className="flex w-full justify-between">
-            <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!} size="invisible" />
             <Button
               className={cn(
                 'transition-all duration-300 ease-in-out',

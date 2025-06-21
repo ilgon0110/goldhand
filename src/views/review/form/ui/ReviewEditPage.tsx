@@ -7,8 +7,7 @@ import type { UploadMetadata } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import type { LexicalEditor } from 'lexical';
 import { useRouter } from 'next/navigation';
-import { createRef, useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -78,7 +77,6 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   });
   const formValidation = form.formState.isValid;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const recaptchaRef = createRef<ReCAPTCHA>();
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
   const [imageProgress, setImagesProgress] = useState<{
@@ -275,7 +273,6 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
           />
           <Editor editable={true} htmlString={data.data.htmlString} onEditorChange={onEditorChange} />
           <div className="flex w-full justify-between">
-            <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!} size="invisible" />
             <Button
               className={cn(
                 'transition-all duration-300 ease-in-out',

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { getUserData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { getConsultDetailData } from '@/src/views/reservation';
-import { ReservationFormPage } from '@/src/views/reservation/form';
+import { ReservationRecaptchaProvider } from '@/src/views/reservation/form';
 
 type TPageProps = {
   params: { slug: string };
@@ -20,7 +20,7 @@ export default async function Page({ params, searchParams }: TPageProps) {
 
   return (
     <Suspense fallback={<LoadingBar />}>
-      <ReservationFormPage consultDetailData={consultDetailData} userData={userData} />
+      <ReservationRecaptchaProvider consultDetailData={consultDetailData} userData={userData} />
     </Suspense>
   );
 }

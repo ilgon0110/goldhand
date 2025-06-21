@@ -5,8 +5,8 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createRef, useEffect, useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useEffect, useState } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -34,6 +34,7 @@ export const ReservationFormPage = ({
   consultDetailData: IConsultDetailData;
 }) => {
   const searchParams = useSearchParams();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const docId = searchParams.get('docId');
   const password = searchParams.get('password');
   const router = useRouter();
@@ -58,11 +59,11 @@ export const ReservationFormPage = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!formValidation) return;
-
+    if (!executeRecaptcha) return;
     try {
       setIsSubmitting(true);
 
-      const recaptchaToken = await recaptchaRef.current?.executeAsync();
+      const recaptchaToken = await executeRecaptcha('join');
 
       // POST 요청
       const apiUrl = consultDetailData.response === 'ok' ? '/api/consultDetail/update' : '/api/consultDetail/create';
@@ -101,7 +102,6 @@ export const ReservationFormPage = ({
       toastError(`상담 신청에 실패했습니다.\n${error.message}`);
     } finally {
       setIsSubmitting(false);
-      recaptchaRef.current?.reset();
     }
   };
 
@@ -110,8 +110,6 @@ export const ReservationFormPage = ({
   useEffect(() => {
     form.trigger();
   }, []);
-
-  const recaptchaRef = createRef<ReCAPTCHA>();
 
   return (
     <div>
@@ -319,7 +317,6 @@ export const ReservationFormPage = ({
                   </FormItem>
                 )}
               />
-              <ReCAPTCHA ref={recaptchaRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!} size="invisible" />
               <Button
                 className={cn(
                   'transition-all duration-300 ease-in-out',

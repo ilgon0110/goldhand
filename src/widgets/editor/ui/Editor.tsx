@@ -1,3 +1,5 @@
+'use client';
+
 import { $generateNodesFromDOM } from '@lexical/html';
 import { $createLinkNode } from '@lexical/link';
 import { $createListItemNode, $createListNode } from '@lexical/list';
@@ -44,10 +46,6 @@ import TableCellActionMenuPlugin from '../plugins/TableActionMenuPlugin';
 import { ToolbarPlugin } from '../plugins/ToolbarPlugin';
 import PlaygroundEditorTheme from '../theme/PlaygroundEditorTheme';
 import ContentEditable from './ContentEditable';
-
-const skipCollaborationInit =
-  // @ts-expect-error
-  window.parent != null && window.parent.frames.right === window;
 
 const theme = {
   // Theme styling goes here
@@ -148,6 +146,7 @@ const RichEditor = ({
 
   useEffect(() => {
     const updateViewPortWidth = () => {
+      if (typeof window === 'undefined') return;
       const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia('(max-width: 1025px)').matches;
 
       if (isNextSmallWidthViewport !== isSmallWidthViewport) {

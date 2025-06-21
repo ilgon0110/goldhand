@@ -1,12 +1,12 @@
 'use client';
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-//import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseApp } from '@/src/shared/config/firebase';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 //import { toastError, toastSuccess } from '@/src/shared/utils';
@@ -36,9 +36,9 @@ export const LoginPage = () => {
         const postData = await naverLoginAction(access_token);
 
         // Client side에서 이메일 로그인
-        if (postData.email) {
-          await signInWithEmailAndPassword(auth, postData.email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-        }
+        // if (postData.email) {
+        //   await signInWithEmailAndPassword(auth, postData.email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
+        // }
 
         if (postData.redirectTo) {
           startTransition(() => {

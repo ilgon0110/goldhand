@@ -5,7 +5,6 @@ import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseGetBody {
@@ -73,10 +72,44 @@ export async function GET() {
   }
 }
 
+async function trySignIn(email: string, password: string) {
+  const auth = getAuth();
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return result;
+  } catch (error) {
+    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/invalid-credential') {
+      return null;
+    }
+    throw error;
+  }
+}
+
+async function signUpUser(email: string, password: string) {
+  const auth = getAuth();
+  const result = await createUserWithEmailAndPassword(auth, email, password);
+  return result;
+}
+
+async function saveUserProfile(uid: string, email: string) {
+  const app = firebaseApp;
+  const db = getFirestore(app);
+  return await setDoc(doc(db, 'users', uid), {
+    email: email,
+    provider: 'naver',
+    uid,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    grade: 'basic',
+    point: 0,
+    name: '',
+    nickname: '',
+    phoneNumber: '',
+  });
+}
+
 export async function POST(req: Request) {
   const { access_token } = await req.json();
-
-  const adminAuth = getAdminAuth(firebaseAdminApp);
   // naver ACCESS_TOKEN을 이용하여 사용자 정보를 가져온다.
   if (typeof access_token === 'string') {
     const profileData = await fetch('https://openapi.naver.com/v1/nid/me', {
@@ -89,12 +122,10 @@ export async function POST(req: Request) {
     const userData = await profileData.json();
     const email = userData.response.email;
     const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-
     // firebase auth에 로그인된 유저가 있는지 확인
     if (user) {
       try {
-        const accessToken = user.user.accessToken;
-        // await setAuthCookie(accessToken);
+        const accessToken = await user.user.getIdToken();
 
         return typedJson<IResponsePostBody>(
           {
@@ -114,8 +145,8 @@ export async function POST(req: Request) {
         if (typeof error === 'object' && error != null && 'code' in error && error.code === 'auth/user-not-found') {
           try {
             const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-            //await setAuthCookie(newUser.user.stsTokenManager.accessToken);
             await saveUserProfile(newUser.user.uid, email);
+            const newUserAccessToken = await newUser.user.getIdToken();
 
             return typedJson<IResponsePostBody>(
               {
@@ -123,7 +154,7 @@ export async function POST(req: Request) {
                 user: newUser,
                 response: 'ok',
                 message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
-                accessToken: newUser.user.stsTokenManager.accessToken,
+                accessToken: newUserAccessToken,
               },
               { status: 200 },
             );
@@ -184,51 +215,4 @@ export async function POST(req: Request) {
       { status: 401 },
     );
   }
-}
-
-async function trySignIn(email: string, password: string) {
-  const auth = getAuth();
-  try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    return result;
-  } catch (error) {
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/invalid-credential') {
-      return null;
-    }
-    throw error;
-  }
-}
-
-async function signUpUser(email: string, password: string) {
-  const auth = getAuth();
-  const result = await createUserWithEmailAndPassword(auth, email, password);
-  return result;
-}
-
-async function saveUserProfile(uid: string, email: string) {
-  const app = firebaseApp;
-  const db = getFirestore(app);
-  return await setDoc(doc(db, 'users', uid), {
-    email: email,
-    provider: 'naver',
-    uid,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    grade: 'basic',
-    point: 0,
-    name: '',
-    nickname: '',
-    phoneNumber: '',
-  });
-}
-
-async function setAuthCookie(token: string, res: Response) {
-  const cookieStore = await cookies();
-  cookieStore.set('accessToken', token, {
-    httpOnly: true,
-    path: '/',
-    //maxAge: 60 * 60 * 24 * 7,
-    maxAge: 60, // 1 day
-    sameSite: 'strict',
-  });
 }

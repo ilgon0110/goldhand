@@ -1,7 +1,6 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -19,7 +18,6 @@ declare global {
   }
 }
 
-const inter = Inter({ subsets: ['latin'] });
 const pretendard = localFont({
   src: [
     {
@@ -43,6 +41,8 @@ const pretendard = localFont({
       style: 'normal',
     },
   ],
+  display: 'swap',
+  variable: '--font-pretendard',
 });
 
 export const metadata: Metadata = {

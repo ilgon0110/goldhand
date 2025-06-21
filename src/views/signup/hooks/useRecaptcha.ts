@@ -20,6 +20,7 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
   const initializeRecaptcha = useCallback(() => {
     const auth = getAuth(firebaseApp);
     auth.languageCode = 'ko';
+    if (typeof window === 'undefined') return;
 
     if (!window.recaptchaVerifier) {
       try {

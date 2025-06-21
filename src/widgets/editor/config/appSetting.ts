@@ -6,13 +6,11 @@
  *
  */
 
-const hostName = window.location.hostname;
-export const isDevPlayground: boolean =
-  hostName !== 'playground.lexical.dev' && hostName !== 'lexical-playground.vercel.app';
+const hostName = 'goldhand.vercel.app';
 
 export const DEFAULT_SETTINGS = {
   disableBeforeInput: false,
-  emptyEditor: isDevPlayground,
+  emptyEditor: false,
   hasLinkAttributes: false,
   isAutocomplete: false,
   isCharLimit: false,

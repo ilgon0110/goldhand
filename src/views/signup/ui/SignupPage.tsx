@@ -100,6 +100,7 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
 
       phoneNumber = `+82${phoneNumber.substring(1)}`;
       try {
+        if (typeof window === 'undefined') return;
         if (!window.recaptchaVerifier) {
           initializeRecaptcha();
         }

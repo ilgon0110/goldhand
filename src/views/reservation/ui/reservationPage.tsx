@@ -9,7 +9,6 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { FAQItem, FAQItemList, OrderCard, orderCardList } from '../index';
 
 export const ReservationPage = () => {
-  const waitingNumber = 35;
   const [height, setHeight] = useState(0);
 
   useEffect(() => {

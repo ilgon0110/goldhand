@@ -88,8 +88,6 @@ export async function POST(req: NextRequest) {
     // 회원인 경우
     else {
       // 회원일 땐 userId로 비교
-      console.log('targetData.userId:', targetData.userId);
-      console.log('userId:', userId);
       if (targetData.userId !== userId) {
         return typedJson<IResponseBody>({ response: 'ng', message: '게시글 수정 권한이 없습니다.' }, { status: 401 });
       }

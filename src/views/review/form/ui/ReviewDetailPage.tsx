@@ -40,7 +40,6 @@ interface ResponsePost {
 }
 
 export const ReviewDetailPage = ({ data, docId, userData }: ReviewDetailPageProps) => {
-  console.log('ReviewDetailPage data', data);
   const router = useRouter();
   const { comments, loading: isCommentSubmitting } = useComments({
     docId,
@@ -51,7 +50,6 @@ export const ReviewDetailPage = ({ data, docId, userData }: ReviewDetailPageProp
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 
-  console.log('comments', comments);
   const form = useForm<z.infer<typeof reviewCommentSchema>>({
     resolver: zodResolver(reviewCommentSchema),
     defaultValues: {
@@ -125,7 +123,6 @@ export const ReviewDetailPage = ({ data, docId, userData }: ReviewDetailPageProp
         }),
       });
       const responseData = await res.json();
-      console.log('responseData', responseData);
       if (responseData.response === 'ok') {
         toastSuccess('게시글이 삭제되었습니다.');
         router.push('/reservation/list');

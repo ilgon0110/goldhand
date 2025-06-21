@@ -34,7 +34,6 @@ export async function POST(req: Request) {
   const uid = decodedToken.uid;
 
   auth.languageCode = 'ko';
-  console.log('회원가입 하려는 user:', uid);
 
   if (!uid)
     return typedJson<IResponsePostBody>(
@@ -57,7 +56,6 @@ export async function POST(req: Request) {
       phoneNumber,
     });
 
-    console.log('회원가입 성공!');
     return typedJson<IResponsePostBody>({ response: 'ok', message: '회원가입 성공!' }, { status: 200 });
   } catch (error) {
     console.error('회원가입 에러!! ', error);

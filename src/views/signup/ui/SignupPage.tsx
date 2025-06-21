@@ -56,9 +56,6 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
   const phoneNumberError = !!form.formState.errors.phoneNumber;
   const authCodeError = !!form.formState.errors.authCode;
 
-  console.log('formValidation: ', formValidation);
-  console.log('phoneNumberError: ', phoneNumberError);
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!formValidation) return;
     if (!!SmsConfirmSuccessMessage === false) return;
@@ -95,8 +92,6 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
     } finally {
       setIsSubmitting(false);
     }
-
-    console.log('values: ', values);
   };
 
   const handleSignInPhoneNumber = useCallback(
@@ -115,7 +110,6 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
 
         const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
         if (confirmationResult) {
-          console.log('SMS sent successfully');
           setSendSmsSuccessMessage('인증번호가 발송되었습니다.');
           confirmationResultRef.current = confirmationResult;
         }
@@ -178,7 +172,6 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
 
               if (linkedResult) {
                 setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
-                console.log('🔗 계정 연결 성공');
               }
             } else {
               form.setError('authCode', {
@@ -218,7 +211,6 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
     form.trigger();
   }, []);
 
-  console.log(form.formState.errors);
   return (
     <div>
       <SectionTitle buttonTitle="" title="고운황금손 회원가입" onClickButtonTitle={() => {}} />

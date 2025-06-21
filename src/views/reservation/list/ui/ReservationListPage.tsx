@@ -49,8 +49,6 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
     setConsultParam({ page });
   };
 
-  console.log('data', data);
-
   return (
     <div>
       <div className="flex items-center space-x-2">

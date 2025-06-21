@@ -46,7 +46,6 @@ export const ReviewFormPage = () => {
   const router = useRouter();
   const { user } = useAuthState();
 
-  console.log('user', user);
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {
@@ -77,16 +76,12 @@ export const ReviewFormPage = () => {
       const htmlString = $generateHtmlFromNodes(reviewFormEditor, null);
       const downloadedImages: { key: string; url: string }[] = [];
       const docId = uuidv4();
-      console.log('user', user);
+
       if (user) {
         const storage = getStorage();
         // 이미지 있을 때 업로드 로직
         if (images != null && images.length > 0) {
-          console.log('이미지 있음, 업로드 시작');
-          console.log('images', images);
-
           for (const image of images) {
-            console.log('userID', user.uid);
             const metadata: UploadMetadata = {
               contentType: image.file.type,
               customMetadata: {
@@ -96,7 +91,6 @@ export const ReviewFormPage = () => {
 
             const imageRef = ref(storage, `reviews/${user.uid}/${docId}/${image.key}`);
             const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
-            console.log('uploadTask', uploadTask);
             uploadTask.on(
               'state_changed',
               snapshot => {
@@ -118,14 +112,12 @@ export const ReviewFormPage = () => {
                     key: image.key,
                     url: downloadURL,
                   });
-                  console.log('downloadedImages', downloadedImages);
                   // 모든 이미지 업로드가 완료되면 서버에 요청
                   if (downloadedImages.length === images.length) {
                     setImagesProgress({
                       key: '이미지 업로드 완료. 잠시만 기다려주세요.',
                       progress: 100,
                     });
-                    console.log('모든 이미지 업로드 완료', downloadedImages);
                     postReview(values, htmlString, docId, downloadedImages);
                   }
                 });
@@ -133,7 +125,6 @@ export const ReviewFormPage = () => {
             );
           }
         } else {
-          console.log('이미지 없음, 바로 서버에 요청');
           postReview(values, htmlString, docId, null);
         }
       }

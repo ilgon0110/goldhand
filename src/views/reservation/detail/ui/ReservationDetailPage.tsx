@@ -41,7 +41,6 @@ interface IResponsePost {
 }
 
 export const ReservationDetailPage = ({ data, docId, userData }: TReservationDetailPageProps) => {
-  console.log('ReservationDetailPage data', data);
   const router = useRouter();
   const author = data.data.userId ? data.data.name : '비회원';
   const { comments, loading: isCommentSubmitting } = useComments({
@@ -53,7 +52,6 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 
-  console.log('comments', comments);
   const form = useForm<z.infer<typeof consultCommentSchema>>({
     resolver: zodResolver(consultCommentSchema),
     defaultValues: {
@@ -65,8 +63,6 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
   const formValidation = form.formState.isValid;
   const isConsultDetailOwner = data.data.userId ? data.data.userId === userData.userData?.uid : true;
   //author === "비회원" ? true : data.data.userId === userData.userData?.uid;
-  console.log('data.data.userId', data.data.userId);
-  console.log('userData uid: ', userData.userData?.uid);
   const onSubmit = async (values: z.infer<typeof consultCommentSchema>) => {
     if (!formValidation) return;
     const { comment } = values;
@@ -120,7 +116,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
         },
       });
       const data = await res.json();
-      console.log('data', data);
+
       if (data.response === 'ok') {
         // 수정하기 버튼 클릭 시
         if (updateButtonName === 'EDIT') {
@@ -193,7 +189,6 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
         }),
       });
       const responseData = await res.json();
-      console.log('responseData', responseData);
       if (responseData.response === 'ok') {
         toastSuccess('게시글이 삭제되었습니다.');
         router.push('/reservation/list');

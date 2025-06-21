@@ -34,9 +34,6 @@ export async function GET(request: NextRequest) {
   const password = searchParams.get('password');
   const userId = searchParams.get('userId') || null;
 
-  console.log('consultDetail docId', docId);
-  console.log('consultDetail password', password);
-  console.log('consultDetail userId', userId);
   if (!docId) {
     return typedJson<IResponseBody>(
       {

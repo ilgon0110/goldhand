@@ -26,18 +26,14 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
       try {
         const verifier = new RecaptchaVerifier(auth, containerId, {
           size: 'invisible', // 또는 'normal'
-          callback: (response: string) => {
-            console.log('reCAPTCHA solved:', response);
-          },
+          callback: (response: string) => {},
           'expired-callback': () => {
             console.warn('reCAPTCHA expired. Resetting...');
             verifier.clear();
           },
         });
 
-        verifier.render().then(widgetId => {
-          console.log('reCAPTCHA rendered with widgetId:', widgetId);
-        });
+        verifier.render().then(widgetId => {});
 
         window.recaptchaVerifier = verifier;
         recaptchaRef.current = verifier;
@@ -56,7 +52,6 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
         recaptchaRef.current.clear();
         recaptchaRef.current = null;
         window.recaptchaVerifier = null;
-        console.log('reCAPTCHA cleared on unmount');
       }
     };
   }, [initializeRecaptcha]);

@@ -47,7 +47,6 @@ export async function GET() {
 
   let uid;
   try {
-    console.log('accessToken:', accessToken.value);
     const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
     uid = decodedToken.uid;
 
@@ -89,7 +88,6 @@ export async function GET() {
 
     if (userDocSnap.exists()) {
       const userData = userDocSnap.data() as UserDetailData;
-      console.log('User data:', userData);
     } else {
       return typedJson<IResponseBody>({
         response: 'ng',
@@ -106,7 +104,6 @@ export async function GET() {
       id: doc.id,
       ...doc.data(),
     })) as MyPageData['consults'];
-    console.log('Consults data:', consultsData);
     // 3. 이용후기 데이터 가져오기
     // userId를 이용하여 이용후기 데이터를 가져온다.
     const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), where('userId', '==', uid));
@@ -115,7 +112,6 @@ export async function GET() {
       id: doc.id,
       ...doc.data(),
     })) as MyPageData['reviews'];
-    console.log('Reviews data:', reviewsData);
     // 4. 댓글 데이터 가져오기
     // userId를 이용하여 댓글 데이터를 가져온다.
     const commentsQuery = query(collectionGroup(db, 'comments'), where('userId', '==', uid));
@@ -124,7 +120,6 @@ export async function GET() {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log('Comments data:', commentsData);
     // 5. 최종 데이터 구성
     return typedJson<IResponseBody>({
       response: 'ok',

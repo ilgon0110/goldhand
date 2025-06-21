@@ -67,7 +67,5 @@ export function useAuthState() {
     asyncFetch();
   }, [pathname, auth.currentUser]);
 
-  console.log('useAuthState authState:', authState);
-
   return { auth, ...authState };
 }

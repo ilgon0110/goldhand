@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
       updatedAt: serverTimestamp(),
     };
     await updateDoc(commentDocRef, updatedCommentData);
-    console.log('Comment updated successfully:', updatedCommentData);
     return typedJson<IResponseBody>({ response: 'ok', message: '댓글 수정 성공' }, { status: 200 });
   } catch (error) {
     console.error('Error updating Document:', error);

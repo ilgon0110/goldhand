@@ -20,8 +20,6 @@ export async function fetcher<T>(path: string, options: RequestInit = {}): Promi
   // API 요청이 성공한 경우
   const result = await response.json();
 
-  console.log('fetcher response', response);
-  console.log('fetcher result', result);
   if (response.ok) {
     return result as T;
   }
@@ -40,7 +38,6 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
   // if (accessToken === null) {
   //   throw new Error('로그인이 필요합니다.');
   // }
-  console.log('authFetcher accessToken:', accessToken);
   return fetcher<T>(path, {
     ...options,
     headers: {

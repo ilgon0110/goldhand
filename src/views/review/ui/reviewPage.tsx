@@ -29,7 +29,6 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
   const [reviewParam, setReviewParam] = useQueryStates(reviewParams, {
     shallow: false,
   });
-  console.log('review data', data);
   const generateReviewThumbnailSrc = (htmlString: string) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
@@ -76,7 +75,6 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
   };
 
   const onSelectValueChange = (value: string) => {
-    console.log('Selected franchisee:', value);
     setReviewParam({ franchisee: value });
   };
 

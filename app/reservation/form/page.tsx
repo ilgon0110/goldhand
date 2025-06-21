@@ -15,10 +15,8 @@ export default async function Page({ params, searchParams }: TPageProps) {
   const consultDetailData = await getConsultDetailData({
     docId: searchParams.docId || '',
     password: searchParams.password || '',
+    userId: userData?.userData?.uid || null,
   });
-  console.log('form docId', searchParams.docId);
-  console.log('form password', searchParams.password);
-  console.log('form consultDetailData', consultDetailData);
 
   return (
     <Suspense fallback={<LoadingBar />}>

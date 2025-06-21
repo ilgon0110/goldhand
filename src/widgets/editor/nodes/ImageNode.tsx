@@ -74,11 +74,9 @@ function $convertImageElement(domNode: Node): DOMConversionOutput | null {
 function getCaptionSpanById(id: string) {
   // 예: dynamicId = "1" 또는 "abc123"
   const containerDiv = document.querySelector(`div.image-caption-container#${CSS.escape(id)}`);
-  console.log('containerDiv', containerDiv);
   if (!containerDiv) return null;
 
   const captionSpan = containerDiv.querySelector('span[data-lexical-text="true"]');
-  console.log('captionSpan', captionSpan);
   return captionSpan;
 }
 

@@ -23,7 +23,6 @@ interface IResponseBody {
 export async function POST(req: Request) {
   const body = (await req.json()) as IReviewPost;
   const { title, name, franchisee, htmlString } = body;
-  console.log('body', body);
   if (!title || !htmlString || !name || !franchisee) {
     return typedJson<IResponseBody>(
       { response: 'ng', message: '필수로 입력해야하는 필드를 입력해주세요.' },
@@ -46,7 +45,6 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
-      console.log('토큰 만료됨');
       return typedJson<IResponseBody>({ response: 'ng', message: 'expired' }, { status: 401 });
     }
 
@@ -64,13 +62,10 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
     return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
   });
   const imageSrcAppliedHtmlString = applyFireImageSrc(cleanedHtmlString, images || []);
-  console.log('imageSrcAppliedHtmlString', imageSrcAppliedHtmlString);
-  console.log('images', images);
 
   const app = firebaseApp;
   const db = getFirestore(app);
 
-  console.log('userId', uid);
   try {
     await setDoc(doc(db, 'reviews', docId), {
       title,

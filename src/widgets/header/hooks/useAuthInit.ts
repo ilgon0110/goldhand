@@ -7,7 +7,6 @@ export const useAuthInit = () => {
   const { accessToken, setAccessToken, setHydrated } = useAuthStore();
 
   useEffect(() => {
-    console.log('useAuthInit');
     const fetchToken = async () => {
       const apiUrl =
         process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'

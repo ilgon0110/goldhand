@@ -33,12 +33,9 @@ export const ReservationFormPage = ({
   userData: IUserData;
   consultDetailData: IConsultDetailData;
 }) => {
-  console.log('form consultDetailData:', consultDetailData);
-  console.log('form userData:', userData);
   const searchParams = useSearchParams();
   const docId = searchParams.get('docId');
   const password = searchParams.get('password');
-  console.log('password:', password);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,17 +56,13 @@ export const ReservationFormPage = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expiredDialogOpen, setExpiredDialogOpen] = useState(false);
 
-  console.log('formError:', form.formState.errors);
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!formValidation) return;
 
     try {
       setIsSubmitting(true);
 
-      console.log('values:', values);
       const recaptchaToken = await recaptchaRef.current?.executeAsync();
-      console.log('recaptcha token:', recaptchaToken);
 
       // POST 요청
       const apiUrl = consultDetailData.response === 'ok' ? '/api/consultDetail/update' : '/api/consultDetail/create';
@@ -87,7 +80,6 @@ export const ReservationFormPage = ({
       });
 
       const data = await response.json();
-      console.log('form response data:', data);
       if (data.response === 'expired') {
         // 추후 회원인데 비회원 상담 신청 시 로직 구현... 지금은 PASS
         //setExpiredDialogOpen(true);

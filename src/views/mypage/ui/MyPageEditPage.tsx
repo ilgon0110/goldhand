@@ -41,9 +41,7 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
     try {
       setIsSubmitting(true);
       const auth = getAuth(firebaseApp);
-      console.log('user uid', auth.currentUser?.uid);
-      console.log('userData uid', userData.userData?.uid);
-      console.log('isSame?', auth.currentUser?.uid === userData.userData?.uid);
+
       const response = await (
         await fetch('/api/mypage/update', {
           method: 'POST',

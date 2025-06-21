@@ -94,7 +94,6 @@ export const ReservationCard = ({
         },
       });
       const data = await res.json();
-      console.log('data', data.response);
       if (data.response === 'ok') {
         router.push(`/reservation/list/${docId}?password=${values.password}`);
       } else {

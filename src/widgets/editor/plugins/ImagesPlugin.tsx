@@ -123,7 +123,7 @@ export function InsertImageDialog({
 export function ImagesPlugin({ captionsEnabled }: { captionsEnabled?: boolean }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const { images, setImages } = useImagesContext();
-  console.log('plugin images', images);
+
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
       throw new Error('ImagesPlugin: ImageNode not registered');

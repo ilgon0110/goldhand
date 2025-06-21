@@ -49,7 +49,6 @@ export default function FileInput({
       };
       //reader.readAsArrayBuffer(file);
       reader.readAsDataURL(file);
-      console.log('image onDrop', file);
       setFile(file);
     });
   };

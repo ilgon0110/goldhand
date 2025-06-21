@@ -28,7 +28,6 @@ export async function GET() {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken');
 
-  console.log('GET accessToken:', accessToken);
   if (accessToken == null || accessToken?.value === 'undefined' || accessToken.value === '') {
     return typedJson<IResponseGetBody>(
       {
@@ -76,7 +75,6 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const { access_token } = await req.json();
-  console.log('POST access_token:', access_token);
 
   const adminAuth = getAdminAuth(firebaseAdminApp);
   // naver ACCESS_TOKEN을 이용하여 사용자 정보를 가져온다.
@@ -92,12 +90,10 @@ export async function POST(req: Request) {
     const email = userData.response.email;
     const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
 
-    console.log('auth/post user:', user);
     // firebase auth에 로그인된 유저가 있는지 확인
     if (user) {
       try {
         const accessToken = user.user.accessToken;
-        console.log('user accessToken:', accessToken);
         // await setAuthCookie(accessToken);
 
         return typedJson<IResponsePostBody>(
@@ -119,7 +115,6 @@ export async function POST(req: Request) {
           try {
             const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
             //await setAuthCookie(newUser.user.stsTokenManager.accessToken);
-            console.log('"newUser:"', newUser.user.uid);
             await saveUserProfile(newUser.user.uid, email);
 
             return typedJson<IResponsePostBody>(

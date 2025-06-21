@@ -28,17 +28,11 @@ export class EmojiNode extends TextNode {
   }
 
   constructor(className: string, text: string, key?: NodeKey) {
-    console.log('EmojiNode constructor');
-    console.log('className', className);
-    console.log('text', text);
-    console.log('key', key);
     super(text, key);
     this.__className = className;
   }
 
   createDOM(config: EditorConfig): HTMLElement {
-    console.log('EmojiNode createDOM');
-    console.log('config', config);
     const dom = document.createElement('span');
     const inner = super.createDOM(config);
     dom.className = this.__className;

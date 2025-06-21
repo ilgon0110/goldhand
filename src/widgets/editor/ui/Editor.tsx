@@ -113,7 +113,6 @@ const RichEditor = ({
   useEffect(() => {
     editor.update(() => {
       if (htmlString) {
-        console.log('htmlString mount', htmlString);
         const parser = new DOMParser();
         const dom = parser.parseFromString(htmlString, 'text/html');
         const nodes = $generateNodesFromDOM(editor, dom);
@@ -132,11 +131,6 @@ const RichEditor = ({
 
   const onChangePlugin = () => {
     onEditorChange(editor);
-    // console.log("editor State", editor.getEditorState());
-    // editor.update(() => {
-    //   const htmlString = $generateHtmlFromNodes(editor, null);
-    //   console.log("htmlString", htmlString);
-    // });
 
     // editor에서 삭제된 ImageNode의 key를 찾아서 ImageContext 업데이트
     const currentImageNodeKeys = new Set<string>();

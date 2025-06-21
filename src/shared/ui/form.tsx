@@ -126,8 +126,6 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<
       return null;
     }
 
-    console.log('error message:', error?.message);
-
     return (
       <p className={cn('text-xs font-medium text-destructive', className)} id={formMessageId} ref={ref} {...props}>
         {body}

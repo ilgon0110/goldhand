@@ -82,7 +82,6 @@ export const Comment = ({
       //     }),
       //   })
       // ).json();
-      console.log('result:', result);
       if (result.response === 'ok') {
         toastSuccess('댓글 삭제 완료!');
       } else {

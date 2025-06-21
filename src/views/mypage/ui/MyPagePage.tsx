@@ -10,12 +10,11 @@ import { Button } from '@/src/shared/ui/button';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 
-type MyPageDataProps = {
+type TMyPageDataProps = {
   myPageData: IMyPageData;
 };
 
-export const MyPagePage = ({ myPageData }: MyPageDataProps) => {
-  console.log('MyPagePage data:', myPageData);
+export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
   const router = useRouter();
   const onClickTitle = (id: string, docType: 'consult' | 'review') => {
     if (docType === 'review') {

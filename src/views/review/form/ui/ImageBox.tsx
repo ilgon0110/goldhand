@@ -25,7 +25,6 @@ export const ImageBoxRef = forwardRef(({ placeholder, name, ref, onChange, onBlu
       reader.onload = () => {
         //Do whatever you want with the file contents
         const binaryStr = reader.result;
-        console.log(binaryStr);
       };
       reader.readAsArrayBuffer(file);
     });

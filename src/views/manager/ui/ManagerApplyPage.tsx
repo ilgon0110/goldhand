@@ -34,16 +34,12 @@ export const ManagerApplyPage = () => {
   const formValidation = form.formState.isValid;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log('formError:', form.formState.errors);
   const onSubmit = async (values: z.infer<typeof managerApplySchema>) => {
     if (!formValidation) return;
 
     try {
       setIsSubmitting(true);
-
-      console.log('values:', values);
       const recaptchaToken = await recaptchaRef.current?.executeAsync();
-      console.log('recaptcha token:', recaptchaToken);
 
       // POST 요청
       const response = await fetch('/api/manager/apply', {
@@ -58,7 +54,6 @@ export const ManagerApplyPage = () => {
       });
 
       const data = await response.json();
-      console.log('form response data:', data);
       if (data.response === 'ng') {
         toastError(`산후관리사 신청에 실패했습니다.\n${data.message}`);
         return;

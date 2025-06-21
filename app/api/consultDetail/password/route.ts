@@ -36,8 +36,6 @@ export async function GET(request: NextRequest) {
 
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken');
-  console.log('secretDocId', docId);
-  console.log('password', password);
 
   if (!docId) {
     return typedJson<IResponseBody>(

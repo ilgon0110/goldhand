@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 
-type CommentProps = {
+type TCommentProps = {
   docId: string;
   collectionName: 'consults' | 'reviews';
 };
 
-type Comment = {
+type TComment = {
   id: string;
   userId: string;
   createdAt: Timestamp;
@@ -17,18 +17,17 @@ type Comment = {
   comment: string;
 };
 
-type UseCommentsResult = {
+type TUseCommentsResult = {
   comments: Comment[] | null;
   loading: boolean;
   error: FirestoreError | null;
 };
 
-export function useComments({ docId, collectionName }: CommentProps): UseCommentsResult {
+export function useComments({ docId, collectionName }: TCommentProps): TUseCommentsResult {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | null>(null);
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const db = getFirestore(firebaseApp);
 
   useEffect(() => {
     if (!docId) return;
@@ -42,7 +41,7 @@ export function useComments({ docId, collectionName }: CommentProps): UseComment
         const updated = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-        })) as Comment[];
+        })) as TComment[];
 
         setComments(updated);
         setLoading(false);

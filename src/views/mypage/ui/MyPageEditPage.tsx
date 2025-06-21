@@ -1,14 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getAuth } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IUserData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
@@ -40,8 +38,6 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
     if (!formValidation) return;
     try {
       setIsSubmitting(true);
-      const auth = getAuth(firebaseApp);
-
       const response = await (
         await fetch('/api/mypage/update', {
           method: 'POST',

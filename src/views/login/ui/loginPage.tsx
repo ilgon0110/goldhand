@@ -6,15 +6,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import { firebaseApp } from '@/src/shared/config/firebase';
+//import { firebaseApp } from '@/src/shared/config/firebase';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 //import { toastError, toastSuccess } from '@/src/shared/utils';
 import useNaverInit from '@/src/views/login/hooks/useNaverInit';
 
 import { naverLoginAction } from '../hooks/naverLoginAction';
-
-//import { useNaverLoginMutation } from '../hooks/useNaverLoginMutation';
 
 export const LoginPage = () => {
   useNaverInit();

@@ -18,8 +18,7 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
 
   // 초기화 함수
   const initializeRecaptcha = useCallback(() => {
-    const app = firebaseApp;
-    const auth = getAuth();
+    const auth = getAuth(firebaseApp);
     auth.languageCode = 'ko';
 
     if (!window.recaptchaVerifier) {

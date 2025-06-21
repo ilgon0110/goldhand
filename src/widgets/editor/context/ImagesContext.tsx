@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -10,25 +12,25 @@ import type { JSX, ReactNode } from 'react';
 import * as React from 'react';
 import { createContext, useContext, useMemo, useState } from 'react';
 
-type ImagesContextShape = {
-  images: ImagesContextFile[] | null;
-  setImages: React.Dispatch<React.SetStateAction<ImagesContextFile[] | null>>;
+interface IImagesContextFile {
+  file: File;
+  key: string;
+}
+
+type TImagesContextShape = {
+  images: IImagesContextFile[] | null;
+  setImages: React.Dispatch<React.SetStateAction<IImagesContextFile[] | null>>;
 };
 
-const Context: React.Context<ImagesContextShape> = createContext<ImagesContextShape>({
+const Context: React.Context<TImagesContextShape> = createContext<TImagesContextShape>({
   images: null,
   setImages: () => {
     return;
   },
 });
 
-interface ImagesContextFile {
-  file: File;
-  key: string;
-}
-
 export const ImagesContext = ({ children }: { children: ReactNode }): JSX.Element => {
-  const [images, setImages] = useState<ImagesContextFile[] | null>(null);
+  const [images, setImages] = useState<IImagesContextFile[] | null>(null);
 
   const contextValue = useMemo(() => {
     return { images, setImages };
@@ -37,6 +39,6 @@ export const ImagesContext = ({ children }: { children: ReactNode }): JSX.Elemen
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 };
 
-export const useImagesContext = (): ImagesContextShape => {
+export const useImagesContext = (): TImagesContextShape => {
   return useContext(Context);
 };

@@ -48,6 +48,7 @@ export const useSettings = (): SettingsContextShape => {
 };
 
 function setURLParam(param: SettingName, value: boolean | null) {
+  if (typeof window === 'undefined' || !window.location) return;
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
   if (value !== DEFAULT_SETTINGS[param]) {

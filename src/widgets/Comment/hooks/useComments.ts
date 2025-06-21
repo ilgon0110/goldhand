@@ -18,13 +18,13 @@ type TComment = {
 };
 
 type TUseCommentsResult = {
-  comments: Comment[] | null;
+  comments: TComment[] | null;
   loading: boolean;
   error: FirestoreError | null;
 };
 
 export function useComments({ docId, collectionName }: TCommentProps): TUseCommentsResult {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<TComment[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | null>(null);
   const db = getFirestore(firebaseApp);

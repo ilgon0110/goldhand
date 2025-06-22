@@ -5,6 +5,8 @@ import { $generateHtmlFromNodes } from '@lexical/html';
 import type { UploadMetadata } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import type { LexicalEditor } from 'lexical';
+//import { Editor } from '@/src/widgets/editor/ui/Editor';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,9 +33,13 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 import { reviewFormSchema } from '../config/reviewFormSchema';
+
+const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
+  ssr: false,
+  loading: () => <LoadingSpinnerIcon />,
+});
 
 interface IReviewPostData {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';

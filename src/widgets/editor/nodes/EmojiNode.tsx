@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -33,6 +35,9 @@ export class EmojiNode extends TextNode {
   }
 
   createDOM(config: EditorConfig): HTMLElement {
+    if (typeof document === 'undefined') {
+      throw new Error('EmojiNode: createDOM called in non-browser environment');
+    }
     const dom = document.createElement('span');
     const inner = super.createDOM(config);
     dom.className = this.__className;

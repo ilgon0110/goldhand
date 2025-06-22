@@ -37,12 +37,10 @@ import AutoLinkPlugin from '../plugins/AutoLinkPlugin';
 import DragDropPaste from '../plugins/DragDropPastePlugin';
 import EmojiPickerPlugin from '../plugins/EmojiPickerPlugin';
 import EmojisPlugin from '../plugins/EmojisPlugin';
-import FloatingLinkEditorPlugin from '../plugins/FloatLinkEditorPlugin';
 import { ImagesPlugin } from '../plugins/ImagesPlugin';
 import KeywordsPlugin from '../plugins/KeywordsPlugin';
 import LinkPlugin from '../plugins/LinkPlugin';
 import ShortcutsPlugin from '../plugins/ShortcutsPlugin';
-import TableCellActionMenuPlugin from '../plugins/TableActionMenuPlugin';
 import { ToolbarPlugin } from '../plugins/ToolbarPlugin';
 import PlaygroundEditorTheme from '../theme/PlaygroundEditorTheme';
 import ContentEditable from './ContentEditable';
@@ -212,16 +210,6 @@ const RichEditor = ({
       <ClickableLinkPlugin disabled={isEditable} />
       <HorizontalRulePlugin />
       <TabIndentationPlugin maxIndent={7} />
-      {floatingAnchorElem && (
-        <>
-          <FloatingLinkEditorPlugin
-            anchorElem={floatingAnchorElem}
-            isLinkEditMode={isLinkEditMode}
-            setIsLinkEditMode={setIsLinkEditMode}
-          />
-          <TableCellActionMenuPlugin anchorElem={floatingAnchorElem} cellMerge={true} />
-        </>
-      )}
     </div>
   );
 };

@@ -317,7 +317,7 @@ export default function ImageComponent({
           event.preventDefault();
           caption.focus();
           return true;
-        } else if (buttonElem !== null && buttonElem !== document.activeElement) {
+        } else if (buttonElem !== null && typeof document !== 'undefined' && buttonElem !== document.activeElement) {
           event.preventDefault();
           buttonElem.focus();
           return true;

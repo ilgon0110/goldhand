@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -73,6 +75,7 @@ function $convertImageElement(domNode: Node): DOMConversionOutput | null {
 
 function getCaptionSpanById(id: string) {
   // 예: dynamicId = "1" 또는 "abc123"
+  if (typeof document === 'undefined') return null;
   const containerDiv = document.querySelector(`div.image-caption-container#${CSS.escape(id)}`);
   if (!containerDiv) return null;
 
@@ -147,6 +150,9 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   exportDOM(): DOMExportOutput {
+    if (typeof document === 'undefined') {
+      throw new Error('ImageNode: exportDOM called in non-browser environment');
+    }
     const container = document.createElement('div');
     const element = document.createElement('img');
     element.setAttribute('src', this.__src);
@@ -237,6 +243,9 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   // View
   createDOM(config: EditorConfig): HTMLElement {
+    if (typeof document === 'undefined') {
+      throw new Error('ImageNode: createDOM called in non-browser environment');
+    }
     const span = document.createElement('span');
     const theme = config.theme;
     const className = theme.image;

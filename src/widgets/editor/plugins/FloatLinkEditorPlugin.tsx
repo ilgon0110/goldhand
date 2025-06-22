@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -86,6 +88,10 @@ function FloatingLinkEditor({
           setEditedLinkUrl(linkUrl);
         }
       }
+    }
+
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      return;
     }
 
     const editorElem = editorRef.current;

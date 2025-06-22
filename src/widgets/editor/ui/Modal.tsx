@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -102,6 +104,6 @@ export default function Modal({
     <PortalImpl closeOnClickOutside={closeOnClickOutside} title={title} onClose={onClose}>
       {children}
     </PortalImpl>,
-    document.body,
+    typeof document !== 'undefined' ? document.body : ({} as HTMLBodyElement),
   );
 }

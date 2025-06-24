@@ -48,6 +48,7 @@ export function useAuthState() {
             cache: 'no-store',
           })
         ).json()) as IResponseGetBody;
+        console.log('useAuthState : res', res);
         if (res.response === 'ok') {
           setAuthState({
             isSignedIn: true,

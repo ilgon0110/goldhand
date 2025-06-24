@@ -40,6 +40,7 @@ export const LoginPage = () => {
         // if (postData.email) {
         //   await signInWithEmailAndPassword(auth, postData.email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
         // }
+        console.log('postData', postData);
 
         if (postData.response !== 'ok') {
           toastError(postData.message || '로그인에 실패했습니다.');

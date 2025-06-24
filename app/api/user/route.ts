@@ -86,7 +86,11 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching user data:', error);
 
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+    const errorCode =
+      typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
+        ? error.code
+        : 'unknown_error';
+    if (errorCode === 'auth/id-token-expired') {
       return typedJson<IResponseBody>(
         {
           response: 'unAuthorized',
@@ -102,12 +106,12 @@ export async function GET() {
     return typedJson<IResponseBody>(
       {
         response: 'ng',
-        message: '해당 토큰을 가진 유저가 존재하지 않습니다.',
+        message: errorCode,
         accessToken: null,
         userData: null,
         isLinked: false,
       },
-      { status: 403 },
+      { status: 500 },
     );
   }
 }

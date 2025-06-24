@@ -5,6 +5,7 @@ import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseGetBody {
@@ -40,7 +41,7 @@ export async function GET() {
 
   // 여기서 실제 accessToken이 유효한지 확인하고, 유효하지 않으면 unauthorized 처리
   try {
-    await getAdminAuth().verifyIdToken(accessToken.value);
+    await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
 
     return typedJson<IResponseGetBody>(
       {

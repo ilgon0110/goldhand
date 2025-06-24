@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     const app = firebaseApp;
     const auth = getAuth();
     const db = getFirestore(app);
-    const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
+    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;
 
     if (!uid) {

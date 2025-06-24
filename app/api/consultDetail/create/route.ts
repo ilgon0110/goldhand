@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IConsultPost {
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       return createNonMemberPost(body);
     }
 
-    const { uid } = await getAdminAuth().verifyIdToken(accessToken.value);
+    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
     if (uid) {
       return createMemberPost(uid, body);
     }

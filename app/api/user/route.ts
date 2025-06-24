@@ -3,6 +3,7 @@ import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { UserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -33,7 +34,7 @@ export async function GET() {
   }
 
   try {
-    const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
+    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;
 
     if (uid === undefined) {
@@ -56,7 +57,7 @@ export async function GET() {
 
     if (userDocSnap.exists()) {
       const userData = userDocSnap.data() as UserDetailData;
-      const userRecord = await getAdminAuth().getUser(uid);
+      const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
       const providerIds = userRecord.providerData.map(provider => provider.providerId);
       const hasEmail = providerIds.includes('password');
       const hasPhone = providerIds.includes('phone');

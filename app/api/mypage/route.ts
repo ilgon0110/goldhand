@@ -13,6 +13,7 @@ import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { CommentData, MyPageData, UserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -48,7 +49,7 @@ export async function GET() {
 
   let uid;
   try {
-    const decodedToken = await getAdminAuth().verifyIdToken(accessToken.value);
+    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
     uid = decodedToken.uid;
 
     if (uid === undefined) {
@@ -95,7 +96,7 @@ export async function GET() {
       });
     }
 
-    const userRecord = await getAdminAuth().getUser(uid);
+    const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
 
     const providersId = userRecord.providerData.map(provider => provider.providerId);
     const hasEmail = providersId.includes('password');

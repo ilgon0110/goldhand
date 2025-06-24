@@ -3,6 +3,7 @@ import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IReviewPost {
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { uid } = await getAdminAuth().verifyIdToken(accessToken?.value);
+    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
     if (uid) {
       return createReviewPost(uid, body);
     }

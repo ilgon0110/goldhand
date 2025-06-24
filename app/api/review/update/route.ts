@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { ReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { uid } = await getAdminAuth().verifyIdToken(accessToken?.value);
+    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
     if (uid !== targetData.userId) {
       return typedJson<IResponseBody>(
         { response: 'unAuthorized', message: '후기 수정 권한이 없습니다.' },

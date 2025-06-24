@@ -90,7 +90,7 @@ export async function GET() {
       typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
         ? error.code
         : 'unknown_error';
-    if (errorCode === 'auth/id-token-expired') {
+    if (typeof error === 'object' && error != null && 'code' in error && error.code === 'auth/invalid-id-token') {
       return typedJson<IResponseBody>(
         {
           response: 'unAuthorized',

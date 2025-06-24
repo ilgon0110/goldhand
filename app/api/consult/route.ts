@@ -10,9 +10,10 @@ import {
   startAt,
   where,
 } from 'firebase/firestore';
+import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { loadConsultParams } from '@/src/shared/searchParams';
+//import { loadConsultParams } from '@/src/shared/searchParams';
 import type { ConsultDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -22,8 +23,11 @@ interface IResponseBody {
   totalDataLength: number;
 }
 
-export async function GET(req: Request) {
-  const { page, hideSecret } = loadConsultParams(req);
+export async function GET(request: NextRequest) {
+  //const { page, hideSecret } = loadConsultParams(request);
+  const searchParams = request.nextUrl.searchParams;
+  const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
+  const hideSecret = searchParams.get('hideSecret');
   const PAGE_SIZE = 10;
   const preloadCount = 1;
 

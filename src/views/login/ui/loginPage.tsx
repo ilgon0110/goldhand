@@ -42,6 +42,7 @@ export const LoginPage = () => {
         // }
 
         if (postData.response !== 'ok') {
+          toastError(postData.message || '로그인에 실패했습니다.');
           throw new Error(postData.message || '로그인에 실패했습니다.');
         }
 

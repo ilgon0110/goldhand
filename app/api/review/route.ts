@@ -10,10 +10,11 @@ import {
   startAt,
   where,
 } from 'firebase/firestore';
+import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { loadReviewParams } from '@/src/shared/searchParams';
+//import { loadReviewParams } from '@/src/shared/searchParams';
 import type { ReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -24,8 +25,11 @@ interface IResponseBody {
   totalDataLength: number;
 }
 
-export async function GET(req: Request) {
-  const { page, franchisee } = loadReviewParams(req);
+export async function GET(request: NextRequest) {
+  //const { page, franchisee } = loadReviewParams(req);
+  const searchParams = request.nextUrl.searchParams;
+  const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
+  const franchisee = searchParams.get('franchisee') ?? '전체';
   const PAGE_SIZE = 10;
   const preloadCount = 1;
 

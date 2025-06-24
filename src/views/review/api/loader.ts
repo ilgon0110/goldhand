@@ -16,7 +16,8 @@ export const getReviewDetailData = async ({ docId }: { docId: string }): Promise
 
 export async function getReviewListData(page: number, franchisee: TFranchiseeList) {
   const res: Response = await fetch(`${apiUrl}/api/review?page=${page}&franchisee=${franchisee}`, {
-    cache: 'no-cache',
+    cache: 'no-store',
+    next: { revalidate: 0 },
   });
 
   if (!res.ok) {

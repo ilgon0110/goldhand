@@ -8,6 +8,7 @@ export const getReservationListData = async ({ page, hideSecret }: { page: numbe
     },
     credentials: 'include',
     cache: 'no-store',
+    next: { revalidate: 0 },
   });
 
   return res.json();

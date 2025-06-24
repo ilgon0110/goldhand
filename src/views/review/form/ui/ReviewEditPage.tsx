@@ -64,7 +64,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   }
 
   const router = useRouter();
-  const { user } = useAuthState();
+  const { isLinked, userData } = useAuthState();
 
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
@@ -95,7 +95,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
       const htmlString = $generateHtmlFromNodes(reviewFormEditor, null);
       const downloadedImages: { key: string; url: string }[] = [];
 
-      if (user) {
+      if (isLinked && userData?.uid) {
         const storage = getStorage();
         // 이미지 있을 때 업로드 로직
         if (images != null && images.length > 0) {
@@ -103,7 +103,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
             const metadata: UploadMetadata = {
               contentType: image.file.type,
               customMetadata: {
-                userId: user.uid,
+                userId: userData.uid,
               },
             };
 

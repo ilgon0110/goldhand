@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { UserCredential } from 'firebase/auth';
 import {
   getAuth,
   PhoneAuthProvider,
@@ -20,7 +19,6 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import type { IUserData } from '@/src/shared/types';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
@@ -30,7 +28,6 @@ import { formSchema } from '../config/formSchema';
 
 export const SignupPage = ({ userData }: { userData: IUserData }) => {
   const router = useRouter();
-  const [emailUserCredential, setEmailUserCredential] = useState<UserCredential>();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
   const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState('');
   const [SmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
@@ -38,9 +35,7 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const auth = getAuth();
-  const { user: currentUser } = useAuthState();
   const confirmationResultRef = useRef<any>(null);
-  //const { initializeRecaptcha } = useRecaptcha('sign-in-button');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

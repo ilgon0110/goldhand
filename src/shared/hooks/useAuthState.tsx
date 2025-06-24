@@ -1,6 +1,5 @@
 'use client';
 
-import type { User } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -21,12 +20,12 @@ export function useAuthState() {
   const [authState, setAuthState] = useState<{
     isSignedIn: boolean;
     pending: boolean;
-    user: User | null;
+    userData: IUserData['userData'] | null;
     isLinked: boolean;
   }>({
     isSignedIn: false,
     pending: true,
-    user: null,
+    userData: null,
     isLinked: false,
   });
   const auth = getAuth(firebaseApp);
@@ -46,18 +45,19 @@ export function useAuthState() {
           })
         ).json()) as IResponseGetBody;
         console.log('useAuthState : res', res);
+
         if (res.response === 'ok') {
           setAuthState({
             isSignedIn: true,
             pending: false,
-            user: res.userData ? auth.currentUser : null,
+            userData: res.userData,
             isLinked: res.isLinked,
           });
         } else {
           setAuthState({
             isSignedIn: false,
             pending: false,
-            user: null,
+            userData: null,
             isLinked: false,
           });
         }
@@ -66,14 +66,14 @@ export function useAuthState() {
         setAuthState({
           isSignedIn: false,
           pending: false,
-          user: null,
+          userData: null,
           isLinked: false,
         });
       }
     };
 
     asyncFetch();
-  }, [pathname, auth.currentUser]);
+  }, [pathname]);
 
-  return { auth, ...authState };
+  return { ...authState };
 }

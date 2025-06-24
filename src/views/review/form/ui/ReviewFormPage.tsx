@@ -49,7 +49,7 @@ interface IReviewPostData {
 
 export const ReviewFormPage = () => {
   const router = useRouter();
-  const { user } = useAuthState();
+  const { isLinked } = useAuthState();
 
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
@@ -80,8 +80,9 @@ export const ReviewFormPage = () => {
       const htmlString = $generateHtmlFromNodes(reviewFormEditor, null);
       const downloadedImages: { key: string; url: string }[] = [];
       const docId = uuidv4();
+      setIsSubmitting(true);
 
-      if (user) {
+      if (isLinked) {
         const storage = getStorage();
         // 이미지 있을 때 업로드 로직
         if (images != null && images.length > 0) {
@@ -146,6 +147,7 @@ export const ReviewFormPage = () => {
     downloadedImages: { key: string; url: string }[] | null,
   ) => {
     try {
+      console.log('후기 업로드 중...');
       const data: IReviewPostData = await (
         await fetch('/api/review/create', {
           method: 'POST',

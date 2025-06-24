@@ -54,6 +54,7 @@ export async function POST(req: Request) {
       nickname,
       email,
       phoneNumber,
+      userId: uid,
     });
 
     return typedJson<IResponsePostBody>({ response: 'ok', message: '회원가입 성공!' }, { status: 200 });

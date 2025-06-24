@@ -13,6 +13,7 @@ interface IResponseGetBody {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
   userData: IUserData['userData'] | null;
+  isLinked: boolean;
 }
 
 export function useAuthState() {
@@ -20,10 +21,12 @@ export function useAuthState() {
     isSignedIn: boolean;
     pending: boolean;
     user: User | null;
+    isLinked: boolean;
   }>({
     isSignedIn: false,
     pending: true,
     user: null,
+    isLinked: false,
   });
   const auth = getAuth(firebaseApp);
   const pathname = usePathname();
@@ -31,8 +34,12 @@ export function useAuthState() {
   useEffect(() => {
     const asyncFetch = async () => {
       try {
+        const apiUrl =
+          process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
+            ? process.env.NEXT_PUBLIC_API_URL
+            : process.env.NEXT_PUBLIC_LOCAL_API_URL;
         const res = (await (
-          await fetch(`/api/user`, {
+          await fetch(`${apiUrl}/api/user`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -46,12 +53,14 @@ export function useAuthState() {
             isSignedIn: true,
             pending: false,
             user: res.userData ? auth.currentUser : null,
+            isLinked: res.isLinked,
           });
         } else {
           setAuthState({
             isSignedIn: false,
             pending: false,
             user: null,
+            isLinked: false,
           });
         }
       } catch (error) {
@@ -60,6 +69,7 @@ export function useAuthState() {
           isSignedIn: false,
           pending: false,
           user: null,
+          isLinked: false,
         });
       }
     };

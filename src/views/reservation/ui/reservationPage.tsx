@@ -68,10 +68,10 @@ export const ReservationPage = () => {
         <SectionTitle buttonTitle="" title="예약상담 FAQ" onClickButtonTitle={() => {}} />
         <div className="mt-6 space-y-6">
           {FAQItemList.map(faqItem => (
-            <>
-              <FAQItem content={faqItem.content} key={faqItem.title} title={faqItem.title} />
+            <div key={faqItem.title}>
+              <FAQItem content={faqItem.content} title={faqItem.title} />
               <div className="h-[1px] w-full bg-gray-500" />
-            </>
+            </div>
           ))}
         </div>
         <div className="mt-10 flex flex-col items-center justify-center space-y-2 md:space-y-4">

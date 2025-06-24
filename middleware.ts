@@ -16,7 +16,9 @@ export async function middleware(request: NextRequest) {
   }
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:3000';
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
+      ? process.env.NEXT_PUBLIC_API_URL
+      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
   const response = await fetch(`${apiUrl}/api/user`, {
     method: 'GET',
@@ -27,19 +29,22 @@ export async function middleware(request: NextRequest) {
     credentials: 'include',
   });
 
+  const redirectUrl =
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? 'https://goldhand.vercel.app' : 'http://127.0.0.1:3000';
+
   if (!response.ok) {
     console.log('"middleware : response not ok"');
     const res = NextResponse.next();
     res.headers.set('accessTokens', '');
 
     if (url.pathname === '/signup') {
-      return NextResponse.redirect('http://127.0.0.1:3000/login');
+      return NextResponse.redirect(`${redirectUrl}/login`);
     }
     return res;
   }
 
   if (url.pathname === '/reservation/apply') {
-    return NextResponse.redirect('http://127.0.0.1:3000/reservation/form');
+    return NextResponse.redirect(`${redirectUrl}/reservation/form`);
   }
 
   const res = NextResponse.next();

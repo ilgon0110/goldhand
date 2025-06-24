@@ -23,6 +23,7 @@ interface IResponseBody {
 }
 
 const defaultData: MyPageData = {
+  isLinked: false,
   userData: null,
   consults: [],
   reviews: [],
@@ -86,15 +87,20 @@ export async function GET() {
     const userDocRef = doc(db, 'users', uid);
     const userDocSnap = await getDoc(userDocRef);
 
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data() as UserDetailData;
-    } else {
+    if (!userDocSnap.exists()) {
       return typedJson<IResponseBody>({
         response: 'ng',
         message: '사용자 데이터가 존재하지 않습니다.',
         data: defaultData,
       });
     }
+
+    const userRecord = await getAdminAuth().getUser(uid);
+
+    const providersId = userRecord.providerData.map(provider => provider.providerId);
+    const hasEmail = providersId.includes('password');
+    const hasPhone = providersId.includes('phone');
+    const isLinked = hasEmail && hasPhone;
 
     // 2. 예약상담 데이터 가져오기
     // userId를 이용하여 예약상담 데이터를 가져온다.
@@ -125,6 +131,7 @@ export async function GET() {
       response: 'ok',
       message: '마이페이지 데이터 조회 성공',
       data: {
+        isLinked,
         userData: { ...userDocSnap.data(), uid } as UserDetailData,
         consults: consultsData,
         reviews: reviewsData,

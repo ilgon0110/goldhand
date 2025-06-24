@@ -1,4 +1,3 @@
-import { getAuth } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
@@ -12,6 +11,7 @@ interface IResponseBody {
   message: string;
   accessToken: string | null;
   userData: UserDetailData | null;
+  isLinked: boolean;
 }
 
 export async function GET() {
@@ -26,6 +26,7 @@ export async function GET() {
         message: '로그인 토큰이 존재하지 않습니다.',
         accessToken: null,
         userData: null,
+        isLinked: false,
       },
       { status: 403 },
     );
@@ -42,12 +43,12 @@ export async function GET() {
           message: '사용자 식별 아이디가 존재하지 않습니다.',
           accessToken: null,
           userData: null,
+          isLinked: false,
         },
         { status: 403 },
       );
     }
     const app = firebaseApp;
-    const auth = getAuth();
     const db = getFirestore(app);
 
     const userDocRef = doc(db, 'users', uid);
@@ -55,6 +56,10 @@ export async function GET() {
 
     if (userDocSnap.exists()) {
       const userData = userDocSnap.data() as UserDetailData;
+      const userRecord = await getAdminAuth().getUser(uid);
+      const providerIds = userRecord.providerData.map(provider => provider.providerId);
+      const hasEmail = providerIds.includes('password');
+      const hasPhone = providerIds.includes('phone');
 
       return typedJson<IResponseBody>(
         {
@@ -62,6 +67,7 @@ export async function GET() {
           message: '로그인 정보 확인',
           accessToken: accessToken.value,
           userData: { ...userData, uid },
+          isLinked: hasEmail && hasPhone,
         },
         { status: 200 },
       );
@@ -73,8 +79,9 @@ export async function GET() {
         message: '해당 uid를 가진 유저가 존재하지 않습니다.',
         accessToken: accessToken.value,
         userData: null,
+        isLinked: false,
       },
-      { status: 404 },
+      { status: 403 },
     );
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -86,6 +93,7 @@ export async function GET() {
           message: error.code,
           accessToken: null,
           userData: null,
+          isLinked: false,
         },
         { status: 401 },
       );
@@ -97,6 +105,7 @@ export async function GET() {
         message: '해당 토큰을 가진 유저가 존재하지 않습니다.',
         accessToken: null,
         userData: null,
+        isLinked: false,
       },
       { status: 403 },
     );

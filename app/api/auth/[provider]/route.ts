@@ -78,9 +78,17 @@ async function trySignIn(email: string, password: string) {
     const result = await signInWithEmailAndPassword(auth, email, password);
     return result;
   } catch (error) {
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/invalid-credential') {
-      return null;
+    // 이메일 열거 보호 정책으로 이메일이 존재하지 않아도
+    // auth/user-not-found 대신 auth/invalid-credential 에러가 발생할 수 있다.
+    if (error != null && typeof error === 'object' && 'code' in error && typeof error.code === 'string') {
+      if (error.code === 'auth/user-not-found') {
+        return null;
+      }
+      if (error.code === 'auth/invalid-credential') {
+        return null;
+      }
     }
+
     throw error;
   }
 }
@@ -121,10 +129,26 @@ export async function POST(req: Request) {
 
     const userData = await profileData.json();
     const email = userData.response.email;
-    const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
+
     // firebase auth에 로그인된 유저가 있는지 확인
-    if (user) {
-      try {
+    if (userData.message !== 'success') {
+      return typedJson<IResponsePostBody>(
+        {
+          response: 'ng',
+          message: '네이버 로그인 정보가 유효하지 않습니다.',
+          redirectTo: '/',
+          user: null,
+          accessToken: null,
+        },
+        { status: 500 },
+      );
+    }
+
+    // 로그인&회원가입 로직
+    try {
+      const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
+
+      if (user) {
         const accessToken = await user.user.getIdToken();
 
         return typedJson<IResponsePostBody>(
@@ -138,81 +162,39 @@ export async function POST(req: Request) {
           },
           { status: 200 },
         );
-      } catch (error) {
-        console.error('Error setting cookie:', error);
+      } else {
+        // 로그인 실패 - 회원가입 진행
+        const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
+        await saveUserProfile(newUser.user.uid, email);
+        const newUserAccessToken = await newUser.user.getIdToken();
 
-        // OAuth로그인은 성공했으나 firebase에 정보 없는 유저 - 회원가입
-        if (typeof error === 'object' && error != null && 'code' in error && error.code === 'auth/user-not-found') {
-          try {
-            const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-            await saveUserProfile(newUser.user.uid, email);
-            const newUserAccessToken = await newUser.user.getIdToken();
-
-            return typedJson<IResponsePostBody>(
-              {
-                redirectTo: '/signup',
-                user: newUser,
-                response: 'ok',
-                message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
-                accessToken: newUserAccessToken,
-              },
-              { status: 200 },
-            );
-          } catch (error) {
-            console.error('Error signing up:', error);
-            if (typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string') {
-              return typedJson<IResponsePostBody>(
-                {
-                  redirectTo: '/',
-                  response: 'ng',
-                  message: error.code,
-                  user: null,
-                  accessToken: null,
-                },
-                { status: 500 },
-              );
-            }
-
-            return typedJson<IResponsePostBody>(
-              {
-                redirectTo: '/',
-                response: 'ng',
-                message: '회원가입 중 오류가 발생했습니다.',
-                user: null,
-                accessToken: null,
-              },
-              { status: 500 },
-            );
-          }
-        }
-
-        // 그 외의 에러 처리
-        const errorCode =
-          typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
-            ? error.code
-            : 'unknown_error';
         return typedJson<IResponsePostBody>(
           {
-            response: 'ng',
-            message: errorCode,
-            redirectTo: '/login',
-            user: null,
-            accessToken: null,
+            redirectTo: '/signup',
+            user: newUser,
+            response: 'ok',
+            message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
+            accessToken: newUserAccessToken,
           },
-          { status: 500 },
+          { status: 200 },
         );
       }
+    } catch (error) {
+      console.error('Error Login', error);
+      const errorCode =
+        typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
+          ? error.code
+          : 'unknown_error';
+      return typedJson<IResponsePostBody>(
+        {
+          redirectTo: '/',
+          response: 'ng',
+          message: errorCode,
+          user: null,
+          accessToken: null,
+        },
+        { status: 500 },
+      );
     }
-
-    return typedJson<IResponsePostBody>(
-      {
-        response: 'ng',
-        message: '로그인에 실패했습니다.',
-        redirectTo: '/login',
-        user: null,
-        accessToken: null,
-      },
-      { status: 401 },
-    );
   }
 }

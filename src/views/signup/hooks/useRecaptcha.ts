@@ -54,7 +54,7 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
         window.recaptchaVerifier = null;
       }
     };
-  }, [initializeRecaptcha]);
+  }, []);
 
   return { initializeRecaptcha };
 }

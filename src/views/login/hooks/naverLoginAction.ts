@@ -12,7 +12,9 @@ interface IResponse {
 export async function naverLoginAction(access_token: string): Promise<IResponse> {
   try {
     const apiUrl =
-      process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:3000';
+      process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
+        ? process.env.NEXT_PUBLIC_API_URL
+        : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
     const postData = await (
       await fetch(`${apiUrl}/api/auth/naver`, {

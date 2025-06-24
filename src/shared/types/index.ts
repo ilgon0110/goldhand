@@ -69,9 +69,11 @@ export interface IUserData {
   message: string;
   accessToken: string | null;
   userData: UserDetailData | null;
+  isLinked: boolean;
 }
 
 export interface MyPageData {
+  isLinked: boolean;
   userData: UserDetailData | null;
   consults: (ConsultDetailData & { id: string })[] | null;
   reviews: (ReviewDetailData & { id: string })[] | null;

@@ -5,7 +5,9 @@ import type { IMyPageData } from '@/src/shared/types';
 
 export const getMyPageData = async (): Promise<IMyPageData> => {
   const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:3000';
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
+      ? process.env.NEXT_PUBLIC_API_URL
+      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);

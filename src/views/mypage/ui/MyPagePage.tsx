@@ -70,8 +70,17 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
             </Badge>
           </div>
           <div className="space-x-3">
-            <Button className="" onClick={() => router.push('/mypage/edit')}>
-              수정하기
+            <Button
+              className=""
+              onClick={() => {
+                if (myPageData.data.isLinked) {
+                  router.push('/mypage/edit');
+                } else {
+                  router.push('/signup');
+                }
+              }}
+            >
+              {myPageData.data.isLinked ? '수정하기' : '회원가입'}
             </Button>
             <Button className="" variant={'destructive'} onClick={onClickLogout}>
               로그아웃

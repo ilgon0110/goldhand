@@ -2,8 +2,14 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { UserCredential } from 'firebase/auth';
-import { deleteUser, getAuth, signInWithEmailAndPassword, signInWithPhoneNumber } from 'firebase/auth';
-import { linkWithCredential, PhoneAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  PhoneAuthProvider,
+  RecaptchaVerifier,
+  signInWithEmailAndPassword,
+  signInWithPhoneNumber,
+} from 'firebase/auth';
+import { linkWithCredential } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,24 +19,18 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
+import { firebaseApp } from '@/src/shared/config/firebase';
 import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import type { IUserData } from '@/src/shared/types';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { formSchema } from '../config/formSchema';
-import { useRecaptcha } from '../hooks/useRecaptcha';
-
-interface SignUpResponse {
-  response: string;
-  message: string;
-  redirectTo: string;
-  user: UserCredential | null;
-  accessToken: string | null;
-}
+//import { useRecaptcha } from '../hooks/useRecaptcha';
 
 export const SignupPage = ({ userData }: { userData: IUserData }) => {
   const router = useRouter();
+  const [emailUserCredential, setEmailUserCredential] = useState<UserCredential>();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
   const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState('');
   const [SmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
@@ -40,7 +40,7 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
   const auth = getAuth();
   const { user: currentUser } = useAuthState();
   const confirmationResultRef = useRef<any>(null);
-  const { initializeRecaptcha } = useRecaptcha('sign-in-button');
+  //const { initializeRecaptcha } = useRecaptcha('sign-in-button');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -94,6 +94,18 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
     }
   };
 
+  useEffect(() => {
+    const auth = getAuth(firebaseApp);
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
+      size: 'invisible',
+      callback: () => {},
+      'expired-callback': () => {
+        console.warn('reCAPTCHA expired, re-initializing');
+        //initializeRecaptcha();
+      },
+    });
+  }, []);
+
   const handleSignInPhoneNumber = useCallback(
     async (phoneNumber: string) => {
       setIsSendingSms(true);
@@ -101,9 +113,11 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
       phoneNumber = `+82${phoneNumber.substring(1)}`;
       try {
         if (typeof window === 'undefined') return;
-        if (!window.recaptchaVerifier) {
-          initializeRecaptcha();
-        }
+
+        // // reCAPTCHA 호출
+        // if (!window.recaptchaVerifier) {
+        //   initializeRecaptcha();
+        // }
         const appVerifier = window.recaptchaVerifier;
         if (!appVerifier) {
           throw new Error('RecaptchaVerifier is not initialized');
@@ -121,7 +135,7 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
           message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
         });
 
-        initializeRecaptcha();
+        //initializeRecaptcha();
       } finally {
         setIsSendingSms(false);
       }
@@ -150,35 +164,27 @@ export const SignupPage = ({ userData }: { userData: IUserData }) => {
       }
 
       try {
-        const { user } = await confirmationResult.confirm(authCode);
-        if (user) {
+        if (userData.userData) {
           // 인증코드 확인 후, 전화번호를 현재 로그인된 계정에 연결
           try {
-            if (userData.userData && currentUser) {
-              // ✅ 1. 전화번호 인증 -> 로그인됨 (새로운 유저)
-              const phoneCredential = PhoneAuthProvider.credential(confirmationResult.verificationId, authCode);
+            // ✅ 1. 이메일 유저 로그인
+            const emailUser = await signInWithEmailAndPassword(
+              auth,
+              userData.userData?.email || '',
+              process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!,
+            );
 
-              // ✅ 2. 전화번호 유저 삭제
-              await deleteUser(currentUser);
+            // ✅ 2. 전화번호 Credential 생성
+            const phoneCredential = PhoneAuthProvider.credential(confirmationResult.verificationId, authCode);
 
-              // ✅ 3. 다시 이메일 유저 로그인
-              const emailUser = await signInWithEmailAndPassword(
-                auth,
-                userData.userData.email,
-                process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!,
-              );
+            if (!emailUser) {
+              throw new Error('이메일 유저 인증 정보가 없습니다. 다시 시도해주세요.');
+            }
 
-              // ✅ 4. 이메일 유저에 전화번호 연결
-              const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
-
-              if (linkedResult) {
-                setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
-              }
-            } else {
-              form.setError('authCode', {
-                type: 'manual',
-                message: '전화번호 인증 계정이 조회되지 않습니다. 처음부터 다시 시도해주세요.',
-              });
+            // ✅ 3. 이메일 유저에 전화번호 연결
+            const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
+            if (linkedResult) {
+              setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
             }
           } catch (error: any) {
             console.error('Error linking phone number:', error);

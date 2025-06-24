@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { toastError } from '@/src/shared/utils';
 //import { toastError, toastSuccess } from '@/src/shared/utils';
 import useNaverInit from '@/src/views/login/hooks/useNaverInit';
 
@@ -40,6 +41,10 @@ export const LoginPage = () => {
         //   await signInWithEmailAndPassword(auth, postData.email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
         // }
 
+        if (postData.response !== 'ok') {
+          throw new Error(postData.message || '로그인에 실패했습니다.');
+        }
+
         if (postData.redirectTo) {
           startTransition(() => {
             router.replace(postData.redirectTo!);
@@ -47,6 +52,7 @@ export const LoginPage = () => {
         }
       } catch (error) {
         console.error(error);
+        toastError('로그인에 실패했습니다. 다시 시도해주세요.\n' + (error instanceof Error ? error.message : ''));
       } finally {
         setIsLoading(false);
       }

@@ -147,7 +147,6 @@ export const ReviewFormPage = () => {
     downloadedImages: { key: string; url: string }[] | null,
   ) => {
     try {
-      console.log('후기 업로드 중...');
       const data: IReviewPostData = await (
         await fetch('/api/review/create', {
           method: 'POST',

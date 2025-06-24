@@ -48,8 +48,6 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
   const onChangePage = (page: number) => {
     setConsultParam({ page });
   };
-  console.log('Reservation List Data:', data);
-  console.log('Consult Params:', consultParam);
 
   return (
     <div>

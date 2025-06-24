@@ -131,7 +131,6 @@ export async function POST(req: Request) {
     const userData = await profileData.json();
     const email = userData.response.email;
 
-    console.log('Naver User Data:', userData);
     // firebase auth에 로그인된 유저가 있는지 확인
     if (userData.message !== 'success') {
       return typedJson<IResponsePostBody>(
@@ -149,7 +148,6 @@ export async function POST(req: Request) {
     // 로그인&회원가입 로직
     try {
       const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-      console.log('User:', user);
       if (user) {
         const accessToken = await user.user.getIdToken();
 

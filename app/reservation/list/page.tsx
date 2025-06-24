@@ -18,8 +18,6 @@ export default async function Page({ searchParams }: TPageProps) {
     hideSecret,
   });
 
-  console.log('Reservation List Data:', data);
-
   return (
     <Suspense fallback={<LoadingBar />}>
       <ReservationListPage data={data} />

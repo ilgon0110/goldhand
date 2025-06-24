@@ -49,7 +49,7 @@ interface IReviewPostData {
 
 export const ReviewFormPage = () => {
   const router = useRouter();
-  const { isLinked } = useAuthState();
+  const { isLinked, userData } = useAuthState();
 
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
@@ -82,7 +82,7 @@ export const ReviewFormPage = () => {
       const docId = uuidv4();
       setIsSubmitting(true);
 
-      if (isLinked) {
+      if (isLinked && userData) {
         const storage = getStorage();
         // 이미지 있을 때 업로드 로직
         if (images != null && images.length > 0) {
@@ -90,11 +90,11 @@ export const ReviewFormPage = () => {
             const metadata: UploadMetadata = {
               contentType: image.file.type,
               customMetadata: {
-                userId: user.uid,
+                userId: userData.uid,
               },
             };
 
-            const imageRef = ref(storage, `reviews/${user.uid}/${docId}/${image.key}`);
+            const imageRef = ref(storage, `reviews/${userData.uid}/${docId}/${image.key}`);
             const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
             uploadTask.on(
               'state_changed',

@@ -2,6 +2,8 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { apiUrl } from './src/shared/config';
+
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -14,11 +16,6 @@ export async function middleware(request: NextRequest) {
 
     return res;
   }
-
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
   const response = await fetch(`${apiUrl}/api/user`, {
     method: 'GET',

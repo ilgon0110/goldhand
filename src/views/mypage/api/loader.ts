@@ -1,14 +1,10 @@
 import { parse } from 'cookie';
 import { headers } from 'next/headers';
 
+import { apiUrl } from '@/src/shared/config';
 import type { IMyPageData } from '@/src/shared/types';
 
 export const getMyPageData = async (): Promise<IMyPageData> => {
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
-
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];

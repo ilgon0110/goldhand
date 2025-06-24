@@ -1,12 +1,9 @@
 import { parse } from 'cookie';
 import { headers } from 'next/headers';
 
-export async function getSignUpData() {
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
+import { apiUrl } from '@/src/shared/config';
 
+export async function getSignUpData() {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];

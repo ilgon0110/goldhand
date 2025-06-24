@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 
+import { apiUrl } from '@/src/shared/config';
 import { useAuthStore } from '@/src/shared/store';
 
 export const useAuthInit = () => {
@@ -8,11 +9,6 @@ export const useAuthInit = () => {
 
   useEffect(() => {
     const fetchToken = async () => {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-          ? process.env.NEXT_PUBLIC_API_URL
-          : process.env.NEXT_PUBLIC_LOCAL_API_URL;
-
       try {
         const res = await fetch(`${apiUrl}/api/auth/header`, {
           method: 'GET',

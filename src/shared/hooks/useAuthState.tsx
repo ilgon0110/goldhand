@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 
+import { apiUrl } from '../config';
 import type { IUserData } from '../types';
 
 interface IResponseGetBody {
@@ -34,10 +35,6 @@ export function useAuthState() {
   useEffect(() => {
     const asyncFetch = async () => {
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-            ? process.env.NEXT_PUBLIC_API_URL
-            : process.env.NEXT_PUBLIC_LOCAL_API_URL;
         const res = (await (
           await fetch(`${apiUrl}/api/user`, {
             method: 'GET',

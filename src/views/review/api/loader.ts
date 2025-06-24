@@ -1,12 +1,7 @@
-import type { TFranchiseeList } from '@/src/shared/config';
+import { apiUrl, type TFranchiseeList } from '@/src/shared/config';
 import type { IReviewDetailData } from '@/src/shared/types';
 
 export const getReviewDetailData = async ({ docId }: { docId: string }): Promise<IReviewDetailData> => {
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
-
   const res: Response = await fetch(`${apiUrl}/api/review/detail?docId=${docId}`, {
     method: 'GET',
     headers: {
@@ -20,10 +15,6 @@ export const getReviewDetailData = async ({ docId }: { docId: string }): Promise
 };
 
 export async function getReviewListData(page: number, franchisee: TFranchiseeList) {
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
   const res: Response = await fetch(`${apiUrl}/api/review?page=${page}&franchisee=${franchisee}`, {
     cache: 'no-cache',
   });

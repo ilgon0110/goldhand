@@ -48,6 +48,8 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
   const onChangePage = (page: number) => {
     setConsultParam({ page });
   };
+  console.log('Reservation List Data:', data);
+  console.log('Consult Params:', consultParam);
 
   return (
     <div>
@@ -82,12 +84,6 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
           );
         })}
       </div>
-      {/* <ReservationPagination
-        dataLength={data.totalDataLength}
-        maxColumnNumber={10}
-        consultParam={consultParam}
-        setConsultParam={setConsultParam}
-      /> */}
       <WidgetPagination
         maxColumnNumber={10}
         targetPage={consultParam.page}

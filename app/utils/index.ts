@@ -2,13 +2,10 @@
 import { parse } from 'cookie';
 import { headers } from 'next/headers';
 
+import { apiUrl } from '@/src/shared/config';
+
 // 로그인을 하지 않은 상태에서도 쓸 수 있는 fechter
 export async function fetcher<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
-
   const response = await fetch(`${apiUrl}${path}`, {
     method: options.method || 'GET',
     cache: 'no-store',

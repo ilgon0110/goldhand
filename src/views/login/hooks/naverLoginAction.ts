@@ -2,6 +2,8 @@
 
 import { cookies } from 'next/headers';
 
+import { apiUrl } from '@/src/shared/config';
+
 interface IResponse {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
@@ -11,11 +13,6 @@ interface IResponse {
 
 export async function naverLoginAction(access_token: string): Promise<IResponse> {
   try {
-    const apiUrl =
-      process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-        ? process.env.NEXT_PUBLIC_API_URL
-        : process.env.NEXT_PUBLIC_LOCAL_API_URL;
-
     const postData = await (
       await fetch(`${apiUrl}/api/auth/naver`, {
         method: 'POST',

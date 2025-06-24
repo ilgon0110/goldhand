@@ -3,12 +3,9 @@ import { headers } from 'next/headers';
 
 import type { IUserData } from '@/src/shared/types';
 
-export async function getUserData(): Promise<IUserData> {
-  const apiUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
+import { apiUrl } from '../config';
 
+export async function getUserData(): Promise<IUserData> {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];

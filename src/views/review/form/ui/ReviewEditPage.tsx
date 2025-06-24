@@ -107,7 +107,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
               },
             };
 
-            const imageRef = ref(storage, `reviews/${user.uid}/${docId}/${image.key}`);
+            const imageRef = ref(storage, `reviews/${userData.uid}/${docId}/${image.key}`);
             const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
             uploadTask.on(
               'state_changed',

@@ -331,7 +331,7 @@ const UlButton = forwardRef(
       </Accordion>
     ) : (
       <ul className={cn('flex flex-row items-center justify-center -space-y-2 px-4 py-2 lg:flex-col')}>
-        <div className="text-sm">{text}</div>
+        <div className="text-base">{text}</div>
         {!!enText && <div className="hidden text-[10px] text-[#728146] lg:block">{enText}</div>}
       </ul>
     );

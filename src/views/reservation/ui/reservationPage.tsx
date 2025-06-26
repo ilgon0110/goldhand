@@ -29,7 +29,6 @@ export const ReservationPage = () => {
     <div>
       <div className="flex flex-col items-center justify-center">
         <SectionTitle buttonTitle="" title="고운황금손 예약상담" onClickButtonTitle={() => {}} />
-
         <div className="relative mt-14">
           <div
             className={`absolute left-3 top-0 -z-10 w-[1px] border border-dashed border-slate-400 md:left-8`}

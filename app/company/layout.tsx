@@ -34,7 +34,7 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
             alt="회사소개 배경 이미지"
             fill
             sizes="100vw"
-            src="/company_background.jpg"
+            src="/company_background.jpeg"
             style={{
               objectFit: 'cover',
             }}
@@ -90,25 +90,6 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
           />
         </div>
         <section className="absolute top-0 z-20 mt-20 space-y-20 px-8 md:px-20 xl:px-56">{children}</section>
-      </div>
-      <div className="relative flex flex-col gap-6 px-8 sm:flex-row md:px-20 xl:px-56">
-        <div className="flex-2 relative mt-20 aspect-[2/3] h-auto w-full sm:h-[450px] sm:w-[300px]">
-          <Image
-            alt="회사소개 배경 이미지"
-            fill
-            sizes="100vw"
-            src="/ceo_profile.jpg"
-            style={{
-              objectFit: 'cover',
-            }}
-          />
-        </div>
-        <section className="z-20 space-y-20 text-center sm:mt-20 sm:text-start">
-          <div className="flex flex-col gap-2">
-            <span className="text-xl text-gray-700">대표자 인사말</span>
-            <span className="whitespace-pre-wrap text-2xl">{`대표자 인사말 작성.\n5~6줄정도?\n5~6줄정도?\n5~6줄정도?\n5~6줄정도?\n5~6줄정도?`}</span>
-          </div>
-        </section>
       </div>
     </>
   );

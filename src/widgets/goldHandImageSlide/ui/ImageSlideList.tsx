@@ -17,8 +17,8 @@ export function ImageSlideList() {
       case '예약상담 하러가기':
         router.push('/reservation');
         break;
-      case '관리사 지원하기':
-        router.push('/manager/apply');
+      case '이용요금 확인하기':
+        router.push('/price');
         break;
       case '가맹점 신청하기':
         router.push('/franchisee/apply');
@@ -30,7 +30,7 @@ export function ImageSlideList() {
   const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
   const images = ['/imageslide/goldhand_imageslide_0.png', '/imageslide/goldhand_imageslide_1.png'];
 
-  const buttonList = ['예약상담 하러가기', '관리사 지원하기'];
+  const buttonList = ['예약상담 하러가기', '이용요금 확인하기'];
 
   return (
     <div className="relative flex h-[100vh] flex-col overflow-hidden md:flex-row">

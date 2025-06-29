@@ -51,7 +51,7 @@ async function saveUserProfile(uid: string, email: string) {
   const defaultUserData: IUserDetailData = {
     email: email,
     provider: 'naver',
-    uid,
+    userId: uid,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
     grade: 'basic',

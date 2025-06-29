@@ -23,7 +23,10 @@ export function getTodayDate(): string {
   return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
 }
 
-export function formatDateToYMD(timestamp: Timestamp): string {
+export function formatDateToYMD(timestamp: Timestamp | null | undefined): string {
+  if (timestamp == null) {
+    return '';
+  }
   const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, '0'); // 0~11 → 1~12

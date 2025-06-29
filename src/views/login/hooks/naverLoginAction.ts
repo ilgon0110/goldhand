@@ -1,14 +1,19 @@
 'use server';
 
+import type { UserCredential } from 'firebase/auth';
 import { cookies } from 'next/headers';
 
 import { apiUrl } from '@/src/shared/config';
+import type { IUserDetailData } from '@/src/shared/types';
 
 interface IResponse {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok' | 'rejoin';
   message: string;
-  email?: string;
-  redirectTo?: string;
+  redirectTo: string;
+  user: UserCredential | null;
+  accessToken: string | null;
+  email?: string | null;
+  userData?: IUserDetailData | null;
 }
 
 export async function naverLoginAction(access_token: string): Promise<IResponse> {

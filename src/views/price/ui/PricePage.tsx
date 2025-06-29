@@ -24,31 +24,21 @@ export const PricePage = () => {
       <SectionTitle buttonTitle="" title="고운황금손 이용요금" onClickButtonTitle={() => {}} />
       <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">출퇴근형</div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard
-          checkList={basicCheckList}
-          description="주 5일 출퇴근. 베이직이 뭔지 설명 간단하게"
-          priceList={basicPriceList}
-          title="베이직"
-        />
-        <PriceCard
-          checkList={premiumCheckList}
-          description="주 5일 출퇴근. 왜 베이직 안쓰고 프리미엄 써야되는지 소개"
-          priceList={premiumPriceList}
-          title="프리미엄"
-        />
+        <PriceCard checkList={basicCheckList} description="" priceList={basicPriceList} title="베이직" />
+        <PriceCard checkList={premiumCheckList} description="" priceList={premiumPriceList} title="프리미엄" />
       </div>
       <div className="mt-10 h-[1px] w-full bg-slate-300" />
       <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">입주형</div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         <PriceCard
           checkList={premiumHouseSixDayCheckList}
-          description="주5일 입주형(프리미엄) 설명 간단하게"
+          description=""
           priceList={premiumHouseFiveDayPriceList}
           title="프리미엄(주5일 입주형)"
         />
         <PriceCard
           checkList={premiumHouseSixDayCheckList}
-          description="주6일 입주형(프리미엄) 설명 간단하게"
+          description=""
           priceList={premiumHouseSixDayPriceList}
           title="프리미엄(주6일 입주형)"
         />
@@ -59,7 +49,7 @@ export const PricePage = () => {
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         <PriceCard
           checkList={costEffectivenessCheckList}
-          description="평일 09:00 ~ 14:00/평일 10:00 ~ 15:00"
+          description=""
           priceList={costEffectivenessPriceList}
           title="실속형"
         />
@@ -70,12 +60,7 @@ export const PricePage = () => {
         09:00 ~ 15:00 / 10:00 ~ 16:00 (근무시간 외 1시간 당 20,000원)
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard
-          checkList={oneDayCheckList}
-          description="평일 09:00 ~ 14:00/평일 10:00 ~ 15:00"
-          priceList={oneDayPriceList}
-          title="하루돌봄"
-        />
+        <PriceCard checkList={oneDayCheckList} description="" priceList={oneDayPriceList} title="하루돌봄" />
       </div>
       <div className="mt-10 h-[1px] w-full bg-slate-300" />
       <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">그 외 요금 안내</div>

@@ -37,7 +37,8 @@ export async function middleware(request: NextRequest) {
     if (url.pathname === '/signup') {
       return NextResponse.redirect(`${redirectUrl}/login`);
     }
-    return res;
+
+    if (response) return res;
   }
 
   if (url.pathname === '/reservation/apply') {

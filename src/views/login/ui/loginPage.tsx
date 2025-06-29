@@ -6,11 +6,21 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
 import { firebaseApp } from '@/src/shared/config/firebase';
+import type { IUserDetailData } from '@/src/shared/types';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/src/shared/ui/alert-dialog';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
-import { toastError } from '@/src/shared/utils';
-//import { toastError, toastSuccess } from '@/src/shared/utils';
+import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 import useNaverInit from '@/src/views/login/hooks/useNaverInit';
 
 import { naverLoginAction } from '../hooks/naverLoginAction';
@@ -23,6 +33,8 @@ export const LoginPage = () => {
   const naverRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isRejoinDialogOpen, setIsRejoinDialogOpen] = useState(false);
+  const [rejoinUserData, setRejoinUserData] = useState<IUserDetailData>();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -33,8 +45,17 @@ export const LoginPage = () => {
 
     const fetchPost = async () => {
       try {
+        if (isRejoinDialogOpen) return;
         // 쿠키 저장을 위해 server action 사용
         const postData = await naverLoginAction(access_token);
+
+        // 재가입 가능한 탈퇴 유저가 로그인 했을 시
+        if (postData.response === 'rejoin') {
+          setRejoinUserData(postData.userData || undefined);
+          setIsRejoinDialogOpen(true);
+
+          return;
+        }
 
         if (postData.response !== 'ok') {
           toastError(postData.message || '로그인에 실패했습니다.');
@@ -60,16 +81,42 @@ export const LoginPage = () => {
     (naverRef.current.children[0] as HTMLImageElement).click();
   };
 
-  const onClickButtonTitle = () => {};
+  const handleRejoin = async () => {
+    if (!rejoinUserData) return;
+    try {
+      const res = await (
+        await fetch('/api/user/rejoin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: rejoinUserData.userId }),
+        })
+      ).json();
+      if (res.response === 'ok') {
+        toastSuccess('재가입이 완료되었습니다.');
+        setIsRejoinDialogOpen(false);
+      } else {
+        toastError(res.message || '재가입에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('재가입 중 오류 발생:', error);
+      toastError('재가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsRejoinDialogOpen(false);
+      setRejoinUserData(undefined);
+      router.replace('/');
+    }
+  };
 
   return (
     <div className="flex flex-col items-center">
-      <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={onClickButtonTitle} />
+      <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={() => {}} />
       {isLoading && <GridLoadingSpinner text="로그인중..." />}
       {isPending && <GridLoadingSpinner text="회원가입 유무 확인중..." />}
       {!isLoading && !isPending && (
         <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
-          <Button
+          <AuthLoginButton
             className="cursor-not-allowed opacity-40"
             color="yellow"
             disabled
@@ -78,21 +125,52 @@ export const LoginPage = () => {
             onClick={() => {}}
           />
           <button className="hidden" id="naverIdLogin" ref={naverRef} />
-          <Button color="green" iconSrc="/icon/naver.png" title="네이버로 로그인하기" onClick={handleNaverLoginClick} />
+          <AuthLoginButton
+            color="green"
+            iconSrc="/icon/naver.png"
+            title="네이버로 로그인하기"
+            onClick={handleNaverLoginClick}
+          />
         </div>
       )}
+
+      {/* 재가입 다이얼로그 */}
+      <AlertDialog open={isRejoinDialogOpen} onOpenChange={setOpen => setIsRejoinDialogOpen(setOpen)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>고운황금손 재가입</AlertDialogTitle>
+            <AlertDialogDescription>
+              <p className="mb-2">고운황금손에 재가입하시겠습니까?</p>
+              <p className="mb-2">기존 계정 정보</p>
+              <p className="mb-2">가입일시 : {formatDateToYMD(rejoinUserData?.createdAt)}</p>
+              <p className="mb-2">탈퇴일시 : {formatDateToYMD(rejoinUserData?.deletedAt)}</p>
+              <p className="mb-2">이메일 : {rejoinUserData?.email || '이메일 없음'}</p>
+              <p className="mb-2">전화번호 : {rejoinUserData?.phoneNumber || '전화번호 없음'}</p>
+              <p className="mb-2">이름 : {rejoinUserData?.name || '이름 없음'}</p>
+              <p className="text-sm text-gray-500">
+                확인을 누르시면 고운황금손에 재가입됩니다. 재가입 후에는 기존의 탈퇴 기록이 복구되며, 이전에 사용하던
+                계정 정보(이메일, 전화번호 등)로 다시 로그인할 수 있습니다.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={handleRejoin}>재가입</Button>
+            <AlertDialogCancel>닫기</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
 
-type TButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type TAutoLoginButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   title: string;
   iconSrc: string;
   color: 'green' | 'yellow';
   onClick: () => void;
 };
 
-const Button = ({ title, iconSrc, color, onClick, ...props }: TButtonProps) => {
+const AuthLoginButton = ({ title, iconSrc, color, onClick, ...props }: TAutoLoginButtonProps) => {
   const colorVariants = {
     green: 'bg-[#2DB400] hover:bg-green-600 text-white',
     yellow: 'bg-[#FFEB3B] hover:bg-yellow-300 text-black',

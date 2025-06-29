@@ -93,13 +93,15 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
               로그아웃
             </Button>
           </div>
-          <Button
-            className="absolute bottom-4 right-4 md:bottom-11 md:right-11"
-            variant="destructive"
-            onClick={() => setWithDrawalModalOpen(true)}
-          >
-            회원탈퇴
-          </Button>
+          {myPageData.data.isLinked && (
+            <Button
+              className="absolute bottom-4 right-4 md:bottom-11 md:right-11"
+              variant="destructive"
+              onClick={() => setWithDrawalModalOpen(true)}
+            >
+              회원탈퇴
+            </Button>
+          )}
         </div>
         <div className="mt-6 flex flex-col gap-4 text-sm md:mt-8 md:flex-row md:gap-9 md:text-xl">
           <div className="space-x-8">

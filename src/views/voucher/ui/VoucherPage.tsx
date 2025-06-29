@@ -21,7 +21,7 @@ export const VoucherPage = () => {
       </div>
       <div className="mt-10 w-full text-center text-xl font-bold text-[#728146] lg:text-2xl">서비스 제공시간</div>
       <div className={`mt-3 whitespace-pre-wrap break-keep text-center leading-7 text-slate-700 xl:text-lg`}>
-        {`평일 : 9시부터 18시까지 (휴계시간 1시간 포함)\n토요일 또는 공휴일 : 9시부터 14시까지 (서비스 원할 경우 협의)`}
+        {`평일 : 9시부터 18시까지 (휴게시간 1시간 포함)\n토요일 또는 공휴일 : 9시부터 14시까지 (서비스 원할 경우 협의)`}
       </div>
       <div className="mt-10 w-full text-center text-xl font-bold text-[#728146] lg:text-2xl">신청 장소</div>
       <div
@@ -53,7 +53,7 @@ export const VoucherPage = () => {
       </div>
       <div className="mt-10 h-[1px] w-full bg-slate-300" />
       <div className="relative mt-6 h-[100vh] w-full">
-        <Image alt="정부바우처 이용요금표" fill sizes="100vw" src="/바우처 25년 이용요금표.png" />
+        <Image alt="정부바우처 이용요금표" fill sizes="100vw" src="/voucher_price_table.png" />
       </div>
     </div>
   );

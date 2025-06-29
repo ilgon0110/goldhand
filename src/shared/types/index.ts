@@ -61,7 +61,7 @@ export interface IUserDetailData {
   nickname: string;
   name: string;
   updatedAt: Timestamp;
-  uid: string;
+  userId: string;
   isDeleted: boolean;
   deletedAt: Timestamp | null;
   provider: 'kakao' | 'naver';

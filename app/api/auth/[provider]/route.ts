@@ -6,20 +6,14 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
-interface IResponseGetBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
-  message: string;
-  accessToken: string | null;
-}
-
 interface IResponsePostBody {
-  response: string;
+  response: 'ng' | 'ok' | 'rejoin';
   message: string;
   redirectTo: string;
   user: UserCredential | null;
   accessToken: string | null;
-  customToken?: string;
   email?: string | null;
+  userData?: IUserDetailData | null;
 }
 
 export async function GET() {}
@@ -109,6 +103,30 @@ export async function POST(req: Request) {
         const userDocRef = doc(db, 'users', user.user.uid);
         const userDocSnap = await getDoc(userDocRef);
         const targetUserData = userDocSnap.data();
+
+        // deletedAt이 1년 이상 지난 유저는 재가입 가능
+        const oneYearAgo = Timestamp.now().toMillis() - 365 * 24 * 60 * 60 * 1000; // 1년 전
+        if (
+          targetUserData?.isDeleted &&
+          targetUserData?.deletedAt &&
+          targetUserData.deletedAt.toMillis() > oneYearAgo
+        ) {
+          // 재가입 가능
+          return typedJson<IResponsePostBody>(
+            {
+              response: 'rejoin',
+              message: '재가입 가능한 유저입니다.',
+              redirectTo: '/signup/rejoin',
+              user,
+              accessToken,
+              email: user.user.email,
+              userData: targetUserData as IUserDetailData,
+            },
+            { status: 200 },
+          );
+        }
+
+        // 탈퇴했는데 1년이 지나지 않은 유저는 탈퇴 상태로 처리
         if (targetUserData?.isDeleted) {
           return typedJson<IResponsePostBody>(
             {

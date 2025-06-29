@@ -14,16 +14,16 @@ import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import type { CommentData, MyPageData, UserDetailData } from '@/src/shared/types';
+import type { ICommentData, IMyPageData, IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: MyPageData;
+  data: IMyPageData;
 }
 
-const defaultData: MyPageData = {
+const defaultData: IMyPageData = {
   isLinked: false,
   userData: null,
   consults: [],
@@ -96,6 +96,18 @@ export async function GET() {
       });
     }
 
+    // 탈퇴한 유저인지 확인
+    if (userDocSnap.data()?.isDeleted) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '탈퇴한 유저입니다.',
+          data: defaultData,
+        },
+        { status: 403 },
+      );
+    }
+
     const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
 
     const providersId = userRecord.providerData.map(provider => provider.providerId);
@@ -110,7 +122,7 @@ export async function GET() {
     const consultsData = consultsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-    })) as MyPageData['consults'];
+    })) as IMyPageData['consults'];
     // 3. 이용후기 데이터 가져오기
     // userId를 이용하여 이용후기 데이터를 가져온다.
     const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), where('userId', '==', uid));
@@ -118,7 +130,7 @@ export async function GET() {
     const reviewsData = reviewsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-    })) as MyPageData['reviews'];
+    })) as IMyPageData['reviews'];
     // 4. 댓글 데이터 가져오기
     // userId를 이용하여 댓글 데이터를 가져온다.
     const commentsQuery = query(collectionGroup(db, 'comments'), where('userId', '==', uid));
@@ -133,10 +145,10 @@ export async function GET() {
       message: '마이페이지 데이터 조회 성공',
       data: {
         isLinked,
-        userData: { ...userDocSnap.data(), uid } as UserDetailData,
+        userData: { ...userDocSnap.data(), uid } as IUserDetailData,
         consults: consultsData,
         reviews: reviewsData,
-        comments: commentsData as CommentData[],
+        comments: commentsData as ICommentData[],
       },
     });
   } catch (error) {

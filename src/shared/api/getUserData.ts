@@ -1,11 +1,11 @@
 import { parse } from 'cookie';
 import { headers } from 'next/headers';
 
-import type { IUserData } from '@/src/shared/types';
+import type { IUserResponseData } from '@/src/shared/types';
 
 import { apiUrl } from '../config';
 
-export async function getUserData(): Promise<IUserData> {
+export async function getUserData(): Promise<IUserResponseData> {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];

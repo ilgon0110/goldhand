@@ -25,7 +25,7 @@ export const ReviewCarousel = ({ data }: { data: IReviewData['reviewData'] }) =>
         />
       </div>
       {/* 웹버전, width:640px 이상 */}
-      <div className="hidden px-0 sm:block md:px-[16vw]">
+      <div className="hidden px-0 sm:block">
         <Carousel
           className="w-full"
           opts={{

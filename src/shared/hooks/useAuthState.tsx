@@ -7,12 +7,12 @@ import { useEffect, useState } from 'react';
 import { firebaseApp } from '@/src/shared/config/firebase';
 
 import { apiUrl } from '../config';
-import type { IUserData } from '../types';
+import type { IUserResponseData } from '../types';
 
 interface IResponseGetBody {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  userData: IUserData['userData'] | null;
+  userData: IUserResponseData['userData'] | null;
   isLinked: boolean;
 }
 
@@ -20,7 +20,7 @@ export function useAuthState() {
   const [authState, setAuthState] = useState<{
     isSignedIn: boolean;
     pending: boolean;
-    userData: IUserData['userData'] | null;
+    userData: IUserResponseData['userData'] | null;
     isLinked: boolean;
   }>({
     isSignedIn: false,

@@ -4,14 +4,14 @@ import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import type { UserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
   accessToken: string | null;
-  userData: UserDetailData | null;
+  userData: IUserDetailData | null;
   isLinked: boolean;
 }
 
@@ -55,8 +55,22 @@ export async function GET() {
     const userDocRef = doc(db, 'users', uid);
     const userDocSnap = await getDoc(userDocRef);
 
+    // userData의 isDeleted가 true인 경우, 삭제된 유저로 간주하고 처리
+    if (userDocSnap.exists() && userDocSnap.data().isDeleted) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '해당 uid를 가진 유저는 현재 탈퇴한 상태입니다.',
+          accessToken: accessToken.value,
+          userData: null,
+          isLinked: false,
+        },
+        { status: 403 },
+      );
+    }
+
     if (userDocSnap.exists()) {
-      const userData = userDocSnap.data() as UserDetailData;
+      const userData = userDocSnap.data() as IUserDetailData;
       const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
       const providerIds = userRecord.providerData.map(provider => provider.providerId);
       const hasEmail = providerIds.includes('password');

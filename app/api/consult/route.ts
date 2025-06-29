@@ -14,12 +14,12 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 //import { loadConsultParams } from '@/src/shared/searchParams';
-import type { ConsultDetailData } from '@/src/shared/types';
+import type { IConsultDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   message: string;
-  consultData: ConsultDetailData[];
+  consultData: IConsultDetailData[];
   totalDataLength: number;
 }
 
@@ -81,14 +81,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-const consultConverter: FirestoreDataConverter<ConsultDetailData> = {
-  toFirestore(data: ConsultDetailData) {
+const consultConverter: FirestoreDataConverter<IConsultDetailData> = {
+  toFirestore(data: IConsultDetailData) {
     return data;
   },
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options);
     return {
       ...data,
-    } as ConsultDetailData;
+    } as IConsultDetailData;
   },
 };

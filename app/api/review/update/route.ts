@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import type { ReviewDetailData } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IReviewRequestBody {
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const targetData = docSnap.data() as ReviewDetailData;
+  const targetData = docSnap.data() as IReviewDetailData;
 
   // 글 작성자 uid 확인
   try {
@@ -71,6 +71,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 탈퇴한 유저인지 확인
+    const userDocRef = doc(db, 'users', uid);
+    const userDocSnap = await getDoc(userDocRef);
+    const targetUserData = userDocSnap.data();
+    if (targetUserData?.isDeleted) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '탈퇴한 유저는 리뷰를 수정할 수 없습니다.',
+        },
+        { status: 403 },
+      );
+    }
+
     // Update logic here...
     const { title, name, franchisee, htmlString, docId, images } = body;
 
@@ -81,8 +95,8 @@ export async function POST(req: NextRequest) {
     });
     const imageSrcAppliedHtmlString = applyFireImageSrc(cleanedHtmlString, images || []);
 
-    const app = firebaseApp;
-    const db = getFirestore(app);
+    //const app = firebaseApp;
+    //const db = getFirestore(app);
 
     try {
       await updateDoc(reviewDocRef, {

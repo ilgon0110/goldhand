@@ -1,4 +1,4 @@
-import { doc, getFirestore, setDoc } from 'firebase/firestore';
+import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 
@@ -41,6 +41,22 @@ export async function POST(req: Request) {
     }
 
     const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
+
+    // 탈퇴한 유저인지 확인
+    const db = getFirestore(firebaseApp);
+    const userDocRef = doc(db, 'users', uid);
+    const userDocSnap = await getDoc(userDocRef);
+    const targetUserData = userDocSnap.data();
+    if (targetUserData?.isDeleted) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '탈퇴한 유저는 리뷰를 작성할 수 없습니다.',
+        },
+        { status: 403 },
+      );
+    }
+
     if (uid) {
       return createReviewPost(uid, body);
     }

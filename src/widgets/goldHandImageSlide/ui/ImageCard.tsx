@@ -10,14 +10,7 @@ type ImageCardProps = {
 export function ImageCard({ src, alt }: ImageCardProps) {
   return (
     <CarouselItem className="relative h-full w-full">
-      <Image
-        alt={alt}
-        fill
-        src={src}
-        style={{ objectFit: 'cover' }}
-        //(max-width: 640px) 33vw, (max-width: 768px) 50vw,
-        sizes="100vw"
-      />
+      <Image alt={alt} fill sizes="100vw" src={src} style={{ objectFit: 'cover' }} />
     </CarouselItem>
   );
 }

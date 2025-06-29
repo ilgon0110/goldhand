@@ -2,7 +2,7 @@ import { deleteDoc, doc, getDoc, getFirestore } from 'firebase/firestore';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { ReviewDetailData } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IReviewRequestBody {
@@ -39,7 +39,7 @@ export async function DELETE(req: NextRequest) {
         { status: 404 },
       );
     }
-    const targetData = docSnap.data() as ReviewDetailData;
+    const targetData = docSnap.data() as IReviewDetailData;
 
     if (targetData.userId !== userId) {
       return typedJson<IResponseBody>(

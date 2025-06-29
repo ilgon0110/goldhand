@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import type { IReviewDetailData, IUserData } from '@/src/shared/types';
+import type { IReviewResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Label } from '@/src/shared/ui/label';
@@ -20,9 +20,9 @@ import { Comment, useComments } from '@/widgets/Comment';
 import { reviewCommentSchema } from '../config/reviewCommentSchema';
 
 type TReviewDetailPageProps = {
-  data: IReviewDetailData;
+  data: IReviewResponseData;
   docId: string;
-  userData: IUserData;
+  userData: IUserResponseData;
 };
 
 interface IResponsePost {

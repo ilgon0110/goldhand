@@ -36,14 +36,8 @@ export const LoginPage = () => {
         // 쿠키 저장을 위해 server action 사용
         const postData = await naverLoginAction(access_token);
 
-        // Client side에서 이메일 로그인
-        // if (postData.email) {
-        //   await signInWithEmailAndPassword(auth, postData.email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
-        // }
-
         if (postData.response !== 'ok') {
           toastError(postData.message || '로그인에 실패했습니다.');
-          throw new Error(postData.message || '로그인에 실패했습니다.');
         }
 
         if (postData.redirectTo) {

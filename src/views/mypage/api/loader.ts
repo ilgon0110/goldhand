@@ -2,9 +2,9 @@ import { parse } from 'cookie';
 import { headers } from 'next/headers';
 
 import { apiUrl } from '@/src/shared/config';
-import type { IMyPageData } from '@/src/shared/types';
+import type { IMyPageResponseData } from '@/src/shared/types';
 
-export const getMyPageData = async (): Promise<IMyPageData> => {
+export const getMyPageData = async (): Promise<IMyPageResponseData> => {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];

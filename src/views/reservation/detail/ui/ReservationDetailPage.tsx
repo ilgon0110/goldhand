@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import type { IConsultDetailData, IUserData } from '@/src/shared/types';
+import type { IConsultResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
@@ -21,9 +21,9 @@ import { Comment, useComments } from '@/widgets/Comment';
 import { consultCommentSchema, detailPasswordFormSchema } from '../config/consultCommentSchema';
 
 type TReservationDetailPageProps = {
-  data: IConsultDetailData;
+  data: IConsultResponseData;
   docId: string;
-  userData: IUserData;
+  userData: IUserResponseData;
 };
 
 interface IResponsePost {

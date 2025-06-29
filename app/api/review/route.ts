@@ -15,13 +15,13 @@ import type { NextRequest } from 'next/server';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 //import { loadReviewParams } from '@/src/shared/searchParams';
-import type { ReviewDetailData } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'ng' | 'ok';
   message: string;
-  reviewData: ReviewDetailData[];
+  reviewData: IReviewDetailData[];
   totalDataLength: number;
 }
 
@@ -89,14 +89,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-const converter: FirestoreDataConverter<ReviewDetailData> = {
-  toFirestore(data: ReviewDetailData) {
+const converter: FirestoreDataConverter<IReviewDetailData> = {
+  toFirestore(data: IReviewDetailData) {
     return data;
   },
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options);
     return {
       ...data,
-    } as ReviewDetailData;
+    } as IReviewDetailData;
   },
 };

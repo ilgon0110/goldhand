@@ -15,7 +15,7 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { franchiseeList } from '@/src/shared/config';
-import type { IConsultDetailData, IUserData } from '@/src/shared/types';
+import type { IConsultResponseData, IUserResponseData } from '@/src/shared/types';
 import { Calendar } from '@/src/shared/ui/calendar';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
@@ -30,8 +30,8 @@ export const ReservationFormPage = ({
   userData,
   consultDetailData,
 }: {
-  userData: IUserData;
-  consultDetailData: IConsultDetailData;
+  userData: IUserResponseData;
+  consultDetailData: IConsultResponseData;
 }) => {
   const searchParams = useSearchParams();
   const { executeRecaptcha } = useGoogleReCaptcha();

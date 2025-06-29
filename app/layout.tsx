@@ -61,7 +61,7 @@ export default function RootLayout({
   return (
     <>
       <html lang="en">
-        <body className={`${pretendard.className}`}>
+        <body className={`${pretendard.className} relative`}>
           <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
             <NuqsAdapter>
               <Header />

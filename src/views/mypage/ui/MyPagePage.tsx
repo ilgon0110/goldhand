@@ -3,19 +3,23 @@
 import { getAuth, signOut } from 'firebase/auth';
 import { BadgeCheckIcon, CalendarIcon, EditIcon, TextIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-import type { IMyPageData } from '@/src/shared/types';
+import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 
+import { WithdrawalModal } from './WithdrawalModal';
+
 type TMyPageDataProps = {
-  myPageData: IMyPageData;
+  myPageData: IMyPageResponseData;
 };
 
 export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
   const router = useRouter();
+  const [withDrawalModalOpen, setWithDrawalModalOpen] = useState(false);
   const onClickTitle = (id: string, docType: 'consult' | 'review') => {
     if (docType === 'review') {
       router.push(`/review/${id}`);
@@ -58,6 +62,9 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
 
   return (
     <div>
+      {withDrawalModalOpen && (
+        <WithdrawalModal handleClose={() => setWithDrawalModalOpen(false)} isOpen={withDrawalModalOpen} />
+      )}
       <SectionTitle buttonTitle="" title="고운황금손 마이페이지" onClickButtonTitle={() => {}} />
       <div className="relative mt-6 w-full rounded border border-slate-300 p-3 md:p-11">
         <div className="flex flex-row justify-between">
@@ -82,10 +89,17 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
             >
               {myPageData.data.isLinked ? '수정하기' : '회원가입'}
             </Button>
-            <Button className="" variant={'destructive'} onClick={onClickLogout}>
+            <Button className="" variant="outline" onClick={onClickLogout}>
               로그아웃
             </Button>
           </div>
+          <Button
+            className="absolute bottom-4 right-4 md:bottom-11 md:right-11"
+            variant="destructive"
+            onClick={() => setWithDrawalModalOpen(true)}
+          >
+            회원탈퇴
+          </Button>
         </div>
         <div className="mt-6 flex flex-col gap-4 text-sm md:mt-8 md:flex-row md:gap-9 md:text-xl">
           <div className="space-x-8">

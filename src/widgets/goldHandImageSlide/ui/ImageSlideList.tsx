@@ -33,7 +33,7 @@ export function ImageSlideList() {
   const buttonList = ['예약상담 하러가기', '이용요금 확인하기'];
 
   return (
-    <div className="relative flex h-[100vh] flex-col overflow-hidden md:flex-row">
+    <div className="relative flex h-[70vh] flex-col overflow-hidden md:flex-row">
       <Carousel
         plugins={[plugin.current]}
         //onMouseEnter={plugin.current.stop}

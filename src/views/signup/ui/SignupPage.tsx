@@ -19,14 +19,14 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { IUserData } from '@/src/shared/types';
+import type { IUserResponseData } from '@/src/shared/types';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { formSchema } from '../config/formSchema';
 //import { useRecaptcha } from '../hooks/useRecaptcha';
 
-export const SignupPage = ({ userData }: { userData: IUserData }) => {
+export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
   const router = useRouter();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
   const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState('');

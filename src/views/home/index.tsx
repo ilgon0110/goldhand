@@ -15,16 +15,14 @@ export async function HomePage() {
       <section>
         <ImageSlideList />
       </section>
-      <section className="my-10 md:my-32">
+      <section className="-mt-12 md:px-[10vw]">
         <MainTitle />
       </section>
-      <section className="space-y-10 px-4 md:space-y-32 md:px-9">
+      <section className="mt-24 space-y-10 px-4 md:space-y-32 md:px-[10vw]">
         <FranchiseeSheetList />
         <ReviewCarousel data={data.reviewData} />
         <SponsorList />
-        <article className="md:px-[10vw]">
-          <PriceList />
-        </article>
+        <PriceList />
       </section>
     </>
   );

@@ -2,7 +2,7 @@ import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { CommentData } from '@/src/shared/types';
+import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface ICommentPost {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const targetCommentData = commentDocSnap.data() as CommentData;
+    const targetCommentData = commentDocSnap.data() as ICommentData;
 
     const updatedCommentData = {
       ...targetCommentData,

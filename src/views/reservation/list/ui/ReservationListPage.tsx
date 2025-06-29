@@ -1,35 +1,23 @@
 'use client';
 
 import type { CheckedState } from '@radix-ui/react-checkbox';
-import type { Timestamp } from 'firebase/firestore';
 import { useQueryStates } from 'nuqs';
 
 import { consultParams } from '@/src/shared/searchParams';
+import type { IConsultDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { formatDateToYMD } from '@/src/shared/utils';
 import { ReservationCard } from '@/src/views/reservation';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
+interface IConsultData extends IConsultDetailData {
+  id: string;
+}
+
 type TReservationListPageProps = {
   data: {
     message: string;
-    consultData:
-      | {
-          id: string;
-          title: string;
-          location: string;
-          phoneNumber: string;
-          secret: boolean;
-          updatedAt: Timestamp;
-          userId: string | null;
-          content: string;
-          createdAt: Timestamp;
-          franchisee: string;
-          name: string;
-          bornDate: Date | null;
-          password: string | null;
-        }[]
-      | null;
+    consultData: IConsultData[] | null;
     totalDataLength: number;
   };
 };

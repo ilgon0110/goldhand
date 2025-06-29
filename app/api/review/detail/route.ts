@@ -2,16 +2,16 @@ import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, Timesta
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { CommentData, ReviewDetailData } from '@/src/shared/types';
+import type { ICommentData, IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: ReviewDetailData;
+  data: IReviewDetailData;
 }
 
-const defaultData: ReviewDetailData = {
+const defaultData: IReviewDetailData = {
   htmlString: '',
   createdAt: Timestamp.now(),
   franchisee: '',
@@ -19,7 +19,7 @@ const defaultData: ReviewDetailData = {
   title: '',
   updatedAt: Timestamp.now(),
   userId: null,
-  comments: [] as CommentData[],
+  comments: [] as ICommentData[],
 };
 
 export async function GET(request: NextRequest) {
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = docSnap.data() as ReviewDetailData;
+    const data = docSnap.data() as IReviewDetailData;
 
     const commentsRef = collection(db, 'reviews', docId, 'comments');
     const q = query(commentsRef, orderBy('createdAt', 'desc'));
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     const comments = commentSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-    })) as CommentData[];
+    })) as ICommentData[];
 
     const responseData: IResponseBody = {
       response: 'ok',

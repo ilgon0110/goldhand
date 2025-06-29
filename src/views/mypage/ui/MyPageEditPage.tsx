@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import type { IUserData } from '@/src/shared/types';
+import type { IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
@@ -16,7 +16,7 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 import { myPageFormSchema } from '../config/mypageFormSchema';
 
 type TMyPageEditPageProps = {
-  userData: IUserData;
+  userData: IUserResponseData;
 };
 
 export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {

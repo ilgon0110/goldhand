@@ -14,7 +14,7 @@ import type { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
 import { useAuthState } from '@/src/shared/hooks/useAuthState';
-import type { IReviewDetailData } from '@/src/shared/types';
+import type { IReviewResponseData } from '@/src/shared/types';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -53,7 +53,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
       if (!response.ok) {
         throw new Error('Failed to fetch review detail');
       }
-      return response.json() as Promise<IReviewDetailData>;
+      return response.json() as Promise<IReviewResponseData>;
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

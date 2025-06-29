@@ -1,7 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
 
 // 이용상담(Consult, Reservation) 관련 타입 정의
-export interface ConsultDetailData {
+export interface IConsultDetailData {
   bornDate: Date | null;
   content: string;
   createdAt: Timestamp;
@@ -14,17 +14,17 @@ export interface ConsultDetailData {
   title: string;
   updatedAt: Timestamp;
   userId: string | null;
-  comments: CommentData[] | null;
+  comments: ICommentData[] | null;
 }
 
-export interface IConsultDetailData {
+export interface IConsultResponseData {
   response: string;
   message: string;
-  data: ConsultDetailData;
+  data: IConsultDetailData;
 }
 
 // 이용후기(Review) 관련 타입 정의
-export interface ReviewDetailData {
+export interface IReviewDetailData {
   htmlString: string;
   createdAt: Timestamp;
   franchisee: string;
@@ -32,17 +32,17 @@ export interface ReviewDetailData {
   title: string;
   updatedAt: Timestamp;
   userId: string | null;
-  comments: CommentData[] | null;
+  comments: ICommentData[] | null;
 }
 
-export interface IReviewDetailData {
+export interface IReviewResponseData {
   response: string;
   message: string;
-  data: ReviewDetailData;
+  data: IReviewDetailData;
 }
 
 // 댓글(Comment) 관련 타입 정의
-export interface CommentData {
+export interface ICommentData {
   id: string;
   comment: string;
   createdAt: Timestamp;
@@ -53,7 +53,7 @@ export interface CommentData {
 }
 
 // 사용자(User) 관련 타입 정의
-export interface UserDetailData {
+export interface IUserDetailData {
   phoneNumber: string;
   email: string;
   grade: string;
@@ -62,26 +62,29 @@ export interface UserDetailData {
   name: string;
   updatedAt: Timestamp;
   uid: string;
+  isDeleted: boolean;
+  deletedAt: Timestamp | null;
+  provider: 'kakao' | 'naver';
 }
 
-export interface IUserData {
+export interface IUserResponseData {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
   accessToken: string | null;
-  userData: UserDetailData | null;
+  userData: IUserDetailData | null;
   isLinked: boolean;
-}
-
-export interface MyPageData {
-  isLinked: boolean;
-  userData: UserDetailData | null;
-  consults: (ConsultDetailData & { id: string })[] | null;
-  reviews: (ReviewDetailData & { id: string })[] | null;
-  comments: (CommentData & { id: string })[] | null;
 }
 
 export interface IMyPageData {
+  isLinked: boolean;
+  userData: IUserDetailData | null;
+  consults: (IConsultDetailData & { id: string })[] | null;
+  reviews: (IReviewDetailData & { id: string })[] | null;
+  comments: (ICommentData & { id: string })[] | null;
+}
+
+export interface IMyPageResponseData {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: MyPageData;
+  data: IMyPageData;
 }

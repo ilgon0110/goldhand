@@ -1,5 +1,5 @@
 import { apiUrl } from '@/src/shared/config';
-import type { IConsultDetailData } from '@/src/shared/types';
+import type { IConsultResponseData } from '@/src/shared/types';
 
 export const getConsultDetailData = async ({
   docId,
@@ -9,7 +9,7 @@ export const getConsultDetailData = async ({
   docId: string;
   password: string;
   userId: string | null;
-}): Promise<IConsultDetailData> => {
+}): Promise<IConsultResponseData> => {
   const res = await fetch(`${apiUrl}/api/consultDetail?docId=${docId}&password=${password}&userId=${userId}`, {
     method: 'GET',
     headers: {

@@ -3,7 +3,7 @@ import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { ConsultDetailData } from '@/src/shared/types';
+import type { IConsultDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IConsultPost {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         { status: 404 },
       );
     }
-    const targetData = docSnap.data() as ConsultDetailData;
+    const targetData = docSnap.data() as IConsultDetailData;
 
     // 비회원인 경우
     if (targetData.userId === null) {

@@ -1,4 +1,4 @@
-import { addDoc, collection, getFirestore } from '@firebase/firestore';
+import { addDoc, collection, doc, getDoc, getFirestore } from '@firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
@@ -62,6 +62,20 @@ export async function POST(request: NextRequest) {
         {
           status: 403,
         },
+      );
+    }
+
+    // 탈퇴한 유저인지 확인
+    const userDocRef = doc(db, 'users', uid);
+    const userDocSnap = await getDoc(userDocRef);
+    const targetUserData = userDocSnap.data();
+    if (targetUserData?.isDeleted) {
+      return typedJson<IResponsePostBody>(
+        {
+          response: 'ng',
+          message: '탈퇴한 유저는 댓글을 작성할 수 없습니다.',
+        },
+        { status: 403 },
       );
     }
 

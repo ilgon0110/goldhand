@@ -1,11 +1,9 @@
 import type { UserCredential } from 'firebase/auth';
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getFirestore, setDoc } from 'firebase/firestore';
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
-import { cookies } from 'next/headers';
+import { doc, getDoc, getFirestore, setDoc, Timestamp } from 'firebase/firestore';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseGetBody {
@@ -24,54 +22,7 @@ interface IResponsePostBody {
   email?: string | null;
 }
 
-export async function GET() {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken');
-
-  if (accessToken == null || accessToken?.value === 'undefined' || accessToken.value === '') {
-    return typedJson<IResponseGetBody>(
-      {
-        response: 'unAuthorized',
-        message: '로그인되지 않았습니다.',
-        accessToken: null,
-      },
-      { status: 200 },
-    );
-  }
-
-  // 여기서 실제 accessToken이 유효한지 확인하고, 유효하지 않으면 unauthorized 처리
-  try {
-    await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
-
-    return typedJson<IResponseGetBody>(
-      {
-        response: 'ok',
-        message: '로그인 된 상태입니다.',
-        accessToken: accessToken.value,
-      },
-      { status: 200 },
-    );
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    if (error != null && typeof error == 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
-      return typedJson<IResponseGetBody>(
-        {
-          response: 'unAuthorized',
-          message: '토큰이 만료되었습니다.',
-          accessToken: null,
-        },
-        { status: 200 },
-      );
-    }
-
-    const errorCode =
-      typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
-        ? error.code
-        : 'unknown_error';
-
-    return typedJson<IResponseGetBody>({ response: 'ng', message: errorCode, accessToken: null }, { status: 500 });
-  }
-}
+export async function GET() {}
 
 async function trySignIn(email: string, password: string) {
   const auth = getAuth();
@@ -103,18 +54,20 @@ async function signUpUser(email: string, password: string) {
 async function saveUserProfile(uid: string, email: string) {
   const app = firebaseApp;
   const db = getFirestore(app);
-  return await setDoc(doc(db, 'users', uid), {
+  const defaultUserData: IUserDetailData = {
     email: email,
     provider: 'naver',
     uid,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
     grade: 'basic',
-    point: 0,
     name: '',
     nickname: '',
     phoneNumber: '',
-  });
+    isDeleted: false,
+    deletedAt: null,
+  };
+  return await setDoc(doc(db, 'users', uid), defaultUserData);
 }
 
 export async function POST(req: Request) {
@@ -150,6 +103,24 @@ export async function POST(req: Request) {
       const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
       if (user) {
         const accessToken = await user.user.getIdToken();
+
+        // 탈퇴한 유저인지 확인
+        const db = getFirestore(firebaseApp);
+        const userDocRef = doc(db, 'users', user.user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        const targetUserData = userDocSnap.data();
+        if (targetUserData?.isDeleted) {
+          return typedJson<IResponsePostBody>(
+            {
+              response: 'ng',
+              message: '탈퇴한 유저입니다.',
+              redirectTo: '/',
+              user: null,
+              accessToken: null,
+            },
+            { status: 403 },
+          );
+        }
 
         return typedJson<IResponsePostBody>(
           {

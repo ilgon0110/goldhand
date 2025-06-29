@@ -47,31 +47,21 @@ export const PriceList = () => {
       <div className="mt-16 flex flex-col items-baseline justify-center gap-12 md:flex-row">
         {type === '출퇴근형' && (
           <>
-            <PriceCard
-              checkList={basicCheckList}
-              description="주 5일 출퇴근. 베이직이 뭔지 설명 간단하게"
-              priceList={basicPriceList}
-              title="베이직"
-            />
-            <PriceCard
-              checkList={premiumCheckList}
-              description="주 5일 출퇴근. 왜 베이직 안쓰고 프리미엄 써야되는지 소개"
-              priceList={premiumPriceList}
-              title="프리미엄"
-            />
+            <PriceCard checkList={basicCheckList} description="" priceList={basicPriceList} title="베이직" />
+            <PriceCard checkList={premiumCheckList} description="" priceList={premiumPriceList} title="프리미엄" />
           </>
         )}
         {type === '입주형' && (
           <>
             <PriceCard
               checkList={premiumHouseSixDayCheckList}
-              description="주5일 입주형(프리미엄) 설명 간단하게"
+              description=""
               priceList={premiumHouseFiveDayPriceList}
               title="프리미엄(주5일 입주형)"
             />
             <PriceCard
               checkList={premiumHouseSixDayCheckList}
-              description="주6일 입주형(프리미엄) 설명 간단하게"
+              description=""
               priceList={premiumHouseSixDayPriceList}
               title="프리미엄(주6일 입주형)"
             />

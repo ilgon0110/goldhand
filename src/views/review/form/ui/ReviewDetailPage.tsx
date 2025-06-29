@@ -51,7 +51,7 @@ export const ReviewDetailPage = ({ data, docId, userData }: TReviewDetailPagePro
   });
 
   const formValidation = form.formState.isValid;
-  const isOwner = data.data.userId === userData.userData?.uid;
+  const isOwner = data.data.userId === userData.userData?.userId;
 
   const onSubmit = async (values: z.infer<typeof reviewCommentSchema>) => {
     if (!formValidation) return;
@@ -142,7 +142,7 @@ export const ReviewDetailPage = ({ data, docId, userData }: TReviewDetailPagePro
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: userData.userData?.uid,
+        userId: userData.userData?.userId,
         docId,
         commentId,
       }),
@@ -256,7 +256,7 @@ export const ReviewDetailPage = ({ data, docId, userData }: TReviewDetailPagePro
               content={item.comment}
               createdAt={item.createdAt}
               docId={docId}
-              isCommentOwner={item.userId === userData.userData?.uid}
+              isCommentOwner={item.userId === userData.userData?.userId}
               key={item.id}
               mutateDeleteComment={mutateDeleteComment}
               mutateUpdateComment={mutateUpdateComment}

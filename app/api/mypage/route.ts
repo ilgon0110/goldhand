@@ -145,7 +145,7 @@ export async function GET() {
       message: '마이페이지 데이터 조회 성공',
       data: {
         isLinked,
-        userData: { ...userDocSnap.data(), uid } as IUserDetailData,
+        userData: { ...userDocSnap.data(), userId: uid } as IUserDetailData,
         consults: consultsData,
         reviews: reviewsData,
         comments: commentsData as ICommentData[],

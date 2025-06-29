@@ -90,11 +90,11 @@ export const ReviewFormPage = () => {
             const metadata: UploadMetadata = {
               contentType: image.file.type,
               customMetadata: {
-                userId: userData.uid,
+                userId: userData.userId,
               },
             };
 
-            const imageRef = ref(storage, `reviews/${userData.uid}/${docId}/${image.key}`);
+            const imageRef = ref(storage, `reviews/${userData.userId}/${docId}/${image.key}`);
             const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
             uploadTask.on(
               'state_changed',

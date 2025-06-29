@@ -46,7 +46,7 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
           },
           body: JSON.stringify({
             ...values,
-            userId: userData.userData?.uid,
+            userId: userData.userData?.userId || '',
           }),
         })
       ).json();

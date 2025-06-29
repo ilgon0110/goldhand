@@ -69,7 +69,7 @@ export const ReservationCard = ({
       return;
     }
 
-    if (isSecret && author !== '비회원' && dataUserId !== userData?.uid) {
+    if (isSecret && author !== '비회원' && dataUserId !== userData?.userId) {
       setIsAlertDialogOpen(true);
       return;
     }

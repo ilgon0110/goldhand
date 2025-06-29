@@ -52,8 +52,8 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
   });
 
   const formValidation = form.formState.isValid;
-  const isConsultDetailOwner = data.data.userId ? data.data.userId === userData.userData?.uid : true;
-  //author === "비회원" ? true : data.data.userId === userData.userData?.uid;
+  const isConsultDetailOwner = data.data.userId ? data.data.userId === userData.userData?.userId : true;
+
   const onSubmit = async (values: z.infer<typeof consultCommentSchema>) => {
     if (!formValidation) return;
     const { comment } = values;
@@ -328,7 +328,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
                 content={item.comment}
                 createdAt={item.createdAt}
                 docId={docId}
-                isCommentOwner={item.userId === userData.userData?.uid}
+                isCommentOwner={item.userId === userData.userData?.userId}
                 key={item.id}
                 mutateDeleteComment={mutateDeleteComment}
                 mutateUpdateComment={mutateUpdateComment}

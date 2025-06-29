@@ -81,7 +81,7 @@ export async function GET() {
           response: 'ok',
           message: '로그인 정보 확인',
           accessToken: accessToken.value,
-          userData: { ...userData, uid },
+          userData: { ...userData, userId: uid },
           isLinked: hasEmail && hasPhone,
         },
         { status: 200 },

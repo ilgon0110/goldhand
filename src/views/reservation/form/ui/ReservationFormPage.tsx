@@ -74,7 +74,7 @@ export const ReservationFormPage = ({
         },
         body: JSON.stringify({
           ...values,
-          userId: userData.userData?.uid || null,
+          userId: userData.userData?.userId || null,
           recaptchaToken,
           docId,
         }),

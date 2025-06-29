@@ -15,7 +15,7 @@ export default async function Page({ params, searchParams }: TPageProps) {
   const consultDetailData = await getConsultDetailData({
     docId: searchParams.docId || '',
     password: searchParams.password || '',
-    userId: userData?.userData?.uid || null,
+    userId: userData?.userData?.userId || null,
   });
 
   return (

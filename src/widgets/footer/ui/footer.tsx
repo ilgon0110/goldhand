@@ -37,7 +37,7 @@ export const Footer = () => {
               </span>
             </div>
           </div>
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col justify-center text-center md:items-start md:text-base">
             <Link className="font-semibold text-gray-900" href="/company">
               회사소개
             </Link>

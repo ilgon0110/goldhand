@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
+import { v4 as uuidv4 } from 'uuid';
 
 import { cn } from '@/lib/utils';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
@@ -38,7 +39,7 @@ export const PrivacyModal = ({ isOpen, handleClose }: TPrivacyModalProps) => {
       </button>
       <div className="space-y-2">
         {privacyContent[selectSeq].contents.map(item => (
-          <p className={cn('text-slate-700', item.styleClass)} key={item.value}>
+          <p className={cn('text-slate-700', item.styleClass)} key={uuidv4()}>
             {item.value}
           </p>
         ))}

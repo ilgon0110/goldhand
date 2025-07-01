@@ -11,7 +11,7 @@ export const Footer = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   return (
     <>
-      {privacyModalOpen && <PrivacyModal handleClose={() => setPrivacyModalOpen(false)} isOpen={privacyModalOpen} />}
+      <PrivacyModal isOpen={privacyModalOpen} setIsOpen={setPrivacyModalOpen} />
       <footer className="relative mt-20 w-full whitespace-nowrap border-gray-300 bg-[#FAFAFA] pb-3 pt-10">
         <div className="flex flex-col justify-center gap-12 px-[10vw] transition-all duration-300 ease-in-out md:flex-row md:items-start md:justify-normal">
           <div className="flex flex-col items-center justify-center space-y-4 xl:block">

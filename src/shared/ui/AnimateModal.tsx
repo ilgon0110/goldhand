@@ -1,7 +1,6 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -10,14 +9,13 @@ import { Drawer, DrawerContent, DrawerTitle } from './drawer';
 
 type TPrivacyModalProps = {
   isOpen: boolean;
-  handleClose: () => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
   className?: string;
 };
 
-export const AnimateModal = ({ isOpen, handleClose, children, className }: TPrivacyModalProps) => {
+export const AnimateModal = ({ isOpen, setIsOpen, children, className }: TPrivacyModalProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const [open, setOpen] = useState(isOpen);
 
   return isDesktop ? (
     <AnimatePresence>
@@ -29,7 +27,7 @@ export const AnimateModal = ({ isOpen, handleClose, children, className }: TPriv
           initial={{ opacity: 0 }}
           key="overlay"
           transition={{ duration: 0.3, ease: 'easeOut' }}
-          onClick={handleClose}
+          onClick={() => setIsOpen(false)} // Close modal on overlay click
         >
           <motion.div
             animate={{ opacity: 1, y: 0 }}
@@ -49,7 +47,7 @@ export const AnimateModal = ({ isOpen, handleClose, children, className }: TPriv
       )}
     </AnimatePresence>
   ) : (
-    <Drawer direction="bottom" open={open} onAnimationEnd={() => handleClose()} onOpenChange={setOpen}>
+    <Drawer direction="bottom" open={isOpen} onOpenChange={setIsOpen}>
       <DrawerContent
         className="fixed bottom-0 left-0 right-0 flex h-[80vh] flex-col rounded-t-[4px] bg-white outline-none"
         forceMount

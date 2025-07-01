@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,15 +13,15 @@ import { privacyContent, privacyVersionDateList } from '../config/const';
 
 type TPrivacyModalProps = {
   isOpen: boolean;
-  handleClose: () => void;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export const PrivacyModal = ({ isOpen, handleClose }: TPrivacyModalProps) => {
+export const PrivacyModal = ({ isOpen, setIsOpen }: TPrivacyModalProps) => {
   const [date, setDate] = useState(privacyVersionDateList[0].date);
   const selectSeq = privacyVersionDateList.find(item => item.date === date)?.seq || 0;
 
   return (
-    <AnimateModal handleClose={handleClose} isOpen={isOpen}>
+    <AnimateModal isOpen={isOpen} setIsOpen={setIsOpen}>
       <Label>개정 이전 내용 조회</Label>
       <Select value={date} onValueChange={setDate}>
         <SelectTrigger className="mt-2 w-full">
@@ -34,7 +35,7 @@ export const PrivacyModal = ({ isOpen, handleClose }: TPrivacyModalProps) => {
           ))}
         </SelectContent>
       </Select>
-      <button onClick={handleClose}>
+      <button onClick={() => setIsOpen(false)}>
         <MdClose className="absolute right-8 top-4 h-6 w-6 text-gray-500 hover:text-gray-700" />
       </button>
       <div className="space-y-2">
@@ -44,7 +45,7 @@ export const PrivacyModal = ({ isOpen, handleClose }: TPrivacyModalProps) => {
           </p>
         ))}
       </div>
-      <Button className="mt-4 w-full" variant="default" onClick={handleClose}>
+      <Button className="mt-4 w-full" variant="default" onClick={() => setIsOpen(false)}>
         확인했습니다
       </Button>
     </AnimateModal>

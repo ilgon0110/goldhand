@@ -46,7 +46,7 @@ export function ImageSlideList() {
         </CarouselContent>
       </Carousel>
       <div
-        className={`${gowunDodumFont.className} absolute top-1/2 flex -translate-y-1/2 flex-col justify-center px-4 text-sm md:px-9 md:text-base lg:text-xl`}
+        className={`${gowunDodumFont.className} absolute top-1/2 flex -translate-y-1/2 flex-col justify-center px-4 text-sm md:px-[10vw] md:text-base lg:text-xl`}
       >
         <span
           className={`break-keep text-center text-4xl leading-relaxed text-white md:text-left xl:text-[72px]`}
@@ -55,7 +55,7 @@ export function ImageSlideList() {
           고운황금손 카피라이트 한줄
         </span>
         <div
-          className="flex flex-col space-y-1 text-2xl text-white"
+          className="flex flex-col space-y-1 text-base text-white md:text-2xl"
           style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
         >
           <span>아기를 맞이하는 순간 고운황금손이 기쁨으로 다가가겠습니다.</span>

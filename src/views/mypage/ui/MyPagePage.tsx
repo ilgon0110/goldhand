@@ -62,9 +62,7 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
 
   return (
     <div>
-      {withDrawalModalOpen && (
-        <WithdrawalModal handleClose={() => setWithDrawalModalOpen(false)} isOpen={withDrawalModalOpen} />
-      )}
+      {withDrawalModalOpen && <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />}
       <SectionTitle buttonTitle="" title="고운황금손 마이페이지" onClickButtonTitle={() => {}} />
       <div className="relative mt-6 w-full rounded border border-slate-300 p-3 md:p-11">
         <div className="flex flex-row justify-between">

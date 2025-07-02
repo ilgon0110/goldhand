@@ -14,10 +14,10 @@ import { privacyContent, privacyVersionDateList } from '@/src/widgets/Privacy';
 
 type TWithdrawalModalProps = {
   isOpen: boolean;
-  handleClose: () => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function WithdrawalModal({ isOpen, handleClose }: TWithdrawalModalProps) {
+export function WithdrawalModal({ isOpen, setIsOpen }: TWithdrawalModalProps) {
   const router = useRouter();
   const [date, setDate] = useState(privacyVersionDateList[0].date);
   const [isChecked, setIsChecked] = useState<CheckedState>(false);
@@ -49,12 +49,12 @@ export function WithdrawalModal({ isOpen, handleClose }: TWithdrawalModalProps) 
       console.error('회원탈퇴 중 오류 발생:', error);
       toastError('회원탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
-      handleClose();
+      setIsOpen(false);
     }
   };
 
   return (
-    <AnimateModal className="w-[500px]" handleClose={handleClose} isOpen={isOpen}>
+    <AnimateModal className="w-[500px]" isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="flex flex-col items-center justify-center p-6">
         <h2 className="mb-4 text-xl font-semibold">회원 탈퇴</h2>
         <div className="flex space-x-4">
@@ -72,7 +72,7 @@ export function WithdrawalModal({ isOpen, handleClose }: TWithdrawalModalProps) 
                 ))}
               </SelectContent>
             </Select>
-            <button onClick={handleClose}>
+            <button onClick={() => setIsOpen(false)}>
               <MdClose className="absolute right-8 top-4 h-6 w-6 text-gray-500 hover:text-gray-700" />
             </button>
             <div className="space-y-2">

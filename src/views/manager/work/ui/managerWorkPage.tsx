@@ -7,17 +7,16 @@ import { BabyCardInfo, FamilyCardInfo, ManagerWorkCard, MotherCardInfo, StudentC
 export const ManagerWorkPage = () => {
   return (
     <div className="mt-14 pb-[20vw] md:pb-0">
-      <div className="mx-auto max-w-[50vw]">
+      <div className="mx-auto w-full px-4 md:max-w-[50vw]">
         <SectionTitle buttonTitle="" title="산후관리사가 하는 일" onClickButtonTitle={() => {}} />
-        <div className="mt-4 flex flex-col gap-1 whitespace-pre-wrap break-keep text-center text-sm leading-6 lg:text-base xl:text-lg">
+        <div className="mt-4 flex flex-col gap-1 whitespace-pre-wrap break-keep text-center text-base md:first-letter:leading-6 lg:text-lg">
           산후관리사는 산모와 신생아 그리고 직계 가족(남편, 아이들)에 관련된 일을 주로 수행합니다.
           <br />
-          산모와 신생아 보호를 최우선으로 합니다.
-          <br />
+          <span className="font-bold">산모와 신생아 보호를 최우선으로 합니다.</span>
           기타 가족이 포함된 가사 일을 지원할 경우는 별도 규정에 따릅니다.
         </div>
       </div>
-      <div className="mt-14 grid grid-cols-1 gap-6 px-4 md:grid-cols-2 md:gap-12 md:px-[10vw]">
+      <div className="mt-14 grid grid-cols-1 gap-6 px-4 md:grid-cols-2 md:gap-12 md:px-[10vw] lg:grid-cols-4">
         <ManagerWorkCard
           contentList={MotherCardInfo.contentList}
           iconSrc={MotherCardInfo.iconSrc}
@@ -39,15 +38,15 @@ export const ManagerWorkPage = () => {
           title={FamilyCardInfo.title}
         />
       </div>
-      <div className="relative mt-20 flex flex-col bg-[#F5F5F5] md:block">
-        <div className="order-2 h-[53vw] w-full bg-[#728146] md:absolute md:right-0 md:order-1 md:h-full md:w-[40%]" />
-        <div className="absolute -bottom-[18vw] h-[66vw] w-[100vw] md:bottom-0 md:right-0 md:h-[30vw] md:w-[45vw]">
+      <div className="relative mt-20 flex flex-col bg-[#F5F5F5] lg:block">
+        <div className="order-2 h-[53vw] w-full bg-[#728146] lg:absolute lg:right-0 lg:order-1 lg:h-full lg:w-[40%]" />
+        <div className="absolute -bottom-[18vw] h-[66vw] w-[100vw] lg:bottom-0 lg:right-0 lg:h-[30vw] lg:w-[45vw]">
           <Image alt="산후관리사가 하는 일 설명 이미지" fill sizes="100vw" src="/woman_group.png" />
         </div>
-        <div className="p-4 text-center text-2xl font-bold md:pl-[10vw] md:pt-9 md:text-start md:text-5xl">
+        <div className="p-4 text-center text-2xl font-bold lg:pl-[10vw] lg:pt-9 lg:text-start lg:text-5xl">
           산후관리사에 대한 기본 에티켓
         </div>
-        <div className="w-full space-y-10 break-keep px-8 pb-8 text-center text-base md:mt-8 md:w-[50vw] md:pl-[10vw] md:text-start md:text-xl">
+        <div className="w-full space-y-10 break-keep px-8 pb-8 text-center text-base lg:mt-8 lg:w-[50vw] lg:pl-[10vw] lg:text-start lg:text-xl">
           <div className="w-full">
             산후관리사는 <span className="font-bold">산모와 신생아를 돌보는 것이 주 업무</span>로 발코니 또는 대청소,
             커튼/이불/빨래, 김치담그기, 손님상 차리기 등 산후관리와 직접적인 연관이 없는 일은 하지 않습니다.{' '}

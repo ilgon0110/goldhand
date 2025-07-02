@@ -15,7 +15,7 @@ export async function HomePage() {
       <section>
         <ImageSlideList />
       </section>
-      <section className="-mt-12 md:px-[10vw]">
+      <section className="-mt-12 px-4 md:px-[10vw]">
         <MainTitle />
       </section>
       <section className="mt-24 space-y-10 px-4 md:space-y-32 md:px-[10vw]">

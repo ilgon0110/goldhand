@@ -37,14 +37,14 @@ export const PriceList = () => {
         title="고운황금손 이용요금"
         onClickButtonTitle={onClickButtonTitle}
       />
-      <div className="mt-10 flex h-fit flex-row items-center justify-center gap-7">
+      <div className="mt-4 flex h-fit flex-row items-center justify-center gap-7 md:mt-10">
         <TypeButton selectedType={type} type="출퇴근형" onChangeType={onChangeType} />
         <div className="h-8 w-[1px] bg-[#D9D9D9]" />
         <TypeButton selectedType={type} type="입주형" onChangeType={onChangeType} />
         <div className="h-8 w-[1px] bg-[#D9D9D9]" />
         <TypeButton selectedType={type} type="실속형" onChangeType={onChangeType} />
       </div>
-      <div className="mt-16 flex flex-col items-baseline justify-center gap-12 md:flex-row">
+      <div className="mt-4 flex flex-col items-baseline justify-center gap-3 md:mt-16 md:flex-row md:gap-12">
         {type === '출퇴근형' && (
           <>
             <PriceCard checkList={basicCheckList} description="" priceList={basicPriceList} title="베이직" />

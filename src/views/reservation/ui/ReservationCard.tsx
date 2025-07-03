@@ -93,7 +93,7 @@ export const ReservationCard = ({
       if (passwordResponseData.response === 'ok') {
         router.push(`/reservation/list/${docId}`);
       } else {
-        toastError('비밀번호가 틀립니다.');
+        toastError(passwordResponseData.message);
       }
     } catch (error) {
       console.error('Error during form submission:', error);

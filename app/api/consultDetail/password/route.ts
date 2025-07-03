@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { doc, getDoc, getFirestore, Timestamp } from 'firebase/firestore';
-import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -11,6 +11,12 @@ interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
   data: IConsultDetailData;
+  reservationToken: string | null;
+}
+
+interface IConsultDetailRequestBody {
+  docId: string;
+  password: string | null;
 }
 
 const defaultData: IConsultDetailData = {
@@ -29,13 +35,8 @@ const defaultData: IConsultDetailData = {
   comments: null,
 };
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const docId = searchParams.get('docId');
-  const password = searchParams.get('password');
-
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken');
+export async function POST(request: NextRequest) {
+  const { docId, password } = (await request.json()) as IConsultDetailRequestBody;
 
   if (!docId) {
     return typedJson<IResponseBody>(
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
         response: 'ng',
         message: 'docId is required',
         data: defaultData,
+        reservationToken: null,
       },
       { status: 400 },
     );
@@ -59,6 +61,7 @@ export async function GET(request: NextRequest) {
           response: 'ng',
           message: 'no such document',
           data: defaultData,
+          reservationToken: null,
         },
         { status: 404 },
       );
@@ -74,6 +77,7 @@ export async function GET(request: NextRequest) {
             response: 'unAuthorized',
             message: 'password is required',
             data: defaultData,
+            reservationToken: null,
           },
           { status: 400 },
         );
@@ -87,18 +91,26 @@ export async function GET(request: NextRequest) {
             response: 'unAuthorized',
             message: '비밀번호가 틀립니다.',
             data: defaultData,
+            reservationToken: null,
           },
           { status: 403 },
         );
       }
     }
 
-    const responseData: IResponseBody = {
-      response: 'ok',
-      message: 'ok',
-      data: { ...data },
-    };
-    return typedJson<IResponseBody>(responseData, { status: 200 });
+    // 인증 토큰을 쿠키에 저장 - 클라이언트 서버 액션에서 저장할 예정
+    const jwtToken = jwt.sign({ docId }, process.env.JWT_SECRET!, {
+      expiresIn: '1minutes',
+    });
+    return typedJson<IResponseBody>(
+      {
+        response: 'ok',
+        message: 'ok',
+        data: { ...data },
+        reservationToken: jwtToken,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Error getting document:', error);
     const errorCode =
@@ -110,6 +122,7 @@ export async function GET(request: NextRequest) {
         response: 'ng',
         message: errorCode,
         data: defaultData,
+        reservationToken: null,
       },
       { status: 500 },
     );

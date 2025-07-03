@@ -92,7 +92,7 @@ export const ReservationFormPage = ({
         toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
         // 3초 후에 페이지 이동
         setTimeout(() => {
-          router.replace(`/reservation/list/${data.docId || docId}?password=${values.password}`);
+          router.replace(`/reservation/list/${data.docId || docId}`);
         }, 3000);
       } else {
         toastError(`상담 신청에 실패했습니다.\n${data.message}`);
@@ -105,7 +105,9 @@ export const ReservationFormPage = ({
     }
   };
 
-  const isMember = userData.userData != null || userData.response === 'unAuthorized';
+  const isMemberAndCreateMode = userData.userData?.userId != null && consultDetailData.data == null;
+  const isNonMemberAndSecret =
+    consultDetailData.data && consultDetailData.data.secret && consultDetailData.data?.userId == null;
 
   useEffect(() => {
     form.trigger();
@@ -156,7 +158,7 @@ export const ReservationFormPage = ({
                 </FormItem>
               )}
             />
-            {!isMember && (
+            {(isNonMemberAndSecret || isMemberAndCreateMode) && (
               <FormField
                 control={form.control}
                 defaultValue={undefined}
@@ -169,7 +171,7 @@ export const ReservationFormPage = ({
                     <FormControl>
                       <Input placeholder="게시글 수정, 삭제를 위한 비밀번호를 입력해주세요." {...field} />
                     </FormControl>
-                    <FormDescription></FormDescription>
+                    <FormDescription>비회원으로 예약하실 경우에만 사용됩니다.</FormDescription>
                     <FormMessage>{form.formState.errors.password?.message}</FormMessage>
                   </FormItem>
                 )}

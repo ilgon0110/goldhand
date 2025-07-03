@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -18,6 +18,7 @@ import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 import { Comment, useComments } from '@/widgets/Comment';
 
+import { passwordPostAction } from '../../list/api/passwordPostAction';
 import { consultCommentSchema, detailPasswordFormSchema } from '../config/consultCommentSchema';
 
 type TReservationDetailPageProps = {
@@ -99,27 +100,18 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
 
     try {
       setIsPasswordSubmitting(true);
-      const res = await fetch(`/api/consultDetail/password?docId=${docId}&password=${password}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
+      const passwordResponseData = await passwordPostAction(docId, password);
 
-      if (data.response === 'ok') {
+      if (passwordResponseData.response === 'ok') {
         // 수정하기 버튼 클릭 시
         if (updateButtonName === 'EDIT') {
-          router.push(`/reservation/form?docId=${docId}&password=${password}`);
+          router.push(`/reservation/form?docId=${docId}`);
           return;
         }
         // 삭제하기 버튼 클릭 시
         setAlertDialogOpen(true);
-      } else if (data.response === 'unAuthorized') {
-        toastError('비밀번호가 틀립니다.');
-        passwordForm.reset();
-      } else if (data.response === 'expired') {
-        toastError('로그인 후 이용해주세요.');
+      } else {
+        toastError(passwordResponseData.message);
         passwordForm.reset();
       }
     } catch (error) {
@@ -138,7 +130,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
       setDialogOpen(true);
     } else {
       // 수정 Form으로 이동
-      router.push(`/reservation/form?docId=${docId}&password=${''}`);
+      router.push(`/reservation/form?docId=${docId}`);
     }
   };
 
@@ -153,16 +145,6 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
       setAlertDialogOpen(true);
     }
   };
-
-  const handleAlertDialogOpen = useCallback(
-    (open: boolean) => {
-      setAlertDialogOpen(open);
-      if (!open) {
-        setDialogOpen(false);
-      }
-    },
-    [setAlertDialogOpen, setDialogOpen],
-  );
 
   const onhandleDeleteActionClick = async () => {
     try {

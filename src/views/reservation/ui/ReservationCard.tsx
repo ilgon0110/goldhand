@@ -25,6 +25,7 @@ import { Input } from '@/src/shared/ui/input';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { toastError } from '@/src/shared/utils';
 
+import { passwordPostAction } from '../list/api/passwordPostAction';
 import { detailFormSchema } from '../list/config/detailFormSchema';
 
 type TReservationCardProps = {
@@ -75,7 +76,7 @@ export const ReservationCard = ({
     }
 
     // 비밀글이 아닌 경우 상세 페이지로 이동
-    router.push(`/reservation/list/${docId}?password=${''}`);
+    router.push(`/reservation/list/${docId}`);
   };
 
   // 비밀글인 경우 비밀번호 검증 후 상세 페이지로 이동
@@ -87,15 +88,10 @@ export const ReservationCard = ({
     // 비밀번호 검증 후 상세 페이지로 이동
     try {
       setIsSubmitting(true);
-      const res = await fetch(`/api/consultDetail/password?docId=${docId}&password=${values.password}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
-      if (data.response === 'ok') {
-        router.push(`/reservation/list/${docId}?password=${values.password}`);
+      const passwordResponseData = await passwordPostAction(docId, values.password);
+
+      if (passwordResponseData.response === 'ok') {
+        router.push(`/reservation/list/${docId}`);
       } else {
         toastError('비밀번호가 틀립니다.');
       }

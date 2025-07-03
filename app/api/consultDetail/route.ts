@@ -1,8 +1,11 @@
-import bcrypt from 'bcryptjs';
 import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, Timestamp } from 'firebase/firestore';
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import jwt from 'jsonwebtoken';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { ICommentData, IConsultDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -31,8 +34,9 @@ const defaultData: IConsultDetailData = {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const docId = searchParams.get('docId');
-  const password = searchParams.get('password');
-  const userId = searchParams.get('userId') || null;
+  const cookieStore = cookies();
+  const accessToken = cookieStore.get('accessToken');
+  const reservationToken = cookieStore.get('reservationToken');
 
   if (!docId) {
     return typedJson<IResponseBody>(
@@ -66,22 +70,12 @@ export async function GET(request: NextRequest) {
     if (data.secret) {
       // 비밀글&비회원
       if (data.userId == null) {
-        if (password == null) {
+        const decoded = jwt.verify(reservationToken?.value || '', process.env.JWT_SECRET!) as { docId: string } | null;
+        if (reservationToken == null || decoded == null || decoded.docId !== docId) {
           return typedJson<IResponseBody>(
             {
               response: 'ng',
-              message: '비밀번호가 필요합니다.',
-              data: defaultData,
-            },
-            { status: 403 },
-          );
-        }
-        const isMatch = await bcrypt.compare(password, data.password || '');
-        if (!isMatch) {
-          return typedJson<IResponseBody>(
-            {
-              response: 'ng',
-              message: '비밀번호가 틀립니다.',
+              message: '비밀글 인증에 실패하였습니다.',
               data: defaultData,
             },
             { status: 403 },
@@ -90,7 +84,9 @@ export async function GET(request: NextRequest) {
       }
       // 비밀글&회원
       else {
-        if (userId !== data.userId) {
+        const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value || '');
+        const uid = decodedToken.uid;
+        if (uid !== data.userId) {
           return typedJson<IResponseBody>(
             {
               response: 'unAuthorized',
@@ -111,6 +107,7 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data(),
     })) as ICommentData[];
+
     // 비밀번호가 맞거나 비밀글이 아닐 경우
     const responseData: IResponseBody = {
       response: 'ok',

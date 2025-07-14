@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import type { IConsultResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
@@ -205,6 +206,9 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
       }),
     });
   };
+
+  // Firebase Analytics 이벤트 로깅
+  useScreenView(`reservation_detail_${docId}`, 'ReservationDetailPage', { doc_id: docId });
 
   if (data.response === 'ng') {
     throw new Error(data.message);

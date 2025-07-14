@@ -60,6 +60,33 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
     }
   };
 
+  if (!!myPageData.data.userData == true && !myPageData.data.isLinked) {
+    return (
+      <>
+        <SectionTitle buttonTitle="" title="고운황금손 마이페이지" onClickButtonTitle={() => {}} />
+        <div className="mt-12 flex flex-col items-center justify-center space-y-4">
+          <span className="text-xl font-bold">
+            {myPageData.data.userData.provider}로 로그인은 완료했으나, 아직 회원가입을 하지 않으셨습니다.
+          </span>
+          <span className="text-[#728146]">회원가입을 먼저 진행해주세요.</span>
+          <div className="space-x-3">
+            <Button
+              className=""
+              onClick={() => {
+                router.push('/signup');
+              }}
+            >
+              회원가입
+            </Button>
+            <Button className="" variant="outline" onClick={onClickLogout}>
+              로그아웃
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div>
       {withDrawalModalOpen && <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />}

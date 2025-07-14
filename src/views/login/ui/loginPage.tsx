@@ -13,12 +13,15 @@ import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
-import useNaverInit from '@/src/views/login/hooks/useNaverInit';
 
 import { naverLoginAction } from '../hooks/naverLoginAction';
+import { useKakaoLogin } from '../hooks/useKakaoLogin';
+import useNaverInit from '../hooks/useNaverInit';
 
 export const LoginPage = () => {
   useNaverInit();
+  //useKakaoInit();
+  const { isLoading: isKakaoLoading } = useKakaoLogin();
   const auth = getAuth(firebaseApp);
   const router = useRouter();
   const params = useParams();
@@ -104,17 +107,20 @@ export const LoginPage = () => {
   return (
     <div className="flex flex-col items-center">
       <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={() => {}} />
-      {isLoading && <GridLoadingSpinner text="로그인중..." />}
+      {(isLoading || isKakaoLoading) && <GridLoadingSpinner text="로그인중..." />}
       {isPending && <GridLoadingSpinner text="회원가입 유무 확인중..." />}
       {!isLoading && !isPending && (
         <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
           <AuthLoginButton
-            className="cursor-not-allowed opacity-40"
+            className=""
             color="yellow"
-            disabled
             iconSrc="/icon/kakaotalk.png"
             title="카카오로 로그인하기(준비중)"
-            onClick={() => {}}
+            onClick={() => {
+              router.push(
+                `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL}&response_type=code`,
+              );
+            }}
           />
           <button className="hidden" id="naverIdLogin" ref={naverRef} />
           <AuthLoginButton

@@ -2,14 +2,18 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useTransition } from 'react';
 
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
 import { FAQItem, FAQItemList, OrderCard, orderCardList } from '../index';
 
 export const ReservationPage = () => {
   const [height, setHeight] = useState(0);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,8 +29,15 @@ export const ReservationPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleApplyClick = () => {
+    startTransition(() => {
+      router.push('/reservation/apply');
+    });
+  };
+
   return (
     <div>
+      {isPending && <LoadingSpinnerOverlay text="신청 페이지 이동중.." />}
       <div className="flex flex-col items-center justify-center">
         <SectionTitle buttonTitle="" title="고운황금손 예약상담" onClickButtonTitle={() => {}} />
         <div className="relative mt-14">
@@ -85,12 +96,12 @@ export const ReservationPage = () => {
           ))}
         </div>
         <div className="mt-10 flex flex-col items-center justify-center space-y-2 md:space-y-4">
-          <Link
+          <button
             className="mx-auto flex items-center justify-center rounded-full bg-[#728146] px-16 py-4 text-lg text-white transition-all duration-300 ease-in-out hover:bg-[#062E16] md:py-6 md:text-2xl"
-            href="reservation/apply"
+            onClick={handleApplyClick}
           >
             예약상담 신청하기
-          </Link>
+          </button>
         </div>
       </div>
     </div>

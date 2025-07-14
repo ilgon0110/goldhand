@@ -1,6 +1,7 @@
 import type { IConsultResponseData, IUserResponseData } from '@/src/shared/types';
 import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
 
+import { ReservationEditPage } from './ReservationEditPage';
 import { ReservationFormPage } from './ReservationFormPage';
 
 export const ReservationRecaptchaProvider = ({
@@ -8,11 +9,15 @@ export const ReservationRecaptchaProvider = ({
   consultDetailData,
 }: {
   userData: IUserResponseData;
-  consultDetailData: IConsultResponseData;
+  consultDetailData?: IConsultResponseData;
 }) => {
   return (
     <MyGoogleCaptcha>
-      <ReservationFormPage consultDetailData={consultDetailData} userData={userData} />
+      {consultDetailData ? (
+        <ReservationEditPage consultDetailData={consultDetailData} userData={userData} />
+      ) : (
+        <ReservationFormPage userData={userData} />
+      )}
     </MyGoogleCaptcha>
   );
 };

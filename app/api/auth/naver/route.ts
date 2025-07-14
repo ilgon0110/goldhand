@@ -60,6 +60,8 @@ async function saveUserProfile(uid: string, email: string) {
     phoneNumber: '',
     isDeleted: false,
     deletedAt: null,
+    kakaoId: null,
+    kakaoEmail: null,
   };
   return await setDoc(doc(db, 'users', uid), defaultUserData);
 }

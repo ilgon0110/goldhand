@@ -50,7 +50,7 @@ export const Header = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const onChangeMobileMenuOpen = () => {
+  const handleChangeMobileMenuOpen = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
@@ -148,7 +148,7 @@ export const Header = () => {
         </div>
         {/* 햄버거 icon, 모바일 헤더 부분 */}
         <div className="lg:hidden">
-          <Drawer direction="right" open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <Drawer direction="right" open={mobileMenuOpen} onOpenChange={open => setMobileMenuOpen(open)}>
             <DrawerTrigger>
               <span className="sr-only">메뉴 열기</span>
               <svg
@@ -176,7 +176,7 @@ export const Header = () => {
                         </div>
                       </DrawerTitle>
                       <DrawerDescription className="sr-only">모바일 헤더</DrawerDescription>
-                      <MoblieHeaderContent onChangeMobileMenuOpen={onChangeMobileMenuOpen} />
+                      <MoblieHeaderContent onChangeMobileMenuOpen={handleChangeMobileMenuOpen} />
                     </div>
                   </div>
                 </DrawerHeader>
@@ -192,112 +192,68 @@ export const Header = () => {
 
 const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpen: () => void }) => {
   const { isSignedIn, pending } = useAuthState();
+  const handleChangeMobileMenuOpen = () => {
+    onChangeMobileMenuOpen();
+  };
   return (
     <div className="flex flex-col gap-4 lg:hidden">
       <Link
         className="font-semibold leading-6 text-gray-900"
         href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
-        onClick={onChangeMobileMenuOpen}
+        onClick={handleChangeMobileMenuOpen}
       >
         <UlButton enText="" text={pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'} />
       </Link>
-      <Link className="font-semibold leading-6 text-gray-900" href={URLS.COMPANY} onClick={onChangeMobileMenuOpen}>
+      <Link className="font-semibold leading-6 text-gray-900" href={URLS.COMPANY} onClick={handleChangeMobileMenuOpen}>
         <UlButton enText="Gold Baby" text="고운황금손" />
       </Link>
-      <UlButton
-        accordionChildren={
-          <div className="flex w-full flex-col items-center justify-center gap-6 pt-6 text-base">
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.MANAGER.ABOUT}
-              onClick={onChangeMobileMenuOpen}
-            >
-              산후관리사란?
-            </Link>
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.MANAGER.WORK}
-              onClick={onChangeMobileMenuOpen}
-            >
-              산후관리사가 하는 일
-            </Link>
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.MANAGER.APPLY}
-              onClick={onChangeMobileMenuOpen}
-            >
-              산후관리사 지원하기
-            </Link>
-          </div>
-        }
-        enText="Service"
-        isAccordion={true}
-        text="산후관리사"
-      />
-      <UlButton
-        accordionChildren={
-          <div className="flex w-full flex-col items-center justify-center gap-4 py-3">
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.RENTAL}
-              onClick={onChangeMobileMenuOpen}
-            >
-              대여물품
-            </Link>
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.PRICE}
-              onClick={onChangeMobileMenuOpen}
-            >
-              이용요금
-            </Link>
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.VOUCHER}
-              onClick={onChangeMobileMenuOpen}
-            >
-              정부지원바우처
-            </Link>
-          </div>
-        }
-        enText="Price"
-        isAccordion={true}
-        text="이용안내"
-      />
+      <UlButton enText="Service" text="산후관리사">
+        <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+          <Link href={URLS.MANAGER.ABOUT} onClick={handleChangeMobileMenuOpen}>
+            산후관리사란?
+          </Link>
+          <Link href={URLS.MANAGER.WORK} onClick={handleChangeMobileMenuOpen}>
+            산후관리사가 하는 일
+          </Link>
+          <Link href={URLS.MANAGER.APPLY} onClick={handleChangeMobileMenuOpen}>
+            산후관리사 지원하기
+          </Link>
+        </div>
+      </UlButton>
+      <UlButton enText="Price" text="이용안내">
+        <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+          <Link href={URLS.RENTAL} onClick={handleChangeMobileMenuOpen}>
+            대여물품
+          </Link>
+          <Link href={URLS.PRICE} onClick={handleChangeMobileMenuOpen}>
+            이용요금
+          </Link>
+          <Link href={URLS.VOUCHER} onClick={handleChangeMobileMenuOpen}>
+            정부지원바우처
+          </Link>
+        </div>
+      </UlButton>
       <Link
-        className="text-sm font-semibold leading-6 text-gray-900"
+        className="text-base font-semibold leading-6 text-gray-900"
         href={URLS.FRANCHISEE}
-        onClick={onChangeMobileMenuOpen}
+        onClick={handleChangeMobileMenuOpen}
       >
         <UlButton enText="Franchisee" text="지점안내" />
       </Link>
-      <UlButton
-        accordionChildren={
-          <div className="flex w-full flex-col items-center justify-center gap-4 py-3">
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.RESERVATION.APPLY}
-              onClick={onChangeMobileMenuOpen}
-            >
-              상담신청
-            </Link>
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              href={URLS.RESERVATION.LIST}
-              onClick={onChangeMobileMenuOpen}
-            >
-              신청목록
-            </Link>
-          </div>
-        }
-        enText="Consult"
-        isAccordion={true}
-        text="예약상담"
-      />
+      <UlButton enText="Consult" text="예약상담">
+        <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+          <Link href={URLS.RESERVATION.APPLY} onClick={handleChangeMobileMenuOpen}>
+            상담신청
+          </Link>
+          <Link href={URLS.RESERVATION.LIST} onClick={handleChangeMobileMenuOpen}>
+            신청목록
+          </Link>
+        </div>
+      </UlButton>
       <Link
         className="text-sm font-semibold leading-6 text-gray-900"
         href={URLS.REVIEW}
-        onClick={onChangeMobileMenuOpen}
+        onClick={handleChangeMobileMenuOpen}
       >
         <UlButton enText="Review" text="이용후기" />
       </Link>
@@ -310,23 +266,21 @@ const UlButton = forwardRef(
     {
       text,
       enText,
-      isAccordion,
-      accordionChildren,
+      children,
     }: {
       text: string;
       enText?: string;
-      isAccordion?: boolean;
-      accordionChildren?: React.ReactNode;
+      children?: React.ReactNode;
     },
     ref,
   ) => {
-    return isAccordion ? (
+    return children ? (
       <Accordion className="text-black lg:hidden" collapsible type="single">
         <AccordionItem value="item-1">
-          <AccordionTrigger className="relative flex items-center justify-center py-2 text-sm font-semibold">
+          <AccordionTrigger className="relative flex items-center justify-center py-2 text-base font-semibold">
             {text}
           </AccordionTrigger>
-          <AccordionContent>{accordionChildren}</AccordionContent>
+          <AccordionContent>{children}</AccordionContent>
         </AccordionItem>
       </Accordion>
     ) : (

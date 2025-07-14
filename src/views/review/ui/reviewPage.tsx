@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useQueryStates } from 'nuqs';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
 import { reviewParams } from '@/src/shared/searchParams';
 import { Button } from '@/src/shared/ui/button';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import {
   Select,
@@ -29,6 +30,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
   const [reviewParam, setReviewParam] = useQueryStates(reviewParams, {
     shallow: false,
   });
+  const [isPending, startTransition] = useTransition();
   const generateReviewThumbnailSrc = (htmlString: string) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
@@ -80,6 +82,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
 
   return (
     <div>
+      {isPending && <LoadingSpinnerOverlay text="페이지 이동중.." />}
       <SectionTitle buttonTitle="" title="이용 후기" onClickButtonTitle={() => {}} />
       <div className="flex w-full flex-col items-baseline justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
         <div className="flex w-full flex-row justify-between gap-2 sm:justify-normal">
@@ -140,7 +143,11 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
         <Button
           className={cn('', !isLogin && 'opacity-20 hover:cursor-not-allowed')}
           disabled={!isLogin}
-          onClick={() => router.push('/review/form')}
+          onClick={() => {
+            startTransition(() => {
+              router.push('/review/form');
+            });
+          }}
         >
           {isLogin ? '후기 남기기' : '로그인 후 작성 가능'}
         </Button>
@@ -161,17 +168,15 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
             thumbnail={generateReviewThumbnailSrc(review.htmlString)}
             title={review.title}
             viewMode={viewMode}
-            onClick={() => router.push(`/review/${review.id}`)}
+            onClick={() => {
+              startTransition(() => {
+                router.push(`/review/${review.id}`);
+              });
+            }}
           />
         ))}
       </section>
       <section className="mt-6">
-        {/* <ReviewPagination
-          dataLength={data.totalDataLength}
-          maxColumnNumber={10}
-          reviewParam={reviewParam}
-          setReviewParam={setReviewParam}
-        /> */}
         <WidgetPagination
           maxColumnNumber={10}
           targetPage={reviewParam.page}

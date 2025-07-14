@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { Label } from '@/src/shared/ui/label';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
@@ -43,6 +44,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof consultCommentSchema>>({
     resolver: zodResolver(consultCommentSchema),
@@ -105,7 +107,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
       if (passwordResponseData.response === 'ok') {
         // 수정하기 버튼 클릭 시
         if (updateButtonName === 'EDIT') {
-          router.push(`/reservation/form?docId=${docId}`);
+          router.push(`/reservation/edit?docId=${docId}`);
           return;
         }
         // 삭제하기 버튼 클릭 시
@@ -130,7 +132,9 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
       setDialogOpen(true);
     } else {
       // 수정 Form으로 이동
-      router.push(`/reservation/form?docId=${docId}`);
+      startTransition(() => {
+        router.push(`/reservation/edit?docId=${docId}`);
+      });
     }
   };
 
@@ -208,6 +212,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
 
   return (
     <>
+      {isPending && <LoadingSpinnerOverlay text="페이지 이동중.." />}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <div className="relative flex flex-col gap-2">
           <h3 className="text-xl font-bold md:text-3xl">{data.data.title}</h3>

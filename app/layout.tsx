@@ -70,6 +70,7 @@ export default function RootLayout({
             <Footer />
             <ToastContainer />
           </ThemeProvider>
+          <Script src="https://developers.kakao.com/sdk/js/kakao.js" strategy="beforeInteractive" />
           <Script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" strategy="beforeInteractive" />
           <Script src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}></Script>
         </body>

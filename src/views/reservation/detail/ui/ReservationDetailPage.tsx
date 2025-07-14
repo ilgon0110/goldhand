@@ -208,7 +208,7 @@ export const ReservationDetailPage = ({ data, docId, userData }: TReservationDet
   };
 
   // Firebase Analytics 이벤트 로깅
-  useScreenView(`reservation_detail_${docId}`, 'ReservationDetailPage', { doc_id: docId });
+  useScreenView('ReservationDetailPage', `reservation_detail_${docId}`, { doc_id: docId });
 
   if (data.response === 'ng') {
     throw new Error(data.message);

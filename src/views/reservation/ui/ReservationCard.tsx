@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
+import type { IUserDetailData } from '@/src/shared/types';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +37,7 @@ type TReservationCardProps = {
   isSecret: boolean;
   content: string;
   dataUserId: string | null; // 추가된 부분: 데이터의 userId
+  userData: IUserDetailData | null;
 };
 
 export const ReservationCard = ({
@@ -48,6 +49,7 @@ export const ReservationCard = ({
   isSecret,
   content,
   dataUserId,
+  userData,
 }: TReservationCardProps) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof detailFormSchema>>({
@@ -61,7 +63,6 @@ export const ReservationCard = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const { userData } = useAuthState();
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();

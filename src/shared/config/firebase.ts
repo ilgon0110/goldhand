@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
+import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getApps, initializeApp } from 'firebase/app';
-
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -12,6 +12,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // const allEnv = getEnv();
@@ -21,3 +22,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Export a promise that resolves to analytics instance or undefined
+export const firebaseAnalyticsPromise = isSupported().then(supported =>
+  supported ? getAnalytics(firebaseApp) : undefined,
+);

@@ -3,6 +3,7 @@
 import type { CheckedState } from '@radix-ui/react-checkbox';
 import { useQueryStates } from 'nuqs';
 
+import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import { consultParams } from '@/src/shared/searchParams';
 import type { IConsultDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
@@ -26,6 +27,7 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
   const [consultParam, setConsultParam] = useQueryStates(consultParams, {
     shallow: false,
   });
+  const { userData } = useAuthState();
 
   const toggleHideSecret = (check: CheckedState) => {
     setConsultParam({
@@ -66,6 +68,7 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
               key={item.id}
               spot={item.franchisee}
               title={item.title}
+              userData={userData}
             />
           );
         })}

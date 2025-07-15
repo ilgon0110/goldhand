@@ -13,6 +13,7 @@ import { firebaseAnalyticsPromise } from '../config/firebase';
  * @param screenClass - 컴포넌트 이름 또는 화면 유형 (예: "ReservationDetailPage")
  * @param additionalParams - 이벤트에 포함할 추가 파라미터 (예: { doc_id: "123" })
  */
+
 export const useScreenView = (screenName: string, screenClass: string, additionalParams: Record<string, any> = {}) => {
   useEffect(() => {
     if (!screenName || !screenClass) return;

@@ -24,6 +24,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } fr
 import { Input } from '@/src/shared/ui/input';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { toastError } from '@/src/shared/utils';
+import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
 import { passwordPostAction } from '../list/api/passwordPostAction';
 import { detailFormSchema } from '../list/config/detailFormSchema';
@@ -76,6 +77,12 @@ export const ReservationCard = ({
       return;
     }
 
+    // 조회수 기록
+    const viewRes = sendViewLog(docId);
+    if (!viewRes) {
+      console.error('Failed to send view log');
+    }
+
     // 비밀글이 아닌 경우 상세 페이지로 이동
     router.push(`/reservation/list/${docId}`);
   };
@@ -92,6 +99,12 @@ export const ReservationCard = ({
       const passwordResponseData = await passwordPostAction(docId, values.password);
 
       if (passwordResponseData.response === 'ok') {
+        // 조회수 기록
+        const viewRes = await sendViewLog(docId);
+        if (!viewRes) {
+          console.error('Failed to send view log');
+        }
+
         router.push(`/reservation/list/${docId}`);
       } else {
         toastError(passwordResponseData.message);

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
@@ -28,17 +28,14 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 import { formSchema } from '@/src/views/reservation/form';
 
 export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {
-  const searchParams = useSearchParams();
   const { executeRecaptcha } = useGoogleReCaptcha();
-  const docId = searchParams.get('docId');
-  const password = searchParams.get('password');
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
       name: userData?.userData?.name || '',
-      password: password || '',
+      password: '',
       secret: true,
       franchisee: '',
       phoneNumber: userData?.userData?.phoneNumber || '',
@@ -70,7 +67,6 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
           ...values,
           userId: userData.userData?.userId || null,
           recaptchaToken,
-          docId,
         }),
       });
 
@@ -86,7 +82,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
         toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
         // 3초 후에 페이지 이동
         setTimeout(() => {
-          router.replace(`/reservation/list/${data.docId || docId}`);
+          router.replace(`/reservation/list/${data.docId}`);
         }, 3000);
       } else {
         toastError(`상담 신청에 실패했습니다.\n${data.message}`);

@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: TPageProps) {
   const userData = await getUserData();
   return (
     <Suspense fallback={<LoadingBar />}>
-      <ReviewPage data={data} isLogin={userData.response === 'ok'} />
+      <ReviewPage data={data} isLogin={userData.isLinked} />
     </Suspense>
   );
 }

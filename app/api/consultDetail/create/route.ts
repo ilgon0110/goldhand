@@ -19,6 +19,7 @@ interface IConsultPost {
   name: string;
   phoneNumber: string;
   recaptchaToken: string;
+  userId: string | null;
 }
 
 interface IResponseBody {
@@ -29,7 +30,7 @@ interface IResponseBody {
 
 export async function POST(req: Request) {
   const body = (await req.json()) as IConsultPost;
-  const { title, name, password, secret, franchisee, phoneNumber, location, content, bornDate, recaptchaToken } = body;
+  const { title, name, userId, franchisee, phoneNumber, location, content, recaptchaToken } = body;
 
   if (!title || !content || !location || !name || !phoneNumber || !franchisee || !recaptchaToken) {
     return typedJson<IResponseBody>(
@@ -57,11 +58,15 @@ export async function POST(req: Request) {
   const accessToken = cookieStore.get('accessToken');
 
   try {
-    if (accessToken === undefined) {
+    if (userId == null || accessToken === undefined) {
       return createNonMemberPost(body);
     }
 
     const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+
+    if (uid !== userId) {
+      return typedJson<IResponseBody>({ response: 'ng', message: '유효하지 않은 사용자입니다.' }, { status: 403 });
+    }
 
     // 탈퇴한 유저인지 확인
     const db = getFirestore(firebaseApp);

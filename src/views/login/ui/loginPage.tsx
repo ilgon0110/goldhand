@@ -10,7 +10,7 @@ import { Button } from '@/shared/ui/button';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IUserDetailData } from '@/src/shared/types';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
-import GridLoadingSpinner from '@/src/shared/ui/gridSpinner';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 
@@ -107,30 +107,30 @@ export const LoginPage = () => {
   return (
     <div className="flex flex-col items-center">
       <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={() => {}} />
-      {(isLoading || isKakaoLoading) && <GridLoadingSpinner text="로그인중..." />}
-      {isPending && <GridLoadingSpinner text="회원가입 유무 확인중..." />}
-      {!isLoading && !isPending && (
-        <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
-          <AuthLoginButton
-            className=""
-            color="yellow"
-            iconSrc="/icon/kakaotalk.png"
-            title="카카오로 로그인하기(준비중)"
-            onClick={() => {
-              router.push(
-                `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL}&response_type=code`,
-              );
-            }}
-          />
-          <button className="hidden" id="naverIdLogin" ref={naverRef} />
-          <AuthLoginButton
-            color="green"
-            iconSrc="/icon/naver.png"
-            title="네이버로 로그인하기"
-            onClick={handleNaverLoginClick}
-          />
-        </div>
-      )}
+      {(isLoading || isKakaoLoading) && <LoadingSpinnerOverlay text="로그인 중..." />}
+      {isPending && <LoadingSpinnerOverlay text="회원가입 유무 확인 중..." />}
+      <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
+        <AuthLoginButton
+          className=""
+          color="yellow"
+          disabled={isLoading || isKakaoLoading || isPending}
+          iconSrc="/icon/kakaotalk.png"
+          title="카카오로 로그인하기"
+          onClick={() => {
+            router.push(
+              `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL}&response_type=code`,
+            );
+          }}
+        />
+        <button className="hidden" id="naverIdLogin" ref={naverRef} />
+        <AuthLoginButton
+          color="green"
+          disabled={isLoading || isKakaoLoading || isPending}
+          iconSrc="/icon/naver.png"
+          title="네이버로 로그인하기"
+          onClick={handleNaverLoginClick}
+        />
+      </div>
 
       {/* 재가입 다이얼로그 */}
       <AnimateModal isOpen={isRejoinDialogOpen} setIsOpen={setIsRejoinDialogOpen}>

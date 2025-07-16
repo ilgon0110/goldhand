@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { apiUrl } from './src/shared/config';
+import { getUserData } from './src/shared/api/getUserData';
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
@@ -17,19 +17,12 @@ export async function middleware(request: NextRequest) {
     return res;
   }
 
-  const response = await fetch(`${apiUrl}/api/user`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: `accessToken=${accessToken.value}`,
-    },
-    credentials: 'include',
-  });
+  const response = await getUserData();
 
   const redirectUrl =
     process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? 'https://goldhand.vercel.app' : 'http://127.0.0.1:3000';
 
-  if (!response.ok) {
+  if (response.response !== 'ok') {
     console.log('"middleware : response not ok"');
     const res = NextResponse.next();
     res.headers.set('accessTokens', '');
@@ -41,8 +34,12 @@ export async function middleware(request: NextRequest) {
     if (response) return res;
   }
 
-  if (url.pathname === '/reservation/apply') {
+  if (url.pathname === '/reservation/apply' && response.isLinked) {
     return NextResponse.redirect(`${redirectUrl}/reservation/form`);
+  }
+
+  if (url.pathname === '/login' && response.response === 'ok' && response.isLinked === false) {
+    return NextResponse.redirect(`${redirectUrl}/mypage`);
   }
 
   const res = NextResponse.next();

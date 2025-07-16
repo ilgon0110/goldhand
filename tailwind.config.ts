@@ -21,6 +21,8 @@ const config = {
         mono: ['var(--font-pretendard)', 'Menlo', 'monospace'],
       },
       colors: {
+        kakao: '#FFEB3B',
+        naver: '#2DB400',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

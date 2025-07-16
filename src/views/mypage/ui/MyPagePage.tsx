@@ -1,10 +1,12 @@
 'use client';
 
 import { getAuth, signOut } from 'firebase/auth';
-import { BadgeCheckIcon, CalendarIcon, EditIcon, TextIcon } from 'lucide-react';
+import { BadgeCheckIcon, CalendarIcon, EditIcon, ShieldCheckIcon, TextIcon } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { cn } from '@/lib/utils';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
@@ -89,55 +91,74 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
 
   return (
     <div>
-      {withDrawalModalOpen && <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />}
+      <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />
       <SectionTitle buttonTitle="" title="고운황금손 마이페이지" onClickButtonTitle={() => {}} />
       <div className="relative mt-6 w-full rounded border border-slate-300 p-3 md:p-11">
-        <div className="flex flex-row justify-between">
-          <div className="space-x-2 text-base font-bold md:text-3xl">
-            <span>{myPageData.data.userData?.name || '이름'}</span>
-            <span className="font-medium text-[#728146]">{myPageData.data.userData?.nickname || '닉네임'}</span>
-            <Badge className="bg-blue-500 text-white dark:bg-blue-600" variant="secondary">
-              <BadgeCheckIcon />
-              {myPageData.data.userData?.grade}
-            </Badge>
+        <div className="flex flex-col md:flex-row md:justify-between">
+          <div className="flex flex-col gap-2 text-base font-bold md:flex-row md:items-center md:text-3xl">
+            <div className="space-x-2">
+              <span>{myPageData.data.userData?.name || '이름'}</span>
+              <span className="font-medium text-[#728146]">{myPageData.data.userData?.nickname || '닉네임'}</span>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <Badge
+                className={cn(
+                  myPageData.data.userData?.grade === 'admin'
+                    ? 'space-x-1 bg-primary'
+                    : 'space-x-1 bg-blue-500 text-white dark:bg-blue-600',
+                )}
+              >
+                {myPageData.data.userData?.grade === 'admin' ? <ShieldCheckIcon /> : <BadgeCheckIcon />}
+                <span>{myPageData.data.userData?.grade}</span>
+              </Badge>
+              <Badge
+                className={cn(
+                  myPageData.data.userData?.provider === 'naver' ? 'bg-naver text-white' : 'bg-kakao text-black',
+                  'space-x-1',
+                )}
+              >
+                <Image
+                  alt="icon"
+                  height={24}
+                  src={myPageData.data.userData?.provider === 'naver' ? '/icon/naver.png' : '/icon/kakaotalk.png'}
+                  width={24}
+                />
+                <span>{myPageData.data.userData?.provider}</span>
+              </Badge>
+            </div>
           </div>
-          <div className="space-x-3">
-            <Button
-              className=""
-              onClick={() => {
-                if (myPageData.data.isLinked) {
-                  router.push('/mypage/edit');
-                } else {
-                  router.push('/signup');
-                }
-              }}
-            >
-              {myPageData.data.isLinked ? '수정하기' : '회원가입'}
-            </Button>
-            <Button className="" variant="outline" onClick={onClickLogout}>
-              로그아웃
-            </Button>
-          </div>
-          {myPageData.data.isLinked && (
-            <Button
-              className="absolute bottom-4 right-4 md:bottom-11 md:right-11"
-              variant="destructive"
-              onClick={() => setWithDrawalModalOpen(true)}
-            >
-              회원탈퇴
-            </Button>
-          )}
         </div>
-        <div className="mt-6 flex flex-col gap-4 text-sm md:mt-8 md:flex-row md:gap-9 md:text-xl">
-          <div className="space-x-8">
-            <span>전화번호</span>
+        <div className="mt-4 flex flex-col gap-4 text-sm md:mt-8 md:flex-row md:gap-9 md:text-xl">
+          <div className="space-x-2">
+            <span className="text-slate-500">전화번호</span>
             <span>{myPageData.data.userData?.phoneNumber || '00011112222'}</span>
           </div>
-          <div className="space-x-8">
-            <span>이메일</span>
+          <div className="space-x-2">
+            <span className="text-slate-500">이메일</span>
             <span>{myPageData.data.userData?.email}</span>
           </div>
         </div>
+      </div>
+      <div className="relative mt-4 flex flex-row justify-end gap-3">
+        <Button className="absolute left-0" variant="outline" onClick={onClickLogout}>
+          로그아웃
+        </Button>
+        <Button
+          onClick={() => {
+            if (myPageData.data.isLinked) {
+              router.push('/mypage/edit');
+            } else {
+              router.push('/signup');
+            }
+          }}
+        >
+          {myPageData.data.isLinked ? '수정하기' : '회원가입'}
+        </Button>
+        {myPageData.data.isLinked && (
+          <Button variant="destructive" onClick={() => setWithDrawalModalOpen(true)}>
+            회원탈퇴
+          </Button>
+        )}
       </div>
       {/* 예약 상담 */}
       <div>

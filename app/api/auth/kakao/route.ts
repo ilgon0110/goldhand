@@ -89,7 +89,6 @@ export async function POST(req: Request) {
     });
 
     const kakaoTokenData: IKakaoTokenResponseBody = await kakaoResponse.json();
-    console.log('kakaoTokenData', kakaoTokenData);
 
     if (kakaoResponse.status !== 200) {
       return typedJson<IResponsePostBody>(
@@ -128,7 +127,7 @@ export async function POST(req: Request) {
     // 로그인&회원가입 로직
     const kakaoUserInfo: IKakaoUserInfoResponseBody = await kakaoUserInfoResponse.json();
     const email = kakaoUserInfo.kakao_account.email;
-    console.log('kakaoUserInfo', kakaoUserInfo);
+
     if (!email) {
       return typedJson<IResponsePostBody>(
         {

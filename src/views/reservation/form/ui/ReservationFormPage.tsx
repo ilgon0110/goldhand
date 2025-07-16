@@ -25,7 +25,10 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
+import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 import { formSchema } from '@/src/views/reservation/form';
+
+import { passwordPostAction } from '../../list/api/passwordPostAction';
 
 export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -65,21 +68,25 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
         },
         body: JSON.stringify({
           ...values,
-          userId: userData.userData?.userId || null,
+          userId: userData.isLinked && userData.userData?.userId ? userData.userData?.userId : null,
           recaptchaToken,
         }),
       });
 
       const data = await response.json();
       if (data.response === 'expired') {
-        // 추후 회원인데 비회원 상담 신청 시 로직 구현... 지금은 PASS
-        //setExpiredDialogOpen(true);
         toastError('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
+        router.replace('/login');
         return;
       }
 
       if (data.response === 'ok') {
         toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
+        // 비밀번호 입력된 경우 비밀번호 검증 jwt 쿠키 저장
+        if (values.password) {
+          await passwordPostAction(data.docId, values.password);
+        }
+        await sendViewLog(data.docId);
         // 3초 후에 페이지 이동
         setTimeout(() => {
           router.replace(`/reservation/list/${data.docId}`);
@@ -144,7 +151,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
                 </FormItem>
               )}
             />
-            {userData.userData?.userId == null && (
+            {!userData.isLinked && (
               <FormField
                 control={form.control}
                 defaultValue={undefined}

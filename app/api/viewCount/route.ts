@@ -112,7 +112,6 @@ export async function POST(req: Request) {
 
   // ✅ 2. 조회수 증가 (totalViewCount 필드)
   if (countSnap.exists()) {
-    console.log('Updating existing view count');
     await updateDoc(countRef, {
       totalViewCount: increment(1),
     });

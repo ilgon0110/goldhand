@@ -1,21 +1,82 @@
 import { doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebase/firestore';
+import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import type { IViewCountData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 import { isViewerIdValid } from '@/src/shared/utils/verifyViewId';
 
 const WINDOW_MS = 1000 * 60 * 30;
 
-interface IResponseBody {
+interface IResponseGetBody {
+  response: 'ng' | 'ok';
+  data: IViewCountData | null;
+  message: string;
+}
+
+interface IResponsePostBody {
   response: 'duplicate' | 'ng' | 'ok';
   message: string;
+}
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const docId = searchParams.get('docId');
+
+  if (!docId) {
+    return typedJson<IResponseGetBody>(
+      {
+        response: 'ng',
+        message: 'docId is required',
+        data: null,
+      },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const app = firebaseApp;
+    const db = getFirestore(app);
+    const viewCountDocRef = doc(db, 'viewCounts', docId);
+    const docSnap = await getDoc(viewCountDocRef);
+
+    if (!docSnap.exists()) {
+      return typedJson<IResponseGetBody>(
+        {
+          response: 'ng',
+          message: 'no such document',
+          data: null,
+        },
+        { status: 404 },
+      );
+    }
+
+    return typedJson<IResponseGetBody>(
+      {
+        response: 'ok',
+        message: 'Document found',
+        data: docSnap.data() as IViewCountData,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error('Error fetching view count:', error);
+    return typedJson<IResponseGetBody>(
+      {
+        response: 'ng',
+        message: 'Error fetching view count',
+        data: null,
+      },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: Request) {
   const { docId, viewerId, signature } = await req.json();
 
   if (!isViewerIdValid(viewerId, signature)) {
-    return typedJson<IResponseBody>(
+    return typedJson<IResponsePostBody>(
       {
         response: 'ng',
         message: 'Invalid viewer ID or signature',
@@ -34,7 +95,7 @@ export async function POST(req: Request) {
   const snapshot = await getDoc(logRef);
 
   if (snapshot.exists() && now - snapshot.data().timestamp < WINDOW_MS) {
-    return typedJson<IResponseBody>(
+    return typedJson<IResponsePostBody>(
       {
         response: 'duplicate',
         message: 'View already recorded within the time window',
@@ -60,7 +121,7 @@ export async function POST(req: Request) {
       totalViewCount: 1,
     });
   }
-  return typedJson<IResponseBody>(
+  return typedJson<IResponsePostBody>(
     {
       response: 'ok',
       message: 'View recorded successfully',

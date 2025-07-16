@@ -89,6 +89,7 @@ export const ReviewCard = ({
           'h-24 flex-row gap-3 border-b border-gray-200 p-4',
           viewMode === undefined ? 'flex flex-1 sm:hidden' : viewMode === 'TABLE' ? 'flex overflow-hidden' : 'hidden',
         )}
+        onClick={onClick}
       >
         {thumbnail ? (
           <>

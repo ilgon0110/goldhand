@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/shared/ui/select';
+import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 import { ReviewCard } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
@@ -169,7 +170,8 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
             title={review.title}
             viewMode={viewMode}
             onClick={() => {
-              startTransition(() => {
+              startTransition(async () => {
+                await sendViewLog(review.id);
                 router.push(`/review/${review.id}`);
               });
             }}

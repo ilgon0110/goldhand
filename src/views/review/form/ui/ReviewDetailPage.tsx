@@ -7,9 +7,11 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import type { IReviewResponseData, IUserResponseData } from '@/src/shared/types';
+import { useScreenView } from '@/src/shared/hooks/useScreenView';
+import type { IReviewResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
+import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
 import { Label } from '@/src/shared/ui/label';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
@@ -23,6 +25,7 @@ type TReviewDetailPageProps = {
   data: IReviewResponseData;
   docId: string;
   userData: IUserResponseData;
+  viewCountData: IViewCountResponseData;
 };
 
 interface IResponsePost {
@@ -30,7 +33,7 @@ interface IResponsePost {
   message: string;
 }
 
-export const ReviewDetailPage = ({ data, docId, userData }: TReviewDetailPageProps) => {
+export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TReviewDetailPageProps) => {
   const router = useRouter();
   const { comments, loading: isCommentSubmitting } = useComments({
     docId,
@@ -160,14 +163,23 @@ export const ReviewDetailPage = ({ data, docId, userData }: TReviewDetailPagePro
     });
   };
 
+  // Firebase Analytics 이벤트 로깅
+  useScreenView(`review_detail_${docId}`, 'ReviewDetailPage', { doc_id: docId });
+
   return (
     <>
       <div className="relative flex flex-col gap-2">
         <h3 className="text-xl font-bold md:text-3xl">{data.data.title}</h3>
-        <div className="flex flex-row gap-2">
-          <span className="text-slate-500">{data.data.franchisee}</span>
-          <span>{data.data.name}</span>
-          <span>{formatDateToYMD(data.data.createdAt)}</span>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="space-x-2">
+            <span className="text-slate-500">{data.data.franchisee}</span>
+            <span>{data.data.name}</span>
+            <span>{formatDateToYMD(data.data.createdAt)}</span>
+          </div>
+          <div className="flex flex-row items-center gap-2 text-slate-500 sm:ml-auto">
+            <ViewIcon />
+            <span>{viewCountData.data?.totalViewCount || 0}회</span>
+          </div>
         </div>
       </div>
       <div className="my-4 h-[1px] w-full bg-slate-300" />

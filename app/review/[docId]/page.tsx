@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 
 import { getUserData } from '@/src/shared/api/getUserData';
+import { getViewCountData } from '@/src/shared/api/getViewCountData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { getReviewDetailData } from '@/src/views/review';
 import { ReviewDetailPage } from '@/src/views/review/form/ui/ReviewDetailPage';
@@ -16,14 +17,14 @@ export default async function Page({ params }: TPageProps) {
     docId,
   });
   const userData = await getUserData();
-
+  const viewCountData = await getViewCountData({ docId });
   if (data.message === 'Error getting document') {
     throw new Error('Error getting document');
   }
 
   return (
     <Suspense fallback={<LoadingBar />}>
-      <ReviewDetailPage data={data} docId={docId} userData={userData} />
+      <ReviewDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />
     </Suspense>
   );
 }

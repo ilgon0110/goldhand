@@ -1,79 +1,72 @@
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
 import type { IUserDetailData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
-import { kakaoLoginAction } from '../api/kakaoLoginAction';
+import { naverLoginAction } from '../api/naverLoginAction';
 
-type TUseKakaoLogin = {
+type TUserNaverLogin = {
   isRejoinDialogOpen: boolean;
   setIsRejoinDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   rejoinUserData: IUserDetailData | undefined;
   setRejoinUserData: React.Dispatch<React.SetStateAction<IUserDetailData | undefined>>;
 };
 
-export const useKakaoLogin = ({
+export const useNaverLogin = ({
   isRejoinDialogOpen,
   setIsRejoinDialogOpen,
   rejoinUserData,
   setRejoinUserData,
-}: TUseKakaoLogin) => {
+}: TUserNaverLogin) => {
+  const router = useRouter();
+  const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const code = searchParams.get('code');
-  const error = searchParams.get('error');
-  const error_description = searchParams.get('error_description');
-  const state = searchParams.get('state');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const access_token = window.location.hash.split('=')[1]?.split('&')[0];
 
-    if (error) {
-      console.error('Kakao login error:', error, error_description);
-      setIsLoading(false);
-      toastError(error_description || '카카오 로그인에 실패했습니다.');
-      return;
-    }
-
-    if (!code) return;
+    if (access_token === undefined) return;
+    setIsLoading(true);
 
     const fetchPost = async () => {
       try {
-        setIsLoading(true);
         if (isRejoinDialogOpen) return;
+
         // 쿠키 저장을 위해 server action 사용
-        const postData = await kakaoLoginAction(code);
+        const postData = await naverLoginAction(access_token);
 
         // 재가입 가능한 탈퇴 유저가 로그인 했을 시
         if (postData.response === 'rejoin') {
           setRejoinUserData(postData.userData || undefined);
           setIsRejoinDialogOpen(true);
+
           return;
         }
 
         if (postData.response !== 'ok') {
           toastError(postData.message || '로그인에 실패했습니다.');
-          return;
         }
 
         if (postData.redirectTo) {
           startTransition(() => {
-            router.replace(postData.redirectTo);
+            router.replace(postData.redirectTo!);
           });
         }
       } catch (error) {
         console.error(error);
-        toastError('로그인 중 오류가 발생했습니다.');
+        toastError('로그인에 실패했습니다. 다시 시도해주세요.\n' + (error instanceof Error ? error.message : ''));
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchPost();
-  }, [code, error, router, error_description, state]);
+  }, [params]);
 
-  return { isLoading, isPending, isError: !!error, error_description };
+  return {
+    isLoading,
+    isPending,
+  };
 };

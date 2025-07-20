@@ -10,7 +10,6 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { useKakaoLogin } from '../hooks/useKakaoLogin';
 import useNaverInit from '../hooks/useNaverInit';
 import { useNaverLogin } from '../hooks/useNaverLogin';
-import { useRejoinMutation } from '../hooks/useRejoinMutation';
 import { AuthLoginButton } from './AutoLoginButton';
 import { RejoinModal } from './RejoinModal';
 
@@ -42,15 +41,11 @@ export const LoginPage = () => {
     (naverRef.current.children[0] as HTMLImageElement).click();
   };
 
-  // 재가입 뮤테이션
-  const { isPending: isRejoinPending } = useRejoinMutation(rejoinUserData?.userId);
-
   return (
     <div className="flex flex-col items-center">
       <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={() => {}} />
       {(isNaverLoading || isKakaoLoading) && <LoadingSpinnerOverlay text="로그인 중..." />}
       {(isNaverPending || isKakaoPending) && <LoadingSpinnerOverlay text="회원가입 유무 확인 중..." />}
-      {isRejoinPending && <LoadingSpinnerOverlay text="재가입 중..." />}
       <div className="mt-14 flex w-full max-w-[480px] flex-col gap-4">
         <AuthLoginButton
           color="yellow"

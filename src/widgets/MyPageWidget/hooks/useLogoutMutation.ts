@@ -8,22 +8,14 @@ interface IResponsePostBody {
   message: string;
 }
 
-export function useRejoinMutation(
-  userId: string | undefined,
-  options?: UseMutationOptions<IResponsePostBody, Error, void>,
-) {
+export function useLogoutMutation(options?: UseMutationOptions<IResponsePostBody, Error, void>) {
   const { isPending, mutate, isSuccess, isError } = useMutation({
     mutationFn: async () => {
-      const rejoinData = await fetcher<IResponsePostBody>('/api/user/rejoin', {
+      const logoutData = await fetcher<IResponsePostBody>('/api/logout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId }),
-        cache: 'no-store',
       });
 
-      return rejoinData;
+      return logoutData;
     },
     ...options,
   });

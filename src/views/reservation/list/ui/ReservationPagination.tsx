@@ -10,7 +10,7 @@ import {
   PaginationPrevious,
 } from '@/src/shared/ui/pagination';
 
-type ReviewPaginationProps = {
+type TReviewPaginationProps = {
   dataLength: number | undefined;
   maxColumnNumber: number;
   consultParam: {
@@ -25,13 +25,7 @@ export const ReservationPagination = ({
   maxColumnNumber,
   consultParam,
   setConsultParam,
-}: ReviewPaginationProps) => {
-  // const [{ page: consultPageParams }] = useQueryStates(
-  //   consultParams,
-  //   {
-  //     shallow: false,
-  //   }
-  // );
+}: TReviewPaginationProps) => {
   if (!dataLength) dataLength = 0;
   const totalPages = Math.ceil(dataLength / maxColumnNumber);
 

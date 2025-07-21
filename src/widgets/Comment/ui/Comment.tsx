@@ -63,10 +63,10 @@ export const Comment = ({
       if (result.response === 'ok') {
         toastSuccess('댓글 삭제 완료!');
       } else {
-        toastError('댓글 삭제 실패!');
+        toastError(result.message || '댓글 삭제 실패!');
       }
-    } catch (error) {
-      toastError('댓글 삭제 중 오류가 발생하였습니다.');
+    } catch (error: any) {
+      toastError(error.message || '댓글 삭제 중 알 수 없는 오류가 발생하였습니다.');
     } finally {
       setIsDeleteSubmitting(false);
       setAlertDialogOpen(false);
@@ -171,7 +171,7 @@ export const Comment = ({
       {/* 삭제 확인 알림 */}
       <MyAlertDialog
         description="삭제된 댓글은 복구할 수 없습니다."
-        handleOkActionClick={onhandleDeleteClick}
+        handleDeletePostClick={onhandleDeleteClick}
         isPending={isDeleteSubmitting}
         okButtonText="삭제하기"
         opOpenChange={open => setAlertDialogOpen(open)}

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +13,7 @@ import {
   PaginationPrevious,
 } from '@/src/shared/ui/pagination';
 
-type ReviewPaginationProps = {
+type TWidgetPaginationProps = {
   totalDataLength: number | undefined;
   maxColumnNumber: number;
   targetPage: number;
@@ -24,7 +25,7 @@ export const WidgetPagination = ({
   maxColumnNumber,
   targetPage,
   onChangePage,
-}: ReviewPaginationProps) => {
+}: TWidgetPaginationProps) => {
   const MAXIMUM_NUMBER_OF_PAGES = 10;
   const totalPages = Math.ceil((totalDataLength || 0) / maxColumnNumber);
   const [paginationArr, setPaginationArr] = useState(

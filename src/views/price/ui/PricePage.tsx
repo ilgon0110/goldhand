@@ -20,7 +20,7 @@ import {
 
 export const PricePage = () => {
   return (
-    <div>
+    <>
       <SectionTitle buttonTitle="" title="고운황금손 이용요금" onClickButtonTitle={() => {}} />
       <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">출퇴근형</div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -149,6 +149,6 @@ export const PricePage = () => {
       <div className="mt-4 flex flex-col gap-1 text-center text-lg text-slate-500 md:text-xl">
         <span>신생아목욕, 신생아 젖병세척, 물품 위생관리, 아기 방청소, 신생아 세탁물 관리</span>
       </div>
-    </div>
+    </>
   );
 };

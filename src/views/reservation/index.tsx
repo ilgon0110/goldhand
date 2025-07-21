@@ -4,6 +4,7 @@ export { FAQItemList, orderCardList } from './config/const';
 export { getConsultDetailData } from './detail/api/loader';
 export { ReservationDetailPage } from './detail/ui/ReservationDetailPage';
 export { getReservationListData } from './list/api/loader';
+export { passwordPostAction } from './list/api/passwordPostAction';
 export { ReservationListPage } from './list/ui/ReservationListPage';
 export { ReservationPagination } from './list/ui/ReservationPagination';
 export { FAQItem } from './ui/FAQItem';

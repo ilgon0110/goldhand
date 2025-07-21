@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { formatDateToYMD } from '@/src/shared/utils';
 
-type ReviewCardProps = {
+type TReviewCardProps = {
   title: string;
   author: string;
   createdAt: Timestamp;
@@ -13,7 +13,7 @@ type ReviewCardProps = {
   description: string;
   thumbnail: string | null;
   viewMode?: 'CARD' | 'TABLE';
-  onClick: () => void;
+  handleClick: () => void;
 };
 
 export const ReviewCard = ({
@@ -24,8 +24,8 @@ export const ReviewCard = ({
   description,
   thumbnail,
   viewMode,
-  onClick,
-}: ReviewCardProps) => {
+  handleClick,
+}: TReviewCardProps) => {
   return (
     <>
       {/* 카드버전, width:640px 이상 */}
@@ -38,7 +38,7 @@ export const ReviewCard = ({
               ? 'flex flex-col overflow-hidden'
               : 'hidden',
         )}
-        onClick={onClick}
+        onClick={handleClick}
       >
         {thumbnail ? (
           <>
@@ -89,7 +89,7 @@ export const ReviewCard = ({
           'h-24 flex-row gap-3 border-b border-gray-200 p-4',
           viewMode === undefined ? 'flex flex-1 sm:hidden' : viewMode === 'TABLE' ? 'flex overflow-hidden' : 'hidden',
         )}
-        onClick={onClick}
+        onClick={handleClick}
       >
         {thumbnail ? (
           <>

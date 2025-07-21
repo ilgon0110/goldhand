@@ -1,20 +1,12 @@
+/* eslint-disable react/jsx-handler-names */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { $generateHtmlFromNodes } from '@lexical/html';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import type { UploadMetadata } from 'firebase/storage';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-import type { LexicalEditor } from 'lexical';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
-import type { IReviewResponseData } from '@/src/shared/types';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -30,41 +22,18 @@ import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-import { toastError, toastSuccess } from '@/src/shared/utils';
-import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 import { reviewFormSchema } from '../config/reviewFormSchema';
+import { useReviewFormMutation } from '../hooks/useReviewFormMutation';
+import { useSuspenseGetReviewDetailData } from '../hooks/useSuspenseGetReviewDetailData';
 
 type TReviewEditPageProps = {
   docId: string;
 };
 
-interface IReviewPostData {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
-  message: string;
-}
-
 export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
-  const { data } = useSuspenseQuery({
-    queryKey: ['reviewEdit', docId],
-    queryFn: async () => {
-      const response = await fetch(`/api/review/detail?docId=${docId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch review detail');
-      }
-      return response.json() as Promise<IReviewResponseData>;
-    },
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-
-  if (data.response !== 'ok') {
-    throw new Error(data.message || 'Failed to fetch review data');
-  }
-
-  const router = useRouter();
-  const { isLinked, userData } = useAuthState();
+  const { data } = useSuspenseGetReviewDetailData(docId);
 
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
@@ -76,132 +45,8 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
     mode: 'onChange',
   });
   const formValidation = form.formState.isValid;
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
-  const { images } = useImagesContext();
-  const [imageProgress, setImagesProgress] = useState<{
-    key: string;
-    progress: number;
-  }>();
-
-  const onEditorChange = (edtior: LexicalEditor) => {
-    setReviewFormEditor(edtior);
-  };
-
-  const onSubmit = async (values: z.infer<typeof reviewFormSchema>) => {
-    // editor validation
-    if (reviewFormEditor === undefined) return;
-    reviewFormEditor.read(() => {
-      const htmlString = $generateHtmlFromNodes(reviewFormEditor, null);
-      const downloadedImages: { key: string; url: string }[] = [];
-
-      if (isLinked && userData?.userId) {
-        const storage = getStorage();
-        // 이미지 있을 때 업로드 로직
-        if (images != null && images.length > 0) {
-          for (const image of images) {
-            const metadata: UploadMetadata = {
-              contentType: image.file.type,
-              customMetadata: {
-                userId: userData.userId,
-              },
-            };
-
-            const imageRef = ref(storage, `reviews/${userData.userId}/${docId}/${image.key}`);
-            const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
-            uploadTask.on(
-              'state_changed',
-              snapshot => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setImagesProgress({ key: image.file.name, progress });
-              },
-              error => {
-                setImagesProgress(undefined);
-                toastError('이미지 업로드 중 오류가 발생했습니다. : ' + error.message);
-                downloadedImages.push({
-                  key: image.key,
-                  url: '',
-                });
-              },
-              () => {
-                setImagesProgress(undefined);
-                getDownloadURL(uploadTask.snapshot.ref).then(async downloadURL => {
-                  downloadedImages.push({
-                    key: image.key,
-                    url: downloadURL,
-                  });
-                  // 모든 이미지 업로드가 완료되면 서버에 요청
-                  if (downloadedImages.length === images.length) {
-                    setImagesProgress({
-                      key: '이미지 업로드 완료. 잠시만 기다려주세요.',
-                      progress: 100,
-                    });
-                    postReview(values, htmlString, docId, downloadedImages);
-                  }
-                });
-              },
-            );
-          }
-        } else {
-          postReview(values, htmlString, docId, null);
-        }
-      }
-    });
-  };
-
-  const postReview = async (
-    formValues: {
-      title: string;
-      name: string;
-      franchisee: string;
-    },
-    htmlString: string,
-    docId: string,
-    downloadedImages: { key: string; url: string }[] | null,
-  ) => {
-    try {
-      const data: IReviewPostData = await (
-        await fetch('/api/review/update', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formValues.name,
-            title: formValues.title,
-            franchisee: formValues.franchisee,
-            htmlString,
-            docId,
-            images: downloadedImages,
-          }),
-        })
-      ).json();
-
-      if (data.response === 'ok') {
-        toastSuccess('후기가 성공적으로 업로드되었습니다.\n잠시 후 작성후기로 이동합니다.');
-        // 3초 후에 페이지 이동
-        setTimeout(() => {
-          router.replace(`/review/${docId}`);
-        }, 3000);
-      } else if (data.response === 'expired') {
-        toastError('세션이 만료되었습니다. 잠시 후 로그인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/login');
-        }, 3000);
-      } else if (data.response === 'unAuthorized') {
-        toastError('권한이 없습니다. 잠시 후 로그인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/login');
-        }, 3000);
-      }
-    } catch (error) {
-      toastError('후기 업로드 중 오류가 발생했습니다.');
-      console.error(`후기 업로드 중 오류가 발생했습니다.\n${error}`);
-    } finally {
-      setIsSubmitting(false);
-      setImagesProgress(undefined);
-    }
-  };
+  const { onSubmit, handleChangeReviewFormEditor, isSubmitting, imageProgress, resetImageProgress } =
+    useReviewFormMutation('update', docId);
 
   return (
     <>
@@ -271,7 +116,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
               </FormItem>
             )}
           />
-          <Editor editable={true} htmlString={data.data.htmlString} onEditorChange={onEditorChange} />
+          <Editor editable={true} htmlString={data.data.htmlString} onEditorChange={handleChangeReviewFormEditor} />
           <div className="flex w-full justify-between">
             <Button
               className={cn(
@@ -287,7 +132,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
         </form>
       </Form>
       {/* 이미지 업로드 진행 상황 모달 */}
-      <AlertDialog open={imageProgress !== undefined} onOpenChange={() => setImagesProgress(undefined)}>
+      <AlertDialog open={imageProgress !== undefined} onOpenChange={resetImageProgress}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>업로드 진행 상황</AlertDialogTitle>

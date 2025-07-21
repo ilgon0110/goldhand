@@ -12,9 +12,9 @@ import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
-import { WithdrawalModal } from '@/src/views/mypage/ui/WithdrawalModal';
 
 import { useLogoutMutation } from '../hooks/useLogoutMutation';
+import { WithdrawalModal } from './WithdrawalModal';
 
 type TMyPageDataProps = {
   myPageData: IMyPageResponseData;

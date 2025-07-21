@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { privacyContent, privacyVersionDateList } from '@/src/widgets/Privacy';
 
+import { useWithdrawalMutation } from '../hooks/useWithdrawalMutation';
+
 type TWithdrawalModalProps = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,34 +25,29 @@ export function WithdrawalModal({ isOpen, setIsOpen }: TWithdrawalModalProps) {
   const [isChecked, setIsChecked] = useState<CheckedState>(false);
   const selectSeq = privacyVersionDateList.find(item => item.date === date)?.seq || 0;
 
+  const { mutate: withdraw } = useWithdrawalMutation({
+    onSuccess: () => {
+      toastSuccess('회원탈퇴가 완료되었습니다.\n다시 방문해주시면 감사하겠습니다.');
+      setTimeout(() => {
+        router.replace('/');
+      }, 1000);
+    },
+    onError: error => {
+      console.error('회원탈퇴 중 오류 발생:', error);
+      toastError('회원탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.');
+    },
+    onSettled: () => {
+      setIsOpen(false);
+    },
+  });
+
   const handleWithdrawal = async () => {
     if (!isChecked) {
       toastError('개인정보 처리 방침에 동의해주세요.');
       return;
     }
-    try {
-      const res = await (
-        await fetch('/api/user/withdrawal', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-      ).json();
-      if (res.response === 'ok') {
-        toastSuccess('회원탈퇴가 완료되었습니다.\n다시 방문해주시면 감사하겠습니다.');
-        setTimeout(() => {
-          router.replace('/');
-        }, 1000);
-      } else {
-        toastError(res.message || '회원탈퇴에 실패했습니다. 다시 시도해주세요.');
-      }
-    } catch (error) {
-      console.error('회원탈퇴 중 오류 발생:', error);
-      toastError('회원탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsOpen(false);
-    }
+
+    withdraw();
   };
 
   return (

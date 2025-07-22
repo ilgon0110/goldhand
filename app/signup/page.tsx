@@ -1,16 +1,18 @@
+'use client';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Suspense } from 'react';
 
-import { getUserData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { SignupPage } from '@/src/views/signup';
 
-export default async function Page() {
-  const userData = await getUserData();
-  //const signUpData = await getSignUpData();
-
+export default function Page() {
+  const client = new QueryClient();
   return (
     <Suspense fallback={<LoadingBar />}>
-      <SignupPage userData={userData} />
+      <QueryClientProvider client={client}>
+        <SignupPage />
+      </QueryClientProvider>
     </Suspense>
   );
 }

@@ -1,16 +1,10 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  getAuth,
-  PhoneAuthProvider,
-  RecaptchaVerifier,
-  signInWithEmailAndPassword,
-  signInWithPhoneNumber,
-} from 'firebase/auth';
-import { linkWithCredential } from 'firebase/auth';
+import type { ConfirmationResult } from 'firebase/auth';
+import { getAuth, RecaptchaVerifier } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -19,32 +13,29 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { IUserResponseData } from '@/src/shared/types';
+import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { formSchema } from '../config/formSchema';
+import { useAuthCodeConfirmMutation } from '../hooks/useAuthCodeConfirmMutation';
+import { usePhoneNumberConfirmMutation } from '../hooks/usePhoneNumberConfirmMutation';
+import { useSignupMutation } from '../hooks/useSignupMutation';
 //import { useRecaptcha } from '../hooks/useRecaptcha';
 
-export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
+export const SignupPage = () => {
   const router = useRouter();
+  const { userData } = useAuthState();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
-  const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState('');
-  const [SmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
-  const [isSendingSms, setIsSendingSms] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const auth = getAuth();
-  const confirmationResultRef = useRef<any>(null);
-
+  const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: userData?.userData?.name || '',
-      nickname: userData?.userData?.nickname || '',
-      phoneNumber: userData?.userData?.phoneNumber || '',
-      email: userData?.userData?.email || '',
+      name: userData?.name || '',
+      nickname: userData?.nickname || '',
+      phoneNumber: userData?.phoneNumber || '',
+      email: userData?.email || '',
     },
     mode: 'onChange',
   });
@@ -52,45 +43,9 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
   const phoneNumberError = !!form.formState.errors.phoneNumber;
   const authCodeError = !!form.formState.errors.authCode;
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!formValidation) return;
-    if (!!SmsConfirmSuccessMessage === false) return;
-
-    try {
-      setIsSubmitting(true);
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...values }),
-      });
-      if (!res.ok) {
-        throw new Error('회원가입 실패');
-      }
-      const result = await res.json();
-      if (result.response === 'ok') {
-        toastSuccess('회원가입 성공!\n잠시 후 메인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/');
-        }, 3000);
-      } else {
-        toastError('회원가입 실패\n다시 시도해주세요.');
-        setTimeout(() => {
-          router.refresh();
-        }, 3000);
-      }
-    } catch (error: any) {
-      console.error('Error during form submission:', error);
-      toastError(`회원가입 중 오류가 발생했습니다.\n${error.message}`);
-      router.refresh();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   useEffect(() => {
+    form.trigger();
+
     const auth = getAuth(firebaseApp);
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
       size: 'invisible',
@@ -102,124 +57,105 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
     });
   }, []);
 
-  const handleSignInPhoneNumber = useCallback(
-    async (phoneNumber: string) => {
-      setIsSendingSms(true);
-
-      phoneNumber = `+82${phoneNumber.substring(1)}`;
-      try {
-        if (typeof window === 'undefined') return;
-
-        //reCAPTCHA 호출
-        const appVerifier = window.recaptchaVerifier;
-        if (!appVerifier) {
-          throw new Error('RecaptchaVerifier is not initialized');
-        }
-
-        const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-        if (confirmationResult) {
-          setSendSmsSuccessMessage('인증번호가 발송되었습니다.');
-          confirmationResultRef.current = confirmationResult;
-        }
-      } catch (error) {
-        console.error('Error during signInWithPhoneNumber:', error);
-        form.setError('phoneNumber', {
-          type: 'manual',
-          message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
-        });
-
-        //initializeRecaptcha();
-      } finally {
-        setIsSendingSms(false);
-      }
+  // 1. 핸드폰 번호로 인증번호 발송 훅
+  const {
+    mutate,
+    isPending: isSendingSms,
+    sendSmsSuccessMessage,
+  } = usePhoneNumberConfirmMutation({
+    onSuccess: res => {
+      confirmationResultRef.current = res;
     },
-    [form],
-  );
+    onError: () => {
+      form.setError('phoneNumber', {
+        type: 'manual',
+        message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
+      });
+    },
+  });
 
   const handleAuthClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     setIsAuthCodeOpen(true);
+
     // 인증번호 발송 버튼 클릭 시
-    handleSignInPhoneNumber(form.getValues().phoneNumber);
+    mutate(form.getValues().phoneNumber);
   };
 
-  const handleAuthConfirmClick = useCallback(
-    async (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault(); // 항상 최상단에서 방지
-      setIsConfirming(true);
+  // 2. 인증번호 검증 훅
+  const {
+    mutate: authCodeConfirmMutate,
+    isPending: isConfirming,
+    getErrorMessage,
+    sendSmsConfirmSuccessMessage,
+  } = useAuthCodeConfirmMutation(userData);
 
-      const authCode = form.getValues().authCode;
-      const confirmationResult = confirmationResultRef.current;
+  const handleAuthConfirmClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault(); // 항상 최상단에서 방지
 
-      if (!confirmationResult) {
-        console.error('No confirmation result found.');
-        return;
-      }
+    await authCodeConfirmMutate(form.getValues(), confirmationResultRef.current);
 
-      try {
-        if (userData.userData) {
-          // 인증코드 확인 후, 전화번호를 현재 로그인된 계정에 연결
-          try {
-            // ✅ 1. 이메일 유저 로그인
-            const emailUser = await signInWithEmailAndPassword(
-              auth,
-              userData.userData?.email || '',
-              process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!,
-            );
+    const errorMessage = getErrorMessage();
+    if (errorMessage === 'linking-failed') {
+      form.setError('authCode', {
+        type: 'manual',
+        message: '이메일과 전화번호 연동에 실패했습니다. 처음부터 다시 시도해주세요.',
+      });
+    } else if (errorMessage === 'auth/invalid-verification-code') {
+      form.setError('authCode', {
+        type: 'manual',
+        message: '인증코드가 일치하지 않습니다.',
+      });
+    } else if (errorMessage === 'auth/account-exists-with-different-credential') {
+      form.setError('authCode', {
+        type: 'manual',
+        message: '이미 가입된 전화번호입니다.',
+      });
+      toastError(
+        `이미 가입된 전화번호입니다.\n혹시 ${userData?.provider === 'kakao' ? '네이버' : '카카오'}로 가입하시지 않으셨나요?`,
+      );
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+    } else {
+      form.setError('authCode', {
+        type: 'manual',
+        message: errorMessage || '알 수 없는 오류가 발생했습니다.',
+      });
+    }
+  };
 
-            // ✅ 2. 전화번호 Credential 생성
-            const phoneCredential = PhoneAuthProvider.credential(confirmationResult.verificationId, authCode);
-
-            if (!emailUser) {
-              throw new Error('이메일 유저 인증 정보가 없습니다. 다시 시도해주세요.');
-            }
-
-            // ✅ 3. 이메일 유저에 전화번호 연결
-            const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
-            if (linkedResult) {
-              setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
-            }
-          } catch (error: any) {
-            console.error('Error linking phone number:', error);
-            form.setError('authCode', {
-              type: 'manual',
-              message: '이메일과 전화번호 연동에 실패했습니다. 처음부터 다시 시도해주세요.',
-            });
-          }
-        }
-      } catch (error: any) {
-        console.error('Error confirming SMS code:', error);
-        if (error.code === 'auth/invalid-verification-code') {
-          form.setError('authCode', {
-            type: 'manual',
-            message: '인증코드가 일치하지 않습니다.',
-          });
-        } else {
-          form.setError('authCode', {
-            type: 'manual',
-            message: '알 수 없는 오류가 발생했습니다.',
-          });
-        }
-      } finally {
-        setIsConfirming(false);
-      }
+  // 3. 회원가입 훅
+  const { mutate: signup, isPending: isSubmitting } = useSignupMutation(form.getValues(), {
+    onSuccess: () => {
+      toastSuccess('회원가입 성공!\n잠시 후 메인 페이지로 이동합니다.');
+      setTimeout(() => {
+        router.replace('/');
+      }, 3000);
     },
-    [form, confirmationResultRef],
-  );
+    onError: (error: Error) => {
+      console.error('회원가입 중 오류 발생:', error);
+      toastError(`회원가입 중 오류가 발생했습니다.\n${error.message}`);
+      router.refresh();
+    },
+  });
 
-  useEffect(() => {
-    form.trigger();
-  }, []);
+  const onSubmit = async (_values: z.infer<typeof formSchema>) => {
+    if (!formValidation) return;
+    if (!!sendSmsConfirmSuccessMessage === false) return;
+
+    signup();
+  };
 
   return (
-    <div>
+    <>
       <SectionTitle buttonTitle="" title="고운황금손 회원가입" onClickButtonTitle={() => {}} />
       <button className="hidden" id="sign-in-button" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            defaultValue={userData?.userData?.name || ''}
+            defaultValue={userData?.name || ''}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -234,7 +170,7 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
           />
           <FormField
             control={form.control}
-            defaultValue={userData?.userData?.nickname || ''}
+            defaultValue={userData?.nickname || ''}
             name="nickname"
             render={({ field }) => (
               <FormItem>
@@ -249,7 +185,7 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
           />
           <FormField
             control={form.control}
-            defaultValue={userData?.userData?.phoneNumber || ''}
+            defaultValue={userData?.phoneNumber || ''}
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
@@ -302,16 +238,16 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
                         className={cn(
                           'transition-all duration-300 ease-in-out',
                           authCodeError && 'cursor-not-allowed opacity-20',
-                          SmsConfirmSuccessMessage && 'bg-green-500',
+                          sendSmsConfirmSuccessMessage && 'bg-green-500',
                         )}
                         disabled={authCodeError}
                         onClick={e => handleAuthConfirmClick(e)}
                       >
                         {isConfirming ? (
                           <LoadingSpinnerIcon />
-                        ) : SmsConfirmSuccessMessage != '' ? (
+                        ) : sendSmsConfirmSuccessMessage != '' ? (
                           '인증완료'
-                        ) : SmsConfirmSuccessMessage == '' ? (
+                        ) : sendSmsConfirmSuccessMessage == '' ? (
                           '인증하기'
                         ) : (
                           '인증확인'
@@ -319,7 +255,7 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
                       </Button>
                     </div>
                   </FormControl>
-                  <FormDescription>{SmsConfirmSuccessMessage}</FormDescription>
+                  <FormDescription>{sendSmsConfirmSuccessMessage}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -327,7 +263,7 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
           )}
           <FormField
             control={form.control}
-            defaultValue={userData?.userData?.email || ''}
+            defaultValue={userData?.email || ''}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -350,7 +286,7 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
           >
             {isSubmitting ? (
               <LoadingSpinnerIcon />
-            ) : userData.userData ? (
+            ) : userData ? (
               '회원정보 수정' // 이미 회원가입된 경우, 회원정보 수정으로 표시
             ) : (
               '회원가입'
@@ -358,6 +294,6 @@ export const SignupPage = ({ userData }: { userData: IUserResponseData }) => {
           </Button>
         </form>
       </Form>
-    </div>
+    </>
   );
 };

@@ -3,7 +3,19 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { typedJson } from '@/src/shared/utils';
-import type { IMyPageUpdatePost, IResponseBody } from '@/src/views/mypage/types';
+
+interface IMyPageUpdatePost {
+  userId: string;
+  name: string;
+  nickname: string;
+  phoneNumber: string;
+  email: string;
+}
+
+interface IResponseBody {
+  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  message: string;
+}
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IMyPageUpdatePost;

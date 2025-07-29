@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const formSchema = z.object({
+export const reservationFormSchema = z.object({
   title: z
     .string()
     .min(1, {

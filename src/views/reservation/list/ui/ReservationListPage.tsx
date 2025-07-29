@@ -8,8 +8,9 @@ import { consultParams } from '@/src/shared/searchParams';
 import type { IConsultDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { formatDateToYMD } from '@/src/shared/utils';
-import { ReservationCard } from '@/src/views/reservation';
 import { WidgetPagination } from '@/src/widgets/Pagination';
+
+import { ReservationCard } from '../../ui/ReservationCard';
 
 interface IConsultData extends IConsultDetailData {
   id: string;

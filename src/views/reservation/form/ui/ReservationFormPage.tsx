@@ -27,15 +27,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { formSchema } from '@/src/views/reservation/form';
 
 import { passwordPostAction } from '../../list/api/passwordPostAction';
+import { reservationFormSchema } from '../config/reservationFormSchema';
 
 export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {
   const { executeRecaptcha } = useGoogleReCaptcha();
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof reservationFormSchema>>({
+    resolver: zodResolver(reservationFormSchema),
     defaultValues: {
       title: '',
       name: userData?.userData?.name || '',
@@ -53,7 +53,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expiredDialogOpen, setExpiredDialogOpen] = useState(false);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof reservationFormSchema>) => {
     if (!formValidation) return;
     if (!executeRecaptcha) return;
     try {

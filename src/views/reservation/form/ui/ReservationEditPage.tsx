@@ -26,7 +26,8 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { formSchema } from '@/src/views/reservation/form';
+
+import { reservationFormSchema } from '../config/reservationFormSchema';
 
 export const ReservationEditPage = ({
   userData,
@@ -41,8 +42,8 @@ export const ReservationEditPage = ({
   const password = searchParams.get('password');
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof reservationFormSchema>>({
+    resolver: zodResolver(reservationFormSchema),
     defaultValues: {
       title: consultDetailData.data.title || '',
       name: userData?.userData?.name || consultDetailData.data.name || '',
@@ -60,7 +61,7 @@ export const ReservationEditPage = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expiredDialogOpen, setExpiredDialogOpen] = useState(false);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof reservationFormSchema>) => {
     if (!formValidation) return;
     if (!executeRecaptcha) return;
     try {

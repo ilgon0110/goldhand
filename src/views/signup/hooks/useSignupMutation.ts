@@ -4,7 +4,7 @@ import type z from 'zod';
 
 import { fetcher } from '@/app/utils/fetcher.client';
 
-import type { formSchema } from '../config/formSchema';
+import type { signUpFormSchema } from '../config/signUpFormSchema';
 
 interface IResponsePostBody {
   response: string;
@@ -12,7 +12,7 @@ interface IResponsePostBody {
 }
 
 export function useSignupMutation(
-  values: z.infer<typeof formSchema>,
+  values: z.infer<typeof signUpFormSchema>,
   options?: UseMutationOptions<IResponsePostBody, Error, void>,
 ) {
   const { isPending, mutate, isSuccess, isError } = useMutation({

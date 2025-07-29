@@ -1,11 +1,11 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
 
-type FAQItemProps = {
+type TFAQItemProps = {
   title: string;
   content: string;
 };
 
-export const FAQItem = ({ title, content }: FAQItemProps) => {
+export const FAQItem = ({ title, content }: TFAQItemProps) => {
   return (
     <Accordion collapsible type="single">
       <AccordionItem value="item-1">

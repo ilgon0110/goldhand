@@ -2,7 +2,8 @@ import Image from 'next/image';
 
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
-import { BabyCardInfo, FamilyCardInfo, ManagerWorkCard, MotherCardInfo, StudentCardInfo } from '../../index';
+import { BabyCardInfo, FamilyCardInfo, MotherCardInfo, StudentCardInfo } from '../config/const';
+import { ManagerWorkCard } from './managerWorkCard';
 
 export const ManagerWorkPage = () => {
   return (
@@ -61,7 +62,7 @@ export const ManagerWorkPage = () => {
           <div className="w-full">
             산후관리사는 일반 가사도우미와는 달리{' '}
             <span className="font-bold">산모님과 신생아에 대한 전문적인 교육</span>을 이수하신 분들로 호칭은{' '}
-            <span className="font-bold">‘관리사님'</span>으로 불러주시고 인격적으로 대해 주시기 바랍니다.{' '}
+            <span className="font-bold">‘관리사님&apos;</span>으로 불러주시고 인격적으로 대해 주시기 바랍니다.{' '}
             <span className="font-bold">신생아는 산후관리사에게 믿고 맡겨 주셔도 좋습니다.</span> 산후관리사의 점심
             식사는 산모님 가정에서 드시게 합니다.
           </div>

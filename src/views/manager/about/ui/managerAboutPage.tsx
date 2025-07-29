@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import { gowunDodumFont } from '@/shared/fonts';
 
-import { policyList, ruleList } from '../../index';
+import { policyList, ruleList } from '../config/const';
 
 export const ManagerAboutPage = () => {
   return (

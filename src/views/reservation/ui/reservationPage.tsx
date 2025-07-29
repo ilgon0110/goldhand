@@ -8,7 +8,9 @@ import { useEffect, useState, useTransition } from 'react';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
-import { FAQItem, FAQItemList, OrderCard, orderCardList } from '../index';
+import { FAQItemList, orderCardList } from '../config/const';
+import { FAQItem } from './FAQItem';
+import { OrderCard } from './OrderCard';
 
 export const ReservationPage = () => {
   const [height, setHeight] = useState(0);

@@ -5,7 +5,7 @@ import type z from 'zod';
 
 import type { IUserDetailData } from '@/src/shared/types';
 
-import type { formSchema } from '../config/formSchema';
+import type { signUpFormSchema } from '../config/signUpFormSchema';
 
 export const useAuthCodeConfirmMutation = (
   userData: IUserDetailData | null,
@@ -20,7 +20,7 @@ export const useAuthCodeConfirmMutation = (
   const [sendSmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
   const errorMessageRef = useRef('');
 
-  async function mutate(values: z.infer<typeof formSchema>, confirmationResult: ConfirmationResult | null) {
+  async function mutate(values: z.infer<typeof signUpFormSchema>, confirmationResult: ConfirmationResult | null) {
     setIsPending(true);
 
     if (!confirmationResult) {

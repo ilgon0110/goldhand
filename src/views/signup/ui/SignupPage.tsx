@@ -18,7 +18,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { formSchema } from '../config/formSchema';
+import { signUpFormSchema } from '../config/signUpFormSchema';
 import { useAuthCodeConfirmMutation } from '../hooks/useAuthCodeConfirmMutation';
 import { usePhoneNumberConfirmMutation } from '../hooks/usePhoneNumberConfirmMutation';
 import { useSignupMutation } from '../hooks/useSignupMutation';
@@ -29,8 +29,8 @@ export const SignupPage = () => {
   const { userData } = useAuthState();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       name: userData?.name || '',
       nickname: userData?.nickname || '',
@@ -140,7 +140,7 @@ export const SignupPage = () => {
     },
   });
 
-  const onSubmit = async (_values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (_values: z.infer<typeof signUpFormSchema>) => {
     if (!formValidation) return;
     if (!!sendSmsConfirmSuccessMessage === false) return;
 

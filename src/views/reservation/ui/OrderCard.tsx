@@ -1,10 +1,10 @@
-type OrderCardProps = {
+type TOrderCardProps = {
   order: string;
   title: string;
   content: string;
   children?: React.ReactNode;
 };
-export const OrderCard = ({ order, title, content, children }: OrderCardProps) => {
+export const OrderCard = ({ order, title, content, children }: TOrderCardProps) => {
   return (
     <>
       <div className="flex flex-row gap-2 md:gap-4">

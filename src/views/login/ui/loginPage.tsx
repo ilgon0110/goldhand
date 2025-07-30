@@ -1,21 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
 import { useKakaoLogin } from '../hooks/useKakaoLogin';
-import useNaverInit from '../hooks/useNaverInit';
 import { useNaverLogin } from '../hooks/useNaverLogin';
 import { AuthLoginButton } from './AutoLoginButton';
 import { RejoinModal } from './RejoinModal';
 
 export const LoginPage = () => {
   const router = useRouter();
-  const naverRef = useRef<HTMLButtonElement>(null);
   const [isRejoinDialogOpen, setIsRejoinDialogOpen] = useState(false);
   const [rejoinUserData, setRejoinUserData] = useState<IUserDetailData>();
 
@@ -28,18 +26,12 @@ export const LoginPage = () => {
   });
 
   // 네이버 로그인
-  useNaverInit();
   const { isLoading: isNaverLoading, isPending: isNaverPending } = useNaverLogin({
     isRejoinDialogOpen,
     setIsRejoinDialogOpen,
     rejoinUserData,
     setRejoinUserData,
   });
-
-  const handleNaverLoginClick = () => {
-    if (!naverRef || !naverRef.current || !naverRef.current.children) return;
-    (naverRef.current.children[0] as HTMLImageElement).click();
-  };
 
   return (
     <div className="flex flex-col items-center">
@@ -58,13 +50,16 @@ export const LoginPage = () => {
             );
           }}
         />
-        <button className="hidden" id="naverIdLogin" ref={naverRef} />
         <AuthLoginButton
           color="green"
           disabled={isNaverLoading || isKakaoLoading || isNaverPending || isKakaoPending}
           iconSrc="/icon/naver.png"
           title="네이버로 로그인하기"
-          onClick={handleNaverLoginClick}
+          onClick={() => {
+            router.push(
+              `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_CALLBACK_URL}&state=${process.env.NEXT_PUBLIC_STATE_STRING}`,
+            );
+          }}
         />
       </div>
 

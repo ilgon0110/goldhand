@@ -1,10 +1,11 @@
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
 import type { IUserDetailData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
 import { naverLoginAction } from '../api/naverLoginAction';
+import { naverLoginTokenAction } from '../api/naverLoginTokenAction';
 
 type TUserNaverLogin = {
   isRejoinDialogOpen: boolean;
@@ -23,12 +24,26 @@ export const useNaverLogin = ({
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
+  const error = searchParams.get('error');
+  const error_description = searchParams.get('error_description');
+  const state = searchParams.get('state');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const access_token = window.location.hash.split('=')[1]?.split('&')[0];
 
-    if (access_token === undefined) return;
+    if (state !== 'goldhand') return; // KaKao login state check
+
+    if (error) {
+      console.error('Naver login error:', error, error_description);
+      setIsLoading(false);
+      toastError(error_description || '네이버 로그인에 실패했습니다.');
+      return;
+    }
+
+    if (!code) return;
+
     setIsLoading(true);
 
     const fetchPost = async () => {
@@ -36,6 +51,12 @@ export const useNaverLogin = ({
         if (isRejoinDialogOpen) return;
 
         // 쿠키 저장을 위해 server action 사용
+        const { access_token, error_description } = await naverLoginTokenAction(code);
+        if (!access_token) {
+          toastError(error_description || '네이버 로그인에 실패했습니다.');
+
+          return;
+        }
         const postData = await naverLoginAction(access_token);
 
         // 재가입 가능한 탈퇴 유저가 로그인 했을 시

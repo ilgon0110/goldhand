@@ -1,10 +1,8 @@
 import { addDoc, collection, doc, getDoc, getFirestore } from '@firebase/firestore';
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
@@ -48,7 +46,8 @@ export async function POST(request: NextRequest) {
   try {
     const app = firebaseApp;
     const db = getFirestore(app);
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    //const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    const decodedToken = { uid: 'testUserId' }; // Mocked for testing, replace with actual token verification
     const uid = decodedToken.uid;
 
     if (!uid) {

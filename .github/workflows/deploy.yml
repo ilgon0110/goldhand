@@ -48,8 +48,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            export PATH=/home/ubuntu/.nvm/versions/node/v23.4.0/bin:$PATH
             cd ${{ secrets.EC2_PATH }}
             tar -xzf app.tar.gz
             rm app.tar.gz
-            yarn install --production
+            yarn install
             pm2 restart all || pm2 start yarn --name goldhand -- start

@@ -1,5 +1,4 @@
 import type { Timestamp } from 'firebase/firestore';
-import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 import TruncateText from '@/src/shared/ui/TruncateText';
@@ -43,10 +42,10 @@ export const ReviewCard = ({
         {thumbnail ? (
           <>
             <div className="relative w-full">
-              <Image
+              <img
                 alt="리뷰썸네일이미지"
                 height={0}
-                sizes="75"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 src={thumbnail}
                 style={{ objectFit: 'cover', width: '100%', height: 200 }}
                 width={0}
@@ -94,10 +93,10 @@ export const ReviewCard = ({
         {thumbnail ? (
           <>
             <div className="relative aspect-square h-full">
-              <Image
+              <img
                 alt="리뷰썸네일이미지"
                 height={0}
-                sizes="75"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 src={thumbnail}
                 style={{ objectFit: 'cover', width: 'auto', height: '100%' }}
                 width={0}

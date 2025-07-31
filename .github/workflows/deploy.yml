@@ -30,7 +30,7 @@ jobs:
 
       - name: Archive build files
         run: |
-          tar -czf app.tar.gz .next package.json yarn.lock public ecosystem.config.js
+          tar -czf app.tar.gz .next package.json yarn.lock public
 
       - name: Upload to EC2
         uses: appleboy/scp-action@v0.1.3

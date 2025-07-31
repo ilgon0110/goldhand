@@ -22,13 +22,6 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
 
-      - name: Load .env and test GOOGLE_APPLICATION_CREDENTIALS
-        run: |
-          set -a
-          source .env
-          set +a
-          echo "$GOOGLE_APPLICATION_CREDENTIALS" | jq empty
-
       - name: Install dependencies
         run: yarn install
 

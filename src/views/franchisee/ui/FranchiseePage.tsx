@@ -7,15 +7,15 @@ export const FranchiseePage = () => {
     {
       src: '/goldhand_black.png',
       title: '화성동탄점',
-      phoneNumber: '+1234567890',
-      description: 'Description for Franchisee 1',
+      phoneNumber: '010-8381-0431',
+      description: '고운황금손 화성동탄 본점입니다.',
       naverPlaceUrl: 'https://naver.me/FBepMjL3',
     },
     {
       src: '/goldhand_black.png',
       title: '수원점',
-      phoneNumber: '+0987654321',
-      description: 'Description for Franchisee 2',
+      phoneNumber: '010-5536-3765',
+      description: '고운황금손 수원점입니다.',
       naverPlaceUrl: 'https://naver.me/xpB4oXiI',
     },
     // Add more franchisees as needed

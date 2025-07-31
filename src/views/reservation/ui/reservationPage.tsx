@@ -69,7 +69,7 @@ export const ReservationPage = () => {
                       <div className="font-bold md:text-2xl">010-4437-0431</div>
                     </div>
                     <Link
-                      className="flex flex-row items-center gap-2 rounded-sm p-3 transition-all duration-300 ease-in-out hover:bg-slate-200"
+                      className="flex animate-pulse flex-row items-center gap-2 rounded-sm bg-slate-100/70 p-3 transition-all duration-1000 ease-in-out hover:bg-slate-200"
                       href="http://pf.kakao.com/_tvkwxj"
                       target="_blank"
                     >

@@ -49,10 +49,10 @@ export function ImageSlideList() {
         className={`${gowunDodumFont.className} absolute top-1/2 flex -translate-y-1/2 flex-col justify-center px-4 text-sm md:px-[10vw] md:text-base lg:text-xl`}
       >
         <span
-          className={`break-keep text-center text-4xl leading-relaxed text-white md:text-left xl:text-[72px]`}
+          className={`break-keep text-left text-3xl leading-relaxed text-white xl:text-[48px]`}
           style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
         >
-          고운황금손 카피라이트 한줄
+          사랑의 마음으로, 고운황금손
         </span>
         <div
           className="flex flex-col space-y-1 text-base text-white md:text-2xl"
@@ -73,7 +73,7 @@ export function ImageSlideList() {
 const Button = ({ text, onClick }: { text: string; onClick: () => void }) => {
   return (
     <button
-      className="h-12 w-full transform rounded-full border border-[#0F2E16] bg-white/70 text-sm text-[#0F2E16] transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-[#0F2E16] hover:text-white md:h-14 md:text-lg"
+      className="h-12 w-full transform rounded-full border border-[#0F2E16] bg-white text-sm text-[#0F2E16] transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-[#0F2E16] hover:text-white md:h-14 md:text-lg"
       onClick={onClick}
     >
       {text}

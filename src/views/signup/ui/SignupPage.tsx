@@ -117,7 +117,7 @@ export const SignupPage = () => {
       setTimeout(() => {
         router.push('/login');
       }, 3000);
-    } else {
+    } else if (errorMessage) {
       form.setError('authCode', {
         type: 'manual',
         message: errorMessage || '알 수 없는 오류가 발생했습니다.',

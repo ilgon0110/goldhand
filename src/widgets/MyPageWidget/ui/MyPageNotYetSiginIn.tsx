@@ -27,7 +27,7 @@ export const MyPageNotYetSignIn = ({ provider }: TMyPageNotYetSignInProps) => {
 
         setTimeout(() => {
           router.replace('/');
-        }, 3000);
+        }, 2000);
       });
     },
     onError: error => {

@@ -1,5 +1,4 @@
 import { addDoc, collection, doc, getDoc, getFirestore } from '@firebase/firestore';
-import { getAuth } from 'firebase/auth';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
@@ -48,7 +47,6 @@ export async function POST(request: NextRequest) {
   // 댓글 생성
   try {
     const app = firebaseApp;
-    const auth = getAuth();
     const db = getFirestore(app);
     const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;

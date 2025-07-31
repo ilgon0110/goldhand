@@ -1,7 +1,11 @@
 import admin from 'firebase-admin';
 import { getApps, initializeApp } from 'firebase-admin/app';
 
-const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!);
+// 수정된 방식
+const raw = process.env.GOOGLE_APPLICATION_CREDENTIALS ?? '';
+const serviceAccount = JSON.parse(raw.startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf-8'));
+
+//const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!);
 
 const firebaseConfig = {
   credential: admin.credential.cert(serviceAccount),

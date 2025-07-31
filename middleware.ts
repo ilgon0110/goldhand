@@ -20,7 +20,9 @@ export async function middleware(request: NextRequest) {
   const response = await getUserData();
 
   const redirectUrl =
-    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' ? 'https://goldhand.vercel.app' : 'http://127.0.0.1:3000';
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
+      ? process.env.NEXT_PUBLIC_API_URL
+      : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
   if (response.response !== 'ok') {
     console.log('"middleware : response not ok"');

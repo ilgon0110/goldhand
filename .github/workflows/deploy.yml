@@ -13,6 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Enable Corepack and install correct Yarn version
+      run: |
+        corepack enable
+        corepack prepare yarn@4.9.2 --activate
+
     - name: Install dependencies
       run: yarn install
 

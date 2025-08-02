@@ -4,7 +4,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 
-import { gowunDodumFont } from '@/src/shared/fonts';
+import { Button } from '@/src/shared/ui/button';
 import { Carousel, CarouselContent } from '@/src/shared/ui/carousel';
 
 import { ImageCard } from './ImageCard';
@@ -46,7 +46,7 @@ export function ImageSlideList() {
         </CarouselContent>
       </Carousel>
       <div
-        className={`${gowunDodumFont.className} absolute top-1/2 flex -translate-y-1/2 flex-col justify-center px-4 text-sm md:px-[10vw] md:text-base lg:text-xl`}
+        className={`absolute top-1/2 flex -translate-y-1/2 flex-col justify-center px-4 text-sm md:px-[10vw] md:text-base lg:text-xl`}
       >
         <span
           className={`break-keep text-left text-3xl leading-relaxed text-white xl:text-[48px]`}
@@ -62,7 +62,7 @@ export function ImageSlideList() {
         </div>
         <div className="mt-8 flex flex-row gap-2 pr-0 md:gap-4 md:pr-9">
           {buttonList.map(text => (
-            <Button key={text} text={text} onClick={() => onClickButton(text)} />
+            <SlideButton key={text} text={text} onClick={() => onClickButton(text)} />
           ))}
         </div>
       </div>
@@ -70,13 +70,10 @@ export function ImageSlideList() {
   );
 }
 
-const Button = ({ text, onClick }: { text: string; onClick: () => void }) => {
+const SlideButton = ({ text, onClick }: { text: string; onClick: () => void }) => {
   return (
-    <button
-      className="h-12 w-full transform rounded-full border border-[#0F2E16] bg-white text-sm text-[#0F2E16] transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-[#0F2E16] hover:text-white md:h-14 md:text-lg"
-      onClick={onClick}
-    >
+    <Button variant="outline" onClick={onClick}>
       {text}
-    </button>
+    </Button>
   );
 };

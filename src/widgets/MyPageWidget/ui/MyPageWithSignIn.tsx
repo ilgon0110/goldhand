@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
+import { EmptyState } from '@/src/shared/ui/empty-state';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 
@@ -130,19 +131,21 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
           </div>
         </div>
         <div className="mt-2 h-[1px] w-full bg-black" />
-        {myPageData.data.consults && myPageData.data.consults.length > 0
-          ? myPageData.data.consults.map(consult => (
-              <div className="mt-3 flex flex-row justify-between" key={consult.id}>
-                <span
-                  className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                  onClick={() => onClickTitle(consult.id, 'consult')}
-                >
-                  {consult.title}
-                </span>
-                <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
-              </div>
-            ))
-          : null}
+        {myPageData.data.consults && myPageData.data.consults.length > 0 ? (
+          myPageData.data.consults.map(consult => (
+            <div className="mt-3 flex flex-row justify-between" key={consult.id}>
+              <span
+                className="text-base font-medium underline hover:cursor-pointer md:text-xl"
+                onClick={() => onClickTitle(consult.id, 'consult')}
+              >
+                {consult.title}
+              </span>
+              <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
+            </div>
+          ))
+        ) : (
+          <EmptyState className="mt-4" description="새로운 예약을 추가해보세요." title="예약 내역이 없습니다." />
+        )}
       </div>
       {/* 이용 후기 */}
       <div className="mt-10">
@@ -154,19 +157,21 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
           </div>
         </div>
         <div className="mt-2 h-[1px] w-full bg-black" />
-        {myPageData.data.reviews && myPageData.data.reviews.length > 0
-          ? myPageData.data.reviews.map(consult => (
-              <div className="mt-3 flex flex-row justify-between" key={consult.id}>
-                <span
-                  className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                  onClick={() => onClickTitle(consult.id, 'review')}
-                >
-                  {consult.title}
-                </span>
-                <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
-              </div>
-            ))
-          : null}
+        {myPageData.data.reviews && myPageData.data.reviews.length > 0 ? (
+          myPageData.data.reviews.map(consult => (
+            <div className="mt-3 flex flex-row justify-between" key={consult.id}>
+              <span
+                className="text-base font-medium underline hover:cursor-pointer md:text-xl"
+                onClick={() => onClickTitle(consult.id, 'review')}
+              >
+                {consult.title}
+              </span>
+              <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
+            </div>
+          ))
+        ) : (
+          <EmptyState className="mt-4" description="새로운 후기를 추가해보세요." title="후기 내역이 없습니다." />
+        )}
       </div>
 
       {/* 작성 댓글 */}
@@ -179,19 +184,21 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
           </div>
         </div>
         <div className="mt-2 h-[1px] w-full bg-black" />
-        {myPageData.data.comments && myPageData.data.comments.length > 0
-          ? myPageData.data.comments.map(consult => (
-              <div className="mt-3 flex flex-row justify-between" key={consult.id}>
-                <span
-                  className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                  onClick={() => onClickTitle(consult.docId, consult.docType)}
-                >
-                  {consult.comment}
-                </span>
-                <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
-              </div>
-            ))
-          : null}
+        {myPageData.data.comments && myPageData.data.comments.length > 0 ? (
+          myPageData.data.comments.map(consult => (
+            <div className="mt-3 flex flex-row justify-between" key={consult.id}>
+              <span
+                className="text-base font-medium underline hover:cursor-pointer md:text-xl"
+                onClick={() => onClickTitle(consult.docId, consult.docType)}
+              >
+                {consult.comment}
+              </span>
+              <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
+            </div>
+          ))
+        ) : (
+          <EmptyState className="mt-4" description="새로운 댓글을 추가해보세요." title="댓글 내역이 없습니다." />
+        )}
       </div>
     </div>
   );

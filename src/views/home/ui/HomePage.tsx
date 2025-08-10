@@ -19,9 +19,9 @@ export async function HomePage() {
       </section>
       <section className="mt-24 space-y-48 px-4 md:px-[10vw]">
         <ReviewCarousel data={data.reviewData} />
-        <SponsorList />
-        <PriceList />
         <FranchiseeSheetList />
+        <PriceList />
+        <SponsorList />
       </section>
     </>
   );

@@ -12,6 +12,11 @@ type TUserNaverLogin = {
   setIsRejoinDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   rejoinUserData: IUserDetailData | undefined;
   setRejoinUserData: React.Dispatch<React.SetStateAction<IUserDetailData | undefined>>;
+  options?: {
+    onSuccess?: () => void;
+    onError?: (error: string) => void;
+    onSettled?: () => void;
+  };
 };
 
 export const useNaverLogin = ({
@@ -19,6 +24,7 @@ export const useNaverLogin = ({
   setIsRejoinDialogOpen,
   rejoinUserData,
   setRejoinUserData,
+  options,
 }: TUserNaverLogin) => {
   const router = useRouter();
   const params = useParams();
@@ -71,6 +77,8 @@ export const useNaverLogin = ({
           toastError(postData.message || '로그인에 실패했습니다.');
         }
 
+        options?.onSuccess?.();
+
         if (postData.redirectTo) {
           startTransition(() => {
             router.replace(postData.redirectTo!);
@@ -78,8 +86,10 @@ export const useNaverLogin = ({
         }
       } catch (error) {
         console.error(error);
+        options?.onError?.(error instanceof Error ? error.message : '로그인에 실패했습니다.');
         toastError('로그인에 실패했습니다. 다시 시도해주세요.\n' + (error instanceof Error ? error.message : ''));
       } finally {
+        options?.onSettled?.();
         setIsLoading(false);
       }
     };

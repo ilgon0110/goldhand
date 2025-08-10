@@ -11,6 +11,11 @@ type TUseKakaoLogin = {
   setIsRejoinDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   rejoinUserData: IUserDetailData | undefined;
   setRejoinUserData: React.Dispatch<React.SetStateAction<IUserDetailData | undefined>>;
+  options?: {
+    onSuccess?: () => void;
+    onError?: (error: string) => void;
+    onSettled?: () => void;
+  };
 };
 
 export const useKakaoLogin = ({
@@ -18,6 +23,7 @@ export const useKakaoLogin = ({
   setIsRejoinDialogOpen,
   rejoinUserData,
   setRejoinUserData,
+  options,
 }: TUseKakaoLogin) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -61,6 +67,8 @@ export const useKakaoLogin = ({
           return;
         }
 
+        options?.onSuccess?.();
+
         if (postData.redirectTo) {
           startTransition(() => {
             router.replace(postData.redirectTo);
@@ -68,8 +76,10 @@ export const useKakaoLogin = ({
         }
       } catch (error) {
         console.error(error);
+        options?.onError?.(error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.');
         toastError('로그인 중 오류가 발생했습니다.');
       } finally {
+        options?.onSettled?.();
         setIsLoading(false);
       }
     };

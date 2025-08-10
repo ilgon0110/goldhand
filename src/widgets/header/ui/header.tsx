@@ -73,11 +73,11 @@ export const Header = () => {
             </Link>
           </div>
           <div className="box-border hidden items-center gap-2 pt-1 lg:flex">
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink href={URLS.COMPANY}>
                 <UlButton enText="Gold Baby" text="고운황금손" />
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             <NavigationMenu>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
@@ -212,9 +212,9 @@ const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpe
       >
         <UlButton enText="" text={pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'} />
       </Link>
-      <Link className="font-semibold leading-6 text-gray-900" href={URLS.COMPANY} onClick={handleChangeMobileMenuOpen}>
+      {/* <Link className="font-semibold leading-6 text-gray-900" href={URLS.COMPANY} onClick={handleChangeMobileMenuOpen}>
         <UlButton enText="Gold Baby" text="고운황금손" />
-      </Link>
+      </Link> */}
       <UlButton enText="Service" text="산후관리사">
         <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
           <Link href={URLS.MANAGER.ABOUT} onClick={handleChangeMobileMenuOpen}>

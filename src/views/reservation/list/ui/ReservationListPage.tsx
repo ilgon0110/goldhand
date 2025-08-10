@@ -7,6 +7,7 @@ import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import { consultParams } from '@/src/shared/searchParams';
 import type { IConsultDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
+import { EmptyState } from '@/src/shared/ui/empty-state';
 import { formatDateToYMD } from '@/src/shared/utils';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
@@ -36,10 +37,6 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
     });
   };
 
-  const onChangePage = (page: number) => {
-    setConsultParam({ page });
-  };
-
   return (
     <div>
       <div className="flex items-center space-x-2">
@@ -57,28 +54,32 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
         </label>
       </div>
       <div className="space-y-4 pt-4">
-        {data.consultData?.map(item => {
-          return (
-            <ReservationCard
-              author={item.userId ? '회원' : '비회원'}
-              content={item.content}
-              createdAt={formatDateToYMD(item.createdAt)}
-              dataUserId={item.userId}
-              docId={item.id}
-              isSecret={item.secret}
-              key={item.id}
-              spot={item.franchisee}
-              title={item.title}
-              userData={userData}
-            />
-          );
-        })}
+        {data.consultData ? (
+          data.consultData.map(item => {
+            return (
+              <ReservationCard
+                author={item.userId ? '회원' : '비회원'}
+                content={item.content}
+                createdAt={formatDateToYMD(item.createdAt)}
+                dataUserId={item.userId}
+                docId={item.id}
+                isSecret={item.secret}
+                key={item.id}
+                spot={item.franchisee}
+                title={item.title}
+                userData={userData}
+              />
+            );
+          })
+        ) : (
+          <EmptyState className="my-auto" description="새로운 예약 상담을 신청해보세요." title="예약 내역이 없습니다" />
+        )}
       </div>
       <WidgetPagination
         maxColumnNumber={10}
         targetPage={consultParam.page}
         totalDataLength={data.totalDataLength}
-        onChangePage={onChangePage}
+        onChangePage={(page: number) => setConsultParam({ page })}
       />
     </div>
   );

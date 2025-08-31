@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
   const franchisee = searchParams.get('franchisee') ?? '전체';
-  const PAGE_SIZE = 1;
+  const PAGE_SIZE = 10;
   const preloadCount = 1;
 
   const totalToFetch = PAGE_SIZE * preloadCount;

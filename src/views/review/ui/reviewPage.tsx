@@ -64,7 +64,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
       </section>
       <section className="mt-6">
         <WidgetPagination
-          maxColumnNumber={1}
+          maxColumnNumber={10}
           targetPage={reviewParam.page}
           totalDataLength={data.totalDataLength}
           onChangePage={page => setReviewParam({ page })}

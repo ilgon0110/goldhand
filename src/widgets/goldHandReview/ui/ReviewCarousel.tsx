@@ -65,12 +65,12 @@ export const ReviewCarousel = ({ data }: { data: IReviewData['reviewData'] }) =>
                 author={item.name}
                 createdAt={item.createdAt}
                 description={generateReviewDescription(item.htmlString)}
-                franchisee={item.franchisee}
                 handleClick={() => {
                   startTransition(() => {
                     router.push(`/review/${item.id}`);
                   });
                 }}
+                id={item.id}
                 thumbnail={null}
                 title={item.title}
               />

@@ -7,7 +7,7 @@ import { formatDateToYMD } from '@/src/shared/utils';
 type TReviewSummaryCardProps = {
   title: string;
   author: string;
-  updatedAt: Timestamp;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   content: string;
   thumbnailSrc: string | null;
   handleClick: () => void;

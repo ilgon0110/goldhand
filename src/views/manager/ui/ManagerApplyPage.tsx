@@ -87,7 +87,7 @@ export const ManagerApplyPage = () => {
 
   return (
     <div>
-      <SectionTitle buttonTitle="" title="고운황금손 산후관리사 지원하기" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 산후관리사 지원하기" />
       <Form {...form}>
         <form className="mt-6 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

@@ -8,7 +8,7 @@ import { PriceSummaryCard } from './PriceSummaryCard';
 export const PriceList = () => {
   return (
     <FadeInWhenVisible delay={0.5}>
-      <SectionTitle buttonTitle="" title="고운황금손 이용요금" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 이용요금" />
       <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         <PriceSummaryCard
           description="산후관리사가 산모 집으로 직접 찾아와요"

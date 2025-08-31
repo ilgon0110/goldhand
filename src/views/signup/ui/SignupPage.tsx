@@ -149,12 +149,7 @@ export const SignupPage = () => {
 
   return (
     <>
-      <SectionTitle
-        buttonTitle=""
-        contents="회원가입을 위해 아래 정보를 입력해주세요"
-        title="고운황금손 회원가입"
-        onClickButtonTitle={() => {}}
-      />
+      <SectionTitle contents="회원가입을 위해 아래 정보를 입력해주세요" title="고운황금손 회원가입" />
       <button className="hidden" id="sign-in-button" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>

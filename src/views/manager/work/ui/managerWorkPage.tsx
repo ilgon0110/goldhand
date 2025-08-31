@@ -9,7 +9,7 @@ export const ManagerWorkPage = () => {
   return (
     <div className="mt-14 pb-[20vw] md:pb-0">
       <div className="mx-auto w-full px-4 md:max-w-[50vw]">
-        <SectionTitle buttonTitle="" title="산후관리사가 하는 일" onClickButtonTitle={() => {}} />
+        <SectionTitle title="산후관리사가 하는 일" />
         <div className="mt-4 flex flex-col gap-1 whitespace-pre-wrap break-keep text-center text-base md:first-letter:leading-6 lg:text-lg">
           산후관리사는 산모와 신생아 그리고 직계 가족(남편, 아이들)에 관련된 일을 주로 수행합니다.
           <br />

@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
-import { EmptyState } from '@/src/shared/ui/empty-state';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { WithEmptyState } from '@/src/shared/ui/WithEmptyState';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 
 import { useLogoutMutation } from '../hooks/useLogoutMutation';
@@ -32,7 +32,7 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
 
         setTimeout(() => {
           router.replace('/');
-        }, 3000);
+        }, 1000);
       });
     },
     onError: error => {
@@ -53,7 +53,7 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
   return (
     <div>
       <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />
-      <SectionTitle buttonTitle="" title="고운황금손 마이페이지" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 마이페이지" />
       <div className="relative mt-6 w-full rounded border border-slate-300 p-3 md:p-11">
         <div className="flex flex-col md:flex-row md:justify-between">
           <div className="flex flex-col gap-2 text-base font-bold md:flex-row md:items-center md:text-3xl">
@@ -131,8 +131,12 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
           </div>
         </div>
         <div className="mt-2 h-[1px] w-full bg-black" />
-        {myPageData.data.consults && myPageData.data.consults.length > 0 ? (
-          myPageData.data.consults.map(consult => (
+        <WithEmptyState
+          data={myPageData.data.consults}
+          emptyDescription="새로운 예약을 추가해보세요."
+          emptyTitle="예약 내역이 없습니다."
+        >
+          {myPageData.data?.consults?.map(consult => (
             <div className="mt-3 flex flex-row justify-between" key={consult.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
@@ -142,10 +146,8 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
               </span>
               <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
             </div>
-          ))
-        ) : (
-          <EmptyState className="mt-4" description="새로운 예약을 추가해보세요." title="예약 내역이 없습니다." />
-        )}
+          ))}
+        </WithEmptyState>
       </div>
       {/* 이용 후기 */}
       <div className="mt-10">
@@ -157,8 +159,12 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
           </div>
         </div>
         <div className="mt-2 h-[1px] w-full bg-black" />
-        {myPageData.data.reviews && myPageData.data.reviews.length > 0 ? (
-          myPageData.data.reviews.map(consult => (
+        <WithEmptyState
+          data={myPageData.data.reviews}
+          emptyDescription="새로운 후기를 추가해보세요."
+          emptyTitle="후기 내역이 없습니다."
+        >
+          {myPageData.data?.reviews?.map(consult => (
             <div className="mt-3 flex flex-row justify-between" key={consult.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
@@ -168,10 +174,8 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
               </span>
               <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
             </div>
-          ))
-        ) : (
-          <EmptyState className="mt-4" description="새로운 후기를 추가해보세요." title="후기 내역이 없습니다." />
-        )}
+          ))}
+        </WithEmptyState>
       </div>
 
       {/* 작성 댓글 */}
@@ -184,8 +188,12 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
           </div>
         </div>
         <div className="mt-2 h-[1px] w-full bg-black" />
-        {myPageData.data.comments && myPageData.data.comments.length > 0 ? (
-          myPageData.data.comments.map(consult => (
+        <WithEmptyState
+          data={myPageData.data.comments}
+          emptyDescription="새로운 댓글을 추가해보세요."
+          emptyTitle="댓글 내역이 없습니다."
+        >
+          {myPageData.data?.comments?.map(consult => (
             <div className="mt-3 flex flex-row justify-between" key={consult.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
@@ -195,10 +203,8 @@ export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
               </span>
               <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
             </div>
-          ))
-        ) : (
-          <EmptyState className="mt-4" description="새로운 댓글을 추가해보세요." title="댓글 내역이 없습니다." />
-        )}
+          ))}
+        </WithEmptyState>
       </div>
     </div>
   );

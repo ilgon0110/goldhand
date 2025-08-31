@@ -50,7 +50,7 @@ export const ReviewFormPage = () => {
 
   return (
     <>
-      <SectionTitle buttonTitle="" title="고운황금손 후기남기기" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 후기남기기" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -97,7 +97,7 @@ export const ReviewFormPage = () => {
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="franchisee-select-trigger">
                       <SelectValue placeholder="이용했던 대리점을 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>

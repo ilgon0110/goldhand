@@ -40,7 +40,7 @@ export const MyPageNotYetSignIn = ({ provider }: TMyPageNotYetSignInProps) => {
   return (
     <>
       {isPending && <LoadingSpinnerOverlay text="회원가입 페이지로 이동 중..." />}
-      <SectionTitle buttonTitle="" title="고운황금손 마이페이지" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 마이페이지" />
       <div className="mt-12 flex flex-col items-center justify-center space-y-4">
         <div className="flex items-center text-center text-xl font-bold">
           <Badge className={cn(provider === 'naver' ? 'bg-naver text-white' : 'bg-kakao text-black', 'space-x-1')}>

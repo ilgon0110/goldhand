@@ -1,7 +1,7 @@
 'use client';
 
 import { Label } from '@/src/shared/ui/label';
-import { Comment, useComments } from '@/widgets/Comment';
+import { Comment, useComments } from '@/src/widgets/Comment';
 
 type TReservationCommentListProps = {
   docId: string;

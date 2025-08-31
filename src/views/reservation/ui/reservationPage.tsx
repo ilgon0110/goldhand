@@ -31,17 +31,11 @@ export const ReservationPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleApplyClick = () => {
-    startTransition(() => {
-      router.push('/reservation/apply');
-    });
-  };
-
   return (
     <div>
       {isPending && <LoadingSpinnerOverlay text="신청 페이지 이동중.." />}
       <div className="flex flex-col items-center justify-center">
-        <SectionTitle buttonTitle="" title="고운황금손 예약상담" onClickButtonTitle={() => {}} />
+        <SectionTitle title="고운황금손 예약상담" />
         <div className="relative mt-14">
           <div
             className={`absolute left-3 top-0 -z-10 w-[1px] border border-dashed border-slate-400 md:left-8`}
@@ -88,7 +82,7 @@ export const ReservationPage = () => {
         </div>
       </div>
       <div className="mt-20 px-[10vw]">
-        <SectionTitle buttonTitle="" title="예약상담 FAQ" onClickButtonTitle={() => {}} />
+        <SectionTitle title="예약상담 FAQ" />
         <div className="mt-6 space-y-6">
           {FAQItemList.map(faqItem => (
             <div key={faqItem.title}>
@@ -100,7 +94,11 @@ export const ReservationPage = () => {
         <div className="mt-10 flex flex-col items-center justify-center space-y-2 md:space-y-4">
           <button
             className="mx-auto flex items-center justify-center rounded-full bg-[#728146] px-16 py-4 text-lg text-white transition-all duration-300 ease-in-out hover:bg-[#062E16] md:py-6 md:text-2xl"
-            onClick={handleApplyClick}
+            onClick={() => {
+              startTransition(() => {
+                router.push('/reservation/apply');
+              });
+            }}
           >
             예약상담 신청하기
           </button>

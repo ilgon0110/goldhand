@@ -14,7 +14,7 @@ export const ReservationApplyPage = () => {
   return (
     <div>
       {isPending && <LoadingSpinnerOverlay text="페이지 이동중.." />}
-      <SectionTitle buttonTitle="" title="고운황금손 예약상담" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 예약상담" />
       <Image alt="apply" className="mx-auto mt-4" height={200} src="/apply.png" width={300} />
       <p className="mt-4 flex flex-col items-center justify-center space-y-2 break-keep text-center text-lg">
         <span>

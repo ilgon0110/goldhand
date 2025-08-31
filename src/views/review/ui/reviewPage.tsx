@@ -10,12 +10,11 @@ import { reviewParams } from '@/src/shared/searchParams';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
+import { type IReviewData } from '@/src/views/review';
+import { generateReviewDescription, generateReviewThumbnailSrc } from '@/src/views/review/utils';
 import { ReviewCard } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 import { ReviewPageHeader } from '@/src/widgets/review';
-
-import { type IReviewData } from '../index';
-import { generateReviewDescription, generateReviewThumbnailSrc } from '../utils';
 
 export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: boolean }) => {
   const router = useRouter();
@@ -28,7 +27,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
   return (
     <div>
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
-      <SectionTitle buttonTitle="" title="이용 후기" onClickButtonTitle={() => {}} />
+      <SectionTitle title="이용 후기" />
       <div className="flex w-full flex-col items-baseline justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
         <ReviewPageHeader
           franchiseeList={franchiseeList}
@@ -49,13 +48,13 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
             author={review.name}
             createdAt={review.createdAt}
             description={generateReviewDescription(review.htmlString)}
-            franchisee={review.franchisee}
             handleClick={() => {
               startTransition(async () => {
                 await sendViewLog(review.id);
                 router.push(`/review/${review.id}`);
               });
             }}
+            id={review.id}
             key={review.id}
             thumbnail={generateReviewThumbnailSrc(review.htmlString)}
             title={review.title}
@@ -65,7 +64,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
       </section>
       <section className="mt-6">
         <WidgetPagination
-          maxColumnNumber={10}
+          maxColumnNumber={1}
           targetPage={reviewParam.page}
           totalDataLength={data.totalDataLength}
           onChangePage={page => setReviewParam({ page })}

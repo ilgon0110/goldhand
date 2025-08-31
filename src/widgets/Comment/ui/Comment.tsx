@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToHMS, getRelativeTimeFromTimestamp, toastError, toastSuccess } from '@/src/shared/utils';
-import { commentEditSchema } from '@/views/reservation/detail/config/commentEditSchema';
+import { commentEditSchema } from '@/src/views/reservation/detail/config/commentEditSchema';
 
 type TCommentProps = {
   docId: string;
@@ -77,13 +77,17 @@ export const Comment = ({
     if (!formValidation) return;
 
     // 수정 로직 시작
-    const result = await (await mutateUpdateComment(commentId, values.editComment)).json();
+    try {
+      const result = await (await mutateUpdateComment(commentId, values.editComment)).json();
 
-    if (result.response === 'ok') {
-      toastSuccess('댓글 수정 완료!');
-      setIsEditMode(false);
-    } else {
-      toastSuccess('댓글 수정 실패!');
+      if (result.response === 'ok') {
+        toastSuccess('댓글 수정 완료!');
+        setIsEditMode(false);
+      } else {
+        toastSuccess('댓글 수정 실패!');
+      }
+    } catch {
+      toastError('댓글 수정 중 알 수 없는 오류가 발생하였습니다.');
     }
   };
 
@@ -103,6 +107,7 @@ export const Comment = ({
               <>
                 <button
                   className="text-slate-500 transition-all duration-200 hover:text-black"
+                  data-testid="edit-button"
                   onClick={handleEditClick}
                 >
                   <svg
@@ -117,6 +122,7 @@ export const Comment = ({
                 </button>
                 <button
                   className="text-slate-500 transition-all duration-200 hover:text-red-500"
+                  data-testid="delete-button"
                   onClick={() => setAlertDialogOpen(true)}
                 >
                   <svg

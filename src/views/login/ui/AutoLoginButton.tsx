@@ -1,8 +1,7 @@
 import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
-
-import { useShowLastLoginTooltip } from '../hooks/useShowLastLoginTooltip';
+import { safeLocalStorage } from '@/src/shared/storage';
 
 type TAutoLoginButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   provider: 'kakao' | 'naver';
@@ -12,7 +11,6 @@ type TAutoLoginButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const AuthLoginButton = ({ provider, title, iconSrc, handleClick, ...props }: TAutoLoginButtonProps) => {
-  const { getLastLoginTooltip } = useShowLastLoginTooltip();
   return (
     <div className={cn('w-full space-y-3', 'md:w-fit')}>
       <button
@@ -27,7 +25,7 @@ export const AuthLoginButton = ({ provider, title, iconSrc, handleClick, ...prop
         <Image alt="icon" height={24} src={iconSrc} width={24} />
         {title}
       </button>
-      {getLastLoginTooltip() === provider ? (
+      {safeLocalStorage.get('last-login-tooltip') === provider ? (
         <div className="bg- relative w-max rounded-lg bg-slate-200 p-4 text-black">
           {'최근에 로그인했어요.'}
           <div className="absolute -top-2 left-4 h-0 w-0 border-b-8 border-l-8 border-r-8 border-b-slate-200 border-l-transparent border-r-transparent"></div>

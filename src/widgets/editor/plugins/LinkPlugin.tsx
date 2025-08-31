@@ -10,13 +10,13 @@ import { LinkPlugin as LexicalLinkPlugin } from '@lexical/react/LexicalLinkPlugi
 import type { JSX } from 'react';
 import * as React from 'react';
 
-import { validateUrl } from '@/shared/utils';
+import { validateUrl } from '@/src/shared/utils';
 
-type Props = {
+type TProps = {
   hasLinkAttributes?: boolean;
 };
 
-export default function LinkPlugin({ hasLinkAttributes = false }: Props): JSX.Element {
+export default function LinkPlugin({ hasLinkAttributes = false }: TProps): JSX.Element {
   return (
     <LexicalLinkPlugin
       attributes={

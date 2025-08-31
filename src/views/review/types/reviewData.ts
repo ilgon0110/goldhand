@@ -6,11 +6,11 @@ export interface IReviewData {
   reviewData:
     | {
         id: string;
-        createdAt: Timestamp;
+        createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
         name: string;
         userId: string;
         title: string;
-        updatedAt: Timestamp;
+        updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
         htmlString: string;
         franchisee: string;
       }[]

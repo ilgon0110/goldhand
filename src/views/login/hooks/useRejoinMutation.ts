@@ -1,7 +1,7 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { fetcher } from '@/app/utils/fetcher.client';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 interface IResponsePostBody {
   response: string;

@@ -6,7 +6,7 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 export const VoucherPage = () => {
   return (
     <div>
-      <SectionTitle buttonTitle="" title="고운황금손 2025년 바우처 이용 안내" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 2025년 바우처 이용 안내" />
       <div className={`mt-6 whitespace-pre-wrap break-keep text-center leading-6 text-slate-700 xl:text-lg`}>
         {`출산가정에 건강관리사를 파견하여 산모의 산후 회복과 신생아의 양육을 지원하고\n출산가정의 경제적 부담을 경감 및 산모, 신생아 건강관리사 양성을 통해 일자리를 창출하는 제도입니다.`}
       </div>

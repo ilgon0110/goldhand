@@ -1,5 +1,8 @@
 import type { Timestamp } from 'firebase/firestore';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TAliasAny = any;
+
 // 이용상담(Consult, Reservation) 관련 타입 정의
 export interface IConsultDetailData {
   bornDate: Date | null;

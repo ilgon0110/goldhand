@@ -10,7 +10,7 @@ type TPageProps = {
   searchParams: { docId: string | undefined; password: string | undefined };
 };
 
-export default async function Page({ params, searchParams }: TPageProps) {
+export default async function Page({ searchParams }: TPageProps) {
   const userData = await getUserData();
   const consultDetailData = await getConsultDetailData({
     docId: searchParams.docId || '',

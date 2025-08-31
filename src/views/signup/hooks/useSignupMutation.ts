@@ -2,7 +2,7 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import type z from 'zod';
 
-import { fetcher } from '@/app/utils/fetcher.client';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 import type { signUpFormSchema } from '../config/signUpFormSchema';
 

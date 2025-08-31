@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { fetcher } from '@/app/utils/fetcher.client';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';

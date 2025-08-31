@@ -61,6 +61,7 @@ export const ReviewPageHeader = ({
               'fill-slate-200 transition-all duration-300 ease-in-out hover:fill-slate-500',
               viewMode === 'TABLE' && 'fill-slate-500',
             )}
+            title="table-view-button"
             onClick={() => setViewMode('TABLE')}
           >
             <svg fill="current" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
@@ -72,6 +73,7 @@ export const ReviewPageHeader = ({
               'fill-slate-200 transition-all duration-300 ease-in-out hover:fill-slate-500',
               viewMode === 'CARD' && 'fill-slate-500',
             )}
+            title="card-view-button"
             onClick={() => setViewMode('CARD')}
           >
             <svg fill="current" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">

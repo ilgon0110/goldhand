@@ -8,5 +8,5 @@ export { ReservationRecaptchaProvider } from './form/ui/ReservationRecaptchaProv
 export { getReservationListData } from './list/api/loader';
 export { passwordPostAction } from './list/api/passwordPostAction';
 export { ReservationListPage } from './list/ui/ReservationListPage';
-export { ReservationPagination } from './list/ui/ReservationPagination';
+export { ReservationCard } from './ui/ReservationCard';
 export { ReservationPage } from './ui/reservationPage';

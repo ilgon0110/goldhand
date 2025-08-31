@@ -17,12 +17,14 @@
         "name": "next"
       }
     ],
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": ["./*"],
       "@/views/*": ["./src/views/*"],
       "@/shared/*": ["./src/shared/*"],
       "@/widgets/*": ["./src/widgets/*"],
-      "@/entities/*": ["./src/entities/*"]
+      "@/entities/*": ["./src/entities/*"],
+      "@/__mock__/*": ["./src/__mock__/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

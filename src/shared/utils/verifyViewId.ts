@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 import { apiUrl } from '../config';
+import { safeLocalStorage } from '../storage';
 
 const HMAC_SECRET = process.env.NEXT_PUBLIC_VIEWER_SECRET!; // 안전하게 관리
 
@@ -34,14 +35,14 @@ function hmacSHA256(value: string, secret: string) {
 }
 
 async function getOrCreateViewer() {
-  const stored = localStorage.getItem('viewer-id');
+  const stored = safeLocalStorage.get('viewer-id');
   if (stored) return JSON.parse(stored);
 
   const viewerId = uuidv4();
   const signature = await hmacSHA256(viewerId, HMAC_SECRET);
 
   const viewer = { id: viewerId, sig: signature };
-  localStorage.setItem('viewer-id', JSON.stringify(viewer));
+  safeLocalStorage.set('viewer-id', JSON.stringify(viewer));
   return viewer;
 }
 

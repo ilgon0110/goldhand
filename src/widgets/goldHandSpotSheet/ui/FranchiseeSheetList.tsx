@@ -29,11 +29,7 @@ export function FranchiseeSheetList() {
   return (
     <div>
       <FadeInWhenVisible>
-        <SectionTitle
-          buttonTitle=""
-          title="고운황금손 지점 소개"
-          onClickButtonTitle={() => router.push('/franchisee')}
-        />
+        <SectionTitle title="고운황금손 지점 소개" />
         <button
           className="mt-9 rounded-t-md bg-[#728146] px-7 py-2 text-base text-white hover:opacity-80"
           onClick={() => onClickLocation('경기')}

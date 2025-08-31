@@ -9,9 +9,8 @@ import type { IConsultDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import { formatDateToYMD } from '@/src/shared/utils';
+import { ReservationCard } from '@/src/views/reservation';
 import { WidgetPagination } from '@/src/widgets/Pagination';
-
-import { ReservationCard } from '../../ui/ReservationCard';
 
 interface IConsultData extends IConsultDetailData {
   id: string;
@@ -54,7 +53,7 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
         </label>
       </div>
       <div className="space-y-4 pt-4">
-        {data.consultData ? (
+        {data.consultData != null ? (
           data.consultData.map(item => {
             return (
               <ReservationCard

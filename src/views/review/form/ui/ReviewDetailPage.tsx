@@ -17,8 +17,8 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
+import { Comment, useComments } from '@/src/widgets/Comment';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
-import { Comment, useComments } from '@/widgets/Comment';
 
 import { reviewCommentSchema } from '../config/reviewCommentSchema';
 
@@ -103,7 +103,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
     router.push(`/review/${docId}/edit`);
   };
 
-  const onhandleReviewDeleteActionClick = async () => {
+  const onHandleReviewDeleteActionClick = async () => {
     try {
       setIsReviewDeleteSubmitting(true);
       const res = await fetch(`/api/review/delete`, {
@@ -270,7 +270,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
       {/* 삭제 확인 알림 */}
       <MyAlertDialog
         description={'삭제된 게시글은 복구할 수 없습니다.'}
-        handleDeletePostClick={onhandleReviewDeleteActionClick}
+        handleDeletePostClick={onHandleReviewDeleteActionClick}
         isPending={isReviewDeleteSubmitting}
         okButtonText={'삭제하기'}
         opOpenChange={open => setReviewDeleteAlertDialogOpen(open)}

@@ -10,7 +10,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { useComments } from '@/widgets/Comment';
+import { useComments } from '@/src/widgets/Comment';
 
 import { consultCommentSchema } from '../config/consultCommentSchema';
 
@@ -24,7 +24,7 @@ type TReservationCommentFormProps = {
 };
 
 export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) => {
-  const { comments, loading: isCommentSubmitting } = useComments({
+  const { loading: isCommentSubmitting } = useComments({
     docId,
     collectionName: 'consults',
   });

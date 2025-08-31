@@ -21,7 +21,7 @@ import {
 export const PricePage = () => {
   return (
     <>
-      <SectionTitle buttonTitle="" title="고운황금손 이용요금" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 이용요금" />
       <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">출퇴근형</div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         <PriceCard checkList={basicCheckList} description="" priceList={basicPriceList} title="베이직" />

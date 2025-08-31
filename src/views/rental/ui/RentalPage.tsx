@@ -19,7 +19,7 @@ export const RentalPage = () => {
   ];
   return (
     <>
-      <SectionTitle buttonTitle="" title="고운황금손 대여물품" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 대여물품" />
       <div className="mt-6 flex flex-col items-center justify-between gap-4 md:flex-row">
         {items.map(el => {
           return <RentalCard alt={el.alt} key={el.alt} src={el.src} />;

@@ -7,7 +7,7 @@ export const SponsorList = () => {
   return (
     <div className="mt-12">
       <FadeInWhenVisible>
-        <SectionTitle buttonTitle="" title="고운황금손 협력사" onClickButtonTitle={() => {}} />
+        <SectionTitle title="고운황금손 협력사" />
         <div className="relative mt-4 flex h-12 flex-row justify-center">
           <div className="relative h-full basis-1/5">
             <Image alt="스폰서 로고 이미지" fill sizes="75" src="/sponsor_1.png" style={{ objectFit: 'contain' }} />

@@ -36,9 +36,10 @@ export const WidgetPagination = ({
       (_, i) => i + 1,
     ),
   );
+  const nowStartPageNumber = paginationArr[0];
+  const nowEndPageNumber = paginationArr[paginationArr.length - 1];
 
   const onClickPrevious = () => {
-    const nowStartPageNumber = paginationArr[0];
     if (nowStartPageNumber > MAXIMUM_NUMBER_OF_PAGES) {
       const newArr = Array.from(
         {
@@ -71,7 +72,7 @@ export const WidgetPagination = ({
   return (
     <Pagination className="mt-6">
       <PaginationContent>
-        {paginationArr[0] > MAXIMUM_NUMBER_OF_PAGES && (
+        {nowStartPageNumber > MAXIMUM_NUMBER_OF_PAGES && (
           <PaginationItem>
             <PaginationPrevious href="#" onClick={onClickPrevious} />
           </PaginationItem>
@@ -83,7 +84,7 @@ export const WidgetPagination = ({
             </PaginationLink>
           </PaginationItem>
         ))}
-        {totalPages > paginationArr[paginationArr.length - 1] && (
+        {nowEndPageNumber < totalPages && (
           <>
             <PaginationItem>
               <PaginationEllipsis />

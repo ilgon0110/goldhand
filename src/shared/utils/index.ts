@@ -23,7 +23,7 @@ export function getTodayDate(): string {
   return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
 }
 
-export function formatDateToYMD(timestamp: Timestamp | null | undefined): string {
+export function formatDateToYMD(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null | undefined): string {
   if (timestamp == null) {
     return '';
   }
@@ -44,7 +44,7 @@ export function formatDateToHMS(timestamp: { seconds: number; nanoseconds: numbe
   return `${hours}:${minutes}:${seconds}`;
 }
 
-export function getRelativeTimeFromTimestamp(timestamp: Timestamp): string {
+export function getRelativeTimeFromTimestamp(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'>): string {
   const createdDate = new Date(timestamp.seconds * 1000);
   const now = new Date();
 

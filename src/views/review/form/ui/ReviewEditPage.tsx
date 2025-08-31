@@ -50,7 +50,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
 
   return (
     <>
-      <SectionTitle buttonTitle="" title="고운황금손 후기남기기" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 후기남기기" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

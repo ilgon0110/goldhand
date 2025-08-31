@@ -1,4 +1,4 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/shared/ui/accordion';
 
 type TFAQItemProps = {
   title: string;

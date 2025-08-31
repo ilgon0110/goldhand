@@ -1,4 +1,4 @@
-import { authFetcher } from '@/app/utils/fetcher.server';
+import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
 interface IResponseGetBody {
   message: string;

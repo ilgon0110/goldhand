@@ -22,7 +22,7 @@ export const FranchiseePage = () => {
   ];
   return (
     <>
-      <SectionTitle buttonTitle="" title="지점 안내" onClickButtonTitle={() => {}} />
+      <SectionTitle title="지점 안내" />
       <div className="mt-10 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {franchisees.map(franchisee => (
           <FranchiseeCard

@@ -4,20 +4,19 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { safeLocalStorage } from '@/src/shared/storage';
 import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
 import { useKakaoLogin } from '../hooks/useKakaoLogin';
 import { useNaverLogin } from '../hooks/useNaverLogin';
-import { useShowLastLoginTooltip } from '../hooks/useShowLastLoginTooltip';
 import { AuthLoginButton } from './AutoLoginButton';
 import { RejoinModal } from './RejoinModal';
 export const LoginPage = () => {
   const router = useRouter();
   const [isRejoinDialogOpen, setIsRejoinDialogOpen] = useState(false);
   const [rejoinUserData, setRejoinUserData] = useState<IUserDetailData>();
-  const { setLastLoginTooltip } = useShowLastLoginTooltip();
 
   // 카카오 로그인
   const { isLoading: isKakaoLoading, isPending: isKakaoPending } = useKakaoLogin({
@@ -27,7 +26,7 @@ export const LoginPage = () => {
     setRejoinUserData,
     options: {
       onSuccess: () => {
-        setLastLoginTooltip('kakao');
+        safeLocalStorage.set('last-login-tooltip', 'kakao');
       },
     },
   });
@@ -40,14 +39,14 @@ export const LoginPage = () => {
     setRejoinUserData,
     options: {
       onSuccess: () => {
-        setLastLoginTooltip('naver');
+        safeLocalStorage.set('last-login-tooltip', 'naver');
       },
     },
   });
 
   return (
     <div className="flex flex-col items-center">
-      <SectionTitle buttonTitle="" title="고운황금손 로그인" onClickButtonTitle={() => {}} />
+      <SectionTitle title="고운황금손 로그인" />
       {(isNaverLoading || isKakaoLoading) && <LoadingSpinnerOverlay text="로그인 중..." />}
       {(isNaverPending || isKakaoPending) && <LoadingSpinnerOverlay text="회원가입 유무 확인 중..." />}
 

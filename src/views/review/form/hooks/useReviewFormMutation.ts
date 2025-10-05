@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
+import { firebaseApp } from '@/src/shared/config/firebase';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
@@ -47,7 +48,7 @@ export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) =
       setIsSubmitting(true);
 
       if (isLinked && userData) {
-        const storage = getStorage();
+        const storage = getStorage(firebaseApp);
         // 이미지 있을 때 업로드 로직
         if (images != null && images.length > 0) {
           for (const image of images) {

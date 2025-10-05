@@ -35,6 +35,7 @@ export function useAuth() {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
+    retry: false,
   });
 
   if (query.isLoading) {

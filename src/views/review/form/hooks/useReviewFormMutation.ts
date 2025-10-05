@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
+import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
@@ -22,7 +22,7 @@ export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) =
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { images } = useImagesContext();
-  const { isLinked, userData } = useAuthState();
+  const { isLinked, userData } = useAuth();
   const [imageProgress, setImagesProgress] = useState<{
     key: string;
     progress: number;

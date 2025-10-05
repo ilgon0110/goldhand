@@ -1,6 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import type { TAliasAny } from '@/src/shared/types';
+import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { ReviewFormPage } from '@/src/views/review';
 
 // useRouter 모킹
@@ -9,6 +11,8 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: pushMock,
   }),
+  usePathname: () => '/review/form',
+  useSearchParams: () => new URLSearchParams('mode=create'),
 }));
 
 vi.mock('@/src/widgets/editor/ui/Editor', () => {
@@ -25,16 +29,36 @@ vi.mock('@/src/shared/hooks/useAuthState', () => ({
   }),
 }));
 
+beforeAll(() => {
+  function createMockPointerEvent(type: string, props: PointerEventInit = {}): PointerEvent {
+    const event = new Event(type, props) as PointerEvent;
+    Object.assign(event, {
+      button: props.button ?? 0,
+      ctrlKey: props.ctrlKey ?? false,
+      pointerType: props.pointerType ?? 'mouse',
+    });
+    return event;
+  }
+  window.PointerEvent = createMockPointerEvent as TAliasAny;
+  Object.assign(window.HTMLElement.prototype, {
+    scrollIntoView: vi.fn(),
+    releasePointerCapture: vi.fn(),
+    hasPointerCapture: vi.fn(),
+  });
+});
+
 describe('ReviewFormPage 컴포넌트 테스트', async () => {
   it('이름 validation 테스트. 2글자 이상 20글자 이하 string만 가능하다.', async () => {
-    render(<ReviewFormPage />);
+    renderWithQueryClient(<ReviewFormPage />);
 
     // title은 제대로 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'This is a valid title');
 
     // 대리점 선택
-    await userEvent.click(screen.getByTestId('franchisee-select-trigger'));
-    await userEvent.click(screen.getByText(/전체/));
+    const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
+    await userEvent.click(franchiseeTrigger);
+    const optionToSelect = await waitFor(() => screen.findByText(/전체/, { selector: 'span' }));
+    await userEvent.click(optionToSelect);
 
     // 이름에 1글자만 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/이름/), 'A');
@@ -55,14 +79,16 @@ describe('ReviewFormPage 컴포넌트 테스트', async () => {
   });
 
   it('title validation 테스트. 2자 이상 100자 이하로 입력해주세요.', async () => {
-    render(<ReviewFormPage />);
+    renderWithQueryClient(<ReviewFormPage />);
 
     // 이름은 제대로 입력
     await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');
 
     // 대리점 선택
-    await userEvent.click(screen.getByTestId('franchisee-select-trigger'));
-    await userEvent.click(screen.getByText(/전체/));
+    const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
+    await userEvent.click(franchiseeTrigger);
+    const optionToSelect = await waitFor(() => screen.findByText(/전체/, { selector: 'span' }));
+    await userEvent.click(optionToSelect);
 
     // 제목에 1글자만 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/제목/), 'A');

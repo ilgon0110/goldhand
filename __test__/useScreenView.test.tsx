@@ -76,6 +76,7 @@ describe('useScreenView', () => {
       expect(logEvent).toHaveBeenCalledTimes(1);
     });
   });
+
   it('screenName과 screenClass가 있고 파라미터가 변하면 logEvent 호출', async () => {
     const { useScreenView } = await import('@/src/shared/hooks/useScreenView');
     const { rerender } = renderHook(({ screenName, screenClass }) => useScreenView(screenName, screenClass), {

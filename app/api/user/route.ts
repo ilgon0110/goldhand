@@ -105,16 +105,30 @@ export async function GET() {
       typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
         ? error.code
         : 'unknown_error';
-    if (typeof error === 'object' && error != null && 'code' in error && error.code === 'auth/invalid-id-token') {
+
+    if (errorCode === 'auth/invalid-id-token') {
       return typedJson<IResponseBody>(
         {
           response: 'unAuthorized',
-          message: error.code,
+          message: errorCode,
           accessToken: null,
           userData: null,
           isLinked: false,
         },
         { status: 401 },
+      );
+    }
+
+    if (errorCode === 'auth/id-token-expired') {
+      return typedJson<IResponseBody>(
+        {
+          response: 'unAuthorized',
+          message: errorCode,
+          accessToken: null,
+          userData: null,
+          isLinked: false,
+        },
+        { status: 200 },
       );
     }
 

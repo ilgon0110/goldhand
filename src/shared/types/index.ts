@@ -5,9 +5,9 @@ export type TAliasAny = any;
 
 // 이용상담(Consult, Reservation) 관련 타입 정의
 export interface IConsultDetailData {
-  bornDate: Date | null;
+  bornDate: string | null;
   content: string;
-  createdAt: Timestamp;
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
   location: string;
   name: string;
@@ -15,9 +15,9 @@ export interface IConsultDetailData {
   phoneNumber: string;
   secret: boolean;
   title: string;
-  updatedAt: Timestamp;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string | null;
-  comments: ICommentData[] | null;
+  comments?: ICommentData[] | null;
 }
 
 export interface IConsultResponseData {
@@ -29,11 +29,11 @@ export interface IConsultResponseData {
 // 이용후기(Review) 관련 타입 정의
 export interface IReviewDetailData {
   htmlString: string;
-  createdAt: Timestamp;
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
   name: string;
   title: string;
-  updatedAt: Timestamp;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string | null;
   comments: ICommentData[] | null;
 }
@@ -48,8 +48,8 @@ export interface IReviewResponseData {
 export interface ICommentData {
   id: string;
   comment: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string;
   docId: string; // 댓글이 달린 문서의 ID (Consult 또는 Review)
   docType: 'consult' | 'review'; // 댓글이 달린 문서의 타입
@@ -60,13 +60,13 @@ export interface IUserDetailData {
   phoneNumber: string;
   email: string;
   grade: string;
-  createdAt: Timestamp;
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   nickname: string;
   name: string;
-  updatedAt: Timestamp;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string;
   isDeleted: boolean;
-  deletedAt: Timestamp | null;
+  deletedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null;
   provider: 'kakao' | 'naver';
   kakaoId: string | null;
   kakaoEmail: string | null;

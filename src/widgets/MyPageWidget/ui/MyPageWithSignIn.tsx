@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
@@ -22,7 +23,7 @@ type TMyPageDataProps = {
 };
 
 export const MyPageWithSignIn = ({ myPageData }: TMyPageDataProps) => {
-  const auth = getAuth();
+  const auth = getAuth(firebaseApp);
   const router = useRouter();
   const [withDrawalModalOpen, setWithDrawalModalOpen] = useState(false);
   const { mutate: logout } = useLogoutMutation({

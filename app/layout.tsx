@@ -6,6 +6,7 @@ import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ToastContainer } from 'react-toastify';
 
+import { QueryProvider } from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { Footer } from '@/src/widgets/footer';
 import { Header } from '@/src/widgets/header';
@@ -64,8 +65,10 @@ export default function RootLayout({
         <body className={`${pretendard.className} relative`}>
           <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
             <NuqsAdapter>
-              <Header />
-              {children}
+              <QueryProvider>
+                <Header />
+                {children}
+              </QueryProvider>
             </NuqsAdapter>
             <Footer />
             <ToastContainer />

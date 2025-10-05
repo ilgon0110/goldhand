@@ -1,26 +1,14 @@
-import { parse } from 'cookie';
-import { headers } from 'next/headers';
-
 import type { IUserResponseData } from '@/src/shared/types';
 
-import { apiUrl } from '../config';
+import { authFetcher } from '../utils/fetcher.server';
 
+/*
+서버 컴포넌트나 서버 액션에서 user 데이터를 가져올 때 사용
+*/
 export async function getUserData(): Promise<IUserResponseData> {
-  const rawCookie = headers().get('cookie') || '';
-  const cookiesObj = parse(rawCookie);
-  const accessToken = cookiesObj['accessToken'];
-
-  const res: Response = await fetch(`${apiUrl}/api/user`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: `accessToken=${accessToken}`,
-    },
+  const result = await authFetcher<IUserResponseData>('/api/user', {
     cache: 'no-store',
   });
 
-  // if (!res.ok) {
-  //   throw new Error("데이터 fetch 실패!!");
-  // }
-
-  return res.json();
+  return result;
 }

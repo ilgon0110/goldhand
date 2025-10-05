@@ -18,5 +18,9 @@ export const getMyPageData = async (): Promise<IMyPageResponseData> => {
     cache: 'no-store',
   });
 
+  // const res = await authFetcher('/api/mypage', {
+  //   cache: 'no-store',
+  // })
+
   return res.json();
 };

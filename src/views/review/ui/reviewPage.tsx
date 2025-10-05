@@ -22,6 +22,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: bool
   const [reviewParam, setReviewParam] = useQueryStates(reviewParams, {
     shallow: false,
   });
+
   const [isPending, startTransition] = useTransition();
 
   return (

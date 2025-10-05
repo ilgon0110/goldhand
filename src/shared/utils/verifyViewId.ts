@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
-import { apiUrl } from '../config';
 import { safeLocalStorage } from '../storage';
+import { fetcher } from './fetcher.client';
 
 const HMAC_SECRET = process.env.NEXT_PUBLIC_VIEWER_SECRET!; // 안전하게 관리
 
@@ -49,7 +49,10 @@ async function getOrCreateViewer() {
 export async function sendViewLog(docId: string) {
   const viewer = await getOrCreateViewer();
 
-  const res = await fetch(`${apiUrl}/api/viewCount`, {
+  const data = await fetcher<{
+    response: 'duplicate' | 'ng' | 'ok';
+    message: string;
+  }>(`/api/viewCount`, {
     method: 'POST',
     body: JSON.stringify({
       docId,
@@ -58,6 +61,5 @@ export async function sendViewLog(docId: string) {
     }),
   });
 
-  const data = await res.json();
   return data;
 }

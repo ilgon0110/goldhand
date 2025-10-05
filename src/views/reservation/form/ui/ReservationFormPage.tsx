@@ -26,8 +26,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { passwordPostAction } from '@/src/views/reservation';
 import { reservationFormSchema } from '@/src/views/reservation';
+import { passwordPostAction } from '@/src/views/reservation';
 
 export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -37,7 +37,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
     defaultValues: {
       title: '',
       name: userData?.userData?.name || '',
-      password: '',
+      isMember: userData.isLinked,
       secret: true,
       franchisee: '',
       phoneNumber: userData?.userData?.phoneNumber || '',
@@ -57,21 +57,21 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
       setIsSubmitting(true);
 
       const recaptchaToken = await executeRecaptcha('join');
-
       // POST 요청
-      const response = await fetch('/api/consultDetail/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...values,
-          userId: userData.isLinked && userData.userData?.userId ? userData.userData?.userId : null,
-          recaptchaToken,
-        }),
-      });
+      const data = await (
+        await fetch('/api/consultDetail/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...values,
+            userId: userData.isLinked && userData.userData?.userId ? userData.userData?.userId : null,
+            recaptchaToken,
+          }),
+        })
+      ).json();
 
-      const data = await response.json();
       if (data.response === 'expired') {
         toastError('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
         router.replace('/login');
@@ -108,7 +108,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
     <>
       <SectionTitle title="고운황금손 상담신청" />
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <form aria-label="상담신청폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             defaultValue={userData.userData?.name || ''}
@@ -215,7 +215,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="franchisee-select-trigger">
                       <SelectValue placeholder="상담받으실 대리점을 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>

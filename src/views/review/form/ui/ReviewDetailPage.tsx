@@ -57,7 +57,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
   const formValidation = form.formState.isValid;
   const isOwner = data.data.userId === userData.userData?.userId;
 
-  const onSubmit = async (values: z.infer<typeof reviewCommentSchema>) => {
+  const onCommentSubmit = async (values: z.infer<typeof reviewCommentSchema>) => {
     if (!formValidation) return;
     const { comment } = values;
 
@@ -81,26 +81,11 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
         toastError('로그인 후 이용해주세요.');
         form.reset();
       } else {
-        toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.\n' + data.message);
+        toastError('댓글 작성에 실패하였습니다.\n' + data.message);
       }
     } catch {
       toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.\n' + data.message);
     }
-  };
-
-  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-    // 수정 Form으로 이동
-    setReviewUpdateAlertDialogOpen(true);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-    setReviewDeleteAlertDialogOpen(true);
-  };
-
-  const onhandleReviewUpdateActionClick = () => {
-    router.push(`/review/${docId}/edit`);
   };
 
   const onHandleReviewDeleteActionClick = async () => {
@@ -120,48 +105,16 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
       if (responseData.response === 'ok') {
         toastSuccess('게시글이 삭제되었습니다.');
         router.push('/review');
-      } else if (data.response === 'unAuthorized') {
-        toastError('비밀번호가 틀립니다.');
-      } else if (data.response === 'expired') {
-        toastError('로그인 후 이용해주세요.');
+      } else {
+        toastError('게시글 삭제에 실패하였습니다.\n' + responseData.message);
       }
     } catch (error) {
       console.error('Error during form submission:', error);
-      toastError('게시글 삭제 중 서버 오류가 발생하였습니다.');
+      toastError('게시글 삭제 중 알 수 없는 오류가 발생하였습니다.');
     } finally {
       setIsReviewDeleteSubmitting(false);
       setReviewDeleteAlertDialogOpen(false);
     }
-  };
-
-  if (data.response === 'ng') {
-    throw new Error(data.message);
-  }
-
-  // 댓글 삭제 및 수정 함수
-  const mutateDeleteComment = async (commentId: string) => {
-    return await fetch('/api/review/detail/comment/delete', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: userData.userData?.userId,
-        docId,
-        commentId,
-      }),
-    });
-  };
-
-  const mutateUpdateComment = async (commentId: string, comment: string) => {
-    return await fetch('/api/review/detail/comment/update', {
-      method: 'POST',
-      body: JSON.stringify({
-        docId,
-        commentId,
-        comment,
-      }),
-    });
   };
 
   // Firebase Analytics 이벤트 로깅
@@ -195,11 +148,20 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
         <div className="flex w-full justify-end space-x-4">
           <Button
             className="border border-primary bg-transparent text-primary transition-all duration-300 hover:bg-primary hover:text-white"
-            onClick={e => handleEditClick(e)}
+            onClick={e => {
+              e.stopPropagation();
+              setReviewUpdateAlertDialogOpen(true);
+            }}
           >
             수정하기
           </Button>
-          <Button variant="destructive" onClick={e => handleDeleteClick(e)}>
+          <Button
+            variant="destructive"
+            onClick={e => {
+              e.stopPropagation();
+              setReviewDeleteAlertDialogOpen(true);
+            }}
+          >
             삭제하기
           </Button>
         </div>
@@ -207,7 +169,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
 
       {/* 댓글 입력란 */}
       <Form {...form}>
-        <form className="mt-4 space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="mt-4 space-y-2" onSubmit={form.handleSubmit(onCommentSubmit)}>
           <FormField
             control={form.control}
             defaultValue={''}
@@ -249,8 +211,29 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
               docId={docId}
               isCommentOwner={item.userId === userData.userData?.userId}
               key={item.id}
-              mutateDeleteComment={mutateDeleteComment}
-              mutateUpdateComment={mutateUpdateComment}
+              mutateDeleteComment={async (commentId: string) => {
+                return await fetch('/api/review/detail/comment/delete', {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    userId: userData.userData?.userId,
+                    docId,
+                    commentId,
+                  }),
+                });
+              }}
+              mutateUpdateComment={async (commentId: string, comment: string) => {
+                return await fetch('/api/review/detail/comment/update', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    docId,
+                    commentId,
+                    comment,
+                  }),
+                });
+              }}
               updatedAt={item.updatedAt}
             />
           );
@@ -260,7 +243,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
       {/* 수정 확인 알림 */}
       <MyAlertDialog
         description={'게시글 수정 화면으로 이동하시겠습니까?'}
-        handleDeletePostClick={onhandleReviewUpdateActionClick}
+        handleDeletePostClick={() => router.push(`/review/${docId}/edit`)}
         isPending={isReviewUpdateSubmitting}
         okButtonText={'수정하기'}
         opOpenChange={open => setReviewUpdateAlertDialogOpen(open)}

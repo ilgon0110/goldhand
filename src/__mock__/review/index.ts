@@ -1,3 +1,4 @@
+import type { IReviewResponseData } from '@/src/shared/types';
 import type { IReviewData } from '@/src/views/review';
 
 export const mockReviewData: IReviewData = {
@@ -210,4 +211,26 @@ export const mockReviewData: IReviewData = {
       name: '흠흠',
     },
   ],
+};
+
+export const mockReviewDetailData: IReviewResponseData = {
+  response: 'ok',
+  message: '리뷰 상세 조회 성공',
+  data: {
+    createdAt: {
+      seconds: 1753097297,
+      nanoseconds: 543000000,
+    },
+    title: 'Test Title',
+    franchisee: '수원점',
+    updatedAt: {
+      seconds: 1753098354,
+      nanoseconds: 311000000,
+    },
+    userId: 'test-user-id',
+    htmlString:
+      '<p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">자... 후기를 싹 다 뜯어고쳤습니다.</span></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph" dir="ltr"><div><img src="https://firebasestorage.googleapis.com/v0/b/goldhand-5fd6c.firebasestorage.app/o/reviews%2FGdoJvrgrhFNrxpSP4NM3ux77D7T2%2F1e8cbb13-472e-448a-ab42-55f2ad7af65e%2F6?alt=media&amp;token=5598792b-d641-46c8-8688-5cc96f4ad8df" alt="avatar_placeholder.png" width="inherit" height="inherit" id="39"></div></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">이미지 업로드해보고</span></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">과연 업로드는되는가. 수정도했습니다.</span></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">삭제 후 다른이미지로 교체</span></p><p class="PlaygroundEditorTheme__paragraph"><br></p><p class="PlaygroundEditorTheme__paragraph"><div><img src="https://firebasestorage.googleapis.com/v0/b/goldhand-5fd6c.firebasestorage.app/o/reviews%2FGdoJvrgrhFNrxpSP4NM3ux77D7T2%2F1e8cbb13-472e-448a-ab42-55f2ad7af65e%2F71?alt=media&token=c9a29099-2678-4ae7-ac63-b7e98c848f68" alt="바우처 25년 이용요금표png.png" width="inherit" height="inherit" id="71"></div></p>',
+    name: '흠흠',
+    comments: [],
+  },
 };

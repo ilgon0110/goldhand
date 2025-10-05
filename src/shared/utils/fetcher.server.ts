@@ -3,6 +3,8 @@
 import { parse } from 'cookie';
 import { headers } from 'next/headers';
 
+import { apiUrl } from '../config';
+
 // 로그인한 상태에서 쓸 수 있는 fetcher
 export async function authFetcher<T>(path: string, options: RequestInit = {}): Promise<T> {
   const rawCookie = headers().get('cookie') || '';
@@ -13,7 +15,7 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
   //   throw new Error('로그인이 필요합니다.');
   // }
 
-  const response = await fetch(`${path}`, {
+  const response = await fetch(`${apiUrl}${path}`, {
     ...options,
     method: options.method || 'GET',
     headers: {

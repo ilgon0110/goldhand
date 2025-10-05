@@ -1,20 +1,17 @@
 'use client';
 
-import { getAuth } from 'firebase/auth';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
-
-import { apiUrl } from '../config';
 import type { IUserResponseData } from '../types';
+import { fetcher } from '../utils/fetcher.client';
 
-interface IResponseGetBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
-  message: string;
-  userData: IUserResponseData['userData'] | null;
-  isLinked: boolean;
-}
+const defaultState = {
+  isSignedIn: false,
+  pending: true,
+  userData: null,
+  isLinked: false,
+};
 
 export function useAuthState() {
   const [authState, setAuthState] = useState<{
@@ -22,28 +19,24 @@ export function useAuthState() {
     pending: boolean;
     userData: IUserResponseData['userData'] | null;
     isLinked: boolean;
-  }>({
-    isSignedIn: false,
-    pending: true,
-    userData: null,
-    isLinked: false,
-  });
-  const auth = getAuth(firebaseApp);
+  }>(defaultState);
+
   const pathname = usePathname();
 
   useEffect(() => {
     const asyncFetch = async () => {
       try {
-        const res = (await (
-          await fetch(`${apiUrl}/api/user`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            cache: 'no-store',
-          })
-        ).json()) as IResponseGetBody;
+        const res = await fetcher<IUserResponseData>(`/api/user`, {
+          credentials: 'include',
+          cache: 'no-store',
+        });
+
+        setAuthState({
+          isSignedIn: res.response === 'ok',
+          pending: false,
+          userData: res.userData || null,
+          isLinked: res.isLinked || false,
+        });
 
         if (res.response === 'ok') {
           setAuthState({
@@ -52,21 +45,17 @@ export function useAuthState() {
             userData: res.userData,
             isLinked: res.isLinked,
           });
-        } else {
-          setAuthState({
-            isSignedIn: false,
-            pending: false,
-            userData: null,
-            isLinked: false,
-          });
+          return;
         }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+
         setAuthState({
-          isSignedIn: false,
+          ...defaultState,
           pending: false,
-          userData: null,
-          isLinked: false,
+        });
+      } catch {
+        setAuthState({
+          ...defaultState,
+          pending: false,
         });
       }
     };

@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 
 import { getUserData } from './src/shared/api/getUserData';
 
-// This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const cookieStore = await cookies();

@@ -2,7 +2,8 @@ import { apiUrl } from '@/src/shared/config';
 
 // 로그인을 하지 않은 상태에서도 쓸 수 있는 fechter
 export async function fetcher<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${apiUrl}${path}`, {
+  const baseUrl = apiUrl || '';
+  const response = await fetch(`${baseUrl}${path}`, {
     ...options,
     method: options.method || 'GET',
     headers: {

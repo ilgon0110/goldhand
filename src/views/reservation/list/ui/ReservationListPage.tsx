@@ -1,9 +1,7 @@
 'use client';
 
-import type { CheckedState } from '@radix-ui/react-checkbox';
 import { useQueryStates } from 'nuqs';
 
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
 import { consultParams } from '@/src/shared/searchParams';
 import type { IConsultDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
@@ -28,13 +26,6 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
   const [consultParam, setConsultParam] = useQueryStates(consultParams, {
     shallow: false,
   });
-  const { userData } = useAuthState();
-
-  const toggleHideSecret = (check: CheckedState) => {
-    setConsultParam({
-      hideSecret: check.toString(),
-    });
-  };
 
   return (
     <div>
@@ -43,7 +34,10 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
           className="h-4 w-4 md:h-6 md:w-6"
           defaultChecked={consultParam.hideSecret === 'true'}
           id="secret"
-          onCheckedChange={check => toggleHideSecret(check)}
+          role="checkbox"
+          onCheckedChange={check => {
+            setConsultParam({ hideSecret: check.toString() });
+          }}
         />
         <label
           className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -66,7 +60,6 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
                 key={item.id}
                 spot={item.franchisee}
                 title={item.title}
-                userData={userData}
               />
             );
           })

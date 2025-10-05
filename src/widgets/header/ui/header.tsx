@@ -23,13 +23,13 @@ import {
   NavigationMenuLink,
   NavigationMenuTrigger,
 } from '@/shared/ui/navigation-menu';
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
+import { useAuth } from '@/src/shared/hooks/useAuth';
 
 import { URLS } from '../index';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isSignedIn, pending, isLinked } = useAuthState();
+  const { isSignedIn, pending, isLinked } = useAuth();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -194,7 +194,7 @@ export const Header = () => {
 };
 
 const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpen: () => void }) => {
-  const { isSignedIn, pending } = useAuthState();
+  const { isSignedIn, pending } = useAuth();
   const handleChangeMobileMenuOpen = () => {
     onChangeMobileMenuOpen();
   };

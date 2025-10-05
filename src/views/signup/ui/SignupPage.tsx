@@ -13,7 +13,7 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { useAuthState } from '@/src/shared/hooks/useAuthState';
+import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
@@ -24,9 +24,12 @@ import { usePhoneNumberConfirmMutation } from '../hooks/usePhoneNumberConfirmMut
 import { useSignupMutation } from '../hooks/useSignupMutation';
 //import { useRecaptcha } from '../hooks/useRecaptcha';
 
-export const SignupPage = () => {
+interface ISignupPageProps {
+  userData: IUserDetailData | null;
+}
+
+export const SignupPage = ({ userData }: ISignupPageProps) => {
   const router = useRouter();
-  const { userData } = useAuthState();
   const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const form = useForm<z.infer<typeof signUpFormSchema>>({

@@ -169,7 +169,7 @@ describe('ReservationForm Component', () => {
     });
     server.use(
       http.get('/api/user', async () => HttpResponse.json(mockNonUserData)),
-      http.post('/api/consultDetail/create', handler),
+      http.post('/api/reservation/detail/create', handler),
     );
     const userData = await (await fetch('/api/user')).json();
     render(<ReservationFormPage userData={userData} />);
@@ -216,7 +216,7 @@ describe('ReservationForm Component', () => {
     });
     server.use(
       http.get('/api/user', async () => HttpResponse.json(mockUserData)),
-      http.post('/api/consultDetail/create', handler),
+      http.post('/api/reservation/detail/create', handler),
     );
 
     const userData = await (await fetch('/api/user')).json();
@@ -247,7 +247,7 @@ describe('ReservationForm Component', () => {
       expect(handler).toHaveBeenCalled();
       const req = handler.mock.calls as unknown as { request: Request }[][];
       const target = req[0][0];
-      expect(target.request.url).toContain('/api/consultDetail/create');
+      expect(target.request.url).toContain('/api/reservation/detail/create');
     });
   });
 
@@ -275,7 +275,7 @@ describe('ReservationForm Component', () => {
     expect(submitButton).toBeEnabled();
 
     server.use(
-      http.post('/api/consultDetail/create', async () =>
+      http.post('/api/reservation/detail/create', async () =>
         HttpResponse.json({ response: 'expired', message: '로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.' }),
       ),
     );
@@ -330,7 +330,7 @@ describe('ReservationForm Component', () => {
     });
     server.use(
       http.get('/api/user', async () => HttpResponse.json(mockNonUserData)),
-      http.post('/api/consultDetail/create', handler),
+      http.post('/api/reservation/detail/create', handler),
     );
     const userData = await (await fetch('/api/user')).json();
     render(<ReservationFormPage userData={userData} />);

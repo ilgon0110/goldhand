@@ -4,7 +4,7 @@ import type { Timestamp } from 'firebase/firestore';
 export type TAliasAny = any;
 
 // 이용상담(Consult, Reservation) 관련 타입 정의
-export interface IConsultDetailData {
+export interface IReservationDetailData {
   bornDate: string | null;
   content: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
@@ -20,10 +20,10 @@ export interface IConsultDetailData {
   comments?: ICommentData[] | null;
 }
 
-export interface IConsultResponseData {
+export interface IReservationResponseData {
   response: string;
   message: string;
-  data: IConsultDetailData;
+  data: IReservationDetailData;
 }
 
 // 이용후기(Review) 관련 타입 정의
@@ -83,7 +83,7 @@ export interface IUserResponseData {
 export interface IMyPageData {
   isLinked: boolean;
   userData: IUserDetailData | null;
-  consults: (IConsultDetailData & { id: string })[] | null;
+  consults: (IReservationDetailData & { id: string })[] | null;
   reviews: (IReviewDetailData & { id: string })[] | null;
   comments: (ICommentData & { id: string })[] | null;
 }

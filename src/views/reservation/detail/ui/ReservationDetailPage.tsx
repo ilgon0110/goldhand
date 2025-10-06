@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
-import type { IConsultResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
+import type { IReservationResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/src/shared/ui/form';
@@ -24,7 +24,7 @@ import { useDeletePostMutation } from '../api/deletePostAction';
 import { detailPasswordFormSchema } from '../config/consultCommentSchema';
 
 type TReservationDetailPageProps = {
-  data: IConsultResponseData;
+  data: IReservationResponseData;
   docId: string;
   userData: IUserResponseData;
   viewCountData: IViewCountResponseData;

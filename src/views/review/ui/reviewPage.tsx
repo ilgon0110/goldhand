@@ -6,7 +6,7 @@ import { useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
-import { reviewParams } from '@/src/shared/searchParams';
+import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';

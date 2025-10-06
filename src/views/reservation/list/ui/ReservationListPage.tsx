@@ -2,15 +2,15 @@
 
 import { useQueryStates } from 'nuqs';
 
-import { consultParams } from '@/src/shared/searchParams';
-import type { IConsultDetailData } from '@/src/shared/types';
+import { reservationParams } from '@/src/shared/lib/nuqs/searchParams';
+import type { IReservationDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import { formatDateToYMD } from '@/src/shared/utils';
 import { ReservationCard } from '@/src/views/reservation';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
-interface IConsultData extends IConsultDetailData {
+interface IConsultData extends IReservationDetailData {
   id: string;
 }
 
@@ -23,7 +23,7 @@ type TReservationListPageProps = {
 };
 
 export const ReservationListPage = ({ data }: TReservationListPageProps) => {
-  const [consultParam, setConsultParam] = useQueryStates(consultParams, {
+  const [consultParam, setConsultParam] = useQueryStates(reservationParams, {
     shallow: false,
   });
 

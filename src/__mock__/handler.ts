@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 
 import { apiUrl } from '../shared/config';
 import type { ICommentData, IReviewDetailData } from '../shared/types';
-import { mockReservationListData } from './consult';
+import { mockReservationListData } from './reservation';
 import { mockReviewData, mockReviewDetailData } from './review';
 import { mockUserData } from './user';
 
@@ -41,7 +41,7 @@ export const handlers = [
       reviewData: mockReviewData.reviewData.filter(review => review.franchisee === franchisee),
     });
   }),
-  http.get('/api/consult', async ({ request }) => {
+  http.get('/api/reservation', async ({ request }) => {
     const url = new URL(request.url);
     const page = url.searchParams.get('page') || '1';
     const hideSecret = url.searchParams.get('hideSecret') || 'false';
@@ -63,7 +63,7 @@ export const handlers = [
     });
   }),
   // server action이라 apiUrl 붙여줌
-  http.post(`${apiUrl}/api/consultDetail/password`, async ({ request }) => {
+  http.post(`${apiUrl}/api/reservation/detail/password`, async ({ request }) => {
     const { docId, password } = (await request.json()) as {
       docId: string;
       password: string;

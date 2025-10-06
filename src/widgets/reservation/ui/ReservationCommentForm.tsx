@@ -43,7 +43,7 @@ export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) 
     const { comment } = values;
 
     try {
-      const response = await fetch('/api/consultDetail/comment', {
+      const response = await fetch('/api/reservation/detail/comment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

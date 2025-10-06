@@ -13,18 +13,16 @@ import {
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-//import { loadConsultParams } from '@/src/shared/searchParams';
-import type { IConsultDetailData } from '@/src/shared/types';
+import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   message: string;
-  consultData: IConsultDetailData[];
+  consultData: IReservationDetailData[];
   totalDataLength: number;
 }
 
 export async function GET(request: NextRequest) {
-  //const { page, hideSecret } = loadConsultParams(request);
   const searchParams = request.nextUrl.searchParams;
   const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
   const hideSecret = searchParams.get('hideSecret');
@@ -81,14 +79,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-const consultConverter: FirestoreDataConverter<IConsultDetailData> = {
-  toFirestore(data: IConsultDetailData) {
+const consultConverter: FirestoreDataConverter<IReservationDetailData> = {
+  toFirestore(data: IReservationDetailData) {
     return data;
   },
   fromFirestore(snapshot, options) {
     const data = snapshot.data(options);
     return {
       ...data,
-    } as IConsultDetailData;
+    } as IReservationDetailData;
   },
 };

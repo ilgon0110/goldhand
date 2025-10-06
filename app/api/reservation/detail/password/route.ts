@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import type { IConsultDetailData } from '@/src/shared/types';
+import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: IConsultDetailData;
+  data: IReservationDetailData;
   reservationToken: string | null;
 }
 
@@ -19,7 +19,7 @@ interface IConsultDetailRequestBody {
   password: string | null;
 }
 
-const defaultData: IConsultDetailData = {
+const defaultData: IReservationDetailData = {
   bornDate: null,
   content: '',
   createdAt: Timestamp.now(),
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const data = docSnap.data() as IConsultDetailData;
+    const data = docSnap.data() as IReservationDetailData;
 
     // 비회원 - 비밀번호 검증
     if (data.userId == null) {

@@ -6,16 +6,16 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import type { ICommentData, IConsultDetailData } from '@/src/shared/types';
+import type { ICommentData, IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: IConsultDetailData;
+  data: IReservationDetailData;
 }
 
-const defaultData: IConsultDetailData = {
+const defaultData: IReservationDetailData = {
   bornDate: null,
   content: '',
   createdAt: Timestamp.now(),
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = docSnap.data() as IConsultDetailData;
+    const data = docSnap.data() as IReservationDetailData;
 
     if (data.secret) {
       // 비밀글&비회원

@@ -6,7 +6,7 @@ import { withNuqsTestingAdapter } from 'nuqs/adapters/testing';
 
 import { server } from '@/src/__mock__/node';
 import { apiUrl } from '@/src/shared/config';
-import type { IConsultDetailData } from '@/src/shared/types';
+import type { IReservationDetailData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
@@ -43,11 +43,11 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams('page=1&hideSecret=false'),
 }));
 
-interface IConsultData extends IConsultDetailData {
+interface IConsultData extends IReservationDetailData {
   id: string;
 }
 
-interface IConsultResponseData {
+interface IReservationResponseData {
   message: string;
   consultData: IConsultData[];
   totalDataLength: number;
@@ -55,8 +55,8 @@ interface IConsultResponseData {
 const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
 describe('ReservationList Component', () => {
   it('예약 API에서 가져온 리뷰들의 데이터가 올바르게 렌더링되는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -74,8 +74,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 클릭할 시 비밀번호 확인 모달이 나타나는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -93,8 +93,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[예약글] 클릭 시 바로 상세페이지로 이동하는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -116,8 +116,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 비밀번호 확인 모달에서 올바른 비밀번호 입력 시 상세페이지로 이동하는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -146,8 +146,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 비밀번호 확인 모달에서 올바른 비밀번호 입력 시 조회수 증가 로직이 실행되는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -178,9 +178,9 @@ describe('ReservationList Component', () => {
     const handler = vi.fn(async () => {
       return HttpResponse.json({ response: 'ng', message: '비밀번호가 틀립니다.' });
     });
-    server.use(http.post(`${apiUrl}/api/consultDetail/password`, handler));
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    server.use(http.post(`${apiUrl}/api/reservation/detail/password`, handler));
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -210,9 +210,9 @@ describe('ReservationList Component', () => {
     const handler = vi.fn(async () => {
       return HttpResponse.json({ response: 'ng', message: '비밀번호가 틀립니다.' });
     });
-    server.use(http.post(`${apiUrl}/api/consultDetail/password`, handler));
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    server.use(http.post(`${apiUrl}/api/reservation/detail/password`, handler));
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -239,8 +239,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[예약글] 클릭 시 조회수 증가 로직이 실행되는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -264,8 +264,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[예약글] 예약 리스트에서 예약 클릭 시 "/reservation/list/[id]" navigate가 호출되는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -286,8 +286,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] hideSecret queryParam이 false면 비밀글 안보기 체크박스가 체크 해제되어야 한다', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
         searchParams: {
@@ -306,8 +306,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] hideSecret queryParam이 true면 비밀글 안보기 체크박스가 체크 되어야 한다', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
         searchParams: {
@@ -326,8 +326,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 비밀글 안보기 버튼을 눌렀을 때 hideSecret=false요청이 발생하는지 확인', async () => {
-    const response = await fetch('/api/consult?hideSecret=true');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation?hideSecret=true');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -353,8 +353,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 비밀글 안보기 버튼을 눌렀을 때 hideSecret=true요청이 발생하는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -379,8 +379,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 비밀글 안보기 버튼을 눌렀을 때 비밀글이 아닌 예약글만 보이는지 확인', async () => {
-    const response = await fetch('/api/consult');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
 
     const { rerender } = renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -401,8 +401,8 @@ describe('ReservationList Component', () => {
 
     // 쿼리 파라미터가 바뀌었다고 가정하고, 새 데이터를 fetch해서 다시 렌더링
     // 상위 테스트에서 쿼리 파라미터가 바뀌면 새 데이터가 fetch되는거 테스트 완료
-    const response2 = await fetch('/api/consult?hideSecret=true');
-    const filteredData = (await response2.json()) as IConsultResponseData;
+    const response2 = await fetch('/api/reservation?hideSecret=true');
+    const filteredData = (await response2.json()) as IReservationResponseData;
 
     rerender(<ReservationListPage data={filteredData} />);
 
@@ -421,8 +421,8 @@ describe('ReservationList Component', () => {
   });
 
   it('[비밀글] 비밀글 안보기 버튼을 다시 눌렀을 때 모든 예약글이 보이는지 확인', async () => {
-    const response = await fetch('/api/consult?hideSecret=true');
-    const data = (await response.json()) as IConsultResponseData;
+    const response = await fetch('/api/reservation?hideSecret=true');
+    const data = (await response.json()) as IReservationResponseData;
 
     const { rerender } = renderWithQueryClient(<ReservationListPage data={data} />, {
       wrapper: withNuqsTestingAdapter({
@@ -443,8 +443,8 @@ describe('ReservationList Component', () => {
 
     // 쿼리 파라미터가 바뀌었다고 가정하고, 새 데이터를 fetch해서 다시 렌더링
     // 상위 테스트에서 쿼리 파라미터가 바뀌면 새 데이터가 fetch되는거 테스트 완료
-    const response2 = await fetch('/api/consult?hideSecret=false');
-    const filteredData = (await response2.json()) as IConsultResponseData;
+    const response2 = await fetch('/api/reservation?hideSecret=false');
+    const filteredData = (await response2.json()) as IReservationResponseData;
 
     rerender(<ReservationListPage data={filteredData} />);
 

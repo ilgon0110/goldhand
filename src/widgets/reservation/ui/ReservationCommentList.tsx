@@ -15,7 +15,7 @@ export const ReservationCommentList = ({ docId, userId }: TReservationCommentLis
   });
 
   const mutateDeleteComment = async (commentId: string) => {
-    return await fetch('/api/consultDetail/comment/delete', {
+    return await fetch('/api/reservation/detail/comment/delete', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export const ReservationCommentList = ({ docId, userId }: TReservationCommentLis
   };
 
   const mutateUpdateComment = async (commentId: string, comment: string) => {
-    return await fetch('/api/consultDetail/comment/update', {
+    return await fetch('/api/reservation/detail/comment/update', {
       method: 'POST',
       body: JSON.stringify({
         docId,

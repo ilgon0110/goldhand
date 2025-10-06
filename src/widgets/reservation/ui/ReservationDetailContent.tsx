@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
-import type { IConsultDetailData, IViewCountData } from '@/src/shared/types';
+import type { IReservationDetailData, IViewCountData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
@@ -9,7 +9,7 @@ import { formatDateToYMD } from '@/src/shared/utils';
 
 type TReservationDetailContentProps = {
   docId: string;
-  reservationDetailData: IConsultDetailData;
+  reservationDetailData: IReservationDetailData;
   viewCountData: IViewCountData | null;
   isOwner: boolean;
   onChangeDialogOpen: (open: boolean) => void;

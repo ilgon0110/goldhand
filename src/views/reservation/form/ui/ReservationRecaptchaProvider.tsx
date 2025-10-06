@@ -1,4 +1,4 @@
-import type { IConsultResponseData, IUserResponseData } from '@/src/shared/types';
+import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
 
 import { ReservationEditPage } from './ReservationEditPage';
@@ -9,7 +9,7 @@ export const ReservationRecaptchaProvider = ({
   consultDetailData,
 }: {
   userData: IUserResponseData;
-  consultDetailData?: IConsultResponseData;
+  consultDetailData?: IReservationResponseData;
 }) => {
   return (
     <MyGoogleCaptcha>

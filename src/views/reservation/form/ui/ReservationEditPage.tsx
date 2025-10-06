@@ -13,7 +13,7 @@ import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
-import type { IConsultResponseData, IUserResponseData } from '@/src/shared/types';
+import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Calendar } from '@/src/shared/ui/calendar';
 import { Checkbox } from '@/src/shared/ui/checkbox';
@@ -33,7 +33,7 @@ export const ReservationEditPage = ({
   consultDetailData,
 }: {
   userData: IUserResponseData;
-  consultDetailData: IConsultResponseData;
+  consultDetailData: IReservationResponseData;
 }) => {
   const searchParams = useSearchParams();
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -68,7 +68,7 @@ export const ReservationEditPage = ({
       const recaptchaToken = await executeRecaptcha('join');
 
       // POST 요청
-      const response = await fetch('/api/consultDetail/update', {
+      const response = await fetch('/api/reservation/detail/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

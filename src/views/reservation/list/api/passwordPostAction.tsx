@@ -3,19 +3,19 @@
 import { cookies } from 'next/headers';
 
 import { apiUrl } from '@/src/shared/config';
-import type { IConsultDetailData } from '@/src/shared/types';
+import type { IReservationDetailData } from '@/src/shared/types';
 
 interface IResponse {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  data: IConsultDetailData;
+  data: IReservationDetailData;
   reservationToken: string | null;
 }
 
 export async function passwordPostAction(docId: string, password: string): Promise<IResponse> {
   try {
     const postData = await (
-      await fetch(`${apiUrl}/api/consultDetail/password`, {
+      await fetch(`${apiUrl}/api/reservation/detail/password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

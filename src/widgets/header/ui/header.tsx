@@ -29,7 +29,7 @@ import { URLS } from '../index';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isSignedIn, pending, isLinked } = useAuth();
+  const { isSignedIn, pending } = useAuth();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -137,9 +137,9 @@ export const Header = () => {
             <NavigationMenuItem>
               <NavigationMenuLink
                 className="absolute right-8 top-2 rounded-full border border-[#0F2E16] px-12 py-2"
-                href={isLinked ? URLS.MYPAGE : isSignedIn ? '/signup' : URLS.LOGIN}
+                href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
               >
-                {pending ? '로딩중..' : isLinked ? '마이페이지' : isSignedIn ? '회원가입' : '로그인'}
+                {pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'}
               </NavigationMenuLink>
             </NavigationMenuItem>
           </div>

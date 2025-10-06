@@ -161,10 +161,10 @@ export async function POST(req: Request) {
 
         return typedJson<IResponsePostBody>(
           {
-            redirectTo: '/signup',
+            redirectTo: '/',
             user: newUser,
             response: 'ok',
-            message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
+            message: '네이버 계정으로 회원가입이 완료되었습니다.',
             accessToken: newUserAccessToken,
           },
           { status: 200 },

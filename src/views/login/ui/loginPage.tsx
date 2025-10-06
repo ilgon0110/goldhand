@@ -8,6 +8,7 @@ import { safeLocalStorage } from '@/src/shared/storage';
 import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { toastSuccess } from '@/src/shared/utils';
 
 import { useKakaoLogin } from '../hooks/useKakaoLogin';
 import { useNaverLogin } from '../hooks/useNaverLogin';
@@ -26,6 +27,7 @@ export const LoginPage = () => {
     setRejoinUserData,
     options: {
       onSuccess: () => {
+        toastSuccess('로그인에 성공했습니다!');
         safeLocalStorage.set('last-login-tooltip', 'kakao');
       },
     },
@@ -39,6 +41,7 @@ export const LoginPage = () => {
     setRejoinUserData,
     options: {
       onSuccess: () => {
+        toastSuccess('로그인에 성공했습니다!');
         safeLocalStorage.set('last-login-tooltip', 'naver');
       },
     },

@@ -120,7 +120,7 @@ describe('Login Component', () => {
     expect(utils.toastError).toHaveBeenCalledWith('로그인 실패 이유');
   });
 
-  it('[카카오] 로그인을 시도한 유저가 이미 회원가입이 되어있다면, 메인 페이지로 리다이렉트된다', async () => {
+  it('[카카오] 로그인 성공 시 메인 페이지로 리다이렉트된다.', async () => {
     // 1. 해당 테스트에서만 useSearchParams 모킹
     // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
     const routerMock = vi.fn();
@@ -144,7 +144,7 @@ describe('Login Component', () => {
     });
   });
 
-  it('[네이버] 로그인을 시도한 유저가 이미 회원가입이 되어있다면, 메인 페이지로 리다이렉트된다', async () => {
+  it('[네이버] 로그인 성공 시 메인 페이지로 리다이렉트된다.', async () => {
     // 1. 해당 테스트에서만 useSearchParams 모킹
     // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
     const routerMock = vi.fn();
@@ -166,84 +166,6 @@ describe('Login Component', () => {
 
     await waitFor(() => {
       expect(routerMock).toHaveBeenCalledWith('/');
-    });
-  });
-
-  it('[카카오] 로그인을 시도한 유저가 회원가입이 되어있지 않다면, 회원가입 페이지로 리다이렉트된다', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
-    const routerMock = vi.fn();
-    vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-        replace: routerMock,
-      }),
-      usePathname: () => '/login',
-      useSearchParams: () => new URLSearchParams('code=abc123&state=kakao'),
-      useParams: () => ({ shopId: 'shopId' }),
-    }));
-
-    server.use(
-      http.post(`${apiUrl}/api/auth/kakao`, async () => {
-        return HttpResponse.json(
-          {
-            redirectTo: '/signup',
-            user: null,
-            response: 'ok',
-            message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
-            accessToken: null,
-          },
-          { status: 200 },
-        );
-      }),
-    );
-
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
-
-    renderWithQueryClient(<LoginPage />);
-
-    await waitFor(() => {
-      expect(routerMock).toHaveBeenCalledWith('/signup');
-    });
-  });
-
-  it('[네이버] 로그인을 시도한 유저가 회원가입이 되어있지 않다면, 회원가입 페이지로 리다이렉트된다', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
-    const routerMock = vi.fn();
-    vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-        replace: routerMock,
-      }),
-      usePathname: () => '/login',
-      useSearchParams: () => new URLSearchParams('code=abc123&state=goldhand'),
-      useParams: () => ({ shopId: 'shopId' }),
-    }));
-
-    server.use(
-      http.post(`${apiUrl}/api/auth/naver`, async () => {
-        return HttpResponse.json(
-          {
-            redirectTo: '/signup',
-            user: null,
-            response: 'ok',
-            message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
-            accessToken: null,
-          },
-          { status: 200 },
-        );
-      }),
-    );
-
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
-
-    renderWithQueryClient(<LoginPage />);
-
-    await waitFor(() => {
-      expect(routerMock).toHaveBeenCalledWith('/signup');
     });
   });
 

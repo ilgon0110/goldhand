@@ -28,7 +28,6 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
     defaultValues: {
       name: userData.userData?.name || '',
       nickname: userData.userData?.nickname || '',
-      phoneNumber: userData.userData?.phoneNumber || '',
       email: userData.userData?.email || '',
     },
     mode: 'onChange',
@@ -62,7 +61,7 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
         toastError(response.message || '정보 수정에 실패했습니다. 다시 시도해주세요.');
         setIsSubmitting(false);
       }
-    } catch (error) {
+    } catch {
       toastError('정보 수정에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
@@ -101,29 +100,7 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          defaultValue={userData?.userData?.phoneNumber || ''}
-          name="phoneNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>휴대폰번호</FormLabel>
-              <FormControl>
-                <div className="flex flex-row gap-6">
-                  <Input
-                    placeholder="휴대폰번호를 입력해주세요. (예:01012345678)"
-                    {...field}
-                    maxLength={12}
-                    minLength={6}
-                    required
-                  />
-                </div>
-              </FormControl>
-              <FormDescription></FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         <FormField
           control={form.control}
           defaultValue={userData?.userData?.email || ''}

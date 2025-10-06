@@ -201,19 +201,16 @@ export async function POST(req: Request) {
         );
       } else {
         // 로그인 실패 - 회원가입 진행
-
-        // 다른 provider로 가입된 유저인지 확인
-
         const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
         await saveUserProfile(newUser.user.uid, email);
         const newUserAccessToken = await newUser.user.getIdToken();
 
         return typedJson<IResponsePostBody>(
           {
-            redirectTo: '/signup',
+            redirectTo: '/',
             user: newUser,
             response: 'ok',
-            message: 'oAuth 로그인 성공, 회원가입 페이지로 이동합니다.',
+            message: '카카오 계정으로 회원가입이 완료되었습니다.',
             accessToken: newUserAccessToken,
           },
           { status: 200 },

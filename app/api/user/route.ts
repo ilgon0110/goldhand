@@ -29,7 +29,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 403 },
+      { status: 200 },
     );
   }
 
@@ -46,7 +46,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 403 },
+        { status: 200 },
       );
     }
     const app = firebaseApp;
@@ -65,7 +65,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 403 },
+        { status: 200 },
       );
     }
 
@@ -96,7 +96,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 403 },
+      { status: 200 },
     );
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -115,11 +115,25 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 401 },
+        { status: 200 },
       );
     }
 
     if (errorCode === 'auth/id-token-expired') {
+      return typedJson<IResponseBody>(
+        {
+          response: 'unAuthorized',
+          message: errorCode,
+          accessToken: null,
+          userData: null,
+          isLinked: false,
+        },
+        { status: 200 },
+      );
+    }
+
+    // db에서 유저정보를 삭제한 경우
+    if (errorCode === 'auth/user-not-found') {
       return typedJson<IResponseBody>(
         {
           response: 'unAuthorized',

@@ -37,7 +37,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
     defaultValues: {
       title: '',
       name: userData?.userData?.name || '',
-      isMember: userData.isLinked,
+      isMember: userData.userData != null,
       secret: true,
       franchisee: '',
       phoneNumber: userData?.userData?.phoneNumber || '',
@@ -66,7 +66,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
           },
           body: JSON.stringify({
             ...values,
-            userId: userData.isLinked && userData.userData?.userId ? userData.userData?.userId : null,
+            userId: userData.userData?.userId ? userData.userData?.userId : null,
             recaptchaToken,
           }),
         })
@@ -148,7 +148,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
               </FormItem>
             )}
           />
-          {!userData.isLinked && (
+          {userData.userData == null && (
             <FormField
               control={form.control}
               defaultValue={undefined}

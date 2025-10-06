@@ -19,7 +19,7 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IMyPageUpdatePost;
-  const { userId, name, nickname, phoneNumber, email } = body;
+  const { userId, name, nickname, email } = body;
 
   if (!userId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'userId is required' }, { status: 400 });
@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
         ...userDocSnap.data(),
         name,
         nickname,
-        phoneNumber,
         email,
         updatedAt: serverTimestamp(),
       });

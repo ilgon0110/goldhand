@@ -23,7 +23,7 @@ export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) =
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { images } = useImagesContext();
-  const { isLinked, userData } = useAuth();
+  const { userData } = useAuth();
   const [imageProgress, setImagesProgress] = useState<{
     key: string;
     progress: number;
@@ -47,7 +47,7 @@ export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) =
       const docId = dId || uuidv4();
       setIsSubmitting(true);
 
-      if (isLinked && userData) {
+      if (userData != null) {
         const storage = getStorage(firebaseApp);
         // 이미지 있을 때 업로드 로직
         if (images != null && images.length > 0) {

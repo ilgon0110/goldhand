@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: TPageProps) {
 
   return (
     <Suspense fallback={<LoadingBar />}>
-      <ReviewPage data={data} isLogin={userData.isLinked} />
+      <ReviewPage data={data} isLogin={userData.userData != null} />
     </Suspense>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import type { CheckedState } from '@radix-ui/react-checkbox';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

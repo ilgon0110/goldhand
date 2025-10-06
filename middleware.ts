@@ -35,11 +35,11 @@ export async function middleware(request: NextRequest) {
     if (response) return res;
   }
 
-  if (url.pathname === '/reservation/apply' && response.isLinked) {
+  if (url.pathname === '/reservation/apply') {
     return NextResponse.redirect(`${redirectUrl}/reservation/form`);
   }
 
-  if (url.pathname === '/login' && response.response === 'ok' && response.isLinked === false) {
+  if (url.pathname === '/login' && response.response === 'ok') {
     return NextResponse.redirect(`${redirectUrl}/mypage`);
   }
 

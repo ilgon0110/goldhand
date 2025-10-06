@@ -6,7 +6,7 @@ export const RentalCard = ({ src, alt }: { src: string; alt: string }) => {
       <div className="absolute right-0 top-6">
         <Image alt={alt} height={200} src={src} style={{ objectFit: 'contain' }} width={200} />
       </div>
-      <span className="absolute bottom-20 left-4 text-2xl font-bold">{alt}</span>
+      <span className="absolute bottom-6 left-4 text-2xl font-bold">{alt}</span>
     </div>
   );
 };

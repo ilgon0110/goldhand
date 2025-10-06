@@ -21,7 +21,7 @@ export function FranchiseeSheetList() {
     .map(franchisee => ({
       title: franchisee,
       address: franchisee.includes('화성') ? '경기도 화성시 향남읍 상신하길로' : '경기도 수원시 팔달구 인계로',
-      phoneNumber: franchisee.includes('화성') ? '010-8381-0431' : '010-5536-3765',
+      phoneNumber: franchisee.includes('화성') ? '010-8381-0431' : '010-4437-0431',
       naverPlaceUrl: franchisee.includes('화성') ? 'https://naver.me/FBepMjL3' : 'https://naver.me/xpB4oXiI',
     }))
     .filter(item => item.title !== '전체');

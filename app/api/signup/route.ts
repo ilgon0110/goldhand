@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         response: 'unAuthorized',
         message: '로그인 된 상태가 아닙니다.',
       },
-      { status: 401 },
+      { status: 200 },
     );
   }
 
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         response: 'unAuthorized',
         message: '토큰이 만료되었거나 정상 토큰이 아닙니다.',
       },
-      { status: 401 },
+      { status: 200 },
     );
 
   // 탈퇴한 유저인지 확인
@@ -54,16 +54,15 @@ export async function POST(req: Request) {
     return typedJson<IResponsePostBody>(
       {
         response: 'ng',
-        message: '탈퇴한 유저는 리뷰를 작성할 수 없습니다.',
+        message: '탈퇴한 유저입니다. 재가입 후 이용해주세요.',
       },
-      { status: 403 },
+      { status: 200 },
     );
   }
 
   const { name, nickname, phoneNumber, email } = await req.json();
 
   // signup 시에는 uid가 반드시 존재해야 하므로, 여기서 uid를 확인하는 것은 의미가 없다.
-
   try {
     await updateDoc(userDocRef, {
       name: name || targetUserData?.name || '',

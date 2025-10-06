@@ -113,4 +113,55 @@ export const handlers = [
 
     return HttpResponse.json(mockReviewDetailData);
   }),
+  http.post(`${apiUrl}/api/auth/kakao`, async () => {
+    return HttpResponse.json(
+      {
+        response: 'ok',
+        message: '로그인 성공',
+        redirectTo: '/',
+        user: null,
+        accessToken: null,
+        email: 'mockEmail@domain.com',
+        userData: mockUserData.userData,
+      },
+      { status: 200 },
+    );
+  }),
+  http.post(`${apiUrl}/api/auth/naver`, async () => {
+    return HttpResponse.json(
+      {
+        response: 'ok',
+        message: '로그인 성공',
+        redirectTo: '/',
+        user: null,
+        accessToken: null,
+        email: 'mockEmail@domain.com',
+        userData: mockUserData.userData,
+      },
+      { status: 200 },
+    );
+  }),
+  http.post('/api/user/rejoin', async ({ request }) => {
+    const { userId } = (await request.json()) as { userId: string };
+
+    if (!userId) {
+      return HttpResponse.json(
+        {
+          response: 'ng',
+          message: 'userId is required',
+        },
+        { status: 400 },
+      );
+    }
+
+    return HttpResponse.json(
+      {
+        response: 'ok',
+        message: '재가입 성공',
+      },
+      {
+        status: 200,
+      },
+    );
+  }),
 ];

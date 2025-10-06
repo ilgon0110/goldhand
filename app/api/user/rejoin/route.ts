@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         response: 'ng',
         message: '유저 ID가 제공되지 않았습니다.',
       },
-      { status: 400 },
+      { status: 200 },
     );
   }
 
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         response: 'unAuthorized',
         message: '재가입 가능 대상이 아닙니다. 재가입이 불가능합니다.',
       },
-      { status: 403 },
+      { status: 200 },
     );
   }
 

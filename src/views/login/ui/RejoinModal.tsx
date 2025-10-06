@@ -64,7 +64,9 @@ export const RejoinModal = ({
           정보(이메일, 전화번호 등)로 다시 로그인할 수 있습니다.
         </p>
         <div className="absolute bottom-4 right-4 mt-4 flex w-full justify-end gap-2">
-          <Button onClick={handleRejoin}>재가입</Button>
+          <Button disabled={isPending || !rejoinUserData} onClick={handleRejoin}>
+            재가입
+          </Button>
           <Button variant="outline" onClick={() => setIsRejoinDialogOpen(false)}>
             닫기
           </Button>

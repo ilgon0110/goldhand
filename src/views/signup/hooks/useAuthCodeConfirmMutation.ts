@@ -18,6 +18,7 @@ export const useAuthCodeConfirmMutation = (
   const auth = getAuth();
   const [isPending, setIsPending] = useState(false);
   const [sendSmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   const errorMessageRef = useRef('');
 
   async function mutate(values: z.infer<typeof signUpFormSchema>, confirmationResult: ConfirmationResult | null) {
@@ -50,6 +51,9 @@ export const useAuthCodeConfirmMutation = (
           const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
           if (linkedResult) {
             setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
+            setIsSuccess(true);
+            errorMessageRef.current = '';
+            options?.onSuccess?.();
           }
         } catch (error: any) {
           console.error('Error linking phone number:', error);
@@ -85,6 +89,7 @@ export const useAuthCodeConfirmMutation = (
   }
 
   return {
+    isSuccess,
     isPending,
     sendSmsConfirmSuccessMessage,
     mutate,

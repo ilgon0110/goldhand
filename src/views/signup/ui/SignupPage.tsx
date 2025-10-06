@@ -9,11 +9,11 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IUserDetailData } from '@/src/shared/types';
+import { Button } from '@/src/shared/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
+import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
@@ -80,13 +80,13 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
   const handleAuthClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     setIsAuthCodeOpen(true);
-
     // 인증번호 발송 버튼 클릭 시
     mutate(form.getValues().phoneNumber);
   };
 
   // 2. 인증번호 검증 훅
   const {
+    isSuccess: authCodeSuccess,
     mutate: authCodeConfirmMutate,
     isPending: isConfirming,
     getErrorMessage,
@@ -130,11 +130,16 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
 
   // 3. 회원가입 훅
   const { mutate: signup, isPending: isSubmitting } = useSignupMutation(form.getValues(), {
-    onSuccess: () => {
-      toastSuccess('회원가입 성공!\n잠시 후 메인 페이지로 이동합니다.');
-      setTimeout(() => {
-        router.replace('/');
-      }, 3000);
+    onSuccess: data => {
+      if (data.response === 'ok') {
+        toastSuccess('회원가입 성공!\n잠시 후 메인 페이지로 이동합니다.');
+        setTimeout(() => {
+          router.replace('/');
+        }, 3000);
+      } else {
+        toastError(`회원가입에 실패했습니다.\n${data.message}`);
+        router.refresh();
+      }
     },
     onError: (error: Error) => {
       console.error('회원가입 중 오류 발생:', error);
@@ -192,10 +197,11 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>휴대폰번호</FormLabel>
+                <FormLabel htmlFor="phoneNumber">휴대폰번호</FormLabel>
                 <FormControl>
                   <div className="flex flex-row gap-6">
                     <Input
+                      id="phoneNumber"
                       placeholder="휴대폰번호를 입력해주세요. (예:01012345678)"
                       {...field}
                       maxLength={12}
@@ -233,10 +239,16 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
               name="authCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>인증코드</FormLabel>
+                  <FormLabel htmlFor="authCode">인증코드</FormLabel>
                   <FormControl>
                     <div className="flex flex-row gap-6">
-                      <Input placeholder="수신받은 인증코드를 입력해주세요." {...field} maxLength={6} minLength={6} />
+                      <Input
+                        id="authCode"
+                        placeholder="수신받은 인증코드를 입력해주세요."
+                        {...field}
+                        maxLength={6}
+                        minLength={6}
+                      />
                       <Button
                         className={cn(
                           'transition-all duration-300 ease-in-out',
@@ -284,16 +296,10 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
               'transition-all duration-300 ease-in-out',
               formValidation ? '' : 'cursor-not-allowed opacity-20',
             )}
-            disabled={!formValidation}
+            disabled={!formValidation || !authCodeSuccess}
             type="submit"
           >
-            {isSubmitting ? (
-              <LoadingSpinnerIcon />
-            ) : userData ? (
-              '회원정보 수정' // 이미 회원가입된 경우, 회원정보 수정으로 표시
-            ) : (
-              '회원가입'
-            )}
+            {isSubmitting ? <LoadingSpinnerIcon /> : '회원가입'}
           </Button>
         </form>
       </Form>

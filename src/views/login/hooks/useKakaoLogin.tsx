@@ -36,7 +36,6 @@ export const useKakaoLogin = ({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
     if (state === 'goldhand') return; // Naver login state check
 
     if (error) {

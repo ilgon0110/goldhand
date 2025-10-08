@@ -11,13 +11,13 @@ import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { Footer } from '@/src/widgets/footer';
 import { Header } from '@/src/widgets/header';
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  interface Window {
-    naver: any;
-    kakao: any;
-  }
-}
+// declare global {
+//   // eslint-disable-next-line @typescript-eslint/naming-convention
+//   interface Window {
+//     naver: any;
+//     kakao: any;
+//   }
+// }
 
 const pretendard = localFont({
   src: [

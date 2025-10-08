@@ -1,153 +1,173 @@
+import { cn } from '@/lib/utils';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { BasicPremiumPriceTable, SinglePriceTable } from '@/src/widgets/pricewidgets';
 import {
-  basicCheckList,
-  basicPriceList,
-  costEffectivenessCheckList,
-  costEffectivenessPriceList,
-  premiumCheckList,
-  premiumHouseFiveDayPriceList,
-  premiumHouseSixDayCheckList,
-  premiumHouseSixDayPriceList,
-  premiumPriceList,
-  PriceCard,
-} from '@/src/widgets/pricewidgets';
-import {
-  etcInsertCheckList,
-  etcWorkOutCheckList,
-  oneDayCheckList,
-  oneDayPriceList,
+  commuteCheckList,
+  dayoffCheckList,
+  inHouseCheckList,
+  onDayCheckList,
 } from '@/src/widgets/pricewidgets/config/const';
 
 export const PricePage = () => {
   return (
     <>
       <SectionTitle title="고운황금손 이용요금" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">출퇴근형</div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard checkList={basicCheckList} description="" priceList={basicPriceList} title="베이직" />
-        <PriceCard checkList={premiumCheckList} description="" priceList={premiumPriceList} title="프리미엄" />
+      <div className={cn('flex flex-col justify-center gap-20', 'lg:flex-row')}>
+        <div>
+          <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">출퇴근형</div>
+          <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">산후관리사가 산모 집으로 방문해요.</div>
+          <div className="w-full overflow-x-auto">
+            <BasicPremiumPriceTable
+              basicPriceList={[850000, 1500000, 2250000, 3000000]}
+              iconMode={false}
+              premiumPriceList={[900000, 1600000, 2400000, 3200000]}
+            />
+          </div>
+          {commuteCheckList.map(checkList => (
+            <div className="ml-2 mt-2 text-sm text-slate-700 lg:text-base" key={checkList}>
+              {checkList}
+            </div>
+          ))}
+        </div>
+        <div>
+          <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">입주형</div>
+          <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">산모 집에서 산후관리사가 함께해요.</div>
+          <div className="w-full overflow-x-auto">
+            <BasicPremiumPriceTable
+              basicPriceList={[1350000, 2450000, 3600000, 4800000]}
+              basicTitle="주5일 입주형"
+              iconMode={false}
+              premiumPriceList={[16000000, 3000000, 4500000, 6000000]}
+              premiumTitle="주6일 입주형"
+            />
+          </div>
+          {inHouseCheckList.map(checkList => (
+            <div className="ml-2 mt-2 text-sm text-slate-700 lg:text-base" key={checkList}>
+              {checkList}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">입주형</div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard
-          checkList={premiumHouseSixDayCheckList}
-          description=""
-          priceList={premiumHouseFiveDayPriceList}
-          title="프리미엄(주5일 입주형)"
-        />
-        <PriceCard
-          checkList={premiumHouseSixDayCheckList}
-          description=""
-          priceList={premiumHouseSixDayPriceList}
-          title="프리미엄(주6일 입주형)"
-        />
+      <div className="mt-10 h-[1px] w-full bg-slate-200" />
+      <div className={cn('flex flex-col justify-center gap-20', 'lg:flex-row')}>
+        <div>
+          <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">오전, 오후 돌봄</div>
+          <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">오전 및 오후에만 돌봐드려요.</div>
+          <SinglePriceTable priceList={[600000, 1150000, 1700000, 2200000]} title="오전, 오후 돌봄" />
+          {dayoffCheckList.map(checkList => (
+            <div className="ml-2 mt-2 text-sm text-slate-700 lg:text-base" key={checkList}>
+              {checkList}
+            </div>
+          ))}
+        </div>
+        <div>
+          <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">하루돌봄</div>
+          <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">원하는 날 하루만 돌봐드려요.</div>
+          <SinglePriceTable priceList={[200000]} title="하루돌봄" />
+          {onDayCheckList.map(checkList => (
+            <div className="ml-2 mt-2 text-sm text-slate-700 lg:text-base" key={checkList}>
+              {checkList}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">실속형</div>
-      <div className="mt-4 text-center text-lg text-slate-500 md:text-xl">평일 09:00 ~ 14:00/평일 10:00 ~ 15:00</div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard
-          checkList={costEffectivenessCheckList}
-          description=""
-          priceList={costEffectivenessPriceList}
-          title="실속형"
-        />
-      </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">하루돌봄</div>
-      <div className="mt-4 text-center text-lg text-slate-500 md:text-xl">
-        09:00 ~ 15:00 / 10:00 ~ 16:00 (근무시간 외 1시간 당 20,000원)
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard checkList={oneDayCheckList} description="" priceList={oneDayPriceList} title="하루돌봄" />
-      </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">그 외 요금 안내</div>
-      <div className="mt-4 text-center text-lg text-slate-500 md:text-xl">
+
+      <div className="mt-10 h-[1px] w-full bg-slate-200" />
+      <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">그 외 요금 안내</div>
+      <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">
         09:00 ~ 15:00 / 10:00 ~ 16:00 (근무시간 외 1시간 당 20,000원)
       </div>
       {/* 요금 안내 표 */}
       <div className="mt-6 w-full overflow-x-auto">
-        <div className="grid grid-cols-4 border border-gray-300 text-center text-[10px] sm:text-sm md:text-base">
-          {/* Header */}
-          <div className="col-span-2 border-r border-white bg-[#728146] px-4 py-2 font-bold text-white">구 분</div>
-          <div className="col-span-1 border-r border-white bg-[#728146] px-4 py-2 font-bold text-white">출퇴근형</div>
-          <div className="col-span-1 bg-[#728146] px-4 py-2 font-bold text-white">입주형</div>
-          <div className="row-span-6 flex flex-col justify-center border border-gray-300 py-4">
-            큰아이
-            <br />
-            추가비용
-          </div>
-          <div className="col-span-1 row-span-6">
-            <div className="flex flex-col justify-center border border-gray-300 py-2">미취학 20개월 미만</div>
-            <div className="flex flex-col justify-center border border-gray-300 py-2">미취학 20개월 이상</div>
-            <div className="flex flex-col justify-center border border-gray-300 py-2">어린이집 유치원</div>
-            <div className="flex flex-col justify-center border border-gray-300 py-2">어린이집 방학</div>
-            <div className="flex flex-col justify-center border border-gray-300 py-2">초등학교 이상 학생</div>
-            <div className="flex flex-col justify-center border border-gray-300 py-2">초등학교 이상 학생 방학</div>
-          </div>
-          {/* 미취학 */}
-          <div className="border border-gray-300 py-2">15,000</div>
-          <div className="border border-gray-300 py-2">20,000</div>
-          <div className="border border-gray-300 py-2">10,000</div>
-          <div className="border border-gray-300 py-2">15,000</div>
-
-          {/* 어린이집/유치원 */}
-          <div className="border border-gray-300 py-2">6,000</div>
-          <div className="border border-gray-300 py-2">10,000</div>
-          <div className="border border-gray-300 py-2">10,000</div>
-          <div className="border border-gray-300 py-2">20,000</div>
-
-          {/* 초등학교 이상 */}
-          <div className="border border-gray-300 py-2">5,000</div>
-          <div className="border border-gray-300 py-2">8,000</div>
-          <div className="border border-gray-300 py-2">6,000</div>
-          <div className="border border-gray-300 py-2">10,000</div>
-
-          {/* 남편 재택근무 */}
-          <div className="col-span-2 border border-gray-300 py-2">남편 재택근무 및 성인가족 추가</div>
-          <div className="border border-gray-300 py-2">5,000</div>
-          <div className="border border-gray-300 py-2">6,000</div>
-
-          {/* 시간 연장 */}
-          <div className="col-span-2 border border-gray-300 py-2">시간연장(시간당)</div>
-          <div className="border border-gray-300 py-2">20,000</div>
-          <div className="border border-gray-300 py-2">20,000</div>
-
-          {/* 명절 휴일 추가 */}
-          <div className="col-span-2 border border-gray-300 py-2">명절 휴일 추가</div>
-          <div className="border border-gray-300 py-2">100,000</div>
-          <div className="border border-gray-300 py-2">100,000</div>
-
-          {/* 관리사 지정 추가 */}
-          <div className="col-span-2 border border-gray-300 py-2">관리사 지정 추가</div>
-          <div className="border border-gray-300 py-2">10,000</div>
-          <div className="border border-gray-300 py-2">10,000</div>
-
-          {/* 쌍둥이 케어 */}
-          <div className="col-span-2 border border-gray-300 py-2">쌍둥이 케어</div>
-          <div className="border border-gray-300 py-2">50,000</div>
-          <div className="border border-gray-300 py-2">60,000</div>
-        </div>
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <PriceCard checkList={etcWorkOutCheckList} description="" priceList={[]} title="출퇴근형 근무시간 안내" />
-        <PriceCard checkList={etcInsertCheckList} description="" priceList={[]} title="입주형 근무시간 안내" />
-      </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">서비스내용</div>
-      <div className="mt-4 flex flex-col gap-1 text-center text-lg text-slate-500 md:text-xl">
-        <span>식사제공, 좌욕준비, 모유수유 원활하게 할 수 있도록 도와드립니다.</span>
-        <span>분유수유, 아기목욕, 배꼽소독, 젖병세척 및 소독, 가정청소</span>
-        <span>주방정리, 신생아 세탁물관리, 식재료장보기</span>
-        <span>(추가서비스 : 등하원, 설거지, 빨래, 장난감정리, 손세수, 간식, 어린이집 식판 세척)</span>
-        <span>(성인추가 : 점심식사, 반찬)</span>
-      </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="mt-6 w-full text-center text-2xl font-bold lg:text-4xl">실속형 5가지 서비스</div>
-      <div className="mt-4 flex flex-col gap-1 text-center text-lg text-slate-500 md:text-xl">
-        <span>신생아목욕, 신생아 젖병세척, 물품 위생관리, 아기 방청소, 신생아 세탁물 관리</span>
+        <table className="w-full min-w-[600px] border border-gray-300 text-center text-sm md:text-base">
+          <thead>
+            <tr>
+              <th className="col-span-2 border-r border-white bg-slate-200 px-4 py-2" colSpan={2}>
+                구 분
+              </th>
+              <th className="border-r border-white bg-slate-200 px-4 py-2">출퇴근형</th>
+              <th className="bg-slate-200 px-4 py-2">입주형</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* 큰아이 추가비용 */}
+            <tr>
+              <td className="row-span-6 border border-gray-300 py-4 align-middle font-bold" rowSpan={6}>
+                큰아이
+                <br />
+                추가비용
+              </td>
+              <td className="border border-gray-300 py-2">미취학 20개월 미만</td>
+              <td className="border border-gray-300 py-2">15,000</td>
+              <td className="border border-gray-300 py-2">20,000</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 py-2">미취학 20개월 이상</td>
+              <td className="border border-gray-300 py-2">10,000</td>
+              <td className="border border-gray-300 py-2">15,000</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 py-2">어린이집 유치원</td>
+              <td className="border border-gray-300 py-2">6,000</td>
+              <td className="border border-gray-300 py-2">10,000</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 py-2">어린이집 방학</td>
+              <td className="border border-gray-300 py-2">10,000</td>
+              <td className="border border-gray-300 py-2">20,000</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 py-2">초등학교 이상 학생</td>
+              <td className="border border-gray-300 py-2">5,000</td>
+              <td className="border border-gray-300 py-2">8,000</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 py-2">초등학교 이상 학생 방학</td>
+              <td className="border border-gray-300 py-2">6,000</td>
+              <td className="border border-gray-300 py-2">10,000</td>
+            </tr>
+            {/* 남편 재택근무 및 성인가족 추가 */}
+            <tr>
+              <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
+                남편 재택근무 및 성인가족 추가
+              </td>
+              <td className="border border-gray-300 py-2">5,000</td>
+              <td className="border border-gray-300 py-2">6,000</td>
+            </tr>
+            {/* 시간 연장 */}
+            <tr>
+              <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
+                시간연장(시간당)
+              </td>
+              <td className="border border-gray-300 py-2">20,000</td>
+              <td className="border border-gray-300 py-2">20,000</td>
+            </tr>
+            {/* 명절 휴일 추가 */}
+            <tr>
+              <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
+                명절 휴일 추가
+              </td>
+              <td className="border border-gray-300 py-2">100,000</td>
+              <td className="border border-gray-300 py-2">100,000</td>
+            </tr>
+            {/* 관리사 지정 추가 */}
+            <tr>
+              <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
+                관리사 지정 추가
+              </td>
+              <td className="border border-gray-300 py-2">10,000</td>
+              <td className="border border-gray-300 py-2">10,000</td>
+            </tr>
+            {/* 쌍둥이 케어 */}
+            <tr>
+              <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
+                쌍둥이 케어
+              </td>
+              <td className="border border-gray-300 py-2">50,000</td>
+              <td className="border border-gray-300 py-2">60,000</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </>
   );

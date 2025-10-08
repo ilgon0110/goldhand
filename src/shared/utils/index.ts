@@ -44,6 +44,20 @@ export function formatDateToHMS(timestamp: { seconds: number; nanoseconds: numbe
   return `${hours}:${minutes}:${seconds}`;
 }
 
+export function formatPrice(price: number | string | undefined): string {
+  if (price === undefined) {
+    return '';
+  }
+
+  const priceNumber = typeof price === 'string' ? parseInt(price, 10) : price;
+
+  if (isNaN(priceNumber)) {
+    return '';
+  }
+
+  return priceNumber.toLocaleString('ko-KR') + '원';
+}
+
 export function getRelativeTimeFromTimestamp(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'>): string {
   const createdDate = new Date(timestamp.seconds * 1000);
   const now = new Date();

@@ -37,7 +37,7 @@ export const PricePage = () => {
               basicPriceList={[1350000, 2450000, 3600000, 4800000]}
               basicTitle="주5일 입주형"
               iconMode={false}
-              premiumPriceList={[16000000, 3000000, 4500000, 6000000]}
+              premiumPriceList={[1600000, 3000000, 4500000, 6000000]}
               premiumTitle="주6일 입주형"
             />
           </div>

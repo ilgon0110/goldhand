@@ -7,22 +7,21 @@ import { useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
+import type { IReviewListResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { type IReviewData } from '@/src/views/review';
 import { generateReviewDescription, generateReviewThumbnailSrc } from '@/src/views/review/utils';
 import { ReviewCard } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 import { ReviewPageHeader } from '@/src/widgets/review';
 
-export const ReviewPage = ({ data, isLogin }: { data: IReviewData; isLogin: boolean }) => {
+export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; isLogin: boolean }) => {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'CARD' | 'TABLE'>('CARD');
   const [reviewParam, setReviewParam] = useQueryStates(reviewParams, {
     shallow: false,
   });
-
   const [isPending, startTransition] = useTransition();
 
   return (

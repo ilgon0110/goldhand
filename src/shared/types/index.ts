@@ -38,6 +38,24 @@ export interface IReviewDetailData {
   comments: ICommentData[] | null;
 }
 
+export interface IReviewListResponseData {
+  response: 'ng' | 'ok';
+  message: string;
+  reviewData:
+    | {
+        id: string;
+        createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+        name: string;
+        userId: string;
+        title: string;
+        updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+        htmlString: string;
+        franchisee: string;
+      }[]
+    | [];
+  totalDataLength: number;
+}
+
 export interface IReviewResponseData {
   response: string;
   message: string;

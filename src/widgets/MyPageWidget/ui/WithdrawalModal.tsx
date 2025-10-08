@@ -11,9 +11,8 @@ import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Label } from '@/src/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { toastError, toastSuccess } from '@/src/shared/utils';
+import { useWithdrawalMutation } from '@/src/widgets/MyPageWidget/hooks/useWithdrawalMutation';
 import { privacyContent, privacyVersionDateList } from '@/src/widgets/Privacy';
-
-import { useWithdrawalMutation } from '../hooks/useWithdrawalMutation';
 
 type TWithdrawalModalProps = {
   isOpen: boolean;
@@ -70,7 +69,7 @@ export function WithdrawalModal({ isOpen, setIsOpen }: TWithdrawalModalProps) {
                 ))}
               </SelectContent>
             </Select>
-            <button onClick={() => setIsOpen(false)}>
+            <button title="닫기" onClick={() => setIsOpen(false)}>
               <MdClose className="absolute right-8 top-4 h-6 w-6 text-gray-500 hover:text-gray-700" />
             </button>
             <div className="space-y-2">

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import type { IReviewData } from '@/src/views/review';
+import type { IReviewListResponseData } from '@/src/shared/types';
 import { ReviewPage } from '@/src/views/review';
 
 // sendViewLog 모킹
@@ -35,7 +35,7 @@ vi.mock('nuqs', async () => {
 describe('ReviewPage 통합 테스트', () => {
   it('리뷰페이지 API에서 가져온 리뷰들의 데이터가 올바르게 렌더링되는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
-    const data = (await response.json()) as IReviewData;
+    const data = (await response.json()) as IReviewListResponseData;
 
     // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={false} />);
@@ -50,7 +50,7 @@ describe('ReviewPage 통합 테스트', () => {
 
   it('리뷰 페이지에서 리뷰 클릭 시 조회수 증가 및 "/review/[id] navigate가 호출되는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
-    const data = (await response.json()) as IReviewData;
+    const data = (await response.json()) as IReviewListResponseData;
 
     // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={false} />);
@@ -71,7 +71,7 @@ describe('ReviewPage 통합 테스트', () => {
 describe('ReviewPageHeader 컴포넌트 테스트', async () => {
   it('비로그인일때 후기 작성 버튼이 비활성화인지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
-    const data = (await response.json()) as IReviewData;
+    const data = (await response.json()) as IReviewListResponseData;
 
     // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={false} />);
@@ -83,7 +83,7 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
 
   it('로그인일때 후기 작성 버튼이 활성화 되는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
-    const data = (await response.json()) as IReviewData;
+    const data = (await response.json()) as IReviewListResponseData;
 
     // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={true} />);
@@ -95,7 +95,7 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
 
   it('cardView/tableView Button을 클릭했을 때 그에 맞게 UI가 변경되는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
-    const data = (await response.json()) as IReviewData;
+    const data = (await response.json()) as IReviewListResponseData;
 
     // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={false} />);

@@ -1,4 +1,4 @@
-import type { IReviewData } from '@/src/views/review';
+import type { IReviewListResponseData } from '@/src/shared/types';
 import { getReviewListData } from '@/src/views/review';
 import { ImageSlideList } from '@/src/widgets/goldHandImageSlide';
 import { MainTitle } from '@/src/widgets/goldHandMainTitle/ui/MainTitle';
@@ -8,7 +8,7 @@ import { FranchiseeSheetList } from '@/src/widgets/goldHandSpotSheet';
 import { PriceList } from '@/src/widgets/pricewidgets';
 
 export async function HomePage() {
-  const data: IReviewData = await getReviewListData(1, '전체');
+  const data: IReviewListResponseData = await getReviewListData(1, '전체');
   return (
     <>
       <section>

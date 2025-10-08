@@ -1,7 +1,6 @@
-import type { IReviewResponseData } from '@/src/shared/types';
-import type { IReviewData } from '@/src/views/review';
+import type { IReviewListResponseData, IReviewResponseData } from '@/src/shared/types';
 
-export const mockReviewData: IReviewData = {
+export const mockReviewData: IReviewListResponseData = {
   response: 'ok',
   message: '리뷰 데이터가 성공적으로 로드되었습니다.',
   totalDataLength: 21,

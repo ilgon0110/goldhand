@@ -40,16 +40,6 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
     },
   });
 
-  const onClickTitle = (id: string, docType: 'consult' | 'review') => {
-    if (docType === 'review') {
-      router.push(`/review/${id}`);
-      return;
-    }
-    if (docType === 'consult') {
-      router.push(`/reservation/list/${id}`);
-    }
-  };
-
   return (
     <div>
       <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />
@@ -70,7 +60,11 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
                 )}
                 variant="outline"
               >
-                {myPageData.data.userData?.grade === 'admin' ? <ShieldCheckIcon /> : <BadgeCheckIcon />}
+                {myPageData.data.userData?.grade === 'admin' ? (
+                  <ShieldCheckIcon data-testid="admin-grade-badge" />
+                ) : (
+                  <BadgeCheckIcon data-testid="basic-grade-badge" />
+                )}
                 <span>{myPageData.data.userData?.grade}</span>
               </Badge>
               <Badge
@@ -144,10 +138,10 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
           emptyTitle="예약 내역이 없습니다."
         >
           {myPageData.data?.consults?.map(consult => (
-            <div className="mt-3 flex flex-row justify-between" key={consult.id}>
+            <div className="mt-3 flex flex-row justify-between" data-testid={consult.id} key={consult.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                onClick={() => onClickTitle(consult.id, 'consult')}
+                onClick={() => router.push(`/reservation/list/${consult.id}`)}
               >
                 {consult.title}
               </span>
@@ -171,15 +165,15 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
           emptyDescription="새로운 후기를 추가해보세요."
           emptyTitle="후기 내역이 없습니다."
         >
-          {myPageData.data?.reviews?.map(consult => (
-            <div className="mt-3 flex flex-row justify-between" key={consult.id}>
+          {myPageData.data?.reviews?.map(review => (
+            <div className="mt-3 flex flex-row justify-between" data-testid={review.id} key={review.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                onClick={() => onClickTitle(consult.id, 'review')}
+                onClick={() => router.push(`/review/${review.id}`)}
               >
-                {consult.title}
+                {review.title}
               </span>
-              <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
+              <span className="text-slate-500">{formatDateToYMD(review.updatedAt)}</span>
             </div>
           ))}
         </WithEmptyState>
@@ -200,15 +194,23 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
           emptyDescription="새로운 댓글을 추가해보세요."
           emptyTitle="댓글 내역이 없습니다."
         >
-          {myPageData.data?.comments?.map(consult => (
-            <div className="mt-3 flex flex-row justify-between" key={consult.id}>
+          {myPageData.data?.comments?.map(item => (
+            <div className="mt-3 flex flex-row justify-between" data-testid={item.id} key={item.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                onClick={() => onClickTitle(consult.docId, consult.docType)}
+                onClick={() => {
+                  if (item.docType === 'review') {
+                    router.push(`/review/${item.id}`);
+                  }
+
+                  if (item.docType === 'consult') {
+                    router.push(`/reservation/list/${item.id}`);
+                  }
+                }}
               >
-                {consult.comment}
+                {item.comment}
               </span>
-              <span className="text-slate-500">{formatDateToYMD(consult.updatedAt)}</span>
+              <span className="text-slate-500">{formatDateToYMD(item.updatedAt)}</span>
             </div>
           ))}
         </WithEmptyState>

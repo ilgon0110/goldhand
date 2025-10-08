@@ -3,17 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
+import type { IReviewListResponseData } from '@/src/shared/types';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { generateReviewDescription, generateThumbnailUrl } from '@/src/shared/utils';
-import type { IReviewData } from '@/src/views/review';
 
 import { ReviewCard } from '../index';
 import { ReviewSummaryCard } from './ReviewSummaryCard';
 
-export const ReviewCarousel = ({ data }: { data: IReviewData['reviewData'] }) => {
+export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['reviewData'] }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 

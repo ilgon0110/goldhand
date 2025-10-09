@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
 import { BabyCardInfo, FamilyCardInfo, MotherCardInfo, StudentCardInfo } from '../config/const';
-import { ManagerWorkCard } from './managerWorkCard';
+import { ManagerWorkCard } from './_ManagerWorkCard';
 
 export const ManagerWorkPage = () => {
   return (

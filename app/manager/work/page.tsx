@@ -1,3 +1,3 @@
-import { ManagerWorkPage } from '@/src/views/manager';
+import { NewManagerWorkPage } from '@/src/views/manager';
 
-export default ManagerWorkPage;
+export default NewManagerWorkPage;

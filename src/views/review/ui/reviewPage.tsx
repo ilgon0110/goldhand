@@ -2,10 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useQueryStates } from 'nuqs';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
+import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IReviewListResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
@@ -23,12 +24,28 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; i
     shallow: false,
   });
   const [isPending, startTransition] = useTransition();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  useEffect(() => {
+    if (!isDesktop) {
+      // 모바일 화면에서는 무조건 TABLE 모드로 설정
+      setViewMode('TABLE');
+    } else {
+      // 데스크탑 화면에서는 기본적으로 CARD 모드로 설정
+      setViewMode('CARD');
+    }
+  }, [isDesktop]);
 
   return (
-    <div>
+    <>
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
       <SectionTitle title="이용 후기" />
-      <div className="flex w-full flex-col items-baseline justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
+      <div
+        className={cn(
+          'flex w-full flex-col items-baseline justify-between gap-4',
+          'sm:flex-row sm:items-center sm:gap-0',
+        )}
+      >
         <ReviewPageHeader
           franchiseeList={franchiseeList}
           handleFranchiseeChange={value => setReviewParam({ franchisee: value })}
@@ -39,8 +56,8 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; i
       </div>
       <section
         className={cn(
-          'mt-6 grid gap-3',
-          viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          'mt-6 grid',
+          viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4',
         )}
       >
         {data.reviewData.map(review => (
@@ -70,6 +87,6 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; i
           onChangePage={page => setReviewParam({ page })}
         />
       </section>
-    </div>
+    </>
   );
 };

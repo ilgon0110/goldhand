@@ -37,62 +37,99 @@ export const ReviewPageHeader = ({
   return (
     <>
       {isPending && <LoadingSpinnerOverlay text="후기 작성 페이지 이동중.." />}
-      <div className="flex w-full flex-row justify-between gap-2 sm:justify-normal">
-        <Select defaultValue={franchiseeList[0]} onValueChange={handleFranchiseeChange}>
-          <SelectTrigger className="mt-4 w-[180px]">
-            <SelectValue placeholder="지점 선택" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>지점 선택</SelectLabel>
-              {franchiseeList.map(franchisee => {
-                return (
-                  <SelectItem key={franchisee} value={franchisee}>
-                    {franchisee}
-                  </SelectItem>
-                );
-              })}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <div className="flex flex-row items-center gap-2 pt-3">
-          <button
-            className={cn(
-              'fill-slate-200 transition-all duration-300 ease-in-out hover:fill-slate-500',
-              viewMode === 'TABLE' && 'fill-slate-500',
-            )}
-            title="table-view-button"
-            onClick={() => setViewMode('TABLE')}
-          >
-            <svg fill="current" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
-              <path d="M320-80q-33 0-56.5-23.5T240-160v-480q0-33 23.5-56.5T320-720h480q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h200v-120H320v120Zm280 0h200v-120H600v120ZM80-240v-560q0-33 23.5-56.5T160-880h560v80H160v560H80Zm240-120h200v-120H320v120Zm280 0h200v-120H600v120ZM320-560h480v-80H320v80Z" />
-            </svg>
-          </button>
-          <button
-            className={cn(
-              'fill-slate-200 transition-all duration-300 ease-in-out hover:fill-slate-500',
-              viewMode === 'CARD' && 'fill-slate-500',
-            )}
-            title="card-view-button"
-            onClick={() => setViewMode('CARD')}
-          >
-            <svg fill="current" height="24px" viewBox="0 -960 960 960" width="24px" xmlns="http://www.w3.org/2000/svg">
-              <path d="M80-360v-240q0-33 23.5-56.5T160-680q33 0 56.5 23.5T240-600v240q0 33-23.5 56.5T160-280q-33 0-56.5-23.5T80-360Zm280 160q-33 0-56.5-23.5T280-280v-400q0-33 23.5-56.5T360-760h240q33 0 56.5 23.5T680-680v400q0 33-23.5 56.5T600-200H360Zm360-160v-240q0-33 23.5-56.5T800-680q33 0 56.5 23.5T880-600v240q0 33-23.5 56.5T800-280q-33 0-56.5-23.5T720-360Zm-360 80h240v-400H360v400Zm120-200Z" />
-            </svg>
-          </button>
+      <div className={cn('flex w-full flex-col justify-between gap-2', 'sm:flex-row')}>
+        <div className={cn('flex flex-row justify-between gap-4', 'sm:justify-normal')}>
+          <Select defaultValue={franchiseeList[0]} onValueChange={handleFranchiseeChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="지점 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>지점 선택</SelectLabel>
+                {franchiseeList.map(franchisee => {
+                  return (
+                    <SelectItem key={franchisee} value={franchisee}>
+                      {franchisee}
+                    </SelectItem>
+                  );
+                })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <div className="flex flex-row items-center gap-2">
+            <button
+              aria-label="table-view-button"
+              className={cn(
+                'group flex flex-row items-center justify-center gap-1 rounded-md border border-slate-200 fill-slate-200 px-4 py-1 transition-all duration-300 ease-in-out',
+                viewMode === 'TABLE' ? 'bg-[#728146] fill-white' : 'hover:fill-slate-500',
+              )}
+              title="table-view-button"
+              onClick={() => setViewMode('TABLE')}
+            >
+              <svg
+                fill="current"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M320-80q-33 0-56.5-23.5T240-160v-480q0-33 23.5-56.5T320-720h480q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h200v-120H320v120Zm280 0h200v-120H600v120ZM80-240v-560q0-33 23.5-56.5T160-880h560v80H160v560H80Zm240-120h200v-120H320v120Zm280 0h200v-120H600v120ZM320-560h480v-80H320v80Z" />
+              </svg>
+              <span
+                className={cn(
+                  'mt-1 text-slate-200 transition-all duration-300 ease-in-out',
+                  viewMode === 'TABLE' ? 'text-white' : 'group-hover:text-slate-500',
+                )}
+              >
+                표 형식
+              </span>
+            </button>
+            <button
+              aria-label="card-view-button"
+              className={cn(
+                'group flex flex-row items-center justify-center gap-1 rounded-md border border-slate-200 fill-slate-200 px-4 py-1 transition-all duration-300 ease-in-out',
+                viewMode === 'CARD' ? 'bg-[#728146] fill-white' : 'hover:fill-slate-500',
+              )}
+              title="card-view-button"
+              onClick={() => setViewMode('CARD')}
+            >
+              <svg
+                fill="current"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M80-360v-240q0-33 23.5-56.5T160-680q33 0 56.5 23.5T240-600v240q0 33-23.5 56.5T160-280q-33 0-56.5-23.5T80-360Zm280 160q-33 0-56.5-23.5T280-280v-400q0-33 23.5-56.5T360-760h240q33 0 56.5 23.5T680-680v400q0 33-23.5 56.5T600-200H360Zm360-160v-240q0-33 23.5-56.5T800-680q33 0 56.5 23.5T880-600v240q0 33-23.5 56.5T800-280q-33 0-56.5-23.5T720-360Zm-360 80h240v-400H360v400Zm120-200Z" />
+              </svg>
+              <span
+                className={cn(
+                  'mt-1 text-slate-200 transition-all duration-300 ease-in-out',
+                  viewMode === 'CARD' ? 'text-white' : 'group-hover:text-slate-500',
+                )}
+              >
+                카드 형식
+              </span>
+            </button>
+          </div>
         </div>
+        <Button
+          className={cn(
+            'w-fit place-self-end',
+            'sm:place-self-auto',
+            !isLogin && 'opacity-20 hover:cursor-not-allowed',
+          )}
+          disabled={!isLogin}
+          onClick={() => {
+            if (!isLogin) return;
+            startTransition(() => {
+              router.push('/review/form');
+            });
+          }}
+        >
+          {isLogin ? '후기 남기기' : '로그인 후 작성 가능'}
+        </Button>
       </div>
-      <Button
-        className={cn('', !isLogin && 'opacity-20 hover:cursor-not-allowed')}
-        disabled={!isLogin}
-        onClick={() => {
-          startTransition(() => {
-            router.push('/review/form');
-          });
-        }}
-      >
-        {isLogin ? '후기 남기기' : '로그인 후 작성 가능'}
-      </Button>
     </>
   );
 };

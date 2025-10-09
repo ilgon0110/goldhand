@@ -1,6 +1,6 @@
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
-import { RentalCard } from './RentalCard';
+import { RentalCard } from './_RentalCard';
 
 export const RentalPage = () => {
   const items = [
@@ -20,10 +20,10 @@ export const RentalPage = () => {
   return (
     <>
       <SectionTitle title="고운황금손 대여물품" />
-      <div className="mt-3 flex flex-col items-center justify-between gap-4 md:flex-row">
-        {items.map(el => {
-          return <RentalCard alt={el.alt} key={el.alt} src={el.src} />;
-        })}
+      <div className="mx-auto mt-3 flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
+        <RentalCard alt="스펙트라 유축기" src="/spectra_origin.jpg" />
+        <RentalCard alt="홈 카메라" src="/webcam.jpg" />
+        <RentalCard alt="스탠 좌욕기" src="/stanseat.png" />
       </div>
       <div className="mt-6 flex flex-col items-center">
         <div className="w-full max-w-xl whitespace-pre-wrap break-keep text-left leading-6 text-slate-700 lg:text-lg">

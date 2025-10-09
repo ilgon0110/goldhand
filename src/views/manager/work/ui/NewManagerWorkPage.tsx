@@ -43,7 +43,7 @@ export const NewManagerWorkPage = () => {
       </section>
 
       {/* 하단 섹션 - 기본 에티켓 */}
-      <section className="relative mt-20 flex w-full flex-col lg:block">
+      <section className="mx-auto mt-10 max-w-6xl">
         <SectionTitle title="산후관리사에 대한 기본 에티켓" />
         <div className={cn('mt-4 grid grid-cols-1 gap-4', 'md:grid-cols-2')}>
           <EtiquetteCard>

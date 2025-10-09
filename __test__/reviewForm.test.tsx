@@ -29,6 +29,10 @@ vi.mock('@/src/shared/hooks/useAuthState', () => ({
   }),
 }));
 
+vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
+  useMediaQuery: () => true, // 항상 데스크탑 뷰포트로 간주
+}));
+
 beforeAll(() => {
   function createMockPointerEvent(type: string, props: PointerEventInit = {}): PointerEvent {
     const event = new Event(type, props) as PointerEvent;

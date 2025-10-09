@@ -9,6 +9,10 @@ vi.mock('@/src/shared/utils/verifyViewId', () => ({
   sendViewLog: vi.fn(),
 }));
 
+vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
+  useMediaQuery: () => true, // 항상 데스크탑 뷰포트로 간주
+}));
+
 // useRouter 모킹
 const pushMock = vi.fn();
 vi.mock('next/navigation', () => ({
@@ -107,6 +111,7 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
     }
 
     // TABLE 모드로 전환
+    screen.debug();
     await userEvent.click(screen.getByRole('button', { name: 'table-view-button' }));
 
     // TABLE 모드가 활성화되었는지 확인

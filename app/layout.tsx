@@ -1,7 +1,6 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ToastContainer } from 'react-toastify';
@@ -11,40 +10,24 @@ import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { Footer } from '@/src/widgets/footer';
 import { Header } from '@/src/widgets/header';
 
-// declare global {
-//   // eslint-disable-next-line @typescript-eslint/naming-convention
-//   interface Window {
-//     naver: any;
-//     kakao: any;
-//   }
-// }
+let pretendardClass = '';
 
-const pretendard = localFont({
-  src: [
-    {
-      path: './fonts/Pretendard-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: './fonts/Pretendard-Medium.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-    {
-      path: './fonts/Pretendard-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-    {
-      path: './fonts/Pretendard-Black.woff2',
-      weight: '900',
-      style: 'normal',
-    },
-  ],
-  display: 'swap',
-  variable: '--font-pretendard',
-});
+// nextjs 14 next-font-loader와 HMR 문제로 인해 production 환경에서만 next/font 적용
+if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'production') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+  const localFont = require('next/font/local').default;
+  const pretendard = localFont({
+    src: [
+      { path: './fonts/Pretendard-Regular.woff2', weight: '400', style: 'normal' },
+      { path: './fonts/Pretendard-Medium.woff2', weight: '600', style: 'normal' },
+      { path: './fonts/Pretendard-Bold.woff2', weight: '700', style: 'normal' },
+      { path: './fonts/Pretendard-Black.woff2', weight: '900', style: 'normal' },
+    ],
+    display: 'swap',
+    variable: '--font-pretendard',
+  });
+  pretendardClass = pretendard.variable;
+}
 
 export const metadata: Metadata = {
   title: '고운황금손',
@@ -59,10 +42,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT !== 'production';
   return (
     <>
-      <html lang="en">
-        <body className={`${pretendard.className} relative`}>
+      <html className={`${pretendardClass}`} lang="en">
+        <body className={`relative`}>
           <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
             <NuqsAdapter>
               <QueryProvider>
@@ -73,9 +57,50 @@ export default function RootLayout({
             <Footer />
             <ToastContainer />
           </ThemeProvider>
-          <Script src="https://developers.kakao.com/sdk/js/kakao.js" strategy="beforeInteractive" />
-          <Script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" strategy="beforeInteractive" />
-          <Script src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}></Script>
+          <Script src="https://developers.kakao.com/sdk/js/kakao.js" strategy="lazyOnload" />
+          <Script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" strategy="lazyOnload" />
+          <Script
+            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+            strategy="lazyOnload"
+          ></Script>
+          {/* ✅ DEV 모드에서는 fallback 폰트 스타일을 추가 */}
+          {isDev && (
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
+                @font-face {
+                  font-family: 'Pretendard';
+                  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+                  font-weight: 400;
+                  font-style: normal;
+                  font-display: swap;
+                }
+                @font-face {
+                  font-family: 'Pretendard';
+                  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
+                  font-weight: 600;
+                  font-style: normal;
+                  font-display: swap;
+                }
+                @font-face {
+                  font-family: 'Pretendard';
+                  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+                  font-weight: 700;
+                  font-style: normal;
+                  font-display: swap;
+                }
+                @font-face {
+                  font-family: 'Pretendard';
+                  src: url('/fonts/Pretendard-Black.woff2') format('woff2');
+                  font-weight: 900;
+                  font-style: normal;
+                  font-display: swap;
+                }
+                .font-pretendard { font-family: 'Pretendard', sans-serif; }
+              `,
+              }}
+            />
+          )}
         </body>
       </html>
     </>

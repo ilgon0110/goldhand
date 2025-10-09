@@ -1,10 +1,10 @@
 import type { IReviewListResponseData } from '@/src/shared/types';
 import { getReviewListData } from '@/src/views/review';
-import { ImageSlideList } from '@/src/widgets/goldHandImageSlide';
-import { MainTitle } from '@/src/widgets/goldHandMainTitle/ui/MainTitle';
 import { ReviewCarousel } from '@/src/widgets/goldHandReview';
 import { SponsorList } from '@/src/widgets/goldHandSponsor';
 import { FranchiseeSheetList } from '@/src/widgets/goldHandSpotSheet';
+import { ImageSlideList } from '@/src/widgets/ImageSlideList';
+import { MainTitle } from '@/src/widgets/MainTitle/ui/MainTitle';
 import { PriceList } from '@/src/widgets/pricewidgets';
 
 export async function HomePage() {

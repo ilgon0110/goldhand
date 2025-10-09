@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/src/shared/ui/button';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
@@ -33,8 +34,8 @@ export const PriceSummaryCard = ({ title, description, priceList, iconSrc }: TPr
           <p className="text-gray-600">{description}</p>
         </div>
         <div className="flex flex-col">
-          {priceList.map((item, index) => (
-            <div className="mt-6 flex flex-row justify-between gap-6" key={index}>
+          {priceList.map(item => (
+            <div className="mt-6 flex flex-row justify-between gap-6" key={uuidv4()}>
               <span className="text-lg font-semibold">{item.type}</span>
               <div className="flex flex-row items-center gap-2">
                 <span className="text-sm text-gray-500">{item.week}</span>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
 
 type TRowProps = {
@@ -13,12 +14,16 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
   return (
     <>
       {/* 웹뷰 */}
-      <div className="hidden w-full flex-row justify-between px-2 md:flex">
-        <div className="text-bold basis-1/4 md:basis-1/5">{title}</div>
-        <div className="basis-1/3 text-center text-gray-600 lg:basis-1/4">{address}</div>
-        <div className="basis-1/4 text-center text-gray-600 lg:basis-1/5">{phoneNumber}</div>
+      <div className={cn('hidden w-full flex-row justify-between px-2', 'md:flex')}>
+        <div className={cn('text-bold basis-1/4', 'md:basis-1/5')}>{title}</div>
+        <div className={cn('basis-1/3 text-center text-gray-600', 'lg:basis-1/4')}>{address}</div>
+        <div className={cn('basis-1/4 text-center text-gray-600', 'lg:basis-1/5')}>{phoneNumber}</div>
         <Link
-          className="w-fit basis-1/4 text-right text-[#728146] underline decoration-[#728146] underline-offset-2 hover:opacity-80 md:basis-1/5"
+          className={cn(
+            'w-fit basis-1/4 text-right text-[#728146] underline decoration-[#728146] underline-offset-2',
+            'hover:opacity-80',
+            'md:basis-1/5',
+          )}
           href={naverPlaceUrl}
           target="_blank"
         >
@@ -26,7 +31,7 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
         </Link>
       </div>
       {/* 모바일뷰 */}
-      <div className="px-2 md:hidden">
+      <div className={cn('px-2', 'md:hidden')}>
         <Accordion collapsible type="single">
           <AccordionItem value="item-1">
             <AccordionTrigger className="relative flex items-center justify-start text-base">{title}</AccordionTrigger>
@@ -35,7 +40,10 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
                 <div className="text-gray-600">{address}</div>
                 <div className="text-gray-600">{phoneNumber}</div>
                 <Link
-                  className="w-fit text-[#728146] underline decoration-[#728146] underline-offset-2 hover:opacity-80"
+                  className={cn(
+                    'w-fit text-[#728146] underline decoration-[#728146] underline-offset-2',
+                    'hover:opacity-80',
+                  )}
                   href={naverPlaceUrl}
                   target="_blank"
                 >

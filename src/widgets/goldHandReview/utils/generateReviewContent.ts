@@ -1,3 +1,15 @@
+function generateThumbnailUrl(htmlString: string): string | null {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  const imgElement = doc.querySelector('img');
+
+  if (imgElement && imgElement instanceof HTMLImageElement) {
+    return imgElement.src;
+  }
+
+  return null;
+}
+
 function generateReviewThumbnailSrc(htmlString: string) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, 'text/html');
@@ -39,4 +51,4 @@ function generateReviewDescription(htmlString: string): string {
   return result.replace(/\s+/g, ' ').trim();
 }
 
-export { generateReviewDescription, generateReviewThumbnailSrc };
+export { generateReviewDescription, generateReviewThumbnailSrc, generateThumbnailUrl };

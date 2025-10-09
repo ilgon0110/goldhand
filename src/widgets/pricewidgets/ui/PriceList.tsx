@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
@@ -9,7 +10,7 @@ export const PriceList = () => {
   return (
     <FadeInWhenVisible delay={0.5}>
       <SectionTitle title="고운황금손 이용요금" />
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className={cn('mt-12 grid grid-cols-1 gap-6', 'md:grid-cols-2', 'xl:grid-cols-4')}>
         <PriceSummaryCard
           description="산후관리사가 산모 집으로 직접 찾아와요"
           iconSrc="/icon/taxi.png"

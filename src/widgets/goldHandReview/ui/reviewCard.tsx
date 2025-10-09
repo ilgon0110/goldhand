@@ -22,7 +22,7 @@ export const ReviewCard = ({
   createdAt,
   description,
   thumbnail,
-  viewMode,
+  viewMode = 'TABLE',
   handleClick,
 }: TReviewCardProps) => {
   return (
@@ -89,7 +89,7 @@ export const ReviewCard = ({
       {viewMode === 'TABLE' && (
         <button
           className={cn(
-            'h-24 flex-row gap-3 border-b border-gray-200 p-4',
+            'h-24 w-full flex-row gap-3 border-b border-gray-200 p-4',
             viewMode === undefined ? 'flex flex-1 sm:hidden' : viewMode === 'TABLE' ? 'flex overflow-hidden' : 'hidden',
           )}
           data-testid={id}

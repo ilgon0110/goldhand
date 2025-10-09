@@ -11,7 +11,7 @@ import type { IReviewListResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { generateReviewDescription, generateReviewThumbnailSrc } from '@/src/views/review/utils';
+import { generateReviewDescription, generateReviewThumbnailSrc } from '@/src/widgets/goldHandReview';
 import { ReviewCard } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 import { ReviewPageHeader } from '@/src/widgets/review';

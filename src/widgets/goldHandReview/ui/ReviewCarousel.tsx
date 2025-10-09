@@ -3,15 +3,15 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
+import { cn } from '@/lib/utils';
 import type { IReviewListResponseData } from '@/src/shared/types';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
-import { generateReviewDescription, generateThumbnailUrl } from '@/src/shared/utils';
+import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/src/widgets/goldHandReview';
 
-import { ReviewCard } from '../index';
-import { ReviewSummaryCard } from './ReviewSummaryCard';
+import { ReviewSummaryCard } from './_ReviewSummaryCard';
 
 export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['reviewData'] }) => {
   const router = useRouter();
@@ -28,7 +28,7 @@ export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['review
       {/* 웹버전, width:640px 이상 */}
       <FadeInWhenVisible delay={0.2}>
         <Carousel
-          className="hidden w-full sm:block"
+          className={cn('hidden w-full', 'sm:block')}
           opts={{
             align: 'start',
           }}
@@ -36,7 +36,7 @@ export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['review
         >
           <CarouselContent className="gap-6">
             {data?.map(item => (
-              <CarouselItem className="basis-1/1 md:basis-1/2 xl:basis-1/4" key={item.id}>
+              <CarouselItem className={cn('basis-1/1', 'md:basis-1/2', 'xl:basis-1/4')} key={item.id}>
                 <ReviewSummaryCard
                   author={item.name}
                   content={generateReviewDescription(item.htmlString)}
@@ -52,15 +52,15 @@ export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['review
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:inline-flex" />
-          <CarouselNext className="hidden md:inline-flex" />
+          <CarouselPrevious className={cn('hidden', 'md:inline-flex')} />
+          <CarouselNext className={cn('hidden', 'md:inline-flex')} />
         </Carousel>
       </FadeInWhenVisible>
       {/* 모바일버전, width:640px 미만 */}
       <FadeInWhenVisible delay={0.2}>
-        <div className="flex flex-col gap-3 sm:hidden">
+        <div className={cn('flex w-full flex-col gap-3', 'sm:hidden')}>
           {data.slice(0, 3).map(item => (
-            <div className="flex max-h-32 flex-row px-1" key={item.id}>
+            <div className={cn('flex max-h-32 w-full flex-row px-1')} key={item.id}>
               <ReviewCard
                 author={item.name}
                 createdAt={item.createdAt}
@@ -71,7 +71,7 @@ export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['review
                   });
                 }}
                 id={item.id}
-                thumbnail={null}
+                thumbnail={generateThumbnailUrl(item.htmlString)}
                 title={item.title}
               />
             </div>

@@ -7,9 +7,8 @@ import { cn } from '@/lib/utils';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
-import { FAQItemList, orderCardList } from '../config/const';
+import { orderCardList } from '../config/const';
 import { OrderCard } from './_OrderCard';
-import { FAQItem } from './FAQItem';
 
 export const ReservationPage = () => {
   const [height, setHeight] = useState(0);
@@ -52,33 +51,20 @@ export const ReservationPage = () => {
           </div>
         </div>
       </div>
-      <div className={cn('mt-20', 'md:px-[10vw]')}>
-        <SectionTitle title="예약상담 FAQ" />
-        <div className="mt-6 space-y-6">
-          {FAQItemList.map(faqItem => (
-            <div key={faqItem.title}>
-              <FAQItem content={faqItem.content} title={faqItem.title} />
-              <div className="h-[1px] w-full bg-gray-500" />
-            </div>
-          ))}
-        </div>
-        <div className="mt-10 flex flex-col items-center justify-center space-y-2 md:space-y-4">
-          <button
-            className={cn(
-              'mx-auto flex items-center justify-center rounded-full bg-[#728146] px-16 py-4 text-lg text-white transition-all duration-300 ease-in-out',
-              'hover:bg-[#062E16]',
-              'md:py-5 md:text-2xl',
-            )}
-            onClick={() => {
-              startTransition(() => {
-                router.push('/reservation/apply');
-              });
-            }}
-          >
-            예약상담 신청하기
-          </button>
-        </div>
-      </div>
+      <button
+        className={cn(
+          'mx-auto mt-12 flex items-center justify-center rounded-full bg-[#728146] px-16 py-4 text-lg text-white transition-all duration-300 ease-in-out',
+          'hover:bg-[#062E16]',
+          'md:mt-20 md:px-20 md:py-5 md:text-2xl',
+        )}
+        onClick={() => {
+          startTransition(() => {
+            router.push('/reservation/apply');
+          });
+        }}
+      >
+        예약상담 신청하기
+      </button>
     </>
   );
 };

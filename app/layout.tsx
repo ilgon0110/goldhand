@@ -23,8 +23,8 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: '고운황금손',
-  description: '고운황금손 공식 홈페이지',
+  title: '고운황금손 수원산후도우미',
+  description: '보건복지부 산후도우미, 정부지원 바우처 서비스 수원 산모신생아 케어 전문기업 고운황금손',
   icons: {
     icon: '/favicon-96x96.png',
   },

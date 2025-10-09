@@ -35,8 +35,8 @@ export function MainTitle() {
             'md:flex-row md:gap-6 md:px-[10vw]',
           )}
         >
-          <TitleCard contents="이용자 수" icon={<PiUsersFourFill size={48} />} title="2,000+" />
-          <TitleCard contents="산후도우미 수" icon={<GrUserFemale size={48} />} title="100+" />
+          <TitleCard contents="산모 신생아 케어 서비스 이용자 수" icon={<PiUsersFourFill size={48} />} title="2,000+" />
+          <TitleCard contents="전문 교육을 이수한 산후도우미 수" icon={<GrUserFemale size={48} />} title="100+" />
           <TitleCard contents="고운황금손 만족후기" icon={<MdPlace size={48} />} title="1,000+" />
         </div>
       </FadeInWhenVisible>

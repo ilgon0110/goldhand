@@ -76,6 +76,21 @@ export const Header = () => {
             <NavigationMenu>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
+                  <UlButton enText="GoldHand" text="고운황금손" />
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.COMPANY}>
+                    인사말
+                  </NavigationMenuLink>
+                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.FRANCHISEE}>
+                    지점소개
+                  </NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenu>
+            <NavigationMenu>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>
                   <UlButton enText="Service" text="산후관리사" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -109,11 +124,11 @@ export const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenu>
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink href={URLS.FRANCHISEE}>
                 <UlButton enText="Franchisee" text="지점안내" />
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             <NavigationMenu>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
@@ -207,6 +222,16 @@ const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpe
       >
         <UlButton enText="" text={pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'} />
       </Link>
+      <UlButton enText="GoldHand" text="고운황금손">
+        <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+          <Link href={URLS.COMPANY} onClick={handleChangeMobileMenuOpen}>
+            인사말
+          </Link>
+          <Link href={URLS.FRANCHISEE} onClick={handleChangeMobileMenuOpen}>
+            지점소개
+          </Link>
+        </div>
+      </UlButton>
       <UlButton enText="Service" text="산후관리사">
         <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
           <Link href={URLS.MANAGER.ABOUT} onClick={handleChangeMobileMenuOpen}>
@@ -233,13 +258,6 @@ const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpe
           </Link>
         </div>
       </UlButton>
-      <Link
-        className="text-base font-semibold leading-6 text-gray-900"
-        href={URLS.FRANCHISEE}
-        onClick={handleChangeMobileMenuOpen}
-      >
-        <UlButton enText="Franchisee" text="지점안내" />
-      </Link>
       <UlButton enText="Consult" text="예약상담">
         <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
           <Link href={URLS.RESERVATION.APPLY} onClick={handleChangeMobileMenuOpen}>

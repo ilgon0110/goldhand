@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Pagination,
@@ -29,22 +29,19 @@ export const WidgetPagination = ({
   const MAXIMUM_NUMBER_OF_PAGES = 10;
   const totalPages = Math.ceil((totalDataLength || 0) / maxColumnNumber);
   const [paginationArr, setPaginationArr] = useState(
-    Array.from(
-      {
-        length: totalPages > MAXIMUM_NUMBER_OF_PAGES ? MAXIMUM_NUMBER_OF_PAGES : totalPages,
-      },
-      (_, i) => i + 1,
-    ),
+    Array.from({ length: Math.min(totalPages, MAXIMUM_NUMBER_OF_PAGES) }, (_, i) => i + 1),
   );
   const nowStartPageNumber = paginationArr[0];
   const nowEndPageNumber = paginationArr[paginationArr.length - 1];
 
+  useEffect(() => {
+    setPaginationArr(Array.from({ length: Math.min(totalPages, MAXIMUM_NUMBER_OF_PAGES) }, (_, i) => i + 1));
+  }, [totalPages]);
+
   const onClickPrevious = () => {
     if (nowStartPageNumber > MAXIMUM_NUMBER_OF_PAGES) {
       const newArr = Array.from(
-        {
-          length: nowStartPageNumber - 1 > MAXIMUM_NUMBER_OF_PAGES ? MAXIMUM_NUMBER_OF_PAGES : nowStartPageNumber - 1,
-        },
+        { length: Math.min(MAXIMUM_NUMBER_OF_PAGES, nowStartPageNumber - 1) },
         (_, i) => nowStartPageNumber - i - 1,
       ).reverse();
       setPaginationArr(newArr);
@@ -56,12 +53,7 @@ export const WidgetPagination = ({
     const nowEndPageNumber = paginationArr[paginationArr.length - 1];
     if (nowEndPageNumber < totalPages) {
       const newArr = Array.from(
-        {
-          length:
-            totalPages - nowEndPageNumber > MAXIMUM_NUMBER_OF_PAGES
-              ? MAXIMUM_NUMBER_OF_PAGES
-              : totalPages - nowEndPageNumber,
-        },
+        { length: Math.min(MAXIMUM_NUMBER_OF_PAGES, totalPages - nowEndPageNumber) },
         (_, i) => nowEndPageNumber + i + 1,
       );
       setPaginationArr(newArr);

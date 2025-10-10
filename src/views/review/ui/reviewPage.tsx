@@ -56,8 +56,8 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; i
       </div>
       <section
         className={cn(
-          'mt-6 grid',
-          viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4',
+          'mt-6 grid gap-2',
+          viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
         )}
       >
         {data.reviewData.map(review => (

@@ -38,9 +38,9 @@ export const ReviewPageHeader = ({
     <>
       {isPending && <LoadingSpinnerOverlay text="후기 작성 페이지 이동중.." />}
       <div className={cn('flex w-full flex-col justify-between gap-2', 'sm:flex-row')}>
-        <div className={cn('flex flex-row justify-between gap-4', 'sm:justify-normal')}>
+        <div className={cn('flex flex-col justify-between gap-4', 'sm:flex-row sm:justify-normal')}>
           <Select defaultValue={franchiseeList[0]} onValueChange={handleFranchiseeChange}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className={cn('w-full', 'sm:w-[180px]')}>
               <SelectValue placeholder="지점 선택" />
             </SelectTrigger>
             <SelectContent>
@@ -56,7 +56,7 @@ export const ReviewPageHeader = ({
               </SelectGroup>
             </SelectContent>
           </Select>
-          <div className="flex flex-row items-center gap-2">
+          <div className={cn('grid grid-cols-2 items-center gap-2')}>
             <button
               aria-label="table-view-button"
               className={cn(
@@ -113,6 +113,7 @@ export const ReviewPageHeader = ({
             </button>
           </div>
         </div>
+
         <Button
           className={cn(
             'w-fit place-self-end',

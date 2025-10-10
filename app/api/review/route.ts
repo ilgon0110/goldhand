@@ -49,7 +49,8 @@ export async function GET(request: NextRequest) {
 
     // 먼저 전체 필터링된 데이터 수를 가져오기 (페이지네이션 계산용)
     const filteredSnap = await getDocs(baseQuery);
-    const totalDataLength = (await getCountFromServer(reviewDocRef)).data().count;
+    const totalDataLength = (await getCountFromServer(baseQuery)).data().count;
+
     let paginatedQuery = baseQuery;
 
     if (startAtIndex > 0) {

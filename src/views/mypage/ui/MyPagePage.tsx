@@ -286,15 +286,15 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
                 onClick={() => {
                   startTransition(() => {
                     if (item.docType === 'review') {
-                      router.push(`/review/${item.id}`);
+                      router.push(`/review/${item.docId}`);
                     }
 
                     if (item.docType === 'consult') {
-                      router.push(`/reservation/list/${item.id}`);
+                      router.push(`/reservation/list/${item.docId}`);
                     }
 
                     if (item.docType === 'manager') {
-                      router.push(`/manager/${item.id}`);
+                      router.push(`/manager/${item.docId}`);
                     }
                   });
                 }}

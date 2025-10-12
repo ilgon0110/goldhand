@@ -35,6 +35,12 @@ export async function middleware(request: NextRequest) {
     if (response) return res;
   }
 
+  if (url.pathname === '/manager/list') {
+    if (response.userData?.grade !== 'admin') {
+      return NextResponse.redirect(`${redirectUrl}/login`);
+    }
+  }
+
   if (url.pathname === '/reservation/apply') {
     return NextResponse.redirect(`${redirectUrl}/reservation/form`);
   }

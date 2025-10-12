@@ -4,13 +4,14 @@ import { getAuth, signOut } from 'firebase/auth';
 import { BadgeCheckIcon, BookCheck, BookX, CalendarIcon, EditIcon, ShieldCheckIcon, TextIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { WithEmptyState } from '@/src/shared/ui/WithEmptyState';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
@@ -22,8 +23,8 @@ type TMyPageDataProps = {
 };
 
 export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
-  console.log('myPageData', myPageData);
   const auth = getAuth(firebaseApp);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const [withDrawalModalOpen, setWithDrawalModalOpen] = useState(false);
   const { mutate: logout } = useLogoutMutation({
@@ -45,6 +46,7 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
 
   return (
     <div>
+      {isPending && <LoadingSpinnerOverlay text="페이지 이동 중..." />}
       <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />
       <SectionTitle title="고운황금손 마이페이지" />
       <div className="relative mt-6 w-full rounded border border-slate-300 p-3 md:p-11">
@@ -102,19 +104,31 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
         </div>
       </div>
       <div className="relative mt-4 flex flex-row justify-end gap-3">
-        <Button className="absolute left-0" variant="outline" onClick={() => logout()}>
+        <Button
+          className="absolute left-0"
+          variant="outline"
+          onClick={() => {
+            startTransition(() => {
+              logout();
+            });
+          }}
+        >
           로그아웃
         </Button>
         <Button
           onClick={() => {
-            router.push('/signup/phone');
+            startTransition(() => {
+              router.push('/signup/phone');
+            });
           }}
         >
           전화번호 인증
         </Button>
         <Button
           onClick={() => {
-            router.push('/mypage/edit');
+            startTransition(() => {
+              router.push('/mypage/edit');
+            });
           }}
         >
           정보수정
@@ -143,7 +157,11 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
               <div className="mt-3 flex flex-row justify-between" data-testid={apply.id} key={apply.id}>
                 <span
                   className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                  onClick={() => router.push(`/reservation/list/${apply.id}`)}
+                  onClick={() => {
+                    startTransition(() => {
+                      router.push(`/manager/${apply.id}`);
+                    });
+                  }}
                 >
                   {apply.content}
                 </span>
@@ -168,7 +186,11 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
             <div className="mt-3 flex flex-row justify-between" data-testid={apply.id} key={apply.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                onClick={() => router.push(`/reservation/list/${apply.id}`)}
+                onClick={() => {
+                  startTransition(() => {
+                    router.push(`/manager/${apply.id}`);
+                  });
+                }}
               >
                 {apply.content}
               </span>
@@ -196,7 +218,11 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
             <div className="mt-3 flex flex-row justify-between" data-testid={consult.id} key={consult.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                onClick={() => router.push(`/reservation/list/${consult.id}`)}
+                onClick={() => {
+                  startTransition(() => {
+                    router.push(`/reservation/list/${consult.id}`);
+                  });
+                }}
               >
                 {consult.title}
               </span>
@@ -224,7 +250,11 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
             <div className="mt-3 flex flex-row justify-between" data-testid={review.id} key={review.id}>
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
-                onClick={() => router.push(`/review/${review.id}`)}
+                onClick={() => {
+                  startTransition(() => {
+                    router.push(`/review/${review.id}`);
+                  });
+                }}
               >
                 {review.title}
               </span>
@@ -254,13 +284,19 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
               <span
                 className="text-base font-medium underline hover:cursor-pointer md:text-xl"
                 onClick={() => {
-                  if (item.docType === 'review') {
-                    router.push(`/review/${item.id}`);
-                  }
+                  startTransition(() => {
+                    if (item.docType === 'review') {
+                      router.push(`/review/${item.id}`);
+                    }
 
-                  if (item.docType === 'consult') {
-                    router.push(`/reservation/list/${item.id}`);
-                  }
+                    if (item.docType === 'consult') {
+                      router.push(`/reservation/list/${item.id}`);
+                    }
+
+                    if (item.docType === 'manager') {
+                      router.push(`/manager/${item.id}`);
+                    }
+                  });
                 }}
               >
                 {item.comment}

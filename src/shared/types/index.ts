@@ -96,7 +96,7 @@ export interface ICommentData {
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string;
   docId: string; // 댓글이 달린 문서의 ID (Consult 또는 Review)
-  docType: 'consult' | 'review'; // 댓글이 달린 문서의 타입
+  docType: 'consult' | 'manager' | 'review'; // 댓글이 달린 문서의 타입
 }
 
 // 사용자(User) 관련 타입 정의

@@ -157,7 +157,6 @@ export async function GET() {
         nanoseconds: doc.data().updatedAt._nanoseconds,
       },
     })) as IMyPageData['applies'];
-    console.log('appliesData', appliesData);
 
     // 예약상담 데이터 가져오기
     const consultsQuery = query(collection(db, 'consults'), orderBy('createdAt', 'desc'), where('userId', '==', uid));

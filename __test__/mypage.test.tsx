@@ -80,6 +80,8 @@ describe('Mypage 컴포넌트 테스트', () => {
           data: {
             userData: mockUserData.userData,
             isLinked: false,
+            managersData: null,
+            applies: null,
             reviews: [],
             consults: [],
             comments: [],

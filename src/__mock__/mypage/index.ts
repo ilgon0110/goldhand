@@ -15,6 +15,8 @@ export const mockMypageData: IMockMypageData = {
   message: '마이페이지 데이터 조회 성공',
   data: {
     isLinked: false,
+    managersData: null,
+    applies: null,
     userData: mockUserData.userData,
     consults: mockReservationListData.consultData,
     reviews: [{ ...mockReviewDetailData.data, id: '123' }],

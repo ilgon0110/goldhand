@@ -1,7 +1,33 @@
 import type { Timestamp } from 'firebase/firestore';
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TAliasAny = any;
+
+// 산후관리사 지원(Manager Apply) 관련 타입 정의
+export interface IApplyDetailData {
+  content: string;
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+  email: string;
+  franchisee: string;
+  location: string;
+  name: string;
+  phoneNumber: string;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+  userId: string | null;
+  docId: string;
+}
+
+export interface IManagerApplyListData {
+  response: 'ng' | 'ok' | 'unAuthorized';
+  message: string;
+  data: IApplyDetailData[] | null;
+  totalDataLength: number;
+}
+
+export interface IManagerApplyDetailResponseData {
+  response: 'ng' | 'ok' | 'unAuthorized';
+  message: string;
+  data: IApplyDetailData | null;
+}
 
 // 이용상담(Consult, Reservation) 관련 타입 정의
 export interface IReservationDetailData {
@@ -98,9 +124,12 @@ export interface IUserResponseData {
   isLinked: boolean;
 }
 
+// 마이페이지(MyPage) 관련 타입 정의
 export interface IMyPageData {
   isLinked: boolean;
   userData: IUserDetailData | null;
+  managersData: (IApplyDetailData & { id: string })[] | null;
+  applies: (IApplyDetailData & { id: string })[] | null;
   consults: (IReservationDetailData & { id: string })[] | null;
   reviews: (IReviewDetailData & { id: string })[] | null;
   comments: (ICommentData & { id: string })[] | null;
@@ -113,7 +142,6 @@ export interface IMyPageResponseData {
 }
 
 // 카카오 로그인 관련 타입 정의
-
 export interface IKakaoTokenResponseBody {
   token_type: 'bearer';
   access_token: string;

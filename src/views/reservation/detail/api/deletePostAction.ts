@@ -57,7 +57,7 @@ export const useDeletePostMutation = ({
 
 const deletePostMutation = async ({ docId, userId, password }: TDeletePostActionParams) => {
   try {
-    const res = await fetcher<IResponseBody>(`/api/reservation/detail/delete`, {
+    const res = await fetcher<IResponseBody>(`/api/reservation/delete`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

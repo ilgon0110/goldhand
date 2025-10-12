@@ -1,3 +1,3 @@
 export default function ManagerAboutLayout({ children }: { children: React.ReactNode }) {
-  return <section>{children}</section>;
+  return <section className="mt-12">{children}</section>;
 }

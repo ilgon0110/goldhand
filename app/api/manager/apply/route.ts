@@ -1,7 +1,7 @@
-import { doc, getFirestore, setDoc } from 'firebase/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IConsultPost {
@@ -11,6 +11,7 @@ interface IConsultPost {
   location: string;
   franchisee: string;
   content: string;
+  userId: string | null;
   recaptchaToken: string;
 }
 
@@ -21,7 +22,7 @@ interface IResponseBody {
 
 export async function POST(req: Request) {
   const body = (await req.json()) as IConsultPost;
-  const { name, phoneNumber, email, location, franchisee, content, recaptchaToken } = body;
+  const { name, phoneNumber, email, location, franchisee, content, userId, recaptchaToken } = body;
 
   if (!name || !phoneNumber || !email || !location || !franchisee || !content || !recaptchaToken) {
     return typedJson<IResponseBody>(
@@ -45,18 +46,20 @@ export async function POST(req: Request) {
   }
 
   // firestore에 데이터 저장
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const adminDb = getAdminFirestore(firebaseAdminApp);
   const docId = uuidv4();
 
   try {
-    await setDoc(doc(db, 'managers', docId), {
+    // 일반 유저가 managers 컬렉션에 직접 쓰기 권한이 없으므로, admin SDK를 사용하여 데이터 저장
+    await adminDb.collection('managers').doc(docId).set({
+      docId,
       name,
       phoneNumber,
       email,
       location,
       franchisee,
       content,
+      userId,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

@@ -13,6 +13,7 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { franchiseeList } from '@/src/shared/config';
+import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
@@ -21,15 +22,19 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { managerApplySchema } from '../config/managerApplySchema';
 
-export const ManagerApplyPage = () => {
+interface IManagerApplyPageProps {
+  userData: IUserDetailData | null;
+}
+
+export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
   const router = useRouter();
   const { executeRecaptcha } = useGoogleReCaptcha();
   const form = useForm<z.infer<typeof managerApplySchema>>({
     resolver: zodResolver(managerApplySchema),
     defaultValues: {
-      name: '',
-      phoneNumber: '',
-      email: '',
+      name: userData?.name || '',
+      phoneNumber: userData?.phoneNumber || '',
+      email: userData?.email || '',
       content: '',
     },
     mode: 'onChange',
@@ -54,6 +59,7 @@ export const ManagerApplyPage = () => {
           },
           body: JSON.stringify({
             ...values,
+            userId: userData?.userId || null,
             recaptchaToken,
           }),
         })
@@ -92,7 +98,7 @@ export const ManagerApplyPage = () => {
         <form className="mt-6 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            defaultValue={''}
+            defaultValue={userData?.name || ''}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -109,7 +115,7 @@ export const ManagerApplyPage = () => {
           />
           <FormField
             control={form.control}
-            defaultValue={''}
+            defaultValue={userData?.phoneNumber || ''}
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
@@ -131,7 +137,7 @@ export const ManagerApplyPage = () => {
           />
           <FormField
             control={form.control}
-            defaultValue={''}
+            defaultValue={userData?.email || ''}
             name="email"
             render={({ field }) => (
               <FormItem>

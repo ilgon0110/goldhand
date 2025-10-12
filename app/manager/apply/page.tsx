@@ -1,10 +1,12 @@
+import { getUserData } from '@/src/shared/api/getUserData';
 import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
 import { ManagerApplyPage } from '@/src/views/manager';
 
-export default function Page() {
+export default async function Page() {
+  const userData = await getUserData();
   return (
     <MyGoogleCaptcha>
-      <ManagerApplyPage />
+      <ManagerApplyPage userData={userData.userData} />
     </MyGoogleCaptcha>
   );
 }

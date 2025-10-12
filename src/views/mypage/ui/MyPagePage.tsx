@@ -22,6 +22,7 @@ type TMyPageDataProps = {
 };
 
 export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
+  console.log('myPageData', myPageData);
   const auth = getAuth(firebaseApp);
   const router = useRouter();
   const [withDrawalModalOpen, setWithDrawalModalOpen] = useState(false);
@@ -40,6 +41,8 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
     },
   });
 
+  const isAdmin = myPageData.data.userData?.grade === 'admin';
+
   return (
     <div>
       <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />
@@ -54,13 +57,11 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
             <div className="flex flex-row items-center gap-2">
               <Badge
                 className={cn(
-                  myPageData.data.userData?.grade === 'admin'
-                    ? 'space-x-1 bg-primary'
-                    : 'space-x-1 bg-blue-500 text-white dark:bg-blue-600',
+                  isAdmin ? 'space-x-1 bg-purple-800 text-white' : 'space-x-1 bg-blue-500 text-white dark:bg-blue-600',
                 )}
                 variant="outline"
               >
-                {myPageData.data.userData?.grade === 'admin' ? (
+                {isAdmin ? (
                   <ShieldCheckIcon data-testid="admin-grade-badge" />
                 ) : (
                   <BadgeCheckIcon data-testid="basic-grade-badge" />
@@ -121,6 +122,60 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
         <Button variant="destructive" onClick={() => setWithDrawalModalOpen(true)}>
           회원탈퇴
         </Button>
+      </div>
+      {/* admin전용 : 산후관리사 지원목록 조회 */}
+      {isAdmin && (
+        <div>
+          <div className="relative mt-6 flex flex-row items-center gap-3">
+            <CalendarIcon className="mr-2 h-6 w-6" />
+            <span className="text-base font-bold md:text-2xl">산후관리사 지원목록</span>
+            <div className="absolute right-1 text-slate-500 underline transition-all ease-in-out hover:cursor-pointer hover:text-black">
+              전체 보기
+            </div>
+          </div>
+          <div className="mt-2 h-[1px] w-full bg-black" />
+          <WithEmptyState
+            data={myPageData.data.applies}
+            emptyDescription=""
+            emptyTitle="산후관리사 지원목록이 없습니다."
+          >
+            {myPageData.data?.applies?.map(apply => (
+              <div className="mt-3 flex flex-row justify-between" data-testid={apply.id} key={apply.id}>
+                <span
+                  className="text-base font-medium underline hover:cursor-pointer md:text-xl"
+                  onClick={() => router.push(`/reservation/list/${apply.id}`)}
+                >
+                  {apply.content}
+                </span>
+                <span className="text-slate-500">{formatDateToYMD(apply.updatedAt)}</span>
+              </div>
+            ))}
+          </WithEmptyState>
+        </div>
+      )}
+      {/* 산후관리사 지원문의 */}
+      <div>
+        <div className="relative mt-6 flex flex-row items-center gap-3">
+          <CalendarIcon className="mr-2 h-6 w-6" />
+          <span className="text-base font-bold md:text-2xl">산후관리사 지원문의</span>
+          <div className="absolute right-1 text-slate-500 underline transition-all ease-in-out hover:cursor-pointer hover:text-black">
+            전체 보기
+          </div>
+        </div>
+        <div className="mt-2 h-[1px] w-full bg-black" />
+        <WithEmptyState data={myPageData.data.applies} emptyDescription="" emptyTitle="산후관리사 지원내역이 없습니다.">
+          {myPageData.data?.applies?.map(apply => (
+            <div className="mt-3 flex flex-row justify-between" data-testid={apply.id} key={apply.id}>
+              <span
+                className="text-base font-medium underline hover:cursor-pointer md:text-xl"
+                onClick={() => router.push(`/reservation/list/${apply.id}`)}
+              >
+                {apply.content}
+              </span>
+              <span className="text-slate-500">{formatDateToYMD(apply.updatedAt)}</span>
+            </div>
+          ))}
+        </WithEmptyState>
       </div>
       {/* 예약 상담 */}
       <div>

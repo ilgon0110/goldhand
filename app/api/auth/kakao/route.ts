@@ -24,6 +24,7 @@ export async function GET() {}
 
 async function trySignIn(email: string, password: string) {
   const auth = getAuth();
+
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
     return result;

@@ -59,7 +59,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
       const recaptchaToken = await executeRecaptcha('join');
       // POST 요청
       const data = await (
-        await fetch('/api/reservation/detail/create', {
+        await fetch('/api/reservation/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

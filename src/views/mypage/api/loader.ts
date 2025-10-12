@@ -1,19 +1,11 @@
-import { parse } from 'cookie';
-import { headers } from 'next/headers';
-
-import { apiUrl } from '@/src/shared/config';
 import type { IMyPageResponseData } from '@/src/shared/types';
+import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
 export const getMyPageData = async (): Promise<IMyPageResponseData> => {
-  const rawCookie = headers().get('cookie') || '';
-  const cookiesObj = parse(rawCookie);
-  const accessToken = cookiesObj['accessToken'];
-
-  const res = await fetch(`${apiUrl}/api/mypage`, {
+  const res = await authFetcher<IMyPageResponseData>(`/api/mypage`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Cookie: `accessToken=${accessToken}`,
     },
     cache: 'no-store',
   });
@@ -22,5 +14,5 @@ export const getMyPageData = async (): Promise<IMyPageResponseData> => {
   //   cache: 'no-store',
   // })
 
-  return res.json();
+  return res;
 };

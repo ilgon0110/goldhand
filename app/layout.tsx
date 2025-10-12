@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <>
       <html className={`${isDev ? null : pretendard.variable}`} lang="en">
-        <body className={`relative`}>
+        <body className="relative">
           <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
             <NuqsAdapter>
               <QueryProvider>

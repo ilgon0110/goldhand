@@ -10,6 +10,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -26,6 +27,8 @@ interface IResponseBody {
 const defaultData: IMyPageData = {
   isLinked: false,
   userData: null,
+  managersData: null,
+  applies: [],
   consults: [],
   reviews: [],
   comments: [],
@@ -83,8 +86,9 @@ export async function GET() {
 
   try {
     const db = getFirestore(firebaseApp);
+    const adminDB = getAdminFirestore(firebaseAdminApp);
 
-    // 1. 사용자 데이터 가져오기
+    // 사용자 데이터 가져오기
     const userDocRef = doc(db, 'users', uid);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -114,38 +118,80 @@ export async function GET() {
     const hasEmail = providersId.includes('password');
     const hasPhone = providersId.includes('phone');
     const isLinked = hasEmail && hasPhone;
+    const isAdmin = userDocSnap.data()?.grade === 'admin';
 
-    // 2. 예약상담 데이터 가져오기
-    // userId를 이용하여 예약상담 데이터를 가져온다.
+    // Admin grade 전용. 산후관리사 지원목록 데이터 가져오기
+    // managers는 보안 룰 전체 false로 한 후, admin SDK로만 접근 가능하게 설정
+    let managersData = null;
+    if (isAdmin) {
+      const managersSnapshot = await adminDB.collection('managers').orderBy('createdAt', 'desc').get();
+      managersData = managersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: {
+          seconds: doc.data().createdAt._seconds,
+          nanoseconds: doc.data().createdAt._nanoseconds,
+        },
+        updatedAt: {
+          seconds: doc.data().updatedAt._seconds,
+          nanoseconds: doc.data().updatedAt._nanoseconds,
+        },
+      })) as IMyPageData['applies'];
+    }
+
+    // 산후관리사 지원문의 데이터 가져오기
+    const appliesSnapshot = await adminDB
+      .collection('managers')
+      .orderBy('createdAt', 'desc')
+      .where('userId', '==', uid)
+      .get();
+    const appliesData = appliesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: {
+        seconds: doc.data().createdAt._seconds,
+        nanoseconds: doc.data().createdAt._nanoseconds,
+      },
+      updatedAt: {
+        seconds: doc.data().updatedAt._seconds,
+        nanoseconds: doc.data().updatedAt._nanoseconds,
+      },
+    })) as IMyPageData['applies'];
+    console.log('appliesData', appliesData);
+
+    // 예약상담 데이터 가져오기
     const consultsQuery = query(collection(db, 'consults'), orderBy('createdAt', 'desc'), where('userId', '==', uid));
     const consultsSnapshot = await getDocs(consultsQuery);
     const consultsData = consultsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as IMyPageData['consults'];
-    // 3. 이용후기 데이터 가져오기
-    // userId를 이용하여 이용후기 데이터를 가져온다.
+
+    // 이용후기 데이터 가져오기
     const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), where('userId', '==', uid));
     const reviewsSnapshot = await getDocs(reviewsQuery);
     const reviewsData = reviewsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as IMyPageData['reviews'];
-    // 4. 댓글 데이터 가져오기
-    // userId를 이용하여 댓글 데이터를 가져온다.
+
+    // 댓글 데이터 가져오기
     const commentsQuery = query(collectionGroup(db, 'comments'), where('userId', '==', uid));
     const commentsSnapshot = await getDocs(commentsQuery);
     const commentsData = commentsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
-    // 5. 최종 데이터 구성
+
+    // 최종 데이터 구성
     return typedJson<IResponseBody>({
       response: 'ok',
       message: '마이페이지 데이터 조회 성공',
       data: {
         isLinked,
         userData: { ...userDocSnap.data(), userId: uid } as IUserDetailData,
+        managersData,
+        applies: appliesData,
         consults: consultsData,
         reviews: reviewsData,
         comments: commentsData as ICommentData[],

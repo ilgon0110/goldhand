@@ -68,7 +68,7 @@ export const ReservationEditPage = ({
       const recaptchaToken = await executeRecaptcha('join');
 
       // POST 요청
-      const response = await fetch('/api/reservation/detail/update', {
+      const response = await fetch('/api/reservation/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

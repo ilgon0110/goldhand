@@ -5,6 +5,7 @@ import { http, HttpResponse } from 'msw';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import type { IMyPageResponseData } from '@/src/shared/types';
+import { formatPhoneNumber } from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { MyPagePage } from '@/src/views/mypage';
 import { WithdrawalModal } from '@/src/widgets/MyPageWidget/ui/WithdrawalModal';
@@ -56,7 +57,7 @@ describe('Mypage 컴포넌트 테스트', () => {
     expect(screen.getByText('고운황금손 마이페이지')).toBeInTheDocument();
     expect(screen.getByText('테스트 사용자')).toBeInTheDocument();
     expect(screen.getByText('testnick')).toBeInTheDocument();
-    expect(screen.getByText('01012345678')).toBeInTheDocument();
+    expect(screen.getByText(formatPhoneNumber('01012345678'))).toBeInTheDocument();
 
     for (const consult of data?.data?.consults ?? []) {
       expect(screen.getByTestId(consult.id)).toBeInTheDocument();

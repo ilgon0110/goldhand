@@ -14,7 +14,7 @@ import { Button } from '@/src/shared/ui/button';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { WithEmptyState } from '@/src/shared/ui/WithEmptyState';
-import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
+import { formatDateToYMD, formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
 import { useLogoutMutation } from '@/src/widgets/MyPageWidget/hooks/useLogoutMutation';
 import { WithdrawalModal } from '@/src/widgets/MyPageWidget/ui/WithdrawalModal';
 
@@ -95,7 +95,7 @@ export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
         <div className="mt-4 flex flex-col gap-4 text-sm md:mt-8 md:flex-row md:gap-9 md:text-xl">
           <div className="space-x-2">
             <span className="text-slate-500">전화번호</span>
-            <span>{myPageData.data.userData?.phoneNumber || '미등록'}</span>
+            <span>{formatPhoneNumber(myPageData.data.userData?.phoneNumber) || '미등록'}</span>
           </div>
           <div className="space-x-2">
             <span className="text-slate-500">이메일</span>

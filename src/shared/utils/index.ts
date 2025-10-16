@@ -203,3 +203,17 @@ export function getEnv(): IEnv {
     optionalValue: getOptionalEnv<IEnv['optionalValue']>('NEXT_PUBLIC_FIREBASE_OPTIONAL_VALUE'),
   };
 }
+
+export function formatPhoneNumber(phoneNumber: number | string | undefined): string {
+  if (phoneNumber === undefined) {
+    return '';
+  }
+
+  const phoneNumberString = typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber;
+  const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{2,3})(\d{3,4})(\d{4})$/);
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]}`;
+  }
+  return phoneNumberString;
+}

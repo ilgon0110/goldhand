@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
+import { formatPhoneNumber } from '@/src/shared/utils';
 
 type TRowProps = {
   title: string;
@@ -17,7 +18,9 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
       <div className={cn('hidden w-full flex-row justify-between px-2', 'md:flex')}>
         <div className={cn('text-bold basis-1/4', 'md:basis-1/5')}>{title}</div>
         <div className={cn('basis-1/3 text-center text-gray-600', 'lg:basis-1/4')}>{address}</div>
-        <div className={cn('basis-1/4 text-center text-gray-600', 'lg:basis-1/5')}>{phoneNumber}</div>
+        <div className={cn('basis-1/4 text-center text-gray-600', 'lg:basis-1/5')}>
+          {formatPhoneNumber(phoneNumber)}
+        </div>
         <Link
           className={cn(
             'w-fit basis-1/4 text-right text-[#728146] underline decoration-[#728146] underline-offset-2',

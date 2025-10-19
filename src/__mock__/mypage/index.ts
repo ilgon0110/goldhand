@@ -1,5 +1,6 @@
 import type { IMyPageData } from '@/src/shared/types';
 
+import { mockManagerData } from '../manager';
 import { mockReservationListData } from '../reservation';
 import { mockReviewDetailData } from '../review';
 import { mockUserData } from '../user';
@@ -15,7 +16,7 @@ export const mockMypageData: IMockMypageData = {
   message: '마이페이지 데이터 조회 성공',
   data: {
     isLinked: false,
-    managersData: null,
+    managersData: mockManagerData.data,
     applies: null,
     userData: mockUserData.userData,
     consults: mockReservationListData.consultData,

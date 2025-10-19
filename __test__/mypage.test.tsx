@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
@@ -59,6 +59,10 @@ describe('Mypage 컴포넌트 테스트', () => {
     expect(screen.getByText('testnick')).toBeInTheDocument();
     expect(screen.getByText(formatPhoneNumber('01012345678'))).toBeInTheDocument();
 
+    for (const apply of data?.data?.applies ?? []) {
+      expect(screen.getByTestId(apply.id)).toBeInTheDocument();
+    }
+
     for (const consult of data?.data?.consults ?? []) {
       expect(screen.getByTestId(consult.id)).toBeInTheDocument();
     }
@@ -94,6 +98,7 @@ describe('Mypage 컴포넌트 테스트', () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     renderWithQueryClient(<MyPagePage myPageData={data} />);
 
+    expect(screen.getByText('산후관리사 지원내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('예약 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 예약을 추가해보세요.')).toBeInTheDocument();
     expect(screen.getByText('후기 내역이 없습니다.')).toBeInTheDocument();
@@ -254,5 +259,61 @@ describe('Mypage 컴포넌트 테스트', () => {
 
     await userEvent.click(withdrawButton);
     expect(withdrawMock).toHaveBeenCalled();
+  });
+
+  // 관리자 계정 전용 테스트
+  it('관리자 계정일 때 산후관리사 지원목록이 올바르게 표시되는지 테스트', async () => {
+    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
+
+    // 관리자 등급 테스트
+    const adminData: IMyPageResponseData = {
+      ...data,
+      data: {
+        ...data.data,
+        userData: { ...data.data.userData!, grade: 'admin' },
+      },
+    };
+    renderWithQueryClient(<MyPagePage myPageData={adminData} />);
+
+    expect(screen.getByText('산후관리사 지원목록')).toBeInTheDocument();
+
+    for (const manager of adminData?.data?.managersData ?? []) {
+      expect(screen.getByTestId(manager.id)).toBeInTheDocument();
+    }
+  });
+
+  it('관리자 계정이 아닐 때 산후관리사 지원목록이 표시되지 않는지 테스트', async () => {
+    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
+    renderWithQueryClient(<MyPagePage myPageData={data} />);
+
+    expect(screen.queryByText('산후관리사 지원목록')).not.toBeInTheDocument();
+
+    for (const apply of data?.data?.managersData ?? []) {
+      expect(screen.queryByTestId(apply.id)).not.toBeInTheDocument();
+    }
+  });
+
+  it('관리자 계정일 때 산후관리사 지원목록을 클릭하면 해당 지원서 상세페이지로 라우팅되는지 테스트', async () => {
+    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
+
+    // 관리자 등급 테스트
+    const adminData: IMyPageResponseData = {
+      ...data,
+      data: {
+        ...data.data,
+        userData: { ...data.data.userData!, grade: 'admin' },
+      },
+    };
+    renderWithQueryClient(<MyPagePage myPageData={adminData} />);
+
+    for (const manager of adminData?.data?.managersData ?? []) {
+      const targetApply = screen.getByTestId(manager.id);
+      expect(targetApply).toBeInTheDocument();
+
+      await userEvent.click(targetApply);
+      waitFor(() => {
+        expect(pushMock).toHaveBeenCalledWith(`/manager/${manager.id}`);
+      });
+    }
   });
 });

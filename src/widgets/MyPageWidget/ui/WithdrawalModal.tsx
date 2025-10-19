@@ -11,7 +11,7 @@ import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Label } from '@/src/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { useWithdrawalMutation } from '@/src/widgets/MyPageWidget/hooks/useWithdrawalMutation';
+import { useWithdrawalMutation } from '@/src/widgets/MyPageWidget';
 import { privacyContent, privacyVersionDateList } from '@/src/widgets/Privacy';
 
 type TWithdrawalModalProps = {

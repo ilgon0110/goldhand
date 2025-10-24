@@ -154,7 +154,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 500 },
+      { status: 200 },
     );
   }
 }

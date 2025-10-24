@@ -10,14 +10,14 @@ type TProps = {
 };
 
 export const LoadingSpinnerOverlay = ({ text = '로딩 중...', show = true }: TProps) => {
-  const [mounted, setMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // client component에서 hydration mismatch 방지
   useEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
   }, []);
 
-  if (!mounted || !show) return null;
+  if (!isMounted || !show) return null;
 
   return (
     <AnimatePresence>

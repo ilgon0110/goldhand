@@ -124,11 +124,6 @@ export const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenu>
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink href={URLS.FRANCHISEE}>
-                <UlButton enText="Franchisee" text="지점안내" />
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
             <NavigationMenu>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
@@ -151,7 +146,7 @@ export const Header = () => {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink
-                className="absolute right-8 top-2 rounded-full border border-[#0F2E16] px-12 py-2"
+                className="absolute right-8 top-2 w-40 rounded-full border border-[#0F2E16] px-12 py-2"
                 href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
               >
                 {pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'}

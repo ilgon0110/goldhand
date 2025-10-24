@@ -18,7 +18,7 @@ const config = {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
-        mono: ['var(--font-pretendard)', 'Menlo', 'monospace'],
+        pretendard: ['var(--font-pretendard)', 'system-ui', 'sans-serif'],
       },
       colors: {
         kakao: '#FFEB3B',

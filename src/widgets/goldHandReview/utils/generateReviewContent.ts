@@ -1,4 +1,8 @@
-function generateThumbnailUrl(htmlString: string): string | null {
+function generateThumbnailUrl(htmlString: string): string {
+  if (typeof window === 'undefined' || htmlString == null) {
+    return '';
+  }
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, 'text/html');
   const imgElement = doc.querySelector('img');
@@ -7,17 +11,30 @@ function generateThumbnailUrl(htmlString: string): string | null {
     return imgElement.src;
   }
 
-  return null;
+  return '';
 }
 
 function generateReviewThumbnailSrc(htmlString: string) {
+  if (typeof window === 'undefined' || htmlString == null) {
+    return '';
+  }
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, 'text/html');
   const imgElement = doc.querySelector('img');
-  return imgElement ? imgElement.getAttribute('src') : null;
+
+  if (imgElement != null) {
+    return imgElement.getAttribute('src') || '';
+  }
+
+  return '';
 }
 
 function generateReviewDescription(htmlString: string): string {
+  if (typeof window === 'undefined' || htmlString == null) {
+    return '';
+  }
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, 'text/html');
 

@@ -137,23 +137,22 @@ export const ReservationCard = ({
             )}
             {
               <div>
-                <div className="text-start text-lg font-bold">
-                  <TruncateText maxLines={1} text={isSecret ? '비밀글입니다' : title} />
-                </div>
+                <TruncateText
+                  className='className="text-start font-bold" text-lg'
+                  maxLines={1}
+                  text={isSecret ? '비밀글입니다' : title}
+                />
                 <div className="mt-[1px] flex w-full gap-2 text-sm">
-                  <span>
-                    <TruncateText maxLines={1} text={spot} />
-                  </span>
-                  <span className="text-gray-800">
-                    <TruncateText maxLines={1} text={author} />
-                  </span>
-                  <span className="text-gray-500">
-                    <TruncateText maxLines={1} text={createdAt} />
-                  </span>
+                  <TruncateText maxLines={1} text={spot} />
+
+                  <TruncateText className="text-gray-800" maxLines={1} text={author} />
+                  <TruncateText className="text-gray-500" maxLines={1} text={createdAt} />
                 </div>
-                <div className="mt-2 text-start text-sm text-gray-800">
-                  <TruncateText maxLines={1} text={isSecret ? '비밀글입니다' : content} />
-                </div>
+                <TruncateText
+                  className="mt-2 text-start text-sm text-gray-800"
+                  maxLines={1}
+                  text={isSecret ? '비밀글입니다' : content}
+                />
               </div>
             }
           </button>

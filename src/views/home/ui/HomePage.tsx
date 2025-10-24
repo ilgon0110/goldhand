@@ -1,5 +1,5 @@
-import type { IReviewListResponseData } from '@/src/shared/types';
-import { getReviewListData } from '@/src/views/review';
+import { Suspense } from 'react';
+
 import { ReviewCarousel } from '@/src/widgets/goldHandReview';
 import { SponsorList } from '@/src/widgets/goldHandSponsor';
 import { FranchiseeSheetList } from '@/src/widgets/goldHandSpotSheet';
@@ -8,7 +8,6 @@ import { MainTitle } from '@/src/widgets/MainTitle/ui/MainTitle';
 import { PriceList } from '@/src/widgets/pricewidgets';
 
 export async function HomePage() {
-  const data: IReviewListResponseData = await getReviewListData(1, '전체');
   return (
     <>
       <section>
@@ -17,8 +16,10 @@ export async function HomePage() {
       <section>
         <MainTitle />
       </section>
-      <section className="mt-24 space-y-48 px-4 md:px-[10vw]">
-        <ReviewCarousel data={data.reviewData} />
+      <section className="mx-auto mt-24 max-w-6xl space-y-48">
+        <Suspense fallback={null}>
+          <ReviewCarousel />
+        </Suspense>
         <FranchiseeSheetList />
         <PriceList />
         <SponsorList />

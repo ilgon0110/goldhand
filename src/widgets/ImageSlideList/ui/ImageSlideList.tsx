@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useRef, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import imageSlideOne from '@/public/imageslide/goldhand_imageslide_0.png';
+import imageSlideTwo from '@/public/imageslide/goldhand_imageslide_1.png';
 import { Button } from '@/src/shared/ui/button';
 import { Carousel, CarouselContent, CarouselItem } from '@/src/shared/ui/carousel';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
@@ -13,23 +15,21 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 export function ImageSlideList() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+  const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: true }));
 
   return (
     <div className={cn('relative flex h-[70vh] flex-col overflow-hidden', 'md:flex-row')}>
       {isPending && <LoadingSpinnerOverlay text="해당 페이지로 이동중.." />}
-      <Carousel
-        plugins={[plugin.current]}
-        //onMouseEnter={plugin.current.stop}
-        //onMouseLeave={plugin.current.reset}
-      >
+      <Carousel plugins={[plugin.current]}>
         <CarouselContent className="absolute top-0 -z-10 h-[100vh] w-[100vw]">
           <CarouselItem className="relative h-full w-full">
             <Image
               alt="고운황금손 이미지 슬라이드 1번"
               fill
+              placeholder="blur"
+              priority
               sizes="100vw"
-              src="/imageslide/goldhand_imageslide_0.png"
+              src={imageSlideOne}
               style={{ objectFit: 'cover' }}
             />
           </CarouselItem>
@@ -37,8 +37,10 @@ export function ImageSlideList() {
             <Image
               alt="고운황금손 이미지 슬라이드 2번"
               fill
+              placeholder="blur"
+              priority
               sizes="100vw"
-              src="/imageslide/goldhand_imageslide_1.png"
+              src={imageSlideTwo}
               style={{ objectFit: 'cover' }}
             />
           </CarouselItem>

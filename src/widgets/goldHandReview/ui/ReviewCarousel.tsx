@@ -1,21 +1,36 @@
 'use client';
 
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import type { IReviewListResponseData } from '@/src/shared/types';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { getReviewListData } from '@/src/views/review';
 import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/src/widgets/goldHandReview';
 
 import { ReviewSummaryCard } from './_ReviewSummaryCard';
 
-export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['reviewData'] }) => {
+export const ReviewCarousel = () => {
+  const { data } = useSuspenseQuery({
+    queryKey: ['reviewCarousel'],
+    queryFn: () => getReviewListData(1, '전체'),
+    select: data => data.reviewData,
+  });
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div className="w-full">
@@ -36,7 +51,7 @@ export const ReviewCarousel = ({ data }: { data: IReviewListResponseData['review
         >
           <CarouselContent className="gap-6">
             {data?.map(item => (
-              <CarouselItem className={cn('basis-1/1', 'md:basis-1/2', 'xl:basis-1/4')} key={item.id}>
+              <CarouselItem className={cn('basis-1/1', 'md:basis-1/2', 'xl:basis-1/3')} key={item.id}>
                 <ReviewSummaryCard
                   author={item.name}
                   content={generateReviewDescription(item.htmlString)}

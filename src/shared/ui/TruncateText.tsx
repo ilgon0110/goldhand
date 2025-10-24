@@ -2,13 +2,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-interface TruncateTextProps {
+interface ITruncateTextProps {
   text: string;
   maxLines: number; // 몇 줄까지 허용할지
   className?: string; // 추가 스타일링을 위한 클래스
 }
 
-const TruncateText: React.FC<TruncateTextProps> = ({ text, maxLines, className }) => {
+const TruncateText: React.FC<ITruncateTextProps> = ({ text, maxLines, className }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [truncatedText, setTruncatedText] = useState<string>(text);
 

@@ -1,10 +1,11 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Suspense } from 'react';
+import { ToastContainer } from 'react-toastify';
 
 import { QueryProvider } from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
@@ -29,10 +30,6 @@ export const metadata: Metadata = {
   },
 };
 
-const ToastContainer = dynamic(() => import('react-toastify').then(m => m.ToastContainer), {
-  ssr: false,
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,18 +37,20 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <html className={`${pretendard.variable}`} lang="ko" suppressHydrationWarning>
-        <body className="relative font-pretendard">
-          <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
-            <NuqsAdapter>
-              <QueryProvider>
-                <Header />
-                {children}
-              </QueryProvider>
-            </NuqsAdapter>
-            <Footer />
-            <ToastContainer />
-          </ThemeProvider>
+      <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
+        <body className="relative">
+          <Suspense fallback={null}>
+            <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
+              <NuqsAdapter>
+                <QueryProvider>
+                  <Header />
+                  {children}
+                </QueryProvider>
+              </NuqsAdapter>
+              <Footer />
+              <ToastContainer />
+            </ThemeProvider>
+          </Suspense>
           <Script src="https://developers.kakao.com/sdk/js/kakao.js" strategy="lazyOnload" />
           <Script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" strategy="lazyOnload" />
           <Script

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 'use client';
 
 import { $generateNodesFromDOM } from '@lexical/html';

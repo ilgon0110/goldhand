@@ -21,7 +21,7 @@ export async function GET() {
   const accessToken = cookieStore.get('accessToken');
   const adminApp = getAdminAuth(firebaseAdminApp);
 
-  if (!accessToken) {
+  if (!accessToken || accessToken == null || accessToken.value === '') {
     return typedJson<IResponseBody>(
       {
         response: 'ng',
@@ -35,6 +35,7 @@ export async function GET() {
   }
 
   try {
+    console.log('accessToken:', accessToken.value);
     const decodedToken = await adminApp.verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;
 

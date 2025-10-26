@@ -19,6 +19,7 @@ export async function GET() {
   // 현재 로그인된 유저의 uid를 가져온다.
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
+  const adminApp = getAdminAuth(firebaseAdminApp);
 
   if (!accessToken) {
     return typedJson<IResponseBody>(
@@ -34,7 +35,7 @@ export async function GET() {
   }
 
   try {
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    const decodedToken = await adminApp.verifyIdToken(accessToken.value);
     const uid = decodedToken.uid;
 
     if (uid === undefined) {
@@ -71,7 +72,7 @@ export async function GET() {
 
     if (userDocSnap.exists()) {
       const userData = userDocSnap.data() as IUserDetailData;
-      const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
+      const userRecord = await adminApp.getUser(uid);
       const providerIds = userRecord.providerData.map(provider => provider.providerId);
       const hasEmail = providerIds.includes('password');
       const hasPhone = providerIds.includes('phone');
@@ -154,7 +155,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 200 },
+      { status: 500 },
     );
   }
 }

@@ -1,12 +1,15 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
+import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { loadEventParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IEventDetailData, IEventListResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
-export async function GET(request: Request) {
-  const { page, status } = loadEventParams(request);
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
+  const status = searchParams.get('status') ?? 'ALL';
+  //const { page, status } = loadEventParams(request);
 
   try {
     const adminDB = getAdminFirestore(firebaseAdminApp); // Use admin firestore for server-side operations

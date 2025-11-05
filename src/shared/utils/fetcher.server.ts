@@ -11,10 +11,6 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];
 
-  // if (accessToken === null) {
-  //   throw new Error('로그인이 필요합니다.');
-  // }
-
   const response = await fetch(`${apiUrl}${path}`, {
     ...options,
     method: options.method || 'GET',

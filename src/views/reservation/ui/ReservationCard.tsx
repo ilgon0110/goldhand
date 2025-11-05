@@ -138,7 +138,7 @@ export const ReservationCard = ({
             {
               <div>
                 <TruncateText
-                  className='className="text-start font-bold" text-lg'
+                  className="text-start text-lg font-bold"
                   maxLines={1}
                   text={isSecret ? '비밀글입니다' : title}
                 />

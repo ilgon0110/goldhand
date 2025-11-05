@@ -217,3 +217,30 @@ export interface IViewCountResponseData {
   message: string;
   data: IViewCountData | null;
 }
+
+// event 관련 타입 정의
+export interface IEventResponseData {
+  response: string;
+  message: string;
+  data: IEventDetailData;
+}
+
+export interface IEventDetailData {
+  id: string;
+  rowNumber: number;
+  htmlString: string;
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+  name: string;
+  title: string;
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+  userId: string | null;
+  status: 'ENDED' | 'ONGOING' | 'UPCOMING';
+  comments: ICommentData[] | null;
+}
+
+export interface IEventListResponseData {
+  response: 'ng' | 'ok';
+  message: string;
+  eventData: IEventDetailData[] | [];
+  totalDataLength: number;
+}

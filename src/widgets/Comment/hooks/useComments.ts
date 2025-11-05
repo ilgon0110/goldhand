@@ -6,7 +6,7 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 
 type TCommentProps = {
   docId: string;
-  collectionName: 'consults' | 'managers' | 'reviews';
+  collectionName: 'consults' | 'events' | 'managers' | 'reviews';
 };
 
 type TComment = {

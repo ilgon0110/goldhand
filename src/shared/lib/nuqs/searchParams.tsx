@@ -15,6 +15,12 @@ export const managerListParams = {
   page: parseAsFloat.withDefault(1),
 };
 
+export const eventParams = {
+  status: parseAsString.withDefault('ALL'),
+  page: parseAsFloat.withDefault(1),
+};
+
 export const loadReservationParams = createLoader(reservationParams);
 export const loadReviewParams = createLoader(reviewParams);
 export const loadManagerListParams = createLoader(managerListParams);
+export const loadEventParams = createLoader(eventParams);

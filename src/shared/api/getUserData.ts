@@ -8,6 +8,7 @@ import { authFetcher } from '../utils/fetcher.server';
 export async function getUserData(): Promise<IUserResponseData> {
   const result = await authFetcher<IUserResponseData>('/api/user', {
     cache: 'no-store',
+    next: { revalidate: 0 },
   });
 
   return result;

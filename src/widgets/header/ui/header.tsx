@@ -145,6 +145,11 @@ export const Header = () => {
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
+              <NavigationMenuLink href={URLS.EVENT}>
+                <UlButton enText="Event" text="이벤트" />
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
               <NavigationMenuLink
                 className="absolute right-8 top-2 w-40 rounded-full border border-[#0F2E16] px-12 py-2"
                 href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
@@ -269,6 +274,13 @@ const MoblieHeaderContent = ({ onChangeMobileMenuOpen }: { onChangeMobileMenuOpe
         onClick={handleChangeMobileMenuOpen}
       >
         <UlButton enText="Review" text="이용후기" />
+      </Link>
+      <Link
+        className="text-sm font-semibold leading-6 text-gray-900"
+        href={URLS.EVENT}
+        onClick={handleChangeMobileMenuOpen}
+      >
+        <UlButton enText="Event" text="이벤트" />
       </Link>
     </div>
   );

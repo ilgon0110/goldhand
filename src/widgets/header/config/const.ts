@@ -19,4 +19,5 @@ export const URLS = {
   RENTAL: '/rental',
   PRICE: '/price',
   VOUCHER: '/voucher',
+  EVENT: '/event',
 };

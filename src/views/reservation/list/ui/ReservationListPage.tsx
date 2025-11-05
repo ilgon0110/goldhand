@@ -24,6 +24,7 @@ type TReservationListPageProps = {
 
 export const ReservationListPage = ({ data }: TReservationListPageProps) => {
   const [consultParam, setConsultParam] = useQueryStates(reservationParams, {
+    clearOnDefault: false,
     shallow: false,
   });
 

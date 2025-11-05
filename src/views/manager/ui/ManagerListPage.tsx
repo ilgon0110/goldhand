@@ -17,6 +17,7 @@ interface IManagerListPageProps {
 
 export const ManagerListPage = ({ managerListData, totalDataLength }: IManagerListPageProps) => {
   const [managerListParam, setManagerListParam] = useQueryStates(managerListParams, {
+    clearOnDefault: false,
     shallow: false,
   });
 

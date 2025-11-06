@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 
 import { QueryProvider } from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
+import { EventModal } from '@/src/widgets/event/ui/EventModal';
 import { Footer } from '@/src/widgets/footer';
 import { Header } from '@/src/widgets/header';
 
@@ -44,6 +45,7 @@ export default function RootLayout({
               <NuqsAdapter>
                 <QueryProvider>
                   <Header />
+                  <EventModal />
                   {children}
                 </QueryProvider>
               </NuqsAdapter>

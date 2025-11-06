@@ -20,7 +20,7 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
+  NavigationMenuNextLink,
   NavigationMenuTrigger,
 } from '@/shared/ui/navigation-menu';
 import { useAuth } from '@/src/shared/hooks/useAuth';
@@ -79,12 +79,12 @@ export const Header = () => {
                   <UlButton enText="GoldHand" text="고운황금손" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.COMPANY}>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.COMPANY}>
                     인사말
-                  </NavigationMenuLink>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.FRANCHISEE}>
+                  </NavigationMenuNextLink>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.FRANCHISEE}>
                     지점소개
-                  </NavigationMenuLink>
+                  </NavigationMenuNextLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenu>
@@ -94,15 +94,15 @@ export const Header = () => {
                   <UlButton enText="Service" text="산후관리사" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.ABOUT}>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.ABOUT}>
                     산후관리사란?
-                  </NavigationMenuLink>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.WORK}>
+                  </NavigationMenuNextLink>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.WORK}>
                     산후관리사가 하는 일
-                  </NavigationMenuLink>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.APPLY}>
+                  </NavigationMenuNextLink>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.APPLY}>
                     산후관리사 지원하기
-                  </NavigationMenuLink>
+                  </NavigationMenuNextLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenu>
@@ -112,15 +112,15 @@ export const Header = () => {
                   <UlButton enText="Price" text="이용안내" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.RENTAL}>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.RENTAL}>
                     대여물품
-                  </NavigationMenuLink>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.PRICE}>
+                  </NavigationMenuNextLink>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.PRICE}>
                     이용요금
-                  </NavigationMenuLink>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.VOUCHER}>
+                  </NavigationMenuNextLink>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.VOUCHER}>
                     정부지원바우처
-                  </NavigationMenuLink>
+                  </NavigationMenuNextLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenu>
@@ -130,32 +130,32 @@ export const Header = () => {
                   <UlButton enText="Consult" text="예약상담" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.RESERVATION.APPLY}>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.RESERVATION.APPLY}>
                     상담신청
-                  </NavigationMenuLink>
-                  <NavigationMenuLink className="text-sm leading-6 text-gray-900" href={URLS.RESERVATION.LIST}>
+                  </NavigationMenuNextLink>
+                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.RESERVATION.LIST}>
                     신청목록
-                  </NavigationMenuLink>
+                  </NavigationMenuNextLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenu>
             <NavigationMenuItem>
-              <NavigationMenuLink href={URLS.REVIEW}>
+              <NavigationMenuNextLink href={URLS.REVIEW}>
                 <UlButton enText="Review" text="이용후기" />
-              </NavigationMenuLink>
+              </NavigationMenuNextLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href={URLS.EVENT}>
+              <NavigationMenuNextLink href={URLS.EVENT}>
                 <UlButton enText="Event" text="이벤트" />
-              </NavigationMenuLink>
+              </NavigationMenuNextLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink
+              <NavigationMenuNextLink
                 className="absolute right-8 top-2 w-40 rounded-full border border-[#0F2E16] px-12 py-2"
                 href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
               >
                 {pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'}
-              </NavigationMenuLink>
+              </NavigationMenuNextLink>
             </NavigationMenuItem>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">

@@ -2,6 +2,7 @@
 
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { cva } from 'class-variance-authority';
+import Link from 'next/link';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -90,6 +91,23 @@ const NavigationMenuLink = React.forwardRef<
 
 NavigationMenuLink.displayName = NavigationMenuPrimitive.Content.displayName;
 
+const NavigationMenuNextLink = React.forwardRef<
+  React.ElementRef<typeof Link>,
+  React.ComponentPropsWithoutRef<typeof Link>
+>(({ className, ...props }, ref) => (
+  <Link
+    className={cn(
+      navigationMenuTriggerStyle(),
+      'px-2 focus:bg-accent focus:text-accent-foreground active:bg-slate-200',
+      className,
+    )}
+    ref={ref}
+    {...props}
+  />
+));
+
+NavigationMenuNextLink.displayName = NavigationMenuPrimitive.Content.displayName;
+
 const NavigationMenuViewport = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Viewport>,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>
@@ -131,6 +149,7 @@ export {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuNextLink,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
   NavigationMenuViewport,

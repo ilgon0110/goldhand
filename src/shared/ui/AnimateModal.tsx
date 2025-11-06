@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';

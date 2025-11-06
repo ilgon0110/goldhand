@@ -50,7 +50,7 @@ export const EventFormPage = () => {
     <>
       <SectionTitle title="고운황금손 이벤트 만들기" />
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <form aria-label="이벤트폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             defaultValue={''}

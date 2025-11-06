@@ -111,7 +111,6 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
     }
 
     // TABLE 모드로 전환
-    screen.debug();
     await userEvent.click(screen.getByRole('button', { name: 'table-view-button' }));
 
     // TABLE 모드가 활성화되었는지 확인

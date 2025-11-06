@@ -3,6 +3,7 @@ import { http, HttpResponse } from 'msw';
 
 import { apiUrl } from '../shared/config';
 import type { ICommentData, IReviewDetailData } from '../shared/types';
+import { mockEventListData } from './event';
 import { mockMypageData } from './mypage';
 import { mockReservationListData } from './reservation';
 import { mockReviewData, mockReviewDetailData } from './review';
@@ -167,5 +168,9 @@ export const handlers = [
   }),
   http.get('/api/mypage', async () => {
     return HttpResponse.json(mockMypageData);
+  }),
+
+  http.get('/api/event', async () => {
+    return HttpResponse.json(mockEventListData);
   }),
 ];

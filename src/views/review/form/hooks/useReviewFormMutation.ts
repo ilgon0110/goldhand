@@ -1,4 +1,6 @@
 import { $generateHtmlFromNodes } from '@lexical/html';
+import type { UseMutationOptions } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type { UploadMetadata } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import type { LexicalEditor } from 'lexical';
@@ -10,6 +12,7 @@ import type z from 'zod';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import type { reviewFormSchema } from '../config/reviewFormSchema';
@@ -17,9 +20,23 @@ import type { reviewFormSchema } from '../config/reviewFormSchema';
 interface IReviewPostData {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
+  docId: string;
 }
 
-export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) => {
+interface IReviewFormMutationProps {
+  title: string;
+  name: string;
+  franchisee: string;
+  htmlString: string;
+  docId: string;
+  images: { key: string; url: string }[] | null;
+}
+
+export const useReviewFormMutation = (
+  mode: 'create' | 'update',
+  dId?: string,
+  options?: UseMutationOptions<IReviewPostData, Error, IReviewFormMutationProps>,
+) => {
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { images } = useImagesContext();
@@ -29,6 +46,32 @@ export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) =
     progress: number;
   }>();
   const router = useRouter();
+  const { mutate } = useMutation({
+    mutationFn: async (data: IReviewFormMutationProps) => {
+      const reviewData = await fetcher<IReviewPostData>(`/api/review/${mode}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        cache: 'no-store',
+      });
+
+      return reviewData;
+    },
+    onSuccess: res => {
+      toastSuccess('후기가 성공적으로 업로드되었습니다.\n잠시 후 작성후기로 이동합니다.');
+      // 3초 후에 페이지 이동
+      setTimeout(() => {
+        router.replace(`/review/${res.docId}`);
+      }, 3000);
+    },
+    onError: error => {
+      toastError('후기 업로드 중 오류가 발생했습니다.');
+      console.error(`후기 업로드 중 오류가 발생했습니다.\n${error}`);
+    },
+    ...options,
+  });
 
   const handleChangeReviewFormEditor = (editor: LexicalEditor) => {
     setReviewFormEditor(editor);
@@ -88,72 +131,34 @@ export const useReviewFormMutation = (mode: 'create' | 'update', dId?: string) =
                       key: '이미지 업로드 완료. 잠시만 기다려주세요.',
                       progress: 100,
                     });
-                    postReview(values, htmlString, docId, downloadedImages);
+                    //postReview(values, htmlString, docId, downloadedImages);
+                    mutate({
+                      title: values.title,
+                      name: values.name,
+                      franchisee: values.franchisee,
+                      htmlString,
+                      docId,
+                      images: downloadedImages,
+                    });
                   }
                 });
               },
             );
           }
         } else {
-          postReview(values, htmlString, docId, null);
+          //postReview(values, htmlString, docId, null);
+          mutate({
+            title: values.title,
+            name: values.name,
+            franchisee: values.franchisee,
+            htmlString,
+            docId,
+            images: null,
+          });
         }
       }
     });
   };
-
-  async function postReview(
-    formValues: {
-      title: string;
-      name: string;
-      franchisee: string;
-    },
-    htmlString: string,
-    docId: string,
-    downloadedImages: { key: string; url: string }[] | null,
-  ) {
-    try {
-      const data: IReviewPostData = await (
-        await fetch(`/api/review/${mode}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formValues.name,
-            title: formValues.title,
-            franchisee: formValues.franchisee,
-            htmlString,
-            docId,
-            images: downloadedImages,
-          }),
-        })
-      ).json();
-
-      if (data.response === 'ok') {
-        toastSuccess('후기가 성공적으로 업로드되었습니다.\n잠시 후 작성후기로 이동합니다.');
-        // 3초 후에 페이지 이동
-        setTimeout(() => {
-          router.replace(`/review/${docId}`);
-        }, 3000);
-      } else if (data.response === 'expired') {
-        toastError('세션이 만료되었습니다. 잠시 후 로그인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/login');
-        }, 3000);
-      } else if (data.response === 'unAuthorized') {
-        toastError('권한이 없습니다. 잠시 후 로그인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/login');
-        }, 3000);
-      }
-    } catch (error) {
-      toastError('후기 업로드 중 오류가 발생했습니다.');
-      console.error(`후기 업로드 중 오류가 발생했습니다.\n${error}`);
-    } finally {
-      setIsSubmitting(false);
-      setImagesProgress(undefined);
-    }
-  }
 
   return {
     onSubmit,

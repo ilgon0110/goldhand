@@ -17,7 +17,7 @@ interface IEventPost {
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
-  docId?: string;
+  docId: string;
 }
 
 export async function POST(req: Request) {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   const { title, htmlString, name, status } = body;
   if (!title || !htmlString || !name || !status) {
     return typedJson<IResponseBody>(
-      { response: 'ng', message: '필수로 입력해야하는 필드를 입력해주세요.' },
+      { response: 'ng', message: '필수로 입력해야하는 필드를 입력해주세요.', docId: '' },
       { status: 400 },
     );
   }
@@ -39,7 +39,8 @@ export async function POST(req: Request) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
-          message: '로그인 토큰이 존재하지 않습니다.',
+          message: '로그인 정보가 존재하지 않습니다.',
+          docId: '',
         },
         { status: 403 },
       );
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
         {
           response: 'ng',
           message: '관리자 권한이 없습니다.',
+          docId: '',
         },
         { status: 403 },
       );
@@ -71,7 +73,10 @@ export async function POST(req: Request) {
     return createEventPost(uid, body, dataSize);
   } catch (error) {
     console.error('Error verifying token:', error);
-    return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '로그인 정보 확인 도중 오류가 발생하였습니다.', docId: '' },
+      { status: 401 },
+    );
   }
 }
 
@@ -108,7 +113,10 @@ const createEventPost = async (uid: string, body: IEventPost, dataSize: number) 
     );
   } catch (error) {
     console.error('Error creating event post:', error);
-    return typedJson<IResponseBody>({ response: 'ng', message: '이벤트 작성에 실패했습니다.' }, { status: 500 });
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '이벤트 작성 도중 알 수 없는 오류가 발생하였습니다.', docId: '' },
+      { status: 500 },
+    );
   }
 };
 

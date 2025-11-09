@@ -92,7 +92,7 @@ export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
   //const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   return (
-    <div>
+    <div className="mt-6">
       <SectionTitle title="고운황금손 산후관리사 지원하기" />
       <Form {...form}>
         <form className="mt-6 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>

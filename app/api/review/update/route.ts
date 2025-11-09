@@ -20,6 +20,7 @@ interface IReviewRequestBody {
 interface IResponseBody {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
+  docId: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -27,12 +28,12 @@ export async function POST(req: NextRequest) {
   const { docId, title, franchisee, htmlString, name, images } = body;
 
   if (!docId) {
-    return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
+    return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required', docId: '' }, { status: 400 });
   }
 
   if (!title || !htmlString || !name || !franchisee) {
     return typedJson<IResponseBody>(
-      { response: 'ng', message: '필수로 입력해야하는 필드를 입력해주세요.' },
+      { response: 'ng', message: '필수로 입력해야하는 필드를 입력해주세요.', docId: '' },
       { status: 400 },
     );
   }
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
       {
         response: 'ng',
         message: '해당 docId를 가진 게시글이 존재하지 않습니다.',
+        docId: '',
       },
       { status: 404 },
     );
@@ -60,13 +62,13 @@ export async function POST(req: NextRequest) {
   // 글 작성자 uid 확인
   try {
     if (!accessToken) {
-      return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
+      return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
     }
 
     const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
     if (uid !== targetData.userId) {
       return typedJson<IResponseBody>(
-        { response: 'unAuthorized', message: '후기 수정 권한이 없습니다.' },
+        { response: 'unAuthorized', message: '후기 수정 권한이 없습니다.', docId: '' },
         { status: 403 },
       );
     }
@@ -80,6 +82,7 @@ export async function POST(req: NextRequest) {
         {
           response: 'ng',
           message: '탈퇴한 유저는 리뷰를 수정할 수 없습니다.',
+          docId: '',
         },
         { status: 403 },
       );
@@ -109,20 +112,20 @@ export async function POST(req: NextRequest) {
       });
 
       return typedJson<IResponseBody>(
-        { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.' },
+        { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.', docId },
         { status: 200 },
       );
     } catch (error) {
       console.error('Error updating review post:', error);
-      return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 수정에 실패했습니다.' }, { status: 500 });
+      return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 수정에 실패했습니다.', docId }, { status: 500 });
     }
   } catch (error) {
     if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
-      return typedJson<IResponseBody>({ response: 'ng', message: 'expired' }, { status: 401 });
+      return typedJson<IResponseBody>({ response: 'ng', message: 'expired', docId: '' }, { status: 401 });
     }
 
     console.error('Error verifying token:', error);
-    return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
+    return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
   }
 }
 

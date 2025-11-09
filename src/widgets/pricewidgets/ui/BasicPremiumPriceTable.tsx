@@ -57,7 +57,7 @@ export const BasicPremiumPriceTable = ({
           <td className={cn('border px-2 py-1', 'hover:bg-slate-50')}>{formatPrice(premiumPriceList[2])}</td>
         </tr>
         <tr>
-          <td className={cn('border bg-slate-100 px-2 py-3', 'md:px-6')}>4주</td>
+          <td className={cn('border bg-slate-100 px-2 py-3', 'md:px-4')}>4주</td>
           <td className={cn('border px-2 py-1', 'hover:bg-slate-50 md:px-12')}>{formatPrice(basicPriceList[3])}</td>
           <td className={cn('border px-2 py-1', 'hover:bg-slate-50', 'md:px-12')}>
             {formatPrice(premiumPriceList[3])}

@@ -98,73 +98,73 @@ export const PricePage = () => {
                 추가비용
               </td>
               <td className="border border-gray-300 py-2">미취학 20개월 미만</td>
-              <td className="border border-gray-300 py-2">15,000</td>
-              <td className="border border-gray-300 py-2">20,000</td>
+              <td className="border border-gray-300 py-2">15,000원</td>
+              <td className="border border-gray-300 py-2">20,000원</td>
             </tr>
             <tr>
               <td className="border border-gray-300 py-2">미취학 20개월 이상</td>
-              <td className="border border-gray-300 py-2">10,000</td>
-              <td className="border border-gray-300 py-2">15,000</td>
+              <td className="border border-gray-300 py-2">10,000원</td>
+              <td className="border border-gray-300 py-2">15,000원</td>
             </tr>
             <tr>
               <td className="border border-gray-300 py-2">어린이집 유치원</td>
-              <td className="border border-gray-300 py-2">6,000</td>
-              <td className="border border-gray-300 py-2">10,000</td>
+              <td className="border border-gray-300 py-2">6,000원</td>
+              <td className="border border-gray-300 py-2">10,000원</td>
             </tr>
             <tr>
               <td className="border border-gray-300 py-2">어린이집 방학</td>
-              <td className="border border-gray-300 py-2">10,000</td>
-              <td className="border border-gray-300 py-2">20,000</td>
+              <td className="border border-gray-300 py-2">10,000원</td>
+              <td className="border border-gray-300 py-2">20,000원</td>
             </tr>
             <tr>
               <td className="border border-gray-300 py-2">초등학교 이상 학생</td>
-              <td className="border border-gray-300 py-2">5,000</td>
-              <td className="border border-gray-300 py-2">8,000</td>
+              <td className="border border-gray-300 py-2">5,000원</td>
+              <td className="border border-gray-300 py-2">8,000원</td>
             </tr>
             <tr>
               <td className="border border-gray-300 py-2">초등학교 이상 학생 방학</td>
-              <td className="border border-gray-300 py-2">6,000</td>
-              <td className="border border-gray-300 py-2">10,000</td>
+              <td className="border border-gray-300 py-2">6,000원</td>
+              <td className="border border-gray-300 py-2">10,000원</td>
             </tr>
             {/* 남편 재택근무 및 성인가족 추가 */}
             <tr>
               <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
                 남편 재택근무 및 성인가족 추가
               </td>
-              <td className="border border-gray-300 py-2">5,000</td>
-              <td className="border border-gray-300 py-2">6,000</td>
+              <td className="border border-gray-300 py-2">5,000원</td>
+              <td className="border border-gray-300 py-2">6,000원</td>
             </tr>
             {/* 시간 연장 */}
             <tr>
               <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
                 시간연장(시간당)
               </td>
-              <td className="border border-gray-300 py-2">20,000</td>
-              <td className="border border-gray-300 py-2">20,000</td>
+              <td className="border border-gray-300 py-2">20,000원</td>
+              <td className="border border-gray-300 py-2">20,000원</td>
             </tr>
             {/* 명절 휴일 추가 */}
             <tr>
               <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
                 명절 휴일 추가
               </td>
-              <td className="border border-gray-300 py-2">100,000</td>
-              <td className="border border-gray-300 py-2">100,000</td>
+              <td className="border border-gray-300 py-2">100,000원</td>
+              <td className="border border-gray-300 py-2">100,000원</td>
             </tr>
             {/* 관리사 지정 추가 */}
             <tr>
               <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
                 관리사 지정 추가
               </td>
-              <td className="border border-gray-300 py-2">10,000</td>
-              <td className="border border-gray-300 py-2">10,000</td>
+              <td className="border border-gray-300 py-2">10,000원</td>
+              <td className="border border-gray-300 py-2">10,000원</td>
             </tr>
             {/* 쌍둥이 케어 */}
             <tr>
               <td className="col-span-2 border border-gray-300 py-2 font-bold" colSpan={2}>
                 쌍둥이 케어
               </td>
-              <td className="border border-gray-300 py-2">50,000</td>
-              <td className="border border-gray-300 py-2">60,000</td>
+              <td className="border border-gray-300 py-2">50,000원</td>
+              <td className="border border-gray-300 py-2">60,000원</td>
             </tr>
           </tbody>
         </table>

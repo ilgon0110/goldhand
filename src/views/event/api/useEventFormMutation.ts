@@ -1,4 +1,6 @@
 import { $generateHtmlFromNodes } from '@lexical/html';
+import type { UseMutationOptions } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type { UploadMetadata } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import type { LexicalEditor } from 'lexical';
@@ -10,6 +12,7 @@ import type z from 'zod';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import type { eventFormSchema } from '../config/eventFormSchema';
@@ -17,9 +20,23 @@ import type { eventFormSchema } from '../config/eventFormSchema';
 interface IEventPostData {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
+  docId: string;
 }
 
-export const useEventFormMutation = (mode: 'create' | 'update', dId?: string) => {
+interface IEventFormMutationProps {
+  title: string;
+  name: string;
+  htmlString: string;
+  docId: string;
+  images: { key: string; url: string }[] | null;
+  status: string;
+}
+
+export const useEventFormMutation = (
+  mode: 'create' | 'update',
+  dId?: string,
+  options?: UseMutationOptions<IEventPostData, Error, IEventFormMutationProps>,
+) => {
   const [eventFormEditor, setEventFormEditor] = useState<LexicalEditor>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { images } = useImagesContext();
@@ -29,6 +46,35 @@ export const useEventFormMutation = (mode: 'create' | 'update', dId?: string) =>
     progress: number;
   }>();
   const router = useRouter();
+  const { mutate } = useMutation({
+    mutationFn: async (data: IEventFormMutationProps) => {
+      const eventData = await fetcher<IEventPostData>(`/api/event/${mode}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        cache: 'no-store',
+      });
+
+      return eventData;
+    },
+    onSuccess: res => {
+      toastSuccess('이벤트가 성공적으로 업로드되었습니다.\n잠시 후 작성한 이벤트 페이지로 이동합니다.');
+      // 3초 후에 페이지 이동
+      setTimeout(() => {
+        router.replace(`/event/${res.docId}`);
+      }, 3000);
+    },
+    onError: error => {
+      toastError('이벤트 업로드 중 오류가 발생했습니다. : ' + error.message);
+    },
+    onSettled: () => {
+      setIsSubmitting(false);
+      setImagesProgress(undefined);
+    },
+    ...options,
+  });
 
   const handleChangeEventFormEditor = (editor: LexicalEditor) => {
     setEventFormEditor(editor);
@@ -88,72 +134,34 @@ export const useEventFormMutation = (mode: 'create' | 'update', dId?: string) =>
                       key: '이미지 업로드 완료. 잠시만 기다려주세요.',
                       progress: 100,
                     });
-                    postEvent(values, htmlString, docId, downloadedImages);
+                    //postEvent(values, htmlString, docId, downloadedImages);
+                    mutate({
+                      title: values.title,
+                      name: values.name,
+                      htmlString,
+                      docId,
+                      images: downloadedImages,
+                      status: values.status,
+                    });
                   }
                 });
               },
             );
           }
         } else {
-          postEvent(values, htmlString, docId, null);
+          //postEvent(values, htmlString, docId, null);
+          mutate({
+            title: values.title,
+            name: values.name,
+            htmlString,
+            docId,
+            images: downloadedImages,
+            status: values.status,
+          });
         }
       }
     });
   };
-
-  async function postEvent(
-    formValues: {
-      title: string;
-      name: string;
-      status: string;
-    },
-    htmlString: string,
-    docId: string,
-    downloadedImages: { key: string; url: string }[] | null,
-  ) {
-    try {
-      const data: IEventPostData = await (
-        await fetch(`/api/event/${mode}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formValues.name,
-            title: formValues.title,
-            htmlString,
-            docId,
-            images: downloadedImages,
-            status: formValues.status,
-          }),
-        })
-      ).json();
-
-      if (data.response === 'ok') {
-        toastSuccess('이벤트가 성공적으로 업로드되었습니다.\n잠시 후 작성한 이벤트 페이지로 이동합니다.');
-        // 3초 후에 페이지 이동
-        setTimeout(() => {
-          router.replace(`/event/${docId}`);
-        }, 3000);
-      } else if (data.response === 'expired') {
-        toastError('세션이 만료되었습니다. 잠시 후 로그인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/login');
-        }, 3000);
-      } else if (data.response === 'unAuthorized') {
-        toastError('권한이 없습니다. 잠시 후 로그인 페이지로 이동합니다.');
-        setTimeout(() => {
-          router.replace('/login');
-        }, 3000);
-      }
-    } catch (error) {
-      toastError('이벤트 업로드 중 오류가 발생했습니다.');
-      console.error(`이벤트 업로드 중 오류가 발생했습니다.\n${error}`);
-    } finally {
-      setIsSubmitting(false);
-      setImagesProgress(undefined);
-    }
-  }
 
   return {
     onSubmit,

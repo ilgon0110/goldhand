@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 
+import { cn } from '@/lib/utils';
 import { ReviewCarousel } from '@/src/widgets/goldHandReview';
 import { SponsorList } from '@/src/widgets/goldHandSponsor';
 import { FranchiseeSheetList } from '@/src/widgets/goldHandSpotSheet';
@@ -16,7 +17,7 @@ export async function HomePage() {
       <section>
         <MainTitle />
       </section>
-      <section className="mx-auto mt-24 max-w-6xl space-y-48">
+      <section className={cn('mx-auto mt-24 max-w-6xl space-y-24 px-4', 'sm:space-y-48 sm:px-12')}>
         <Suspense fallback={null}>
           <ReviewCarousel />
         </Suspense>

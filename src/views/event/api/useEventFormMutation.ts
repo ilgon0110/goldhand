@@ -134,7 +134,6 @@ export const useEventFormMutation = (
                       key: '이미지 업로드 완료. 잠시만 기다려주세요.',
                       progress: 100,
                     });
-                    //postEvent(values, htmlString, docId, downloadedImages);
                     mutate({
                       title: values.title,
                       name: values.name,
@@ -149,7 +148,6 @@ export const useEventFormMutation = (
             );
           }
         } else {
-          //postEvent(values, htmlString, docId, null);
           mutate({
             title: values.title,
             name: values.name,

@@ -1,3 +1,10 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -12,13 +19,13 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "firebasestorage.googleapis.com",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/**',
       },
     ],
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

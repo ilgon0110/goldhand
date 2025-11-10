@@ -64,12 +64,10 @@ export const Header = () => {
       </div>
       <header className="bg-white">
         <NavigationMenu className="z-50 mx-auto flex h-14 max-w-7xl list-none items-center justify-between px-8">
-          <div className="flex lg:flex-1">
+          <div className="flex items-center justify-center lg:flex-1">
             <Link className="-m-1.5 p-1.5" href={URLS.HOME}>
               <span className="sr-only">고운황금손</span>
-              <div className="relative h-8 w-32">
-                <Image alt="home_logo" fill sizes="75" src="/logo_green.png" />
-              </div>
+              <Image alt="home_logo" height={36} sizes="75" src="/logo_green.png" width={128} />
             </Link>
           </div>
           <div className="box-border hidden items-center gap-2 pt-1 lg:flex">

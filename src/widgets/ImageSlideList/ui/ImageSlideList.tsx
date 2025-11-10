@@ -37,6 +37,7 @@ export function ImageSlideList() {
             <Image
               alt="고운황금손 이미지 슬라이드 2번"
               fill
+              loading="lazy"
               placeholder="blur"
               priority
               sizes="100vw"

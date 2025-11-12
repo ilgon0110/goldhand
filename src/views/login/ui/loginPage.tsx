@@ -14,13 +14,14 @@ import { useKakaoLogin } from '../hooks/useKakaoLogin';
 import { useNaverLogin } from '../hooks/useNaverLogin';
 import { AuthLoginButton } from './AutoLoginButton';
 import { RejoinModal } from './RejoinModal';
+
 export const LoginPage = () => {
   const router = useRouter();
   const [isRejoinDialogOpen, setIsRejoinDialogOpen] = useState(false);
   const [rejoinUserData, setRejoinUserData] = useState<IUserDetailData>();
 
   // 카카오 로그인
-  const { isLoading: isKakaoLoading, isPending: isKakaoPending } = useKakaoLogin({
+  const { isPending: isKakaoPending, isLoading: isKakaoLoading } = useKakaoLogin({
     isRejoinDialogOpen,
     setIsRejoinDialogOpen,
     rejoinUserData,
@@ -34,7 +35,7 @@ export const LoginPage = () => {
   });
 
   // 네이버 로그인
-  const { isLoading: isNaverLoading, isPending: isNaverPending } = useNaverLogin({
+  const { isPending: isNaverPending, isLoading: isNaverLoading } = useNaverLogin({
     isRejoinDialogOpen,
     setIsRejoinDialogOpen,
     rejoinUserData,
@@ -50,12 +51,12 @@ export const LoginPage = () => {
   return (
     <div className="flex flex-col items-center">
       <SectionTitle title="고운황금손 로그인" />
-      {(isNaverLoading || isKakaoLoading) && <LoadingSpinnerOverlay text="로그인 중..." />}
+      {isNaverLoading && <LoadingSpinnerOverlay text="로그인 중..." />}
       {(isNaverPending || isKakaoPending) && <LoadingSpinnerOverlay text="회원가입 유무 확인 중..." />}
 
       <div className={cn('mt-6 flex w-full flex-col justify-center gap-4', 'md:flex-row')}>
         <AuthLoginButton
-          disabled={isNaverLoading || isKakaoLoading || isNaverPending || isKakaoPending}
+          disabled={isKakaoLoading || isNaverLoading || isNaverPending || isKakaoPending}
           handleClick={() => {
             router.push(
               `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL}&response_type=code`,
@@ -67,7 +68,7 @@ export const LoginPage = () => {
         />
 
         <AuthLoginButton
-          disabled={isNaverLoading || isKakaoLoading || isNaverPending || isKakaoPending}
+          disabled={isKakaoLoading || isNaverLoading || isNaverPending || isKakaoPending}
           handleClick={() => {
             router.push(
               `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_CALLBACK_URL}&state=${process.env.NEXT_PUBLIC_STATE_STRING}`,

@@ -21,14 +21,6 @@ vi.mock('@/src/widgets/editor/ui/Editor', () => {
   };
 });
 
-// useAuthState가 정의된 경로를 정확히 입력하세요.
-vi.mock('@/src/shared/hooks/useAuthState', () => ({
-  useAuthState: () => ({
-    isLinked: true, // 원하는 mock 값
-    userData: { userId: 'mockUserId' }, // 원하는 mock 값
-  }),
-}));
-
 vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
   useMediaQuery: () => true, // 항상 데스크탑 뷰포트로 간주
 }));

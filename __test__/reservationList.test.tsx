@@ -27,13 +27,6 @@ vi.mock('@/src/shared/utils', async () => {
   };
 });
 
-vi.mock('@/src/shared/hooks/useAuthState', () => ({
-  useAuthState: () => ({
-    isLinked: true, // 원하는 mock 값
-    userData: { userId: 'mockUserId' }, // 원하는 mock 값
-  }),
-}));
-
 const pushMock = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: () => ({

@@ -1,8 +1,8 @@
 'use client';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
@@ -15,22 +15,13 @@ import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/s
 import { ReviewSummaryCard } from './_ReviewSummaryCard';
 
 export const ReviewCarousel = () => {
-  const { data } = useSuspenseQuery({
+  const { data } = useQuery({
     queryKey: ['reviewCarousel'],
     queryFn: () => getReviewListData(1, '전체'),
     select: data => data.reviewData,
   });
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <div className="w-full">
@@ -74,7 +65,7 @@ export const ReviewCarousel = () => {
       {/* 모바일버전, width:640px 미만 */}
       <FadeInWhenVisible delay={0.2}>
         <div className={cn('flex w-full flex-col gap-3', 'sm:hidden')}>
-          {data.slice(0, 3).map(item => (
+          {data?.slice(0, 3).map(item => (
             <div className={cn('flex max-h-32 w-full flex-row px-1')} key={item.id}>
               <ReviewCard
                 author={item.name}

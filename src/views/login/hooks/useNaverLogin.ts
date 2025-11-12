@@ -1,5 +1,5 @@
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState, useTransition } from 'react';
 
 import type { IUserDetailData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
@@ -22,23 +22,24 @@ type TUserNaverLogin = {
 export const useNaverLogin = ({
   isRejoinDialogOpen,
   setIsRejoinDialogOpen,
-  rejoinUserData,
   setRejoinUserData,
   options,
 }: TUserNaverLogin) => {
+  const initTsRef = useRef<number>(performance.now());
+
   const router = useRouter();
-  const params = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const error = searchParams.get('error');
   const error_description = searchParams.get('error_description');
   const state = searchParams.get('state');
 
+  // 초기 렌더에서 code+state가 있으면 즉시 로딩 상태로 시작
+  const [isLoading, setIsLoading] = useState<boolean>(!!(code && state === 'goldhand'));
+  const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
     if (state !== 'goldhand') return; // KaKao login state check
 
     if (error) {
@@ -50,12 +51,10 @@ export const useNaverLogin = ({
 
     if (!code) return;
 
-    setIsLoading(true);
-
     const fetchPost = async () => {
       try {
         if (isRejoinDialogOpen) return;
-
+        setIsLoading(true);
         // 쿠키 저장을 위해 server action 사용
         const { access_token, error_description } = await naverLoginTokenAction(code);
         if (!access_token) {
@@ -93,8 +92,9 @@ export const useNaverLogin = ({
         setIsLoading(false);
       }
     };
+
     fetchPost();
-  }, [params]);
+  }, [code, error, error_description, state]);
 
   return {
     isLoading,

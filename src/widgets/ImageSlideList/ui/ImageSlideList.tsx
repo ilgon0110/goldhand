@@ -39,7 +39,6 @@ export function ImageSlideList() {
               fill
               loading="lazy"
               placeholder="blur"
-              priority
               sizes="100vw"
               src={imageSlideTwo}
               style={{ objectFit: 'cover' }}

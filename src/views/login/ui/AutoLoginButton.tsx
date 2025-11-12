@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import { safeLocalStorage } from '@/src/shared/storage';
@@ -11,6 +12,17 @@ type TAutoLoginButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const AuthLoginButton = ({ provider, title, iconSrc, handleClick, ...props }: TAutoLoginButtonProps) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    // 마운트 이후에만 localStorage를 읽음 -> SSR과 동일한 초기 마크업 보장
+    try {
+      setShowTooltip(safeLocalStorage.get('last-login-tooltip') === provider);
+    } catch {
+      setShowTooltip(false);
+    }
+  }, [provider]);
+
   return (
     <div className={cn('w-full space-y-3', 'md:w-fit')}>
       <button
@@ -25,12 +37,12 @@ export const AuthLoginButton = ({ provider, title, iconSrc, handleClick, ...prop
         <Image alt="icon" height={24} src={iconSrc} width={24} />
         {title}
       </button>
-      {safeLocalStorage.get('last-login-tooltip') === provider ? (
+      {showTooltip && (
         <div className="bg- relative w-max rounded-lg bg-slate-200 p-4 text-black">
           {'최근에 로그인했어요.'}
           <div className="absolute -top-2 left-4 h-0 w-0 border-b-8 border-l-8 border-r-8 border-b-slate-200 border-l-transparent border-r-transparent"></div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

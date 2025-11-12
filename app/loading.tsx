@@ -1,11 +1,5 @@
-'use client';
-
-import React from 'react';
-
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 
-const Loading = () => {
+export default function Loading() {
   return <LoadingSpinnerOverlay text="로딩 중..." />;
-};
-
-export default Loading;
+}

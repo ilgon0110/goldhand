@@ -15,13 +15,12 @@ export async function middleware(request: NextRequest) {
 
     return res;
   }
-
-  const response = await getUserData();
-
   const redirectUrl =
     process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'
       ? process.env.NEXT_PUBLIC_API_URL
       : process.env.NEXT_PUBLIC_LOCAL_API_URL;
+
+  const response = await getUserData();
 
   if (response.response !== 'ok') {
     console.log('"middleware : response not ok"');
@@ -59,6 +58,8 @@ export async function middleware(request: NextRequest) {
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: [
+    '/',
+    '/home',
     '/login',
     '/login/:path*',
     '/signup',

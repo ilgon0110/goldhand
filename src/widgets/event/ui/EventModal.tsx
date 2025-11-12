@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { safeLocalStorage } from '@/src/shared/storage';
@@ -10,7 +10,13 @@ import { Button } from '@/src/shared/ui/button';
 
 export const EventModal = () => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const hideUntilTime = safeLocalStorage.get('hideUntilTime');
 
@@ -20,7 +26,7 @@ export const EventModal = () => {
     } else {
       setIsOpen(true);
     }
-  }, [pathname, hideUntilTime]);
+  }, [pathname, hideUntilTime, searchParams]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -32,6 +38,10 @@ export const EventModal = () => {
     safeLocalStorage.set('hideUntilTime', tommorrow.toISOString());
     setIsOpen(false);
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <AnimateModal isOpen={isOpen} setIsOpen={setIsOpen}>

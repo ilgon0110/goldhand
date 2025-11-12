@@ -14,7 +14,6 @@ interface IAuthState {
 async function fetchAuth(): Promise<IAuthState> {
   const res = await fetcher<IUserResponseData>('/api/user', {
     credentials: 'include',
-    cache: 'no-store',
   });
 
   return {
@@ -32,9 +31,7 @@ export function useAuth() {
   const query = useQuery({
     queryKey: ['auth', pathname, searchParams.toString()],
     queryFn: fetchAuth,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   });
 

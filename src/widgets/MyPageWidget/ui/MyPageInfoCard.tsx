@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { getAuth, signOut } from 'firebase/auth';
 import { BadgeCheckIcon, BookCheck, BookX, ShieldCheckIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -21,9 +22,11 @@ interface IMyPageInfoCardProps {
 export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageInfoCardProps) => {
   const router = useRouter();
   const auth = getAuth(firebaseApp);
+  const queryClient = useQueryClient();
   const { mutate: logout } = useLogoutMutation({
     onSuccess: data => {
       signOut(auth).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['auth'] });
         toastSuccess(data.message || '로그아웃 되었습니다.');
 
         setTimeout(() => {

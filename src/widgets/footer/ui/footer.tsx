@@ -51,7 +51,7 @@ export const Footer = () => {
           </button>
         </div>
         <div className="mt-8 flex w-full flex-row justify-between border-t border-gray-900/10 px-[10vw] pt-3">
-          <p className="text-sm/6 text-gray-600">&copy; 2024 고운황금손, Inc. All rights reserved.</p>
+          <p className="text-sm/6 text-gray-600">&copy; 2025 고운황금손, Inc. All rights reserved.</p>
         </div>
       </footer>
     </>

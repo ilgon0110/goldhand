@@ -1,6 +1,6 @@
 // 읽기 전용 const 객체
 export const URLS = {
-  HOME: '/home',
+  HOME: '/',
   COMPANY: '/company',
   REVIEW: '/review',
   MANAGER: {

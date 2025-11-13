@@ -21,7 +21,7 @@ export async function HomePage() {
       <section>
         <MainTitle />
       </section>
-      <section className={cn('mx-auto mt-24 max-w-6xl space-y-24 px-4', 'sm:space-y-48 sm:px-12')}>
+      <section className={cn('mx-auto mt-24 max-w-7xl space-y-24 px-4', 'sm:space-y-48')}>
         <ReviewCarousel />
         <FranchiseeSheetList />
         <PriceList />

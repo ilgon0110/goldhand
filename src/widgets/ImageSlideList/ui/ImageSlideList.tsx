@@ -19,6 +19,7 @@ export function ImageSlideList() {
 
   return (
     <div className={cn('relative flex h-[70vh] flex-col overflow-hidden', 'md:flex-row')}>
+      <div className="absolute inset-0 bg-black opacity-30" />
       {isPending && <LoadingSpinnerOverlay text="해당 페이지로 이동중.." />}
       <Carousel plugins={[plugin.current]}>
         <CarouselContent className="absolute top-0 -z-10 h-[100vh] w-[100vw]">

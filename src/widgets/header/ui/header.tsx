@@ -20,16 +20,52 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuNextLink,
+  NavigationMenuLink,
+  NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/shared/ui/navigation-menu';
 import { useAuth } from '@/src/shared/hooks/useAuth';
+import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 
 import { URLS } from '../index';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isSignedIn, pending } = useAuth();
+  const components: { title: string; href: string; description: string }[] = [
+    {
+      title: 'Alert Dialog',
+      href: '/docs/primitives/alert-dialog',
+      description: 'A modal dialog that interrupts the user with important content and expects a response.',
+    },
+    {
+      title: 'Hover Card',
+      href: '/docs/primitives/hover-card',
+      description: 'For sighted users to preview content available behind a link.',
+    },
+    {
+      title: 'Progress',
+      href: '/docs/primitives/progress',
+      description:
+        'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
+    },
+    {
+      title: 'Scroll-area',
+      href: '/docs/primitives/scroll-area',
+      description: 'Visually or semantically separates content.',
+    },
+    {
+      title: 'Tabs',
+      href: '/docs/primitives/tabs',
+      description: 'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
+    },
+    {
+      title: 'Tooltip',
+      href: '/docs/primitives/tooltip',
+      description:
+        'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
+    },
+  ];
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -54,117 +90,120 @@ export const Header = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
   return (
     <>
-      <div className="text-red sticky top-0 z-50 animate-pulse bg-slate-300 py-3 text-center font-bold text-red-500 duration-500">
+      <div className="sticky top-0 z-50 animate-pulse bg-slate-300 py-3 text-center font-bold text-[#2B0000] duration-500">
         공식 사이트가 아닌 개발 중인 사이트 입니다.{' '}
-        <Link className="font-normal text-blue-500" href="https://goldbaby.itpage.kr/">
+        <Link className="font-normal text-[#0000b5]" href="https://goldbaby.itpage.kr/">
           공식 사이트 이동하기
         </Link>
       </div>
-      <header className="bg-white">
-        <NavigationMenu className="z-50 mx-auto flex h-14 max-w-7xl list-none items-center justify-between px-8">
-          <div className="flex items-center justify-center lg:flex-1">
-            <Link className="-m-1.5 p-1.5" href={URLS.HOME}>
-              <span className="sr-only">고운황금손</span>
-              <Image alt="home_logo" height={36} sizes="75" src="/logo_green.png" width={128} />
-            </Link>
-          </div>
-          <div className="box-border hidden items-center gap-2 pt-1 lg:flex">
-            <NavigationMenu>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>
-                  <UlButton enText="GoldHand" text="고운황금손" />
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.COMPANY}>
-                    인사말
-                  </NavigationMenuNextLink>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.FRANCHISEE}>
-                    지점소개
-                  </NavigationMenuNextLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenu>
-            <NavigationMenu>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>
-                  <UlButton enText="Service" text="산후관리사" />
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.ABOUT}>
-                    산후관리사란?
-                  </NavigationMenuNextLink>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.WORK}>
-                    산후관리사가 하는 일
-                  </NavigationMenuNextLink>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.MANAGER.APPLY}>
-                    산후관리사 지원하기
-                  </NavigationMenuNextLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenu>
-            <NavigationMenu>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>
-                  <UlButton enText="Price" text="이용안내" />
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.RENTAL}>
-                    대여물품
-                  </NavigationMenuNextLink>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.PRICE}>
-                    이용요금
-                  </NavigationMenuNextLink>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.VOUCHER}>
-                    정부지원바우처
-                  </NavigationMenuNextLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenu>
-            <NavigationMenu>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>
-                  <UlButton enText="Consult" text="예약상담" />
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.RESERVATION.APPLY}>
-                    상담신청
-                  </NavigationMenuNextLink>
-                  <NavigationMenuNextLink className="text-sm leading-6 text-gray-900" href={URLS.RESERVATION.LIST}>
-                    신청목록
-                  </NavigationMenuNextLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenu>
-            <NavigationMenuItem>
-              <NavigationMenuNextLink href={URLS.REVIEW}>
-                <UlButton enText="Review" text="이용후기" />
-              </NavigationMenuNextLink>
+      <header className="mx-auto max-w-7xl py-2">
+        <NavigationMenu>
+          <NavigationMenuList className={cn('hidden gap-6', 'lg:flex lg:flex-wrap')}>
+            <NavigationMenuItem className="relative">
+              <div className="flex items-center justify-center lg:flex-1">
+                <Link className="-m-1.5 p-1.5" href={URLS.HOME}>
+                  <span className="sr-only">고운황금손</span>
+                  <Image alt="home_logo" height={36} sizes="75" src="/logo_green.png" width={128} />
+                </Link>
+              </div>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuNextLink href={URLS.EVENT}>
-                <UlButton enText="Event" text="이벤트" />
-              </NavigationMenuNextLink>
+              <NavigationMenuTrigger>
+                <UlButton enText="GoldHand" text="고운황금손" />
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="flex w-[170px] flex-col items-center gap-2 py-4">
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.COMPANY}>인사말</Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.FRANCHISEE}>지점소개</Link>
+                  </NavigationMenuLink>
+                </div>
+              </NavigationMenuContent>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuNextLink
-                className="absolute right-8 top-2 w-40 rounded-full border border-[#0F2E16] px-12 py-2"
-                href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
-              >
-                {pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'}
-              </NavigationMenuNextLink>
+              <NavigationMenuTrigger>
+                <UlButton enText="Service" text="산후관리사" />
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="flex w-[170px] flex-col items-center gap-2 py-4">
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.MANAGER.ABOUT}>산후관리사란?</Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.MANAGER.WORK}>산후관리사가 하는 일</Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.MANAGER.APPLY}>산후관리사 지원하기</Link>
+                  </NavigationMenuLink>
+                </div>
+              </NavigationMenuContent>
             </NavigationMenuItem>
-          </div>
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a className="text-sm font-semibold leading-6 text-gray-900" href="#">
-              {/* <span aria-hidden="true">&rarr;</span> */}
-            </a>
-          </div>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                <UlButton enText="Price" text="이용안내" />
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="flex w-[170px] flex-col items-center gap-2 py-4">
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.RENTAL}>대여물품</Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.PRICE}>이용요금</Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.VOUCHER}>정부지원바우처</Link>
+                  </NavigationMenuLink>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                <UlButton enText="Consult" text="예약상담" />
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="flex w-[170px] flex-col items-center gap-2 py-4">
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.RESERVATION.APPLY}>상담신청</Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                    <Link href={URLS.RESERVATION.LIST}>신청목록</Link>
+                  </NavigationMenuLink>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                <Link href={URLS.REVIEW}>
+                  <UlButton enText="Review" text="이용후기" />
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
+                <Link href={URLS.EVENT}>
+                  <UlButton enText="Event" text="이벤트" />
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild className="w-40 rounded-full border border-[#0F2E16]">
+                <Link href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}>
+                  {pending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'}
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+
           {/* 햄버거 icon, 모바일 헤더 부분 */}
           <div className="lg:hidden">
-            <Drawer direction="right" open={mobileMenuOpen} onOpenChange={open => setMobileMenuOpen(open)}>
-              <DrawerTrigger>
+            <Drawer direction="left" open={mobileMenuOpen} onOpenChange={open => setMobileMenuOpen(open)}>
+              <DrawerTrigger className="align-middle">
                 <span className="sr-only">메뉴 열기</span>
                 <svg
                   aria-hidden="true"
@@ -179,7 +218,7 @@ export const Header = () => {
               </DrawerTrigger>
               <DrawerPortal>
                 <DrawerOverlay className="fixed inset-0 bg-black/40" />
-                <DrawerContent className="fixed bottom-0 right-0 flex h-full w-[360px] flex-col rounded-bl-sm rounded-tl-sm bg-white pt-6 lg:hidden">
+                <DrawerContent className="fixed bottom-0 left-0 flex h-full w-[360px] flex-col rounded-br-sm rounded-tr-sm bg-white pt-6 lg:hidden">
                   <DrawerHeader>
                     <div className="h-full flex-1 p-4">
                       <div className="mx-auto max-w-md">
@@ -200,8 +239,8 @@ export const Header = () => {
             </Drawer>
           </div>
         </NavigationMenu>
-        {/* </nav> */}
       </header>
+      {/* </nav> */}
     </>
   );
 };
@@ -307,10 +346,10 @@ const UlButton = forwardRef(
         </AccordionItem>
       </Accordion>
     ) : (
-      <ul className={cn('flex flex-row items-center justify-center -space-y-2 px-4 py-2 lg:flex-col')}>
+      <div className={cn('flex flex-row items-center justify-center -space-y-2 px-4 py-2 lg:flex-col')}>
         <div className="text-base">{text}</div>
-        {!!enText && <div className="hidden text-[10px] text-[#728146] lg:block">{enText}</div>}
-      </ul>
+        {!!enText && <div className="hidden text-[10px] text-[#00552a] lg:block">{enText}</div>}
+      </div>
     );
   },
 );

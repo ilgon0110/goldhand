@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 
 import { getUserData } from '@/src/shared/api/getUserData';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
-import LoadingBar from '@/src/shared/ui/loadingBar';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { getReviewListData, ReviewPage } from '@/src/views/review';
 
 type TPageProps = {
@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: TPageProps) {
   const userData = await getUserData();
 
   return (
-    <Suspense fallback={<LoadingBar />}>
+    <Suspense fallback={<LoadingSpinnerOverlay text="후기 페이지 로딩중..." />}>
       <ReviewPage data={data} isLogin={userData.userData != null} />
     </Suspense>
   );

@@ -4,6 +4,7 @@ import type { Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/src/shared/ui/skeleton';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { formatDateToYMD } from '@/src/shared/utils';
 
@@ -46,7 +47,7 @@ export const ReviewCard = ({
 
   if (!isMounted) {
     // Skeleton UI
-    return null;
+    return <Skeleton className={rootClass} />;
   }
 
   return (

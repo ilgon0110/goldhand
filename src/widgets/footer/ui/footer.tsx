@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -15,7 +16,7 @@ export const Footer = () => {
         <div className="flex flex-col justify-center gap-12 px-[10vw] transition-all duration-300 ease-in-out md:flex-row md:items-start md:justify-normal">
           <div className="flex flex-col items-center justify-center space-y-4 xl:block">
             <div className="flex flex-row items-center space-x-2">
-              <img alt="고운황금손" height={32} loading="lazy" src="/favicon-96x96.png" width={32} />
+              <Image alt="고운황금손" height={32} loading="lazy" src="/favicon-96x96.png" width={32} />
               <span className={`${gowunDodumFont.className} font-bold text-gray-700`}>고운황금손</span>
             </div>
             <div className="space-y-2 text-center xl:text-start">

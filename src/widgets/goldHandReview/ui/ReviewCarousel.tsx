@@ -24,17 +24,17 @@ export const ReviewCarousel = () => {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="w-full">
+    <div className="w-full sm:px-20">
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
       <FadeInWhenVisible>
         <div className="mb-12 flex flex-col items-center justify-center gap-6 whitespace-pre-wrap">
           <SectionTitle title="고운황금손 이용후기" />
         </div>
       </FadeInWhenVisible>
-      {/* 웹버전, width:640px 이상 */}
+      {/* 웹버전, width:768px 이상 */}
       <FadeInWhenVisible delay={0.2}>
         <Carousel
-          className={cn('hidden w-full', 'sm:block')}
+          className={cn('hidden w-full', 'md:block')}
           opts={{
             align: 'start',
           }}
@@ -62,9 +62,9 @@ export const ReviewCarousel = () => {
           <CarouselNext className={cn('hidden', 'md:inline-flex')} />
         </Carousel>
       </FadeInWhenVisible>
-      {/* 모바일버전, width:640px 미만 */}
+      {/* 모바일버전, width:768px 미만 */}
       <FadeInWhenVisible delay={0.2}>
-        <div className={cn('flex w-full flex-col gap-3', 'sm:hidden')}>
+        <div className={cn('flex w-full flex-col gap-3', 'md:hidden')}>
           {data?.slice(0, 3).map(item => (
             <div className={cn('flex max-h-32 w-full flex-row px-1')} key={item.id}>
               <ReviewCard

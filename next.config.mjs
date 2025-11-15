@@ -26,7 +26,8 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'goldhand-5fd6c.firebasestore.app',
+        hostname: 'goldhand-5fd6c.firebasestorage.app',
+        pathname: '/**',
       },
     ],
   },

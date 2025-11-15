@@ -49,8 +49,6 @@ export const EventCard = ({
     return <Skeleton className={rootClass} />;
   }
 
-  console.log(new URL(thumbnail).hostname);
-
   return (
     <div
       className={cn(

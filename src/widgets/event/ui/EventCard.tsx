@@ -69,6 +69,7 @@ export const EventCard = ({
               borderRadius: isCard ? '4px' : '0',
               border: isCard ? '1px solid #e2e8f0' : 'none',
             }}
+            unoptimized
           />
         </div>
         <div className={isCard ? 'mt-2 flex flex-col text-start' : 'flex flex-col text-start'}>

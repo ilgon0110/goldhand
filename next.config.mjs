@@ -7,7 +7,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   // webpack: (config, options) => {
   //   config.module.rules.push({
   //     test: /\.mjs/,
@@ -23,6 +23,10 @@ const nextConfig = {
         hostname: 'firebasestorage.googleapis.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'goldhand-5fd6c.firebasestore.app',
       },
     ],
   },

@@ -22,29 +22,7 @@ interface IResponseBody {
 }
 
 export async function POST(req: Request) {
-  let body: IReviewPost;
-  try {
-    body = (await req.json()) as IReviewPost;
-  } catch (parseErr) {
-    // req.clone()으로 원본 텍스트를 읽어 디버깅에 사용
-    let rawText = '<unreadable>';
-    try {
-      const clone = req.clone();
-      rawText = await clone.text();
-    } catch {
-      // ignore
-    }
-    console.error('API /api/review/create - failed to parse JSON body', {
-      parseErr,
-      rawPreview: rawText?.slice?.(0, 2000),
-      headers: {
-        'user-agent': req.headers.get('user-agent'),
-        'content-type': req.headers.get('content-type'),
-        'content-length': req.headers.get('content-length'),
-      },
-    });
-    return typedJson<IResponseBody>({ response: 'ng', message: 'Invalid JSON body', docId: '' }, { status: 400 });
-  }
+  const body = (await req.json()) as IReviewPost;
   const { title, name, franchisee, htmlString } = body;
   if (!title || !htmlString || !name || !franchisee) {
     return typedJson<IResponseBody>(
@@ -101,9 +79,8 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
     // src 속성을 ""로 바꾼 새로운 img 태그를 반환
     return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
   });
-  console.log('Cleaned HTML String:', cleanedHtmlString);
+
   const imageSrcAppliedHtmlString = applyFireImageSrc(cleanedHtmlString, images || []);
-  console.log('Image SRC Applied HTML String:', imageSrcAppliedHtmlString);
 
   const app = firebaseApp;
   const db = getFirestore(app);

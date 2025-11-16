@@ -171,7 +171,6 @@ export async function POST(req: Request) {
         );
       }
     } catch (error) {
-      console.error('Error Login', error);
       const errorCode =
         typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
           ? error.code

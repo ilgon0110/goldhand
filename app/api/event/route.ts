@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error getting document:', error);
     const errorCode =
       typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'
         ? error.code

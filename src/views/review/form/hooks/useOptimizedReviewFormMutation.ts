@@ -71,8 +71,15 @@ export const useOptimizedReviewFormMutation = (
       }, 3000);
     },
     onError: error => {
-      toastError('후기 업로드 중 오류가 발생했습니다.');
+      toastError('후기 업로드 중 오류가 발생했습니다.\n' + error.message);
       console.error(`후기 업로드 중 오류가 발생했습니다.\n${error}`);
+      setTimeout(() => {
+        router.replace(`/review`);
+      }, 2000);
+    },
+    onSettled: () => {
+      setIsSubmitting(false);
+      setImagesProgress(undefined);
     },
     ...options,
   });
@@ -176,6 +183,7 @@ async function uploadImage({
         uploadFile = new File([optimized], fileName, { type: 'image/webp' });
       } catch (optimizedError) {
         // 최적화 실패 시 원본 파일 업로드
+        toastError('이미지 최적화에 실패하여 원본 파일을 업로드합니다.');
         console.warn('이미지 최적화에 실패하여 원본 파일을 업로드합니다.', optimizedError);
       } finally {
         handleChangeOptimizing(false);

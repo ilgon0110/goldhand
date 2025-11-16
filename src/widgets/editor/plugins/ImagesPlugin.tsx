@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-handler-names */
+/* eslint-disable @typescript-eslint/naming-convention */
 'use client';
 
 /**

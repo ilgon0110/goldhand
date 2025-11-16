@@ -38,6 +38,9 @@ import type { JSX, LegacyRef } from 'react';
 import * as React from 'react';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
+import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
+
 import { useSettings } from '../context/SettingContext';
 import { useSharedHistoryContext } from '../context/SharedHistoryContext';
 import brokenImage from '../images/image-broken.svg';
@@ -298,6 +301,7 @@ export default function ImageComponent({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const { isCollabActive } = useCollaborationContext();
   const [editor] = useLexicalComposerContext();
@@ -305,6 +309,10 @@ export default function ImageComponent({
   const activeEditorRef = useRef<LexicalEditor | null>(null);
   const [isLoadError, setIsLoadError] = useState<boolean>(false);
   const isEditable = useLexicalEditable();
+
+  const effectiveMaxWidth = React.useMemo(() => {
+    return isDesktop ? maxWidth : Math.min(maxWidth, window.innerWidth * 0.8);
+  }, [isDesktop, maxWidth]);
 
   const $onEnter = useCallback(
     (event: KeyboardEvent) => {
@@ -485,10 +493,10 @@ export default function ImageComponent({
           ) : (
             <LazyImage
               altText={altText}
-              className={isFocused ? `focused ${$isNodeSelection(selection) ? 'draggable' : ''}` : null}
+              className={cn(isFocused ? `focused ${$isNodeSelection(selection) ? 'draggable' : ''}` : null)}
               height={height}
               imageRef={imageRef}
-              maxWidth={maxWidth}
+              maxWidth={effectiveMaxWidth}
               nodeKey={nodeKey}
               src={src}
               width={width}

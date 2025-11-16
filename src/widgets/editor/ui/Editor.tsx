@@ -165,8 +165,8 @@ const RichEditor = ({
   return (
     <div
       className={cn(
-        'relative mt-6',
-        editable ? 'h-[500px] overflow-scroll rounded-md border border-slate-200' : 'h-fit',
+        'relative mt-6 max-w-[100vw] overflow-x-hidden',
+        editable ? 'h-[500px] overflow-y-scroll rounded-md border border-slate-200' : 'h-fit',
       )}
     >
       {editable && (

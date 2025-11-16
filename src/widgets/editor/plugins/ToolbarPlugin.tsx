@@ -38,6 +38,7 @@ import type { Dispatch, JSX } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 
+import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
 
 import { SHORTCUTS } from '../config/shortcuts';
@@ -503,7 +504,7 @@ export function ToolbarPlugin({
     setImageModalOpen(open);
   }, []);
   return (
-    <div className="toolbar sticky top-0 z-10 shadow-sm">
+    <div className={cn('toolbar sticky top-0 z-10 overflow-x-auto shadow-sm')}>
       <button
         aria-label="Undo"
         className="toolbar-item spaced"

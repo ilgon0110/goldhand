@@ -226,12 +226,21 @@ async function uploadImage({
                 key: '이미지 업로드 완료. 잠시만 기다려주세요.',
                 progress: 100,
               });
-              //postReview(values, htmlString, docId, downloadedImages);
+              console.log('All images uploaded:', downloadedImages);
+              // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
+              const cleanedHtmlString = htmlString.replace(
+                /<img\s+[^>]*src=["']data:image\/[^"']*["'][^>]*>/gi,
+                match => {
+                  // src 속성을 ""로 바꾼 새로운 img 태그를 반환
+                  return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
+                },
+              );
+              console.log('Cleaned HTML String:', cleanedHtmlString);
               mutate({
                 title: values.title,
                 name: values.name,
                 franchisee: values.franchisee,
-                htmlString,
+                htmlString: cleanedHtmlString,
                 docId,
                 images: downloadedImages,
               });

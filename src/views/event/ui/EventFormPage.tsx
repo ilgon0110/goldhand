@@ -21,10 +21,11 @@ import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 
-import { useEventFormMutation } from '../api/useEventFormMutation';
+import { useOptimizedEventFormMutation } from '../api/useOptimizedEventFormMutation';
 import { eventFormSchema } from '../config/eventFormSchema';
 
 const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
@@ -43,11 +44,12 @@ export const EventFormPage = () => {
   });
   const formValidation = form.formState.isValid;
 
-  const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress } =
-    useEventFormMutation('create');
+  const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
+    useOptimizedEventFormMutation('create');
 
   return (
     <>
+      {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
       <SectionTitle title="고운황금손 이벤트 만들기" />
       <Form {...form}>
         <form aria-label="이벤트폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>

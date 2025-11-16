@@ -84,7 +84,7 @@ export const useReviewFormMutation = (
   const onSubmit = async (values: z.infer<typeof reviewFormSchema>) => {
     // editor validation
     if (reviewFormEditor === undefined) return;
-    reviewFormEditor.read(() => {
+    reviewFormEditor.read(async () => {
       const htmlString = $generateHtmlFromNodes(reviewFormEditor, null);
       const downloadedImages: { key: string; url: string }[] = [];
       const docId = dId || uuidv4();
@@ -104,6 +104,7 @@ export const useReviewFormMutation = (
 
             const imageRef = ref(storage, `reviews/${userData.userId}/${docId}/${image.key}`);
             const uploadTask = uploadBytesResumable(imageRef, image.file, metadata);
+
             uploadTask.on(
               'state_changed',
               snapshot => {

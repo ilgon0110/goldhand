@@ -12,7 +12,7 @@ import type { JSX, ReactNode } from 'react';
 import * as React from 'react';
 import { createContext, useContext, useMemo, useState } from 'react';
 
-interface IImagesContextFile {
+export interface IImagesContextFile {
   file: File;
   key: string;
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import type { Timestamp } from 'firebase/firestore';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -35,10 +34,10 @@ export const ReviewCard = ({
     'transition-all duration-300 ease-in-out',
     isCard
       ? 'relative h-[266px] w-full rounded-md border-2 border-slate-200 hover:border-slate-500 flex flex-col overflow-hidden'
-      : 'h-24 w-full flex flex-row gap-3 border-b border-gray-200 hover:bg-slate-100 p-4 overflow-hidden',
+      : 'h-24 w-full flex flex-row gap-3 group-hover:bg-slate-100 p-4 overflow-hidden',
   );
 
-  const imageWrapperClass = cn(isCard ? 'relative w-full p-1 h-[200px]' : 'relative aspect-square h-full');
+  const imageWrapperClass = cn(isCard ? 'relative w-full p-1' : 'relative aspect-square h-full');
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -54,17 +53,19 @@ export const ReviewCard = ({
   return (
     <button className={rootClass} data-testid={id} onClick={handleClick}>
       <div className={imageWrapperClass} data-testid={`${id}-${isCard ? 'card' : 'table'}-review`}>
-        <Image
+        <img
           alt="리뷰썸네일이미지"
-          fill
+          height={0}
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           src={thumbnail === '' ? '/default_image.png' : thumbnail}
           style={{
             objectFit: 'contain',
+            width: isCard ? '100%' : 'auto',
+            height: isCard ? 200 : '100%',
             borderRadius: isCard ? '4px' : '0',
             border: isCard ? '1px solid #e2e8f0' : 'none',
           }}
-          unoptimized
+          width={0}
         />
       </div>
       <div className={isCard ? 'mt-2 flex flex-col text-start' : 'flex flex-col text-start'}>

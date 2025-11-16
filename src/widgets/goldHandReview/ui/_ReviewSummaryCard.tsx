@@ -1,5 +1,4 @@
 import type { Timestamp } from 'firebase/firestore';
-import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/src/shared/ui/button';
@@ -25,7 +24,7 @@ export const ReviewSummaryCard = ({
 }: TReviewSummaryCardProps) => {
   return (
     <div className={cn('flex w-full flex-col rounded-lg border border-slate-100 bg-white shadow')}>
-      <Image
+      <img
         alt={title}
         height={200}
         loading="lazy"

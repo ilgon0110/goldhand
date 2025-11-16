@@ -22,11 +22,12 @@ import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 
 import { reviewFormSchema } from '../config/reviewFormSchema';
-import { useReviewFormMutation } from '../hooks/useReviewFormMutation';
+import { useOptimizedReviewFormMutation } from '../hooks/useOptimizedReviewFormMutation';
 
 const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
   ssr: false,
@@ -45,11 +46,12 @@ export const ReviewFormPage = () => {
   });
   const formValidation = form.formState.isValid;
 
-  const { onSubmit, handleChangeReviewFormEditor, isSubmitting, imageProgress, resetImageProgress } =
-    useReviewFormMutation('create');
+  const { onSubmit, handleChangeReviewFormEditor, isSubmitting, isOptimizing, imageProgress, resetImageProgress } =
+    useOptimizedReviewFormMutation('create');
 
   return (
     <>
+      {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
       <SectionTitle title="고운황금손 후기남기기" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -126,7 +128,7 @@ export const ReviewFormPage = () => {
               disabled={!formValidation}
               type="submit"
             >
-              {isSubmitting ? <LoadingSpinnerIcon /> : '후기 남기기'}
+              {isSubmitting || isOptimizing ? <LoadingSpinnerIcon /> : '후기 남기기'}
             </Button>
           </div>
         </form>

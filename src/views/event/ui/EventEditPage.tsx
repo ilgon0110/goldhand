@@ -19,11 +19,12 @@ import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
-import { useEventFormMutation } from '../api/useEventFormMutation';
+import { useOptimizedEventFormMutation } from '../api/useOptimizedEventFormMutation';
 import { useSuspenseGetEventData } from '../api/useSuspenseGetEventData';
 import { eventFormSchema } from '../config/eventFormSchema';
 
@@ -44,10 +45,11 @@ export const EventEditPage = ({ docId }: TEventEditPageProps) => {
   });
   const formValidation = form.formState.isValid;
 
-  const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress } =
-    useEventFormMutation('update', docId);
+  const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
+    useOptimizedEventFormMutation('update', docId);
   return (
     <>
+      {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
       <SectionTitle title="고운황금손 이벤트 수정" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>

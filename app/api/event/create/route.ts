@@ -82,7 +82,11 @@ export async function POST(req: Request) {
 
 const createEventPost = async (uid: string, body: IEventPost, dataSize: number) => {
   const { title, htmlString, docId, images, name, status } = body;
-  const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, images || []);
+
+  // thumbnail 제외한 이미지 src 적용
+  const filteredImages = (images || []).filter(image => image.key !== 'thumbnail');
+  const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, filteredImages);
+  const thumbnailImage = (images || []).find(image => image.key === 'thumbnail');
 
   const adminDB = getAdminFirestore(firebaseAdminApp);
 
@@ -92,6 +96,7 @@ const createEventPost = async (uid: string, body: IEventPost, dataSize: number) 
       .doc(docId)
       .set({
         id: docId,
+        thumbnail: thumbnailImage ? thumbnailImage.url : null,
         rowNumber: dataSize + 1,
         title,
         name,

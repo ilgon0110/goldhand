@@ -13,7 +13,7 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 import { EventCard, EventPageHeader } from '@/src/widgets/event';
-import { generateReviewDescription, generateReviewThumbnailSrc } from '@/src/widgets/goldHandReview';
+import { generateReviewDescription } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
 interface IEventPageProps {
@@ -75,7 +75,7 @@ export const EventPage = ({ eventData, userData, totalDataLength }: IEventPagePr
               id={event.id}
               key={event.id}
               rowNumber={event.rowNumber}
-              thumbnail={generateReviewThumbnailSrc(event.htmlString)}
+              thumbnail={event.thumbnail}
               title={event.title}
               viewMode={viewMode}
             />

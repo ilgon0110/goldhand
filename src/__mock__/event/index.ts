@@ -7,6 +7,7 @@ export const mockEventListData: IEventListResponseData = {
     {
       id: 'event1',
       rowNumber: 1,
+      thumbnail: null,
       htmlString: '<p>Event 1 Description</p>',
       createdAt: { seconds: 1622505600, nanoseconds: 0 },
       name: 'Event 1',
@@ -19,6 +20,8 @@ export const mockEventListData: IEventListResponseData = {
     {
       id: 'event2',
       rowNumber: 2,
+      thumbnail: null,
+
       htmlString: '<p>Event 2 Description</p>',
       createdAt: { seconds: 1622592000, nanoseconds: 0 },
       name: 'Event 2',
@@ -31,6 +34,8 @@ export const mockEventListData: IEventListResponseData = {
     {
       id: 'event3',
       rowNumber: 3,
+      thumbnail: null,
+
       htmlString: '<p>Event 3 Description</p>',
       createdAt: { seconds: 1622678400, nanoseconds: 0 },
       name: 'Event 3',

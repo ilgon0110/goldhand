@@ -14,6 +14,7 @@ import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { TAliasAny } from '@/src/shared/types';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
+import { generateThumbnail } from '@/src/shared/utils/generateThumnailImage';
 import { optimizeImage } from '@/src/shared/utils/optimizeImage';
 import type { IImagesContextFile } from '@/src/widgets/editor/context/ImagesContext';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
@@ -165,7 +166,44 @@ async function uploadImage({
   if (images == null || images.length === 0 || !images) return;
   const storage = getStorage(firebaseApp);
   const downloadedImages: { key: string; url: string }[] = [];
-  const total = images.length;
+  const total = images.length + 1;
+
+  const thumbnail = await generateThumbnail(images[0].file);
+  const thumbnailMetadata: UploadMetadata = {
+    contentType: thumbnail.type,
+    customMetadata: {
+      userId: userId,
+    },
+  };
+  // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
+  const cleanedHtmlString = htmlString.replace(/<img\s+[^>]*src=["']data:image\/[^"']*["'][^>]*>/gi, match => {
+    // src 속성을 ""로 바꾼 새로운 img 태그를 반환
+    return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
+  });
+
+  const imageRef = ref(storage, `events/${userId}/${docId}/thumbnail`);
+  const thumbnailUploadTask = uploadBytesResumable(imageRef, thumbnail, thumbnailMetadata);
+
+  thumbnailUploadTask.on(
+    'state_changed',
+    snapshot => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      handleChangeImageprocess({ key: `thumbnail`, progress });
+    },
+    error => {
+      handleChangeImageprocess(undefined);
+      toastError('썸네일 업로드 중 오류가 발생했습니다. : ' + error.message);
+    },
+    () => {
+      handleChangeImageprocess(undefined);
+      getDownloadURL(thumbnailUploadTask.snapshot.ref).then(async downloadURL => {
+        downloadedImages.push({
+          key: `thumbnail`,
+          url: downloadURL,
+        });
+      });
+    },
+  );
 
   for (const image of images) {
     try {
@@ -223,14 +261,7 @@ async function uploadImage({
                 key: '이미지 업로드 완료. 잠시만 기다려주세요.',
                 progress: 100,
               });
-              // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
-              const cleanedHtmlString = htmlString.replace(
-                /<img\s+[^>]*src=["']data:image\/[^"']*["'][^>]*>/gi,
-                match => {
-                  // src 속성을 ""로 바꾼 새로운 img 태그를 반환
-                  return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
-                },
-              );
+
               mutate({
                 title: values.title,
                 name: values.name,

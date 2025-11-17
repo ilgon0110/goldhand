@@ -14,6 +14,7 @@ interface IResponseBody {
 
 const defaultData: IEventDetailData = {
   id: '',
+  thumbnail: null,
   htmlString: '',
   createdAt: Timestamp.now(),
   rowNumber: 0,

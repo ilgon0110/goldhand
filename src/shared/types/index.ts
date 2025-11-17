@@ -218,6 +218,7 @@ export interface IEventResponseData {
 export interface IEventDetailData {
   id: string;
   rowNumber: number;
+  thumbnail: string | null;
   htmlString: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   name: string;

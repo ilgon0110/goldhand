@@ -12,6 +12,7 @@ interface IResponseBody {
 }
 
 const defaultData: IReviewDetailData = {
+  thumbnail: null,
   htmlString: '',
   createdAt: Timestamp.now(),
   franchisee: '',

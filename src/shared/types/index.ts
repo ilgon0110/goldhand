@@ -54,6 +54,7 @@ export interface IReservationResponseData {
 
 // 이용후기(Review) 관련 타입 정의
 export interface IReviewDetailData {
+  thumbnail: string | null;
   htmlString: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
@@ -67,18 +68,7 @@ export interface IReviewDetailData {
 export interface IReviewListResponseData {
   response: 'ng' | 'ok';
   message: string;
-  reviewData:
-    | {
-        id: string;
-        createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
-        name: string;
-        userId: string;
-        title: string;
-        updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
-        htmlString: string;
-        franchisee: string;
-      }[]
-    | [];
+  reviewData: (IReviewDetailData & { id: string })[] | [];
   totalDataLength: number;
 }
 

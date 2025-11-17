@@ -91,16 +91,7 @@ export async function POST(req: NextRequest) {
 
     // Update logic here...
     const { title, name, htmlString, images, status } = body;
-
-    // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
-    const cleanedHtmlString = htmlString.replace(/<img\s+[^>]*src=["']data:image\/[^"']*["'][^>]*>/gi, match => {
-      // src 속성을 ""로 바꾼 새로운 img 태그를 반환
-      return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
-    });
-    const imageSrcAppliedHtmlString = applyFireImageSrc(cleanedHtmlString, images || []);
-
-    //const app = firebaseApp;
-    //const db = getFirestore(app);
+    const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, images || []);
 
     try {
       await eventDocRef.update({

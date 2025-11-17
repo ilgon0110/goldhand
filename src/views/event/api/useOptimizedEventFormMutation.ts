@@ -180,6 +180,7 @@ async function uploadImage({
         uploadFile = new File([optimized], fileName, { type: 'image/webp' });
       } catch (optimizedError) {
         // 최적화 실패 시 원본 파일 업로드
+        toastError('이미지 최적화에 실패하여 원본 파일을 업로드합니다.');
         console.warn('이미지 최적화에 실패하여 원본 파일을 업로드합니다.', optimizedError);
       } finally {
         handleChangeOptimizing(false);

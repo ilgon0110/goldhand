@@ -9,10 +9,11 @@ import { franchiseeList } from '@/src/shared/config';
 import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IReviewListResponseData } from '@/src/shared/types';
+import { EmptyState } from '@/src/shared/ui/empty-state';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { generateReviewDescription, generateReviewThumbnailSrc } from '@/src/widgets/goldHandReview';
+import { generateReviewDescription } from '@/src/widgets/goldHandReview';
 import { ReviewCard } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 import { ReviewPageHeader } from '@/src/widgets/review';
@@ -55,31 +56,35 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; i
           viewMode={viewMode}
         />
       </div>
-      <section
-        className={cn(
-          'mt-6 grid gap-2',
-          viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-        )}
-      >
-        {data.reviewData.map(review => (
-          <ReviewCard
-            author={review.name}
-            createdAt={review.createdAt}
-            description={generateReviewDescription(review.htmlString)}
-            handleClick={() => {
-              startTransition(async () => {
-                await sendViewLog(review.id);
-                router.push(`/review/${review.id}`);
-              });
-            }}
-            id={review.id}
-            key={review.id}
-            thumbnail={generateReviewThumbnailSrc(review.htmlString)}
-            title={review.title}
-            viewMode={viewMode}
-          />
-        ))}
-      </section>
+      {data.reviewData.length > 0 ? (
+        <section
+          className={cn(
+            'mt-6 grid gap-2',
+            viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          )}
+        >
+          {data.reviewData.map(review => (
+            <ReviewCard
+              author={review.name}
+              createdAt={review.createdAt}
+              description={generateReviewDescription(review.htmlString)}
+              handleClick={() => {
+                startTransition(async () => {
+                  await sendViewLog(review.id);
+                  router.push(`/review/${review.id}`);
+                });
+              }}
+              id={review.id}
+              key={review.id}
+              thumbnail={review.thumbnail}
+              title={review.title}
+              viewMode={viewMode}
+            />
+          ))}
+        </section>
+      ) : (
+        <EmptyState className="mt-4" description="등록된 후기가 없습니다." title="새로운 후기를 등록해보세요" />
+      )}
       <section className="mt-6">
         <WidgetPagination
           maxColumnNumber={10}

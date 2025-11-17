@@ -82,13 +82,7 @@ export async function POST(req: Request) {
 
 const createEventPost = async (uid: string, body: IEventPost, dataSize: number) => {
   const { title, htmlString, docId, images, name, status } = body;
-
-  // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
-  const cleanedHtmlString = htmlString.replace(/<img\s+[^>]*src=["']data:image\/[^"']*["'][^>]*>/gi, match => {
-    // src 속성을 ""로 바꾼 새로운 img 태그를 반환
-    return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
-  });
-  const imageSrcAppliedHtmlString = applyFireImageSrc(cleanedHtmlString, images || []);
+  const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, images || []);
 
   const adminDB = getAdminFirestore(firebaseAdminApp);
 

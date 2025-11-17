@@ -25,7 +25,7 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IReviewRequestBody;
-  const { docId, title, franchisee, htmlString, name, images } = body;
+  const { docId, title, franchisee, htmlString, name } = body;
 
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required', docId: '' }, { status: 400 });
@@ -91,19 +91,15 @@ export async function POST(req: NextRequest) {
     // Update logic here...
     const { title, name, franchisee, htmlString, docId, images } = body;
 
-    // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
-    const cleanedHtmlString = htmlString.replace(/<img\s+[^>]*src=["']data:image\/[^"']*["'][^>]*>/gi, match => {
-      // src 속성을 ""로 바꾼 새로운 img 태그를 반환
-      return match.replace(/src=["']data:image\/[^"']*["']/, 'src=""');
-    });
-    const imageSrcAppliedHtmlString = applyFireImageSrc(cleanedHtmlString, images || []);
-
-    //const app = firebaseApp;
-    //const db = getFirestore(app);
+    // thumbnail 제외한 이미지 src 적용
+    const filteredImages = (images || []).filter(image => image.key !== 'thumbnail');
+    const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, filteredImages);
+    const thumbnailImage = (images || []).find(image => image.key === 'thumbnail');
 
     try {
       await updateDoc(reviewDocRef, {
         ...targetData,
+        thumbnail: thumbnailImage ? thumbnailImage.url : null,
         title,
         name,
         franchisee,

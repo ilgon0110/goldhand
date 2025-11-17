@@ -14,7 +14,7 @@ type TReviewCardProps = {
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   id: string;
   description: string;
-  thumbnail: string;
+  thumbnail: string | null;
   viewMode?: 'CARD' | 'TABLE';
   handleClick: () => void;
 };
@@ -57,7 +57,7 @@ export const ReviewCard = ({
           alt="리뷰썸네일이미지"
           height={0}
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          src={thumbnail === '' ? '/default_image.png' : thumbnail}
+          src={thumbnail == null ? '/default_image.png' : thumbnail}
           style={{
             objectFit: 'contain',
             width: isCard ? '100%' : 'auto',

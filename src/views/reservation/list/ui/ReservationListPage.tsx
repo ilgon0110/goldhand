@@ -48,7 +48,7 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
         </label>
       </div>
       <div className="space-y-4 pt-4">
-        {data.consultData != null ? (
+        {data.consultData != null && data.consultData?.length > 0 ? (
           data.consultData.map(item => {
             return (
               <ReservationCard

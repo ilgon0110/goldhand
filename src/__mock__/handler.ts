@@ -89,6 +89,7 @@ export const handlers = [
 
   http.get('/api/review/detail', async ({ request }) => {
     const defaultData: IReviewDetailData = {
+      thumbnail: null,
       htmlString: '',
       createdAt: Timestamp.now(),
       franchisee: '',

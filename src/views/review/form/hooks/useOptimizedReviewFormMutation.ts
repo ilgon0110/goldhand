@@ -145,15 +145,6 @@ export const useOptimizedReviewFormMutation = (
   };
 };
 
-interface IUploadThumbnailParams {
-  image: IImagesContextFile;
-}
-
-async function uploadThumbnail({ image }: IUploadThumbnailParams) {
-  // 썸네일 생성 로직 (필요시 구현)
-  const thumbnail = await generateThumbnail(image.file);
-}
-
 interface IUploadImageParams {
   userId: string;
   docId: string;
@@ -180,7 +171,8 @@ async function uploadImage({
   const downloadedImages: { key: string; url: string }[] = [];
   const total = images.length + 1; // 썸네일 이미지 포함
 
-  const thumbnail = await generateThumbnail(images[0].file);
+  const thumbnail = await generateThumbnail(images[0].file, 300, 0.5, 'image/webp');
+  const uploadThumbnailFile = new File([thumbnail], 'thumbnail.webp', { type: 'image/webp' });
   const thumbnailMetadata: UploadMetadata = {
     contentType: thumbnail.type,
     customMetadata: {
@@ -189,7 +181,7 @@ async function uploadImage({
   };
 
   const imageRef = ref(storage, `reviews/${userId}/${docId}/thumbnail`);
-  const thumbnailUploadTask = uploadBytesResumable(imageRef, thumbnail, thumbnailMetadata);
+  const thumbnailUploadTask = uploadBytesResumable(imageRef, uploadThumbnailFile, thumbnailMetadata);
 
   // htmlString 중 img 태그는 유지하면서 src의 속성만 제거
   // 서버에 무거운 base64 전송 방지

@@ -7,6 +7,17 @@ export async function optimizeImage(
   if (typeof window === 'undefined') {
     throw new Error('optimizeImage can only be used in a browser environment');
   }
+  const convertToJpeg = (canvas: HTMLCanvasElement, blob: Blob | null): Promise<Blob> => {
+    return new Promise(resolve => {
+      // webp 실패 → JPEG로 강제 변환
+      if (!blob || blob.type !== mimeType) {
+        canvas.toBlob(b => resolve(b!), 'image/jpeg', quality);
+      } else {
+        resolve(blob);
+      }
+    });
+  };
+
   try {
     const bitmap = await createImageBitmap(file);
     const ratio = Math.min(1, maxWidth / bitmap.width);
@@ -23,12 +34,8 @@ export async function optimizeImage(
     return await new Promise<Blob>(resolve => {
       canvas.toBlob(
         async blob => {
-          if (!blob || blob.type !== mimeType) {
-            // 최적화 포맷 인코딩 실패 → jpeg로 강제 변환
-            canvas.toBlob(fallbackBlob => resolve(fallbackBlob!), 'image/jpeg', quality);
-          } else {
-            resolve(blob);
-          }
+          const finalBlob = await convertToJpeg(canvas, blob);
+          resolve(finalBlob);
         },
         mimeType,
         quality,
@@ -54,9 +61,9 @@ export async function optimizeImage(
         ctx.drawImage(img, 0, 0, width, height);
 
         canvas.toBlob(
-          blob => {
-            if (blob) resolve(blob);
-            else reject(new Error('Image optimization failed'));
+          async blob => {
+            const finalBlob = await convertToJpeg(canvas, blob);
+            resolve(finalBlob);
           },
           mimeType,
           quality,

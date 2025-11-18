@@ -7,6 +7,16 @@ export async function generateThumbnail(
   if (typeof window === 'undefined') {
     throw new Error('generateThumbnail can only be used in a browser environment');
   }
+  const convertToJpeg = (canvas: HTMLCanvasElement, blob: Blob | null): Promise<Blob> => {
+    return new Promise(resolve => {
+      // webp 실패 → JPEG로 강제 변환
+      if (!blob || blob.type !== mimeType) {
+        canvas.toBlob(b => resolve(b!), 'image/jpeg', quality);
+      } else {
+        resolve(blob);
+      }
+    });
+  };
 
   try {
     const bitmap = await createImageBitmap(file);
@@ -22,11 +32,11 @@ export async function generateThumbnail(
     if (!ctx) throw new Error('Failed to get canvas 2D context');
     ctx.drawImage(bitmap, 0, 0, width, height);
 
-    return await new Promise<Blob>((resolve, reject) => {
+    return await new Promise<Blob>(resolve => {
       canvas.toBlob(
-        blob => {
-          if (blob) resolve(blob);
-          else reject(new Error('Thumbnail generation failed'));
+        async blob => {
+          const finalBlob = await convertToJpeg(canvas, blob);
+          resolve(finalBlob);
         },
         mimeType,
         quality,
@@ -54,12 +64,8 @@ export async function generateThumbnail(
 
         canvas.toBlob(
           async blob => {
-            if (!blob || blob.type !== mimeType) {
-              // 최적화 포맷 인코딩 실패 → jpeg로 강제 변환
-              canvas.toBlob(fallbackBlob => resolve(fallbackBlob!), 'image/jpeg', quality);
-            } else {
-              resolve(blob);
-            }
+            const finalBlob = await convertToJpeg(canvas, blob);
+            resolve(finalBlob);
           },
           mimeType,
           quality,

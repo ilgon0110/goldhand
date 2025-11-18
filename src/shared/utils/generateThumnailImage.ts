@@ -53,9 +53,13 @@ export async function generateThumbnail(
         ctx.drawImage(img, 0, 0, width, height);
 
         canvas.toBlob(
-          blob => {
-            if (blob) resolve(blob);
-            else reject(new Error('Thumbnail generation failed'));
+          async blob => {
+            if (!blob || blob.type !== mimeType) {
+              // 최적화 포맷 인코딩 실패 → jpeg로 강제 변환
+              canvas.toBlob(fallbackBlob => resolve(fallbackBlob!), 'image/jpeg', quality);
+            } else {
+              resolve(blob);
+            }
           },
           mimeType,
           quality,

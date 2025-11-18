@@ -20,11 +20,15 @@ export async function optimizeImage(
     if (!ctx) throw new Error('Failed to get canvas 2D context');
     ctx.drawImage(bitmap, 0, 0, width, height);
 
-    return await new Promise<Blob>((resolve, reject) => {
+    return await new Promise<Blob>(resolve => {
       canvas.toBlob(
-        blob => {
-          if (blob) resolve(blob);
-          else reject(new Error('Image optimization failed'));
+        async blob => {
+          if (!blob || blob.type !== mimeType) {
+            // 최적화 포맷 인코딩 실패 → jpeg로 강제 변환
+            canvas.toBlob(fallbackBlob => resolve(fallbackBlob!), 'image/jpeg', quality);
+          } else {
+            resolve(blob);
+          }
         },
         mimeType,
         quality,

@@ -2,6 +2,7 @@ import { QueryClient, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import type { INotificationDetailData, INotificationResponseData } from '../types';
+import { toastSuccess } from '../utils';
 import { authFetcher } from '../utils/fetcher.server';
 
 export type TChannel = 'comment' | 'consult' | 'event' | 'generic' | 'manager' | 'review';
@@ -111,6 +112,7 @@ export const useAlarm = (userId: string) => {
         console.log('comment event:', payload);
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
+        toastSuccess('새 댓글이 달렸습니다!');
       });
 
       sse.addEventListener(CHANNELS.NEW_EVENT, async (e: MessageEvent) => {

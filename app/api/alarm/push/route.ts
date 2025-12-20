@@ -7,11 +7,11 @@ import type { INotificationDetailData } from '@/src/shared/types';
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  console.log('HEADERS:', req.headers);
-  console.log('BODY:', req.body);
-
   const secret = req.headers.get('x-webhook-secret');
   const expected = process.env.WEBHOOK_SECRET;
+  console.log('Webhook secret received:', secret);
+  console.log('Expected secret:', expected);
+
   if (!expected || !secret || secret !== expected) {
     return new Response('unauthorized', { status: 401 });
   }

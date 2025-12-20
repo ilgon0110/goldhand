@@ -4,7 +4,6 @@ import { Bell } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { forwardRef, useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
@@ -28,15 +27,22 @@ import {
 } from '@/shared/ui/navigation-menu';
 import { useAlarm } from '@/src/shared/hooks/useAlarm';
 import { useAuth } from '@/src/shared/hooks/useAuth';
+import { useInfiniteAlarmQuery } from '@/src/shared/hooks/useInfiniteAlarmQuery';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
-import TruncateText from '@/src/shared/ui/TruncateText';
+import { AlarmMenu } from '@/src/widgets/AlarmMenu';
 
 import { URLS } from '../index';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isSignedIn, pending, userData } = useAuth();
-  const { data: notificationData } = useAlarm(userData?.userId ?? '');
+  const {
+    data: notificationData,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteAlarmQuery(userData?.userId ?? '');
+  useAlarm(userData?.userId ?? '');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -61,6 +67,16 @@ export const Header = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  const notificationNoReadCount = notificationData?.pages.reduce((acc, page) => {
+    return acc + page.data.filter(item => !item.isRead).length;
+  }, 0);
+
+  const onClickNextNotifications = () => {
+    if (hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  };
+
   return (
     <>
       <Popover>
@@ -71,37 +87,20 @@ export const Header = () => {
           </Link>
         </div>
         <header className="relative mx-auto max-w-7xl py-2">
-          {userData?.userId && (
-            <div className="absolute right-8 top-1/2 -translate-y-1/3">
-              <PopoverTrigger asChild>
-                <button className="relative">
-                  <Bell size={20} />
-                  <div className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500">
-                    {notificationData?.data.filter(item => !item.isRead).length ?? 0}
-                  </div>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="max-h-[500px] overflow-y-auto p-4">
-                <div>
-                  {notificationData?.data.map(noti => {
-                    return (
-                      <div className="flex flex-col text-sm" key={uuidv4()}>
-                        <button className="p-2 text-start hover:bg-slate-100">
-                          <TruncateText maxLines={1} text={noti.message} />
-                        </button>
-                        <div className="h-[1px] w-full bg-slate-200" />
-                      </div>
-                    );
-                  })}
-                  <button className="mt-3 w-full text-center text-sm text-slate-500 hover:text-slate-800">
-                    알림 더 찾아보기
-                  </button>
+          {userData?.userId != null && (
+            <button
+              className={cn('absolute right-6 top-1/2 flex -translate-y-1/2 items-center justify-center', 'lg:hidden')}
+            >
+              <Bell size={20} />
+              {notificationNoReadCount != null && notificationNoReadCount > 0 && (
+                <div className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500">
+                  {notificationNoReadCount}
                 </div>
-              </PopoverContent>
-            </div>
+              )}
+            </button>
           )}
           <NavigationMenu>
-            <NavigationMenuList className={cn('hidden gap-6', 'lg:flex lg:flex-wrap')}>
+            <NavigationMenuList className={cn('hidden gap-3', 'lg:flex lg:flex-wrap')}>
               <NavigationMenuItem className="relative">
                 <div className="flex items-center justify-center lg:flex-1">
                   <Link className="-m-1.5 p-1.5" href={URLS.HOME}>
@@ -197,10 +196,33 @@ export const Header = () => {
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
+              {userData?.userId != null && (
+                <NavigationMenuItem>
+                  <PopoverTrigger asChild>
+                    <button className="relative flex items-center justify-center">
+                      <Bell size={20} />
+                      {notificationNoReadCount != null && notificationNoReadCount > 0 && (
+                        <div className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500">
+                          {notificationNoReadCount}
+                        </div>
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="max-h-[500px] overflow-y-auto p-4">
+                    <AlarmMenu
+                      handleClickNextNotifications={onClickNextNotifications}
+                      hasNextPage={hasNextPage}
+                      isFetching={isFetching}
+                      notificationData={notificationData}
+                      userId={userData.userId || ''}
+                    />
+                  </PopoverContent>
+                </NavigationMenuItem>
+              )}
             </NavigationMenuList>
 
             {/* 햄버거 icon, 모바일 헤더 부분 */}
-            <div className="lg:hidden">
+            <div className="relative lg:hidden">
               <Drawer direction="left" open={mobileMenuOpen} onOpenChange={open => setMobileMenuOpen(open)}>
                 <DrawerTrigger className="px-6 align-middle">
                   <span className="sr-only">메뉴 열기</span>

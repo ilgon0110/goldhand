@@ -266,4 +266,5 @@ export interface INotificationResponseData {
   response: 'ng' | 'ok' | 'unAuthorized';
   message: string;
   data: INotificationDetailData[] | [];
+  nextCursor: string | null;
 }

@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   console.log('Webhook secret received:', secret);
   console.log('Expected secret:', expected);
 
-  if (!expected || !secret || secret !== expected) {
+  if (expected == null || secret == null || secret !== expected) {
     return new Response('unauthorized', { status: 401 });
   }
 

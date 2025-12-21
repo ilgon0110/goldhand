@@ -7,6 +7,7 @@ import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { authKeys } from '@/src/shared/config/queryKeys';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
@@ -26,7 +27,7 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   const { mutate: logout } = useLogoutMutation({
     onSuccess: data => {
       signOut(auth).then(() => {
-        queryClient.invalidateQueries({ queryKey: ['auth'] });
+        queryClient.invalidateQueries({ queryKey: authKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
 
         setTimeout(() => {

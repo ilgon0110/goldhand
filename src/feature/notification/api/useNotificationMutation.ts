@@ -1,6 +1,7 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { notificationKeys } from '@/src/shared/config/queryKeys';
 import type { INotificationDetailData, INotificationResponseData, TAliasAny } from '@/src/shared/types';
 import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
@@ -47,7 +48,7 @@ export function useNotificationMutation(
     },
 
     onMutate: async (vars: INotificationVariables) => {
-      const key = ['infiniteNotifications', vars.userId];
+      const key = notificationKeys.list(vars.userId);
       await queryClient.cancelQueries({ queryKey: key });
 
       const previous = queryClient.getQueryData<INotificationResponseData>(key);
@@ -85,7 +86,7 @@ export function useNotificationMutation(
 
     // 성공 또는 실패 후(항상) 서버와 동기화
     onSettled: (data, error, vars, context) => {
-      const key = context?.key ?? ['infiniteNotifications', vars.userId];
+      const key = context?.key ?? notificationKeys.list(vars.userId);
       queryClient.invalidateQueries({ queryKey: key });
 
       if (options?.onSettled) {

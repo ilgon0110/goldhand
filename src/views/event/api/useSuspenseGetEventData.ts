@@ -1,11 +1,12 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 
+import { eventKeys } from '@/src/shared/config/queryKeys';
 import type { IReviewResponseData } from '@/src/shared/types';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 export const useSuspenseGetEventData = (docId: string) => {
   const res = useSuspenseQuery({
-    queryKey: ['eventEdit', docId],
+    queryKey: eventKeys.detail(docId),
     queryFn: async () => {
       const response = await fetcher(`/api/event/detail?docId=${docId}`);
 

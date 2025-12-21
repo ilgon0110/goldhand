@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
@@ -16,7 +17,7 @@ import { ReviewSummaryCard } from './_ReviewSummaryCard';
 
 export const ReviewCarousel = () => {
   const { data } = useQuery({
-    queryKey: ['reviewCarousel'],
+    queryKey: reviewKeys.carousel(),
     queryFn: () => getReviewListData(1, '전체'),
     select: data => data.reviewData,
   });

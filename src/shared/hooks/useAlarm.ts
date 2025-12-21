@@ -2,6 +2,7 @@ import type { InfiniteData } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
+import { notificationKeys } from '../config/queryKeys';
 import type { INotificationDetailData, INotificationResponseData } from '../types';
 import { toastSuccess } from '../utils';
 
@@ -22,7 +23,7 @@ export const useAlarm = (userId: string) => {
 
   const onReceiveAlarm = useCallback(
     async (payload: INotificationDetailData) => {
-      const key = ['infiniteNotifications', userId];
+      const key = notificationKeys.list(userId);
 
       queryClient.setQueryData<InfiniteData<INotificationResponseData> | undefined>(key, old => {
         // old가 없으면 infinite query 형태로 새로 만든다

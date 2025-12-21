@@ -88,7 +88,6 @@ export async function POST(req: Request) {
   // 알림 읽음처리
   try {
     const notificationData = notificationDocSnap.data() as INotificationDetailData;
-    console.log('알림 읽음처리 대상 데이터: ', notificationData);
     await notificationDocRef.update({
       ...notificationData,
       isRead: true,

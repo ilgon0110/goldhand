@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { usePathname, useSearchParams } from 'next/navigation';
 
+import { authKeys } from '../config/queryKeys';
 import type { IUserResponseData } from '../types';
 import { fetcher } from '../utils/fetcher.client';
 
@@ -29,7 +30,7 @@ export function useAuth() {
   const searchParams = useSearchParams();
 
   const query = useQuery({
-    queryKey: ['auth', pathname, searchParams.toString()],
+    queryKey: authKeys.searchParams(pathname, searchParams.toString()),
     queryFn: fetchAuth,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,

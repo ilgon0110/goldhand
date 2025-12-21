@@ -1,10 +1,11 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 
+import { reviewKeys } from '@/src/shared/config/queryKeys';
 import type { IReviewResponseData } from '@/src/shared/types';
 
 export const useSuspenseGetReviewDetailData = (docId: string) => {
   const res = useSuspenseQuery({
-    queryKey: ['reviewEdit', docId],
+    queryKey: reviewKeys.detail(docId),
     queryFn: async () => {
       const response = await fetch(`/api/review/detail?docId=${docId}`);
       if (!response.ok) {

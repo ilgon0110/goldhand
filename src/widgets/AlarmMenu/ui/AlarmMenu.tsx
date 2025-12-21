@@ -17,6 +17,7 @@ interface IAlarmMenuProps {
   hasNextPage: boolean;
   isFetching: boolean;
   handleClickNextNotifications: () => void;
+  modalClose?: () => void;
 }
 
 export const AlarmMenu = ({
@@ -25,6 +26,8 @@ export const AlarmMenu = ({
   hasNextPage,
   isFetching,
   handleClickNextNotifications,
+
+  modalClose,
 }: IAlarmMenuProps) => {
   const router = useRouter();
   const { isPending, mutate } = useNotificationMutation({
@@ -90,6 +93,7 @@ export const AlarmMenu = ({
             <AlarmCard
               handleClick={() => {
                 mutate({ userId: noti.userId, notificationId: noti.id });
+                modalClose?.();
               }}
               key={uuidv4()}
               label={getAlarmType(noti.type).label}

@@ -120,6 +120,20 @@ export function typedJson<T>(body: T, init?: ResponseInit): Response {
   return Response.json(body, init);
 }
 
+export function toastInfo(comment: string) {
+  return toast.info(comment, {
+    position: 'top-center',
+    autoClose: 3000,
+    transition: Bounce,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'colored',
+  });
+}
+
 export function toastError(comment: string) {
   return toast.error(comment, {
     position: 'top-center',

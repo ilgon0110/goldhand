@@ -4,7 +4,7 @@ import { useCallback, useEffect } from 'react';
 
 import { notificationKeys } from '../config/queryKeys';
 import type { INotificationDetailData, INotificationResponseData } from '../types';
-import { toastSuccess } from '../utils';
+import { toastInfo, toastSuccess } from '../utils';
 
 const CHANNELS = {
   NEW_REVIEW: 'new_review',
@@ -90,37 +90,42 @@ export const useAlarm = (userId: string) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
+        toastInfo('새로운 리뷰가 등록되었습니다!');
       });
 
       sse.addEventListener(CHANNELS.REVIEW_COMMENT, async (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
-        toastSuccess('새 댓글이 달렸습니다!');
+        toastInfo('내 리뷰에 새로운 댓글이 달렸습니다!');
       });
 
       sse.addEventListener(CHANNELS.NEW_EVENT, async (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
+        toastSuccess('새로운 이벤트가 등록되었습니다!');
       });
 
       sse.addEventListener(CHANNELS.EVENT_COMMENT, async (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
+        toastInfo('내 이벤트에 새로운 댓글이 달렸습니다!');
       });
 
       sse.addEventListener(CHANNELS.NEW_RESERVATION, async (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
+        toastSuccess('새로운 상담신청이 접수되었습니다!');
       });
 
       sse.addEventListener(CHANNELS.CONSULT_COMMENT, async (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
         // 여기서 알림 UI 업데이트 등 작업 수행
         await onReceiveAlarm(payload);
+        toastInfo('내 상담에 새로운 댓글이 달렸습니다!');
       });
 
       return () => sse.close();

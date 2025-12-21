@@ -31,7 +31,7 @@ jobs:
 
       - name: Archive build files
         run: |
-          tar -czf app.tar.gz package.json yarn.lock public
+          tar -czf app.tar.gz package.json yarn.lock public .next .env
 
       - name: Upload to EC2
         uses: appleboy/scp-action@v0.1.3

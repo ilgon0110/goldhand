@@ -9,8 +9,6 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   const secret = req.headers.get('x-webhook-secret');
   const expected = process.env.WEBHOOK_SECRET;
-  console.log('Webhook secret received:', secret);
-  console.log('Expected secret:', expected);
 
   if (expected == null || secret == null || secret !== expected) {
     return new Response('unauthorized', { status: 401 });
@@ -19,7 +17,6 @@ export async function POST(req: NextRequest) {
   let body;
   try {
     body = (await req.json()) as INotificationDetailData;
-    console.log('push notify body', body);
   } catch (err) {
     return new Response('invalid body', { status: 400 });
   }
@@ -42,8 +39,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // userId + channel 기반 전송
-    await notify(payload, { channel: payload.type as any, userId: body.userId });
-    console.log('push notify sent', { channel: payload.type, to: body.userId, payload });
+    await notify(payload, { channel: payload.type, userId: body.userId });
 
     // // FCM 로직은 추후 구현: send to FCM if needed
 

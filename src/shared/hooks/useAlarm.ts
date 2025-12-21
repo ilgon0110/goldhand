@@ -1,10 +1,9 @@
+import type { InfiniteData } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
 import type { INotificationDetailData, INotificationResponseData } from '../types';
 import { toastSuccess } from '../utils';
-
-export type TChannel = 'comment' | 'consult' | 'event' | 'generic' | 'manager' | 'review';
 
 const CHANNELS = {
   NEW_REVIEW: 'new_review',
@@ -16,31 +15,45 @@ const CHANNELS = {
   NEW_MANAGER: 'new_manager',
 };
 
+export type TChannel = (typeof CHANNELS)[keyof typeof CHANNELS];
+
 export const useAlarm = (userId: string) => {
   const queryClient = useQueryClient();
 
   const onReceiveAlarm = useCallback(
     async (payload: INotificationDetailData) => {
-      // 여기에 알림 수신 시 처리 로직 추가 (예: UI 업데이트)
       const key = ['infiniteNotifications', userId];
 
-      queryClient.setQueryData<INotificationResponseData | undefined>(key, old => {
-        // old가 없으면 새로운 구조를 반환 (INotificationResponseData 스펙에 맞춰 수정)
+      queryClient.setQueryData<InfiniteData<INotificationResponseData> | undefined>(key, old => {
+        // old가 없으면 infinite query 형태로 새로 만든다
         if (!old) {
-          return {
+          const newPage: INotificationResponseData = {
             response: 'ok',
-            message: 'New notification received',
+            message: payload.message || '새로운 알림이 도착했습니다.',
             data: [payload],
             nextCursor: null,
-          } as INotificationResponseData;
+          };
+          return {
+            pages: [newPage],
+            pageParams: [1],
+          };
         }
 
-        const exists = (old.data ?? []).find(n => n.id === payload.id);
-        if (exists) return old; // 중복 알림 방지
+        // 중복 체크: 첫 페이지(가장 최신)에 이미 존재하면 아무 변경 없음
+        const firstPage = old.pages[0];
+        const exists = firstPage?.data?.find(n => n.id === payload.id);
+        if (exists) return old;
 
+        // 첫 페이지의 data에 새 알림을 앞쪽으로 추가
+        const updatedFirstPage: INotificationResponseData = {
+          ...firstPage,
+          data: firstPage?.data ? [payload, ...firstPage.data] : [payload],
+        };
+
+        const newPages = [updatedFirstPage, ...old.pages.slice(1)];
         return {
           ...old,
-          data: [payload, ...(old.data ?? [])],
+          pages: newPages,
         };
       });
 

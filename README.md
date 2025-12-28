@@ -78,6 +78,12 @@ WARN : Backup deploy의 경우 Cold Start 존재
   - Paragraph, Node로 이루어진 직관적인 Editor 상태관리 아키텍처
 - 작성된 후기는 이미지와 텍스트를 분리하여 DB에 저장 후, 각 `ImageNode`의 key를 이용해 FireStore에서 알맞은 이미지를 찾아 `<img>` tag에 src 매핑
 
+### ⏰ 실시간 알림 수신
+
+- Firebase Cloud Function + SSE를 통한 실시간 알림 기능
+- 운영이 메인인 팀 업무를 하면서, 실시간으로 필요한 알림을 수신하는 것이 사용자 경험 및 리텐션에 매우 중요하게 작용하는 것을 체감하고 해당 기능 구현
+- 놓친 알림은 DB에 저장해 재접속 시 읽지 않은 알림만 식별할 수 있게함
+
 ## ⚡ 개발 Point: 성능 최적화
 
 Server Component에서 Data Fetching 후,

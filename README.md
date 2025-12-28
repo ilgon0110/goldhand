@@ -14,13 +14,7 @@
 
 ## Deploy Link
 
-### [MAIN](https://nicegoldhand.com/)
-
-### [BACKUP](https://goldhand.vercel.app/)
-
-```
-WARN : Backup deploy의 경우 Cold Start 존재
-```
+### [nicegoldhand.com](https://nicegoldhand.com/)
 
 ## 폴더구조
 

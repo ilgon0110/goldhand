@@ -27,35 +27,6 @@ WARN : Backup deploy의 경우 Cold Start 존재
 - FSD 아키텍처 사용
 - Next.js app directory와의 충돌 방지를 위해 `pages` -> `views`로 폴더 이름 변경
 
-```
-📂__test__
-📂app
- ┣ 📂api
- ┣ 📂company
- ┣ 📂fonts
- ┣ 📂franchisee
- ┣ 📂login
- ┣ 📂manager
- ┣ 📂mypage
- ┣ 📂price
- ┣ 📂rental
- ┣ 📂reservation
- ┣ 📂review
- ┣ 📂signup
- ┣ 📂voucher
- ┣ 📜error.tsx
- ┣ 📜globals.css
- ┣ 📜layout.tsx
- ┗ 📜page.tsx
-📂src
- ┣ 📂__mock__
- ┣ 📂app
- ┣ 📂entities
- ┣ 📂shared
- ┣ 📂views //app의 폴더 구조와 동일. FSD에서 pages 계층 담당
- ┗ 📂widgets
-```
-
 ## 주요 Feature
 
 ### 🔑 OAuth 로그인 & 회원 관리

@@ -1,2 +1,2 @@
-export { useRecaptcha } from './hooks/useRecaptcha';
+export { useRecaptcha } from './lib/useRecaptcha';
 export { SignupPage } from './ui/SignupPage';

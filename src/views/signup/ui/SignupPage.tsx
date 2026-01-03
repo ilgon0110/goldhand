@@ -18,11 +18,10 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
+import { useSignupMutation } from '../api/useSignupMutation';
 import { signUpFormSchema } from '../config/signUpFormSchema';
-import { useAuthCodeConfirmMutation } from '../hooks/useAuthCodeConfirmMutation';
-import { usePhoneNumberConfirmMutation } from '../hooks/usePhoneNumberConfirmMutation';
-import { useSignupMutation } from '../hooks/useSignupMutation';
-//import { useRecaptcha } from '../hooks/useRecaptcha';
+import { useAuthCodeConfirmMutation } from '../lib/useAuthCodeConfirmMutation';
+import { usePhoneNumberConfirmMutation } from '../lib/usePhoneNumberConfirmMutation';
 
 interface ISignupPageProps {
   userData: IUserDetailData | null;

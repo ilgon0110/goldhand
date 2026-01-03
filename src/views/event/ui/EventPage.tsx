@@ -5,6 +5,7 @@ import { useQueryStates } from 'nuqs';
 import { useEffect, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import { generateReviewDescription } from '@/src/entities/review';
 import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IEventDetailData, IUserDetailData } from '@/src/shared/types';
@@ -13,7 +14,6 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 import { EventCard, EventPageHeader } from '@/src/widgets/event';
-import { generateReviewDescription } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 
 interface IEventPageProps {

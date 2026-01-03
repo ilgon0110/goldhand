@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 'use client';
 
 import type { ConfirmationResult } from 'firebase/auth';
@@ -26,14 +27,14 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
       try {
         const verifier = new RecaptchaVerifier(auth, containerId, {
           size: 'invisible', // 또는 'normal'
-          callback: (response: string) => {},
+          callback: (_response: string) => {},
           'expired-callback': () => {
             console.warn('reCAPTCHA expired. Resetting...');
             verifier.clear();
           },
         });
 
-        verifier.render().then(widgetId => {});
+        verifier.render().then(_widgetId => {});
 
         window.recaptchaVerifier = verifier;
         recaptchaRef.current = verifier;

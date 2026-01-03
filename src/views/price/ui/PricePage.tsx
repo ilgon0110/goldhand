@@ -1,12 +1,7 @@
 import { cn } from '@/lib/utils';
+import { commuteCheckList, dayoffCheckList, inHouseCheckList, onDayCheckList } from '@/src/feature/price';
+import { BasicPremiumPriceTable, SinglePriceTable } from '@/src/feature/price';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
-import { BasicPremiumPriceTable, SinglePriceTable } from '@/src/widgets/pricewidgets';
-import {
-  commuteCheckList,
-  dayoffCheckList,
-  inHouseCheckList,
-  onDayCheckList,
-} from '@/src/widgets/pricewidgets/config/const';
 
 export const PricePage = () => {
   return (

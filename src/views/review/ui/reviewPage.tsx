@@ -5,6 +5,7 @@ import { useQueryStates } from 'nuqs';
 import { useEffect, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import { generateReviewDescription, ReviewCard } from '@/src/entities/review';
 import { franchiseeList } from '@/src/shared/config';
 import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
@@ -13,8 +14,6 @@ import { EmptyState } from '@/src/shared/ui/empty-state';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { generateReviewDescription } from '@/src/widgets/goldHandReview';
-import { ReviewCard } from '@/src/widgets/goldHandReview';
 import { WidgetPagination } from '@/src/widgets/Pagination';
 import { ReviewPageHeader } from '@/src/widgets/review';
 

@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/src/entities/review';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
-import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/src/widgets/goldHandReview';
 
 import { useReviewCarouselQuery } from '../api/useReviewCarouselQuery';
 import { ReviewSummaryCard } from './_ReviewSummaryCard';

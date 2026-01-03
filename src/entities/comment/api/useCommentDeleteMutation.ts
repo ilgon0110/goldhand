@@ -23,10 +23,7 @@ export const useCommentDeleteMutation = (
   return useMutation({
     mutationFn: async ({ userId, docId, commentId }) => {
       const response = await authFetcher<IResponsePostBody>(`/api/${type}/detail/comment/delete`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        method: 'DELETE',
         body: JSON.stringify({ userId, docId, commentId }),
         cache: 'no-store',
       });

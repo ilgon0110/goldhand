@@ -41,7 +41,6 @@ export const Comment = ({
   const isUpdated = createdAt.toMillis() !== updatedAt.toMillis();
   const [isEditMode, setIsEditMode] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
-  const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 
   const { mutate: updateMutate } = useCommentUpdateMutation(type, {
     onSuccess: () => {
@@ -51,7 +50,7 @@ export const Comment = ({
       toastError('댓글 수정 실패!');
     },
   });
-  const { mutate: deleteMutate } = useCommentDeleteMutation(type, {
+  const { mutate: deleteMutate, isPending } = useCommentDeleteMutation(type, {
     onSuccess: () => {
       toastSuccess('댓글 삭제 완료!');
     },
@@ -78,12 +77,10 @@ export const Comment = ({
 
     // 삭제 로직 시작
     try {
-      setIsDeleteSubmitting(true);
       deleteMutate({ userId, docId, commentId });
     } catch {
       toastError('댓글 삭제 중 알 수 없는 오류가 발생하였습니다.');
     } finally {
-      setIsDeleteSubmitting(false);
       setAlertDialogOpen(false);
     }
   };
@@ -186,7 +183,7 @@ export const Comment = ({
       <MyAlertDialog
         description="삭제된 댓글은 복구할 수 없습니다."
         handleDeletePostClick={onhandleDeleteClick}
-        isPending={isDeleteSubmitting}
+        isPending={isPending}
         okButtonText="삭제하기"
         opOpenChange={open => setAlertDialogOpen(open)}
         open={alertDialogOpen}

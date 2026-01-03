@@ -8,7 +8,6 @@ interface ICommentPost {
   userId: string;
   docId: string;
   commentId: string;
-  comment: string;
 }
 
 interface IResponseBody {

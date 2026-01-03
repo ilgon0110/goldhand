@@ -1,11 +1,11 @@
 export { ReservationApplyPage } from './apply/ui/ReservationApplyPage';
-export { getConsultDetailData } from './detail/api/loader';
+export { getReservationDetailData } from './detail/api/getReservationDetailData';
 export { ReservationDetailPage } from './detail/ui/ReservationDetailPage';
 export { reservationFormSchema } from './form/config/reservationFormSchema';
 export { ReservationEditPage } from './form/ui/ReservationEditPage';
 export { ReservationFormPage } from './form/ui/ReservationFormPage';
 export { ReservationRecaptchaProvider } from './form/ui/ReservationRecaptchaProvider';
-export { getReservationListData } from './list/api/loader';
+export { getReservationListData } from './list/api/getReservationListData';
 export { passwordPostAction } from './list/api/passwordPostAction';
 export { ReservationListPage } from './list/ui/ReservationListPage';
 export { ReservationCard } from './ui/ReservationCard';

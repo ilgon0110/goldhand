@@ -13,7 +13,8 @@ import { Badge } from '@/src/shared/ui/badge';
 import { Button } from '@/src/shared/ui/button';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
-import { useLogoutMutation } from '@/src/widgets/MyPageWidget';
+
+import { useLogoutMutation } from '../api/useLogoutMutation';
 
 interface IMyPageInfoCardProps {
   myPageData: IMyPageResponseData;

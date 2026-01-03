@@ -1,7 +1,7 @@
 'use client';
 
+import { Comment, useComments } from '@/src/entities/comment';
 import { Label } from '@/src/shared/ui/label';
-import { Comment, useComments } from '@/src/widgets/Comment';
 
 type TManagerCommentListProps = {
   docId: string;
@@ -13,31 +13,6 @@ export const ManagerCommentList = ({ docId, userId }: TManagerCommentListProps) 
     docId,
     collectionName: 'managers',
   });
-
-  const mutateDeleteComment = async (commentId: string) => {
-    return await fetch('/api/manager/detail/comment/delete', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        docId,
-        commentId,
-      }),
-    });
-  };
-
-  const mutateUpdateComment = async (commentId: string, comment: string) => {
-    return await fetch('/api/manager/detail/comment/update', {
-      method: 'POST',
-      body: JSON.stringify({
-        docId,
-        commentId,
-        comment,
-      }),
-    });
-  };
 
   return (
     <>
@@ -54,9 +29,9 @@ export const ManagerCommentList = ({ docId, userId }: TManagerCommentListProps) 
               docId={docId}
               isCommentOwner={item.userId === userId}
               key={item.id}
-              mutateDeleteComment={mutateDeleteComment}
-              mutateUpdateComment={mutateUpdateComment}
+              type="manager"
               updatedAt={item.updatedAt}
+              userId={userId || ''}
             />
           );
         })}

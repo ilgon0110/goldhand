@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { cn } from '@/lib/utils';
+import { Comment, useComments } from '@/src/entities/comment';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import type { IEventResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -17,7 +18,6 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
-import { Comment, useComments } from '@/src/widgets/Comment';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 import { eventCommentSchema } from '../config/eventCommentSchema';
@@ -208,30 +208,9 @@ export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEvent
               docId={docId}
               isCommentOwner={item.userId === userData.userData?.userId}
               key={item.id}
-              mutateDeleteComment={async (commentId: string) => {
-                return await fetch('/api/event/detail/comment/delete', {
-                  method: 'DELETE',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    userId: userData.userData?.userId,
-                    docId,
-                    commentId,
-                  }),
-                });
-              }}
-              mutateUpdateComment={async (commentId: string, comment: string) => {
-                return await fetch('/api/event/detail/comment/update', {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    docId,
-                    commentId,
-                    comment,
-                  }),
-                });
-              }}
+              type="event"
               updatedAt={item.updatedAt}
+              userId={userData.userData?.userId || ''}
             />
           );
         })}

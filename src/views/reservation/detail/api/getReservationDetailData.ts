@@ -6,7 +6,7 @@ import { headers } from 'next/headers';
 import { apiUrl } from '@/src/shared/config';
 import type { IReservationResponseData } from '@/src/shared/types';
 
-export const getConsultDetailData = async ({ docId }: { docId: string }): Promise<IReservationResponseData> => {
+export const getReservationDetailData = async ({ docId }: { docId: string }): Promise<IReservationResponseData> => {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];

@@ -25,9 +25,9 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
+import { useOptimizedReviewFormMutation } from '../api/useOptimizedReviewFormMutation';
+import { useSuspenseGetReviewDetailData } from '../api/useSuspenseGetReviewDetailData';
 import { reviewFormSchema } from '../config/reviewFormSchema';
-import { useOptimizedReviewFormMutation } from '../hooks/useOptimizedReviewFormMutation';
-import { useSuspenseGetReviewDetailData } from '../hooks/useSuspenseGetReviewDetailData';
 
 type TReviewEditPageProps = {
   docId: string;

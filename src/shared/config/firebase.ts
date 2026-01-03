@@ -15,11 +15,6 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// const allEnv = getEnv();
-// const firebaseConfig = {
-//   ...allEnv,
-// };
-
 // Initialize Firebase
 export const firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 // Export a promise that resolves to analytics instance or undefined

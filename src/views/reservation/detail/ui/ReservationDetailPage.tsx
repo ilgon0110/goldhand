@@ -21,7 +21,7 @@ import { ReservationCommentForm, ReservationCommentList, ReservationDetailConten
 import { passwordPostAction } from '@/src/widgets/reservation/api/passwordPostAction';
 
 import { useDeletePostMutation } from '../api/deletePostAction';
-import { detailPasswordFormSchema } from '../config/consultCommentSchema';
+import { detailPasswordFormSchema } from '../../../../entities/comment/config/consultCommentSchema';
 
 type TReservationDetailPageProps = {
   data: IReservationResponseData;

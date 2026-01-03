@@ -4,7 +4,7 @@ import { getReviewDetailData } from '@/src/entities/review';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
-import { ReviewDetailPage } from '@/src/views/review/form/ui/ReviewDetailPage';
+import { ReviewDetailPage } from '@/src/views/review';
 
 type TPageProps = {
   params: { docId: string };

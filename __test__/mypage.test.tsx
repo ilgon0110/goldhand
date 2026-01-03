@@ -4,11 +4,11 @@ import { http, HttpResponse } from 'msw';
 
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
+import { WithdrawalModal } from '@/src/feature/mypage/ui/WithdrawalModal';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { formatPhoneNumber } from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { MyPagePage } from '@/src/views/mypage';
-import { WithdrawalModal } from '@/src/widgets/MyPageWidget/ui/WithdrawalModal';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -36,14 +36,14 @@ vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
 }));
 
 const logoutMock = vi.fn();
-vi.mock('@/src/widgets/MyPageWidget/hooks/useLogoutMutation', () => ({
+vi.mock('@/src/feature/mypage/api/useLogoutMutation', () => ({
   useLogoutMutation: () => ({
     mutate: logoutMock,
   }),
 }));
 
 const withdrawMock = vi.fn();
-vi.mock('@/src/widgets/MyPageWidget/hooks/useWithdrawalMutation', () => ({
+vi.mock('@/src/feature/mypage/api/useWithdrawalMutation', () => ({
   useWithdrawalMutation: () => ({
     mutate: withdrawMock,
   }),

@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import type { IUserDetailData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
-import { naverLoginAction } from '../api/naverLoginAction';
-import { naverLoginTokenAction } from '../api/naverLoginTokenAction';
+import { naverLoginAction } from './naverLoginAction';
+import { naverLoginTokenAction } from './naverLoginTokenAction';
 
 type TUserNaverLogin = {
   isRejoinDialogOpen: boolean;

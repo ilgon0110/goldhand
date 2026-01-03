@@ -5,14 +5,15 @@ import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
 
 import { cn } from '@/lib/utils';
+import { privacyContent, privacyVersionDateList } from '@/src/shared/config/privacy';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import { Button } from '@/src/shared/ui/button';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Label } from '@/src/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { useWithdrawalMutation } from '@/src/widgets/MyPageWidget';
-import { privacyContent, privacyVersionDateList } from '@/src/widgets/Privacy';
+
+import { useWithdrawalMutation } from '../api/useWithdrawalMutation';
 
 type TWithdrawalModalProps = {
   isOpen: boolean;

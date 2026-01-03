@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import { getUserData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getConsultDetailData } from '@/src/views/reservation';
+import { getReservationDetailData } from '@/src/views/reservation';
 import { ReservationRecaptchaProvider } from '@/src/views/reservation';
 
 type TPageProps = {
@@ -12,7 +12,7 @@ type TPageProps = {
 
 export default async function Page({ searchParams }: TPageProps) {
   const userData = await getUserData();
-  const consultDetailData = await getConsultDetailData({
+  const consultDetailData = await getReservationDetailData({
     docId: searchParams.docId || '',
   });
 

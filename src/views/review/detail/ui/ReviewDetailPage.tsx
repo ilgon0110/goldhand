@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { Comment, useComments } from '@/src/entities/comment';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import type { IReviewResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -17,9 +18,9 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
-import { Comment, useComments } from '@/src/widgets/Comment';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
+import { useReviewDetailCommentMutation } from '../api/useReviewDetailCommentMutation';
 import { reviewCommentSchema } from '../config/reviewCommentSchema';
 
 type TReviewDetailPageProps = {
@@ -35,17 +36,6 @@ interface IResponsePost {
 }
 
 export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TReviewDetailPageProps) => {
-  const router = useRouter();
-  const { comments, loading: isCommentSubmitting } = useComments({
-    docId,
-    collectionName: 'reviews',
-  });
-
-  const [reviewUpdateAlertDialogOpen, setReviewUpdateAlertDialogOpen] = useState(false);
-  const [isReviewUpdateSubmitting, setIsReviewUpdateSubmitting] = useState(false);
-  const [reviewDeleteAlertDialogOpen, setReviewDeleteAlertDialogOpen] = useState(false);
-  const [isReviewDeleteSubmitting, setIsReviewDeleteSubmitting] = useState(false);
-
   const form = useForm<z.infer<typeof reviewCommentSchema>>({
     resolver: zodResolver(reviewCommentSchema),
     defaultValues: {
@@ -53,6 +43,26 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
     },
     mode: 'onChange',
   });
+  const router = useRouter();
+  const { comments, loading: isCommentSubmitting } = useComments({
+    docId,
+    collectionName: 'reviews',
+  });
+  const { mutate } = useReviewDetailCommentMutation(docId, {
+    onSuccess: () => {
+      toastSuccess('댓글이 작성되었습니다.');
+      form.reset();
+    },
+    onError: data => {
+      toastError('댓글 작성에 실패하였습니다.\n' + data.message);
+    },
+    onSettled: () => {},
+  });
+
+  const [reviewUpdateAlertDialogOpen, setReviewUpdateAlertDialogOpen] = useState(false);
+  const [isReviewUpdateSubmitting, setIsReviewUpdateSubmitting] = useState(false);
+  const [reviewDeleteAlertDialogOpen, setReviewDeleteAlertDialogOpen] = useState(false);
+  const [isReviewDeleteSubmitting, setIsReviewDeleteSubmitting] = useState(false);
 
   const formValidation = form.formState.isValid;
   const isOwner = data.data.userId === userData.userData?.userId;
@@ -62,27 +72,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
     const { comment } = values;
 
     try {
-      const response = await fetch('/api/review/detail/comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          docId,
-          comment,
-        }),
-      });
-      const data: IResponsePost = await response.json();
-      if (data.response === 'ok') {
-        toastSuccess('댓글이 작성되었습니다.');
-        form.reset();
-      } else if (data.response === 'unAuthorized' || data.response === 'expired') {
-        toastError('로그인 후 이용해주세요.');
-        form.reset();
-      } else {
-        toastError('댓글 작성에 실패하였습니다.\n' + data.message);
-      }
+      mutate(comment);
     } catch {
       toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.\n' + data.message);
     }
@@ -211,30 +201,9 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
               docId={docId}
               isCommentOwner={item.userId === userData.userData?.userId}
               key={item.id}
-              mutateDeleteComment={async (commentId: string) => {
-                return await fetch('/api/review/detail/comment/delete', {
-                  method: 'DELETE',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    userId: userData.userData?.userId,
-                    docId,
-                    commentId,
-                  }),
-                });
-              }}
-              mutateUpdateComment={async (commentId: string, comment: string) => {
-                return await fetch('/api/review/detail/comment/update', {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    docId,
-                    commentId,
-                    comment,
-                  }),
-                });
-              }}
+              type="review"
               updatedAt={item.updatedAt}
+              userId={userData.userData?.userId || ''}
             />
           );
         })}

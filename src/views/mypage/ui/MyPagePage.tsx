@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 
+import { MyPageInfoCard, MyPagePostList, WithdrawalModal } from '@/src/feature/mypage';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
-import { MyPageInfoCard, MyPagePostList } from '@/src/widgets/MyPageWidget';
-import { WithdrawalModal } from '@/src/widgets/MyPageWidget/ui/WithdrawalModal';
 
 type TMyPageDataProps = {
   myPageData: IMyPageResponseData;

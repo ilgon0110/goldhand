@@ -1,7 +1,7 @@
 'use client';
 
+import { Comment, useComments } from '@/src/entities/comment';
 import { Label } from '@/src/shared/ui/label';
-import { Comment, useComments } from '@/src/widgets/Comment';
 
 type TReservationCommentListProps = {
   docId: string;
@@ -13,31 +13,6 @@ export const ReservationCommentList = ({ docId, userId }: TReservationCommentLis
     docId,
     collectionName: 'consults',
   });
-
-  const mutateDeleteComment = async (commentId: string) => {
-    return await fetch('/api/reservation/detail/comment/delete', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        docId,
-        commentId,
-      }),
-    });
-  };
-
-  const mutateUpdateComment = async (commentId: string, comment: string) => {
-    return await fetch('/api/reservation/detail/comment/update', {
-      method: 'POST',
-      body: JSON.stringify({
-        docId,
-        commentId,
-        comment,
-      }),
-    });
-  };
 
   return (
     <>
@@ -54,9 +29,9 @@ export const ReservationCommentList = ({ docId, userId }: TReservationCommentLis
               docId={docId}
               isCommentOwner={item.userId === userId}
               key={item.id}
-              mutateDeleteComment={mutateDeleteComment}
-              mutateUpdateComment={mutateUpdateComment}
+              type="reservation"
               updatedAt={item.updatedAt}
+              userId={userId || ''}
             />
           );
         })}

@@ -4,12 +4,11 @@ import { MdClose } from 'react-icons/md';
 import { v4 as uuidv4 } from 'uuid';
 
 import { cn } from '@/lib/utils';
+import { privacyContent, privacyVersionDateList } from '@/src/shared/config/privacy';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import { Button } from '@/src/shared/ui/button';
 import { Label } from '@/src/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-
-import { privacyContent, privacyVersionDateList } from '../config/const';
 
 type TPrivacyModalProps = {
   isOpen: boolean;

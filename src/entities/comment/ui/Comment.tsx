@@ -7,38 +7,58 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
+import { commentEditSchema } from '@/src/entities/comment/config/commentEditSchema';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToHMS, getRelativeTimeFromTimestamp, toastError, toastSuccess } from '@/src/shared/utils';
-import { commentEditSchema } from '@/src/views/reservation/detail/config/commentEditSchema';
+
+import { useCommentDeleteMutation } from '../api/useCommentDeleteMutation';
+import { useCommentUpdateMutation } from '../api/useCommentUpdateMutation';
 
 type TCommentProps = {
+  userId: string;
   docId: string;
   commentId: string;
   isCommentOwner: boolean;
   content: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
-  mutateUpdateComment: (commentId: string, comment: string) => Promise<any>;
-  mutateDeleteComment: (commentId: string) => Promise<any>;
+  type: 'event' | 'manager' | 'reservation' | 'review';
 };
 
 export const Comment = ({
+  userId,
   docId,
   commentId,
   isCommentOwner,
   content,
   createdAt,
   updatedAt,
-  mutateUpdateComment,
-  mutateDeleteComment,
+  type,
 }: TCommentProps) => {
   const isUpdated = createdAt.toMillis() !== updatedAt.toMillis();
   const [isEditMode, setIsEditMode] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
+
+  const { mutate: updateMutate } = useCommentUpdateMutation(type, {
+    onSuccess: () => {
+      toastSuccess('댓글 수정 완료!');
+    },
+    onError: () => {
+      toastError('댓글 수정 실패!');
+    },
+  });
+  const { mutate: deleteMutate } = useCommentDeleteMutation(type, {
+    onSuccess: () => {
+      toastSuccess('댓글 삭제 완료!');
+    },
+    onError: () => {
+      toastError('댓글 삭제 실패!');
+    },
+  });
 
   const form = useForm<z.infer<typeof commentEditSchema>>({
     resolver: zodResolver(commentEditSchema),
@@ -59,14 +79,9 @@ export const Comment = ({
     // 삭제 로직 시작
     try {
       setIsDeleteSubmitting(true);
-      const result = await (await mutateDeleteComment(commentId)).json();
-      if (result.response === 'ok') {
-        toastSuccess('댓글 삭제 완료!');
-      } else {
-        toastError(result.message || '댓글 삭제 실패!');
-      }
-    } catch (error: any) {
-      toastError(error.message || '댓글 삭제 중 알 수 없는 오류가 발생하였습니다.');
+      deleteMutate({ userId, docId, commentId });
+    } catch {
+      toastError('댓글 삭제 중 알 수 없는 오류가 발생하였습니다.');
     } finally {
       setIsDeleteSubmitting(false);
       setAlertDialogOpen(false);
@@ -78,14 +93,7 @@ export const Comment = ({
 
     // 수정 로직 시작
     try {
-      const result = await (await mutateUpdateComment(commentId, values.editComment)).json();
-
-      if (result.response === 'ok') {
-        toastSuccess('댓글 수정 완료!');
-        setIsEditMode(false);
-      } else {
-        toastSuccess('댓글 수정 실패!');
-      }
+      updateMutate({ docId, commentId, comment: values.editComment });
     } catch {
       toastError('댓글 수정 중 알 수 없는 오류가 발생하였습니다.');
     }

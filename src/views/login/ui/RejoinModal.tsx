@@ -6,7 +6,7 @@ import { Button } from '@/src/shared/ui/button';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useRejoinMutation } from '../hooks/useRejoinMutation';
+import { useRejoinMutation } from '../api/useRejoinMutation';
 
 type TRejoinModalProps = {
   isRejoinDialogOpen: boolean;

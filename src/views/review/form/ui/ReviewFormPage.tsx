@@ -26,8 +26,8 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 
+import { useOptimizedReviewFormMutation } from '../api/useOptimizedReviewFormMutation';
 import { reviewFormSchema } from '../config/reviewFormSchema';
-import { useOptimizedReviewFormMutation } from '../hooks/useOptimizedReviewFormMutation';
 
 const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
   ssr: false,

@@ -10,9 +10,9 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { toastSuccess } from '@/src/shared/utils';
 
-import { useKakaoLogin } from '../hooks/useKakaoLogin';
-import { useNaverLogin } from '../hooks/useNaverLogin';
-import { AuthLoginButton } from './AutoLoginButton';
+import { useKakaoLogin } from '../api/useKakaoLogin';
+import { useNaverLogin } from '../api/useNaverLogin';
+import { AuthLoginButton } from './_AuthLoginButton';
 import { RejoinModal } from './RejoinModal';
 
 export const LoginPage = () => {

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getConsultDetailData, ReservationDetailPage } from '@/src/views/reservation';
+import { getReservationDetailData, ReservationDetailPage } from '@/src/views/reservation';
 
 type TPageProps = {
   params: { docId: string };
@@ -13,7 +13,7 @@ type TPageProps = {
 export default async function Page({ params }: TPageProps) {
   const { docId } = params;
 
-  const data = await getConsultDetailData({
+  const data = await getReservationDetailData({
     docId,
   });
   const userData = await getUserData();

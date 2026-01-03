@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 import type { IUserDetailData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
-import { kakaoLoginAction } from '../api/kakaoLoginAction';
+import { kakaoLoginAction } from './kakaoLoginAction';
 
 type TUseKakaoLogin = {
   isRejoinDialogOpen: boolean;

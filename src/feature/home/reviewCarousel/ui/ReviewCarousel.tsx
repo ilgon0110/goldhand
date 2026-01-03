@@ -1,26 +1,20 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
-import { getReviewListData } from '@/src/views/review';
 import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/src/widgets/goldHandReview';
 
+import { useReviewCarouselQuery } from '../api/useReviewCarouselQuery';
 import { ReviewSummaryCard } from './_ReviewSummaryCard';
 
 export const ReviewCarousel = () => {
-  const { data } = useQuery({
-    queryKey: reviewKeys.carousel(),
-    queryFn: () => getReviewListData(1, '전체'),
-    select: data => data.reviewData,
-  });
+  const { data } = useReviewCarouselQuery();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 

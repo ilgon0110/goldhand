@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 
+import { getReviewDetailData } from '@/src/entities/review';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getReviewDetailData } from '@/src/views/review';
 import { ReviewDetailPage } from '@/src/views/review/form/ui/ReviewDetailPage';
 
 type TPageProps = {

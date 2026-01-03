@@ -1,5 +1,4 @@
 export { ReviewCard } from './ui/ReviewCard';
-export { ReviewCarousel } from './ui/ReviewCarousel';
 export {
   generateReviewDescription,
   generateReviewThumbnailSrc,

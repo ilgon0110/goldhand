@@ -3,10 +3,11 @@ export const dynamic = 'force-dynamic';
 import type { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 
+import { getReviewListData } from '@/src/entities/review';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { getReviewListData, ReviewPage } from '@/src/views/review';
+import { ReviewPage } from '@/src/views/review';
 
 type TPageProps = {
   searchParams: Promise<SearchParams>;

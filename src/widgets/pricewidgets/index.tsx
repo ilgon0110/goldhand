@@ -9,5 +9,4 @@ export { costEffectivenessPriceList } from './config/const';
 export { costEffectivenessCheckList } from './config/const';
 export { BasicPremiumPriceTable } from './ui/BasicPremiumPriceTable';
 export { PriceCard } from './ui/PriceCard';
-export { PriceList } from './ui/PriceList';
 export { SinglePriceTable } from './ui/SinglePriceTable';

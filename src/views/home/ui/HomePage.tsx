@@ -1,15 +1,11 @@
 import dynamic from 'next/dynamic';
 
 import { cn } from '@/lib/utils';
-import { SponsorList } from '@/src/widgets/goldHandSponsor';
-import { FranchiseeSheetList } from '@/src/widgets/goldHandSpotSheet';
-import { ImageSlideList } from '@/src/widgets/ImageSlideList';
-import { MainTitle } from '@/src/widgets/MainTitle/ui/MainTitle';
-import { PriceList } from '@/src/widgets/pricewidgets';
+import { FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
 
 const ReviewCarousel = dynamic(
-  () => import('@/src/widgets/goldHandReview/ui/ReviewCarousel').then(m => m.ReviewCarousel),
-  { ssr: false, loading: () => <div className="h-48" /> },
+  () => import('@/src/feature/home/reviewCarousel/ui/ReviewCarousel').then(m => m.ReviewCarousel),
+  { ssr: false, loading: () => <div className="h-48 w-full animate-pulse rounded-md bg-gray-200" /> },
 );
 
 export async function HomePage() {

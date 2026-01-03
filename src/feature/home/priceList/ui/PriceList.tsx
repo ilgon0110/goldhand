@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 
-import { PriceSummaryCard } from './PriceSummaryCard';
+import { PriceSummaryCard } from './_PriceSummaryCard';
 
 export const PriceList = () => {
   return (

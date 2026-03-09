@@ -51,7 +51,7 @@ export const AlarmMenu = ({
   const getAlarmType = (type: string) => {
     switch (type) {
       case NotificationType.CONSULT_COMMENT:
-        return { docType: 'reservation', label: '상담신청 신규 댓글' };
+        return { docType: 'reservation/list', label: '상담신청 신규 댓글' };
       case NotificationType.EVENT_COMMENT:
         return { docType: 'event', label: '이벤트 신규 댓글' };
       case NotificationType.NEW_CONNECTION:
@@ -59,7 +59,7 @@ export const AlarmMenu = ({
       case NotificationType.NEW_MANAGER:
         return { docType: 'manager', label: '매니저 신청 알림' };
       case NotificationType.NEW_RESERVATION:
-        return { docType: 'reservation', label: '예약 신청 알림' };
+        return { docType: 'reservation/list', label: '예약 신청 알림' };
       case NotificationType.NEW_REVIEW:
         return { docType: 'review', label: '리뷰 작성 알림' };
       case NotificationType.REVIEW_COMMENT:

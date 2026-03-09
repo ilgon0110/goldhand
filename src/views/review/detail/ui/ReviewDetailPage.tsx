@@ -30,11 +30,6 @@ type TReviewDetailPageProps = {
   viewCountData: IViewCountResponseData;
 };
 
-interface IResponsePost {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
-  message: string;
-}
-
 export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TReviewDetailPageProps) => {
   const form = useForm<z.infer<typeof reviewCommentSchema>>({
     resolver: zodResolver(reviewCommentSchema),
@@ -178,10 +173,16 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
           <div className="flex w-full justify-end">
             <Button
               className={cn('transition-all duration-300', formValidation ? '' : 'opacity-20 hover:cursor-not-allowed')}
-              disabled={!formValidation}
+              disabled={!formValidation || isCommentSubmitting || userData.userData == null}
               type="submit"
             >
-              {isCommentSubmitting ? <LoadingSpinnerIcon /> : '댓글달기'}
+              {isCommentSubmitting ? (
+                <LoadingSpinnerIcon />
+              ) : userData.userData == null ? (
+                '로그인 후 댓글 작성'
+              ) : (
+                '댓글달기'
+              )}
             </Button>
           </div>
         </form>

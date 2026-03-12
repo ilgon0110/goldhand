@@ -7,12 +7,12 @@ import LoadingBar from '@/src/shared/ui/loadingBar';
 import { ReviewDetailPage } from '@/src/views/review';
 
 type TPageProps = {
-  params: { docId: string };
-  searchParams: { password: string };
+  params: Promise<{ docId: string }>;
+  searchParams: Promise<{ password: string }>;
 };
 
 export default async function Page({ params }: TPageProps) {
-  const { docId } = params;
+  const { docId } = await params;
   const data = await getReviewDetailData({
     docId,
   });

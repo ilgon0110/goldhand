@@ -7,13 +7,13 @@ import { ReservationRecaptchaProvider } from '@/src/views/reservation';
 
 type TPageProps = {
   params: { slug: string };
-  searchParams: { docId: string | undefined; password: string | undefined };
+  searchParams: Promise<{ docId: string | undefined; password: string | undefined }>;
 };
 
 export default async function Page({ searchParams }: TPageProps) {
   const userData = await getUserData();
   const consultDetailData = await getReservationDetailData({
-    docId: searchParams.docId || '',
+    docId: (await searchParams).docId || '',
   });
 
   return (

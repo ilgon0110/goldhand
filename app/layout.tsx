@@ -47,7 +47,9 @@ export default function Layout({
               <NuqsAdapter>
                 <QueryProvider>
                   <Header />
-                  <EventModal />
+                  <Suspense fallback={null}>
+                    <EventModal />
+                  </Suspense>
                   {children}
                 </QueryProvider>
               </NuqsAdapter>

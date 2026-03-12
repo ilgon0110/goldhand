@@ -6,12 +6,12 @@ import LoadingBar from '@/src/shared/ui/loadingBar';
 import { EventDetailPage, getEventDetailData } from '@/src/views/event';
 
 type TPageProps = {
-  params: { docId: string };
-  searchParams: { password: string };
+  params: Promise<{ docId: string }>;
+  searchParams: Promise<{ password: string }>;
 };
 
 export default async function Page({ params }: TPageProps) {
-  const { docId } = params;
+  const { docId } = await params;
   const data = await getEventDetailData({
     docId,
   });

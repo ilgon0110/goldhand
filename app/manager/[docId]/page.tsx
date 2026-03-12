@@ -5,11 +5,11 @@ import LoadingBar from '@/src/shared/ui/loadingBar';
 import { getManagerApplyDetailData, ManagerApplyDetailPage } from '@/src/views/manager';
 
 type TPageProps = {
-  params: { docId: string };
+  params: Promise<{ docId: string }>;
 };
 
 export default async function Page({ params }: TPageProps) {
-  const { docId } = params;
+  const { docId } = await params;
   const userData = await getUserData();
   const data = await getManagerApplyDetailData({
     docId,

@@ -1,4 +1,4 @@
-import type { UseMutationOptions } from '@tanstack/react-query';
+import type { InfiniteData, UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { notificationKeys } from '@/src/shared/config/queryKeys';
@@ -19,7 +19,7 @@ interface INotificationVariables {
 }
 
 type TContext = {
-  previous?: INotificationResponseData | undefined;
+  previous?: InfiniteData<INotificationResponseData> | undefined;
   key?: readonly unknown[];
 };
 
@@ -51,22 +51,25 @@ export function useNotificationMutation(
       const key = notificationKeys.list(vars.userId);
       await queryClient.cancelQueries({ queryKey: key });
 
-      const previous = queryClient.getQueryData<INotificationResponseData>(key);
+      const previous = queryClient.getQueryData<InfiniteData<INotificationResponseData>>(key);
 
       if (previous) {
-        const newData: INotificationResponseData = {
+        const newData: InfiniteData<INotificationResponseData> = {
           ...previous,
-          data: (previous.data ?? []).map((noti: INotificationDetailData) => {
-            if (vars.markAsRead) {
-              return { ...noti, isRead: true };
-            }
-            if (vars.notificationId && noti.id === vars.notificationId) {
-              return { ...noti, isRead: true };
-            }
-            return noti;
-          }),
+          pages: previous.pages.map(page => ({
+            ...page,
+            data: (page.data ?? []).map((noti: INotificationDetailData) => {
+              if (vars.markAsRead) {
+                return { ...noti, isRead: true };
+              }
+              if (vars.notificationId && noti.id === vars.notificationId) {
+                return { ...noti, isRead: true };
+              }
+              return noti;
+            }),
+          })),
         };
-        queryClient.setQueryData<INotificationResponseData>(key, newData);
+        queryClient.setQueryData<InfiniteData<INotificationResponseData>>(key, newData);
       }
 
       return { previous, key };

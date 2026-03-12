@@ -40,12 +40,12 @@ export const useAlarm = (userId: string) => {
           };
         }
 
-        // 중복 체크: 첫 페이지(가장 최신)에 이미 존재하면 아무 변경 없음
-        const firstPage = old.pages[0];
-        const exists = firstPage?.data?.find(n => n.id === payload.id);
+        // 중복 체크: 전체 페이지에 이미 존재하면 아무 변경 없음
+        const exists = old.pages.some(page => page.data?.some(n => n.id === payload.id));
         if (exists) return old;
 
         // 첫 페이지의 data에 새 알림을 앞쪽으로 추가
+        const firstPage = old.pages[0];
         const updatedFirstPage: INotificationResponseData = {
           ...firstPage,
           data: firstPage?.data ? [payload, ...firstPage.data] : [payload],

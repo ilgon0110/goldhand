@@ -51,19 +51,18 @@ export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
       const recaptchaToken = await executeRecaptcha('join');
 
       // POST 요청
-      const managerApplyResponse = (await (
-        await fetch('/api/manager/apply', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...values,
-            userId: userData?.userId || null,
-            recaptchaToken,
-          }),
-        })
-      ).json()) as { response: string; message: string };
+      const res = await fetch('/api/manager/apply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...values,
+          userId: userData?.userId || null,
+          recaptchaToken,
+        }),
+      });
+      const managerApplyResponse = (await res.json()) as { response: string; message: string };
 
       if (managerApplyResponse.response === 'ng') {
         toastError(`산후관리사 신청에 실패했습니다.\n${managerApplyResponse.message}`);
@@ -87,7 +86,7 @@ export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
 
   useEffect(() => {
     form.trigger();
-  }, []);
+  }, [form]);
 
   //const recaptchaRef = useRef<ReCAPTCHA>(null);
 

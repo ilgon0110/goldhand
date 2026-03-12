@@ -58,19 +58,18 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
 
       const recaptchaToken = await executeRecaptcha('join');
       // POST 요청
-      const data = await (
-        await fetch('/api/reservation/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...values,
-            userId: userData.userData?.userId ? userData.userData?.userId : null,
-            recaptchaToken,
-          }),
-        })
-      ).json();
+      const res = await fetch('/api/reservation/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...values,
+          userId: userData.userData?.userId ? userData.userData?.userId : null,
+          recaptchaToken,
+        }),
+      });
+      const data = await res.json();
 
       if (data.response === 'expired') {
         toastError('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
@@ -81,10 +80,10 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
       if (data.response === 'ok') {
         toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
         // 비밀번호 입력된 경우 비밀번호 검증 jwt 쿠키 저장
-        if (values.password) {
-          await passwordPostAction(data.docId, values.password);
-        }
-        await sendViewLog(data.docId);
+        await Promise.all([
+          values.password ? passwordPostAction(data.docId, values.password) : Promise.resolve(),
+          sendViewLog(data.docId),
+        ]);
         // 3초 후에 페이지 이동
         setTimeout(() => {
           router.replace(`/reservation/list/${data.docId}`);
@@ -102,7 +101,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
 
   useEffect(() => {
     form.trigger();
-  }, []);
+  }, [form]);
 
   return (
     <>

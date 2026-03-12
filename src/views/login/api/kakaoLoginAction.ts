@@ -18,15 +18,14 @@ interface IResponse {
 
 export async function kakaoLoginAction(code: string): Promise<IResponse> {
   try {
-    const postData = await (
-      await fetch(`${apiUrl}/api/auth/kakao`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-      })
-    ).json();
+    const res = await fetch(`${apiUrl}/api/auth/kakao`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+    const postData = await res.json();
 
     if (postData.accessToken) {
       // Set the access token in cookies

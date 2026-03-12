@@ -18,15 +18,14 @@ interface IResponse {
 
 export async function naverLoginAction(access_token: string): Promise<IResponse> {
   try {
-    const postData = await (
-      await fetch(`${apiUrl}/api/auth/naver`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ access_token }),
-      })
-    ).json();
+    const res = await fetch(`${apiUrl}/api/auth/naver`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ access_token }),
+    });
+    const postData = await res.json();
 
     if (postData.accessToken) {
       // Set the access token in cookies

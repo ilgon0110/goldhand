@@ -86,45 +86,39 @@ export const useAlarm = (userId: string) => {
       sse.onerror = err => console.error('Alarm SSE error', err);
 
       // 채널별 이벤트 처리 (server-side의 "event: <channel>" 값)
-      sse.addEventListener(CHANNELS.NEW_REVIEW, async (e: MessageEvent) => {
+      sse.addEventListener(CHANNELS.NEW_REVIEW, (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
-        // 여기서 알림 UI 업데이트 등 작업 수행
-        await onReceiveAlarm(payload);
+        void onReceiveAlarm(payload);
         toastInfo('새로운 리뷰가 등록되었습니다!');
       });
 
-      sse.addEventListener(CHANNELS.REVIEW_COMMENT, async (e: MessageEvent) => {
+      sse.addEventListener(CHANNELS.REVIEW_COMMENT, (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
-        // 여기서 알림 UI 업데이트 등 작업 수행
-        await onReceiveAlarm(payload);
+        void onReceiveAlarm(payload);
         toastInfo('내 리뷰에 새로운 댓글이 달렸습니다!');
       });
 
-      sse.addEventListener(CHANNELS.NEW_EVENT, async (e: MessageEvent) => {
+      sse.addEventListener(CHANNELS.NEW_EVENT, (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
-        // 여기서 알림 UI 업데이트 등 작업 수행
-        await onReceiveAlarm(payload);
+        void onReceiveAlarm(payload);
         toastSuccess('새로운 이벤트가 등록되었습니다!');
       });
 
-      sse.addEventListener(CHANNELS.EVENT_COMMENT, async (e: MessageEvent) => {
+      sse.addEventListener(CHANNELS.EVENT_COMMENT, (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
-        // 여기서 알림 UI 업데이트 등 작업 수행
-        await onReceiveAlarm(payload);
+        void onReceiveAlarm(payload);
         toastInfo('내 이벤트에 새로운 댓글이 달렸습니다!');
       });
 
-      sse.addEventListener(CHANNELS.NEW_RESERVATION, async (e: MessageEvent) => {
+      sse.addEventListener(CHANNELS.NEW_RESERVATION, (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
-        // 여기서 알림 UI 업데이트 등 작업 수행
-        await onReceiveAlarm(payload);
+        void onReceiveAlarm(payload);
         toastSuccess('새로운 상담신청이 접수되었습니다!');
       });
 
-      sse.addEventListener(CHANNELS.CONSULT_COMMENT, async (e: MessageEvent) => {
+      sse.addEventListener(CHANNELS.CONSULT_COMMENT, (e: MessageEvent) => {
         const payload = JSON.parse(e.data) as INotificationDetailData;
-        // 여기서 알림 UI 업데이트 등 작업 수행
-        await onReceiveAlarm(payload);
+        void onReceiveAlarm(payload);
         toastInfo('내 상담에 새로운 댓글이 달렸습니다!');
       });
 

@@ -11,22 +11,16 @@ import { Button } from '@/src/shared/ui/button';
 export const EventModal = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const hideUntilTime = safeLocalStorage.get('hideUntilTime');
-
-  useEffect(() => {
+    const hideUntilTime = safeLocalStorage.get('hideUntilTime');
     if (hideUntilTime && new Date(hideUntilTime) > new Date()) {
       setIsOpen(false);
     } else {
       setIsOpen(true);
     }
-  }, [pathname, hideUntilTime, searchParams]);
+  }, [pathname, searchParams]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -38,10 +32,6 @@ export const EventModal = () => {
     safeLocalStorage.set('hideUntilTime', tommorrow.toISOString());
     setIsOpen(false);
   };
-
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <AnimateModal isOpen={isOpen} setIsOpen={setIsOpen}>

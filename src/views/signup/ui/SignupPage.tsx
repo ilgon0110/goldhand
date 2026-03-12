@@ -57,7 +57,7 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
         //initializeRecaptcha();
       },
     });
-  }, []);
+  }, [form]);
 
   // 1. 핸드폰 번호로 인증번호 발송 훅
   const {

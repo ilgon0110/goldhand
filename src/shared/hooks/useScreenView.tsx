@@ -2,7 +2,7 @@
 'use client';
 
 import { logEvent } from 'firebase/analytics';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { firebaseAnalyticsPromise } from '../config/firebase';
 
@@ -15,6 +15,10 @@ import { firebaseAnalyticsPromise } from '../config/firebase';
  */
 
 export const useScreenView = (screenName: string, screenClass: string, additionalParams: Record<string, any> = {}) => {
+  const additionalParamsRef = useRef(additionalParams);
+  additionalParamsRef.current = additionalParams;
+  const serializedParams = JSON.stringify(additionalParams);
+
   useEffect(() => {
     if (!screenName || !screenClass) return;
 
@@ -24,8 +28,8 @@ export const useScreenView = (screenName: string, screenClass: string, additiona
       logEvent(analytics, 'screen_view', {
         firebase_screen: screenName,
         firebase_screen_class: screenClass,
-        ...additionalParams,
+        ...additionalParamsRef.current,
       });
     });
-  }, [screenName, screenClass, JSON.stringify(additionalParams)]);
+  }, [screenName, screenClass, serializedParams]);
 };

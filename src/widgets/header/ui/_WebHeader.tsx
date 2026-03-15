@@ -144,10 +144,20 @@ export const WebHeader = ({
           {userId != null && (
             <NavigationMenuItem>
               <PopoverTrigger asChild>
-                <button className="relative flex items-center justify-center">
-                  <Bell size={20} />
+                <button
+                  aria-label={
+                    notificationNoReadCount != null && notificationNoReadCount > 0
+                      ? `알림 ${notificationNoReadCount}개`
+                      : '알림'
+                  }
+                  className="relative flex items-center justify-center"
+                >
+                  <Bell aria-hidden="true" size={20} />
                   {notificationNoReadCount != null && notificationNoReadCount > 0 && (
-                    <div className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500">
+                    <div
+                      aria-hidden="true"
+                      className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500"
+                    >
                       {notificationNoReadCount}
                     </div>
                   )}

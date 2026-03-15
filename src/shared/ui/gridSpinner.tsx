@@ -5,9 +5,11 @@ import { GridLoader } from 'react-spinners';
 
 const GridLoadingSpinner = ({ text }: { text: string }) => {
   return (
-    <div className="flex w-full flex-col items-center gap-4">
+    <div aria-label={text} aria-live="polite" className="flex w-full flex-col items-center gap-4" role="status">
       <GridLoader color="green" cssOverride={{ width: '100%' }} />
-      <span className="text-xl text-gray-400">{text}</span>
+      <span aria-hidden="true" className="text-xl text-gray-400">
+        {text}
+      </span>
     </div>
   );
 };

@@ -26,6 +26,7 @@ export const OrderCard = ({ order, title, content }: TOrderCardProps) => {
           <div className={cn('flex flex-row gap-6', 'md:gap-10')}>
             <div className="flex flex-row items-center gap-2">
               <svg
+                aria-hidden="true"
                 className={cn('h-6 w-6', 'md:h-12 md:w-12')}
                 fill="#728146"
                 viewBox="0 -960 960 960"
@@ -44,7 +45,7 @@ export const OrderCard = ({ order, title, content }: TOrderCardProps) => {
               target="_blank"
             >
               <div className={cn('relative h-8 w-8', 'md:h-12 md:w-12')}>
-                <Image alt="Kakao" fill sizes="100vw" src="/icon/kakaotalk.png" />
+                <Image alt="카카오톡 채널 바로가기" fill sizes="100vw" src="/icon/kakaotalk.png" />
               </div>
               <div className={cn('', 'md:text-2xl')}>
                 <span className="font-bold">고운황금손</span> 클릭

@@ -97,7 +97,7 @@ export const EventEditPage = ({ docId }: TEventEditPageProps) => {
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger data-testid="event-status-select-trigger">
+                    <SelectTrigger aria-label="이벤트 상태" data-testid="event-status-select-trigger">
                       <SelectValue placeholder="이벤트 상태를 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>

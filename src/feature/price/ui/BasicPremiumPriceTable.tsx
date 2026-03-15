@@ -25,7 +25,7 @@ export const BasicPremiumPriceTable = ({
     >
       <thead>
         <tr>
-          <th className="bg-slate-100 px-2 py-1"></th>
+          <th aria-label="기간" className="bg-slate-100 px-2 py-1" scope="col"></th>
           <th className="border p-4">
             <div className="flex flex-col items-center justify-center gap-2">
               {iconMode && <Plane height={40} width={40} />}

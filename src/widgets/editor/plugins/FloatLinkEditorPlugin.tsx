@@ -256,6 +256,7 @@ function FloatingLinkEditor({
           />
           <div>
             <div
+              aria-label="링크 편집 취소"
               className="link-cancel"
               role="button"
               tabIndex={0}
@@ -266,6 +267,7 @@ function FloatingLinkEditor({
             />
 
             <div
+              aria-label="링크 확인"
               className="link-confirm"
               role="button"
               tabIndex={0}
@@ -280,6 +282,7 @@ function FloatingLinkEditor({
             {linkUrl}
           </a>
           <div
+            aria-label="링크 편집"
             className="link-edit"
             role="button"
             tabIndex={0}
@@ -291,6 +294,7 @@ function FloatingLinkEditor({
             onMouseDown={preventDefault}
           />
           <div
+            aria-label="링크 삭제"
             className="link-trash"
             role="button"
             tabIndex={0}

@@ -25,6 +25,7 @@ export const ManagerCard = ({ docId, title, author, createdAt }: TManagerCardPro
     <>
       {isPending && <LoadingSpinnerOverlay text="해당 지원내역으로 이동중.." />}
       <button
+        aria-label={`${title} — ${author}`}
         className={cn(
           'relative flex w-full flex-row overflow-hidden border-b border-gray-200 p-4 transition-all duration-300 ease-in-out',
           'hover:bg-slate-100',

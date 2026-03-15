@@ -111,11 +111,13 @@ export const Comment = ({
             {isCommentOwner && (
               <>
                 <button
+                  aria-label="댓글 수정"
                   className="text-slate-500 transition-all duration-200 hover:text-black"
                   data-testid="edit-button"
                   onClick={handleEditClick}
                 >
                   <svg
+                    aria-hidden="true"
                     fill="currentColor"
                     height="24px"
                     viewBox="0 -960 960 960"
@@ -126,11 +128,13 @@ export const Comment = ({
                   </svg>
                 </button>
                 <button
+                  aria-label="댓글 삭제"
                   className="text-slate-500 transition-all duration-200 hover:text-red-500"
                   data-testid="delete-button"
                   onClick={() => setAlertDialogOpen(true)}
                 >
                   <svg
+                    aria-hidden="true"
                     fill="currentColor"
                     height="24px"
                     viewBox="0 -960 960 960"

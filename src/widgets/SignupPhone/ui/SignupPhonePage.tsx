@@ -152,7 +152,7 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   return (
     <>
       <SectionTitle title="고운황금손 핸드폰인증" />
-      <button className="hidden" id="sign-in-button" />
+      <button aria-hidden="true" className="hidden" id="sign-in-button" tabIndex={-1} />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

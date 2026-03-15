@@ -69,7 +69,7 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
               </Badge>
               <Badge
                 className={cn(
-                  myPageData.data.userData?.provider === 'naver' ? 'bg-naver text-white' : 'bg-kakao text-black',
+                  myPageData.data.userData?.provider === 'naver' ? 'bg-naver text-black' : 'bg-kakao text-black',
                   'space-x-1',
                 )}
                 variant="outline"

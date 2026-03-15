@@ -80,7 +80,7 @@ export const AlarmMenu = ({
   }
 
   return (
-    <div className="relative flex flex-col space-y-2">
+    <div aria-label="알림 목록" aria-live="polite" className="relative flex flex-col space-y-2" role="region">
       <button
         className={cn('self-end text-sm text-slate-500', 'hover:text-slate-800')}
         onClick={() => mutate({ userId, markAsRead: true, notificationId: '' })}

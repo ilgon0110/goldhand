@@ -22,6 +22,7 @@ export const Footer = () => {
             <div className="space-y-2 text-center xl:text-start">
               <div className="flex flex-row items-center justify-center space-x-2 xl:justify-normal">
                 <svg
+                  aria-hidden="true"
                   fill="#20603C"
                   height="24px"
                   viewBox="0 -960 960 960"

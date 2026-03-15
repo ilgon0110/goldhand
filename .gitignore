@@ -44,3 +44,7 @@ goldhand-firebase-adminsdk.json
 .eslintcache
 eslint*
 rule.mjs
+
+# docs
+/docs
+비즈톡*

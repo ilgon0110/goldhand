@@ -50,7 +50,7 @@ export default function Layout({
                   <Suspense fallback={null}>
                     <EventModal />
                   </Suspense>
-                  {children}
+                  <main>{children}</main>
                 </QueryProvider>
               </NuqsAdapter>
               <Footer />

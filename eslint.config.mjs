@@ -35,8 +35,9 @@ export default tseslint.config(
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',
       '@typescript-eslint/no-empty-object-type': 'off',
-      // flatConfigs.recommended에서 'off'로 설정된 규칙을 명시적으로 활성화
+      // control-has-associated-label: recommended에서 off → warn으로 활성화
       'jsx-a11y/control-has-associated-label': 'warn',
+      // label-has-associated-control: recommended에서 error → 기존 코드베이스 호환을 위해 warn으로 완화
       'jsx-a11y/label-has-associated-control': 'warn',
     },
 

@@ -14,8 +14,8 @@
 
 | 지표 | Before | After | 개선율 |
 |---|---|---|---|
-| ESLint a11y violations (총) | 35 | - | - |
-| alt-text 누락 | 0 | - | - |
-| control-has-associated-label 누락 | 12 | - | - |
-| label-has-associated-control 누락 | 2 | - | - |
-| no-noninteractive-element-interactions | 0 | - | - |
+| ESLint a11y violations (총) | 35 | 23 | -34% |
+| alt-text 누락 | 0 | 0 | - |
+| control-has-associated-label 누락 | 12 | 0 | -100% |
+| label-has-associated-control 누락 | 2 | 2 | 0% |
+| no-noninteractive-element-interactions | 0 | 0 | - |

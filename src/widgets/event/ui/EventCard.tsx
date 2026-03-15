@@ -59,7 +59,7 @@ export const EventCard = ({
       <button className={rootClass} data-testid={id} onClick={handleClick}>
         <div className={imageWrapperClass} data-testid={`${id}-${isCard ? 'card' : 'table'}-review`}>
           <img
-            alt="리뷰썸네일이미지"
+            alt={thumbnail == null ? `${title} - 기본 이미지` : `${title} 썸네일`}
             height={0}
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             src={thumbnail == null ? '/default_image.png' : thumbnail}

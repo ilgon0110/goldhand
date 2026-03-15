@@ -29,9 +29,11 @@ export const LoadingSpinnerOverlay = ({ text = '로딩 중...', show = true }: T
       >
         <motion.div
           animate={{ opacity: 1, y: 0 }}
+          aria-live="polite"
           className="flex flex-col items-center justify-center space-y-4"
           exit={{ opacity: 0, y: 20 }}
           initial={{ opacity: 0, y: 20 }}
+          role="status"
           transition={{ duration: 0.2 }}
         >
           <BarLoader color="white" cssOverride={{ width: '64px' }} />

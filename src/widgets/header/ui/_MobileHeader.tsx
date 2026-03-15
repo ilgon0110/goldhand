@@ -167,20 +167,26 @@ export const MobileHeader = ({
       </Drawer>
 
       <Drawer direction="bottom" open={notificationMenuOpen} onOpenChange={open => setNotificationMenuOpen(open)}>
-        <DrawerTrigger className="px-6">
-          {userId != null && (
-            <button
-              className={cn('absolute right-6 top-1/2 flex -translate-y-1/2 items-center justify-center', 'lg:hidden')}
-            >
-              <Bell size={20} />
-              {notificationNoReadCount != null && notificationNoReadCount > 0 && (
-                <div className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500">
-                  {notificationNoReadCount}
-                </div>
-              )}
-            </button>
-          )}
-        </DrawerTrigger>
+        {userId != null && (
+          <DrawerTrigger
+            aria-label={
+              notificationNoReadCount != null && notificationNoReadCount > 0
+                ? `알림 ${notificationNoReadCount}개`
+                : '알림'
+            }
+            className={cn('absolute right-6 top-1/2 -translate-y-1/2 px-6', 'lg:hidden')}
+          >
+            <Bell aria-hidden="true" size={20} />
+            {notificationNoReadCount != null && notificationNoReadCount > 0 && (
+              <div
+                aria-hidden="true"
+                className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500"
+              >
+                {notificationNoReadCount}
+              </div>
+            )}
+          </DrawerTrigger>
+        )}
         <DrawerPortal>
           <DrawerOverlay className="fixed inset-0 bg-black/40" />
           <DrawerContent className="fixed bottom-0 left-0 flex h-[80vh] w-full flex-col rounded-br-sm rounded-tr-sm bg-white px-6 pb-12 pt-6">

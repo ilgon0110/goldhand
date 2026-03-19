@@ -1,9 +1,7 @@
-import type { InfiniteData } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { notificationKeys } from '../config/queryKeys';
-import type { INotificationDetailData, INotificationResponseData } from '../types';
 import { toastInfo, toastSuccess } from '../utils';
 
 const CHANNELS = {
@@ -21,108 +19,49 @@ export type TChannel = (typeof CHANNELS)[keyof typeof CHANNELS];
 export const useAlarm = (userId: string) => {
   const queryClient = useQueryClient();
 
-  const onReceiveAlarm = useCallback(
-    async (payload: INotificationDetailData) => {
-      const key = notificationKeys.list(userId);
-
-      queryClient.setQueryData<InfiniteData<INotificationResponseData> | undefined>(key, old => {
-        // old가 없으면 infinite query 형태로 새로 만든다
-        if (!old) {
-          const newPage: INotificationResponseData = {
-            response: 'ok',
-            message: payload.message || '새로운 알림이 도착했습니다.',
-            data: [payload],
-            nextCursor: null,
-          };
-          return {
-            pages: [newPage],
-            pageParams: [1],
-          };
-        }
-
-        // 중복 체크: 전체 페이지에 이미 존재하면 아무 변경 없음
-        const exists = old.pages.some(page => page.data?.some(n => n.id === payload.id));
-        if (exists) return old;
-
-        // 첫 페이지의 data에 새 알림을 앞쪽으로 추가
-        const firstPage = old.pages[0];
-        const updatedFirstPage: INotificationResponseData = {
-          ...firstPage,
-          data: firstPage?.data ? [payload, ...firstPage.data] : [payload],
-        };
-
-        const newPages = [updatedFirstPage, ...old.pages.slice(1)];
-        return {
-          ...old,
-          pages: newPages,
-        };
-      });
-
-      if (payload.id) {
-        try {
-          await fetch('/api/alarm/ack', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ notificationId: payload.id }),
-          });
-        } catch (ackErr) {
-          console.warn('Acknowledging notification failed', ackErr);
-        }
-      }
-    },
-    [userId, queryClient],
-  );
-
   useEffect(() => {
     if (userId) {
-      // 요청 시 쿠키를 함께 보내려면 withCredentials: true 사용
+      const refetchAlarms = () => {
+        void queryClient.invalidateQueries({ queryKey: notificationKeys.list(userId) });
+      };
+
       const url = '/api/alarm/stream';
       const sse = new EventSource(url, { withCredentials: true });
 
       sse.onopen = () => console.log('Alarm SSE open');
       sse.onerror = err => console.error('Alarm SSE error', err);
 
-      // 채널별 이벤트 처리 (server-side의 "event: <channel>" 값)
-      sse.addEventListener(CHANNELS.NEW_REVIEW, (e: MessageEvent) => {
-        const payload = JSON.parse(e.data) as INotificationDetailData;
-        void onReceiveAlarm(payload);
+      sse.addEventListener(CHANNELS.NEW_REVIEW, () => {
+        refetchAlarms();
         toastInfo('새로운 리뷰가 등록되었습니다!');
       });
 
-      sse.addEventListener(CHANNELS.REVIEW_COMMENT, (e: MessageEvent) => {
-        const payload = JSON.parse(e.data) as INotificationDetailData;
-        void onReceiveAlarm(payload);
+      sse.addEventListener(CHANNELS.REVIEW_COMMENT, () => {
+        refetchAlarms();
         toastInfo('내 리뷰에 새로운 댓글이 달렸습니다!');
       });
 
-      sse.addEventListener(CHANNELS.NEW_EVENT, (e: MessageEvent) => {
-        const payload = JSON.parse(e.data) as INotificationDetailData;
-        void onReceiveAlarm(payload);
+      sse.addEventListener(CHANNELS.NEW_EVENT, () => {
+        refetchAlarms();
         toastSuccess('새로운 이벤트가 등록되었습니다!');
       });
 
-      sse.addEventListener(CHANNELS.EVENT_COMMENT, (e: MessageEvent) => {
-        const payload = JSON.parse(e.data) as INotificationDetailData;
-        void onReceiveAlarm(payload);
+      sse.addEventListener(CHANNELS.EVENT_COMMENT, () => {
+        refetchAlarms();
         toastInfo('내 이벤트에 새로운 댓글이 달렸습니다!');
       });
 
-      sse.addEventListener(CHANNELS.NEW_RESERVATION, (e: MessageEvent) => {
-        const payload = JSON.parse(e.data) as INotificationDetailData;
-        void onReceiveAlarm(payload);
+      sse.addEventListener(CHANNELS.NEW_RESERVATION, () => {
+        refetchAlarms();
         toastSuccess('새로운 상담신청이 접수되었습니다!');
       });
 
-      sse.addEventListener(CHANNELS.CONSULT_COMMENT, (e: MessageEvent) => {
-        const payload = JSON.parse(e.data) as INotificationDetailData;
-        void onReceiveAlarm(payload);
+      sse.addEventListener(CHANNELS.CONSULT_COMMENT, () => {
+        refetchAlarms();
         toastInfo('내 상담에 새로운 댓글이 달렸습니다!');
       });
 
       return () => sse.close();
     }
-  }, [userId, queryClient, onReceiveAlarm]);
+  }, [userId, queryClient]);
 };

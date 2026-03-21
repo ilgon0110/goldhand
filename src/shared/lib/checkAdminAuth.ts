@@ -6,7 +6,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 
 type TAdminAuthResult =
-  | { ok: false; reason: 'deleted' | 'expired' | 'invalid' | 'no_token' | 'not_found' }
+  | { ok: false; reason: 'deleted_rejoin' | 'deleted' | 'expired' | 'invalid' | 'no_token' | 'not_found' }
   | { ok: true; uid: string; isAdmin: boolean };
 
 export async function checkAdminAuth(): Promise<TAdminAuthResult> {
@@ -37,6 +37,10 @@ export async function checkAdminAuth(): Promise<TAdminAuthResult> {
 
   const userData = userSnapshot.data() as IUserDetailData;
   if (userData.isDeleted) {
+    const oneYearAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
+    if (userData.deletedAt && userData.deletedAt.seconds * 1000 > oneYearAgo) {
+      return { ok: false, reason: 'deleted_rejoin' };
+    }
     return { ok: false, reason: 'deleted' };
   }
 

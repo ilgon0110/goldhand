@@ -23,7 +23,7 @@ const pendingAcks: Map<string, Set<string>> = gw.__alarm_pendingAcks;
 // Helper to log with prefix
 function log(...args: any[]) {
   try {
-    console.log('[alarm]', ...args);
+    // console.log('[alarm]', ...args);
   } catch {
     // ignore
   }

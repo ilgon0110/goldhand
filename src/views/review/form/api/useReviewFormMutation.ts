@@ -14,22 +14,22 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
-import type { eventFormSchema } from '../config/eventFormSchema';
-import { useEventImageUpload } from './useEventImageUpload';
+import type { reviewFormSchema } from '../config/reviewFormSchema';
+import { useReviewImageUpload } from './useReviewImageUpload';
 
-interface IEventPostData {
+interface IReviewPostData {
   response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
   message: string;
   docId: string;
 }
 
-interface IEventFormMutationProps {
+interface IReviewFormMutationProps {
   title: string;
   name: string;
+  franchisee: string;
   htmlString: string;
   docId: string;
   images: { key: string; url: string }[] | null;
-  status: string;
 }
 
 function stripDataUriSrcs(html: string): string {
@@ -38,50 +38,52 @@ function stripDataUriSrcs(html: string): string {
   );
 }
 
-export const useEventFormMutation = (
+export const useReviewFormMutation = (
   mode: 'create' | 'update',
   dId?: string,
-  options?: UseMutationOptions<IEventPostData, Error, IEventFormMutationProps>,
+  options?: UseMutationOptions<IReviewPostData, Error, IReviewFormMutationProps>,
 ) => {
-  const [eventFormEditor, setEventFormEditor] = useState<LexicalEditor>();
+  const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
   const { userData } = useAuth();
   const router = useRouter();
 
-  const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useEventImageUpload();
+  const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useReviewImageUpload();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: IEventFormMutationProps) =>
-      fetcher<IEventPostData>(`/api/event/${mode}`, {
+    mutationFn: (data: IReviewFormMutationProps) =>
+      fetcher<IReviewPostData>(`/api/review/${mode}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
         cache: 'no-store',
       }),
     onSuccess: res => {
-      toastSuccess('이벤트가 성공적으로 업로드되었습니다.\n잠시 후 작성한 이벤트 페이지로 이동합니다.');
-      setTimeout(() => router.replace(`/event/${res.docId}`), 3000);
+      toastSuccess('후기가 성공적으로 업로드되었습니다.\n잠시 후 작성후기로 이동합니다.');
+      setTimeout(() => router.replace(`/review/${res.docId}`), 3000);
     },
     onError: error => {
-      toastError('이벤트 업로드 중 오류가 발생했습니다. : ' + error.message);
+      toastError('후기 업로드 중 오류가 발생했습니다.\n' + error.message);
+      console.error(`후기 업로드 중 오류가 발생했습니다.\n${error}`);
+      setTimeout(() => router.replace(`/review`), 2000);
     },
     ...options,
   });
 
   const isSubmitting = isUploading || isPending;
 
-  const onSubmit = async (values: z.infer<typeof eventFormSchema>) => {
-    if (!eventFormEditor || !userData) return;
+  const onSubmit = async (values: z.infer<typeof reviewFormSchema>) => {
+    if (!reviewFormEditor || !userData) return;
 
     let htmlString = '';
-    eventFormEditor.read(() => {
-      htmlString = $generateHtmlFromNodes(eventFormEditor, null);
+    reviewFormEditor.read(() => {
+      htmlString = $generateHtmlFromNodes(reviewFormEditor, null);
     });
 
     const docId = dId || uuidv4();
 
     if (!images || images.length === 0) {
-      mutate({ title: values.title, name: values.name, htmlString, docId, images: [], status: values.status });
+      mutate({ title: values.title, name: values.name, franchisee: values.franchisee, htmlString, docId, images: null });
       return;
     }
 
@@ -90,18 +92,18 @@ export const useEventFormMutation = (
       mutate({
         title: values.title,
         name: values.name,
+        franchisee: values.franchisee,
         htmlString: cleanedHtmlString,
         docId,
         images: uploadedImages,
-        status: values.status,
       });
     });
   };
 
   return {
     onSubmit,
-    handleChangeEventFormEditor: setEventFormEditor,
-    eventFormEditor,
+    handleChangeReviewFormEditor: setReviewFormEditor,
+    reviewFormEditor,
     isSubmitting,
     imageProgress,
     isOptimizing,

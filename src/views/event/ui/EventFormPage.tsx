@@ -25,7 +25,7 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 
-import { useOptimizedEventFormMutation } from '../api/useOptimizedEventFormMutation';
+import { useEventFormMutation } from '../api/useEventFormMutation';
 import { eventFormSchema } from '../config/eventFormSchema';
 
 const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
@@ -45,7 +45,7 @@ export const EventFormPage = () => {
   const formValidation = form.formState.isValid;
 
   const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
-    useOptimizedEventFormMutation('create');
+    useEventFormMutation('create');
 
   return (
     <>
@@ -120,7 +120,7 @@ export const EventFormPage = () => {
                 'transition-all duration-300 ease-in-out',
                 formValidation ? '' : 'cursor-not-allowed opacity-20',
               )}
-              disabled={!formValidation}
+              disabled={!formValidation || isSubmitting}
               type="submit"
             >
               {isSubmitting ? <LoadingSpinnerIcon /> : '이벤트 만들기'}

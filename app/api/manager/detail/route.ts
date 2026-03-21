@@ -1,11 +1,8 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
-import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import type { IApplyDetailData, IManagerApplyDetailResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -13,45 +10,30 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const docId = searchParams.get('docId');
 
-  // 현재 로그인된 유저의 uid를 가져온다.
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
-
-  if (!accessToken) {
-    return typedJson<IManagerApplyDetailResponseData>(
-      {
-        response: 'ng',
-        message: '로그인 토큰이 존재하지 않습니다.',
-        data: null,
-      },
-      { status: 403 },
-    );
-  }
-
-  let uid;
-  try {
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
-    uid = decodedToken.uid;
-
-    if (uid === undefined) {
+  const authResult = await checkAdminAuth();
+  if (!authResult.ok) {
+    if (authResult.reason === 'no_token') {
       return typedJson<IManagerApplyDetailResponseData>(
-        {
-          response: 'ng',
-          message: '사용자 식별 아이디가 존재하지 않습니다.',
-          data: null,
-        },
+        { response: 'ng', message: '로그인 토큰이 존재하지 않습니다.', data: null },
         { status: 403 },
       );
     }
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    if (error != null && typeof error == 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+    if (authResult.reason === 'expired') {
       return typedJson<IManagerApplyDetailResponseData>(
-        {
-          response: 'ng',
-          message: '로그인 토큰이 만료되었습니다.',
-          data: null,
-        },
+        { response: 'ng', message: '로그인 토큰이 만료되었습니다.', data: null },
+        { status: 403 },
+      );
+    }
+    if (authResult.reason === 'not_found') {
+      return typedJson<IManagerApplyDetailResponseData>({
+        response: 'ng',
+        message: '사용자 데이터가 존재하지 않습니다.',
+        data: null,
+      });
+    }
+    if (authResult.reason === 'deleted') {
+      return typedJson<IManagerApplyDetailResponseData>(
+        { response: 'ng', message: '탈퇴한 유저입니다.', data: null },
         { status: 403 },
       );
     }
@@ -62,46 +44,17 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  const { uid, isAdmin } = authResult;
+
+  if (!docId) {
+    return typedJson<IManagerApplyDetailResponseData>(
+      { response: 'ng', message: 'docId가 존재하지 않습니다.', data: null },
+      { status: 400 },
+    );
+  }
+
   try {
-    const db = getFirestore(firebaseApp);
     const adminDB = getAdminFirestore(firebaseAdminApp);
-
-    // 사용자 데이터 가져오기
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (!userDocSnap.exists()) {
-      return typedJson<IManagerApplyDetailResponseData>({
-        response: 'ng',
-        message: '사용자 데이터가 존재하지 않습니다.',
-        data: null,
-      });
-    }
-
-    // 탈퇴한 유저인지 확인
-    if (userDocSnap.data()?.isDeleted) {
-      return typedJson<IManagerApplyDetailResponseData>(
-        {
-          response: 'ng',
-          message: '탈퇴한 유저입니다.',
-          data: null,
-        },
-        { status: 403 },
-      );
-    }
-    // 관리자 계정인지 확인
-    const isAdmin = userDocSnap.data()?.grade === 'admin';
-
-    if (!docId) {
-      return typedJson<IManagerApplyDetailResponseData>(
-        {
-          response: 'ng',
-          message: 'docId가 존재하지 않습니다.',
-          data: null,
-        },
-        { status: 400 },
-      );
-    }
 
     // 산후관리사 신청 데이터 가져오기
     const docSnap = await adminDB.collection('managers').doc(docId).get();
@@ -110,11 +63,7 @@ export async function GET(request: NextRequest) {
     // 관리자이거나 본인인 경우 접근 가능
     if (!isAdmin && docData?.userId != uid) {
       return typedJson<IManagerApplyDetailResponseData>(
-        {
-          response: 'unAuthorized',
-          message: '접근 권한이 없습니다.',
-          data: null,
-        },
+        { response: 'unAuthorized', message: '접근 권한이 없습니다.', data: null },
         { status: 403 },
       );
     }
@@ -135,11 +84,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching user data:', error);
     return typedJson<IManagerApplyDetailResponseData>(
-      {
-        response: 'ng',
-        message: '데이터를 가져오는 중 오류가 발생했습니다.',
-        data: null,
-      },
+      { response: 'ng', message: '데이터를 가져오는 중 오류가 발생했습니다.', data: null },
       { status: 500 },
     );
   }

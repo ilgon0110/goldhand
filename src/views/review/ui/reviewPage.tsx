@@ -10,11 +10,11 @@ import { franchiseeList } from '@/src/shared/config';
 import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IReviewListResponseData } from '@/src/shared/types';
+import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { WidgetPagination } from '@/src/widgets/Pagination';
 import { ReviewPageHeader } from '@/src/widgets/review';
 
 export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; isLogin: boolean }) => {
@@ -85,7 +85,7 @@ export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; i
         <EmptyState className="mt-4" description="등록된 후기가 없습니다." title="새로운 후기를 등록해보세요" />
       )}
       <section className="mt-6">
-        <WidgetPagination
+        <CustomPagination
           maxColumnNumber={10}
           targetPage={reviewParam.page}
           totalDataLength={data.totalDataLength}

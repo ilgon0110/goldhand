@@ -25,7 +25,7 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
-import { useOptimizedReviewFormMutation } from '../api/useOptimizedReviewFormMutation';
+import { useReviewFormMutation } from '../api/useReviewFormMutation';
 import { useSuspenseGetReviewDetailData } from '../api/useSuspenseGetReviewDetailData';
 import { reviewFormSchema } from '../config/reviewFormSchema';
 
@@ -47,7 +47,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   });
   const formValidation = form.formState.isValid;
   const { onSubmit, handleChangeReviewFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
-    useOptimizedReviewFormMutation('update', docId);
+    useReviewFormMutation('update', docId);
 
   return (
     <>

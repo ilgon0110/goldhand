@@ -5,10 +5,10 @@ import { useQueryStates } from 'nuqs';
 import { reservationParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { Checkbox } from '@/src/shared/ui/checkbox';
+import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import { formatDateToYMD } from '@/src/shared/utils';
 import { ReservationCard } from '@/src/views/reservation';
-import { WidgetPagination } from '@/src/widgets/Pagination';
 
 interface IConsultData extends IReservationDetailData {
   id: string;
@@ -68,7 +68,7 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
           <EmptyState className="my-auto" description="새로운 예약 상담을 신청해보세요." title="예약 내역이 없습니다" />
         )}
       </div>
-      <WidgetPagination
+      <CustomPagination
         maxColumnNumber={10}
         targetPage={consultParam.page}
         totalDataLength={data.totalDataLength}

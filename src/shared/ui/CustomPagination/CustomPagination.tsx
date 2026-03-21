@@ -13,19 +13,14 @@ import {
   PaginationPrevious,
 } from '@/src/shared/ui/pagination';
 
-type TWidgetPaginationProps = {
+type TCustomPaginationProps = {
   totalDataLength: number | undefined;
   maxColumnNumber: number;
   targetPage: number;
   onChangePage: (page: number) => void;
 };
 
-export const WidgetPagination = ({
-  totalDataLength,
-  maxColumnNumber,
-  targetPage,
-  onChangePage,
-}: TWidgetPaginationProps) => {
+const CustomPagination = ({ totalDataLength, maxColumnNumber, targetPage, onChangePage }: TCustomPaginationProps) => {
   const MAXIMUM_NUMBER_OF_PAGES = 10;
   const totalPages = Math.ceil((totalDataLength || 0) / maxColumnNumber);
   const [paginationArr, setPaginationArr] = useState(
@@ -66,12 +61,12 @@ export const WidgetPagination = ({
       <PaginationContent>
         {nowStartPageNumber > MAXIMUM_NUMBER_OF_PAGES && (
           <PaginationItem>
-            <PaginationPrevious href="#" onClick={onClickPrevious} />
+            <PaginationPrevious href="#" onClick={e => { e.preventDefault(); onClickPrevious(); }} />
           </PaginationItem>
         )}
         {paginationArr.map(page => (
           <PaginationItem key={page}>
-            <PaginationLink href={`#`} isActive={page === targetPage} onClick={() => onChangePage(page)}>
+            <PaginationLink href="#" isActive={page === targetPage} onClick={e => { e.preventDefault(); onChangePage(page); }}>
               {page}
             </PaginationLink>
           </PaginationItem>
@@ -82,12 +77,12 @@ export const WidgetPagination = ({
               <PaginationEllipsis />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href={`#`} isActive={targetPage === totalPages} onClick={() => onChangePage(totalPages)}>
+              <PaginationLink href="#" isActive={targetPage === totalPages} onClick={e => { e.preventDefault(); onChangePage(totalPages); }}>
                 {totalPages}
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationNext href="#" onClick={onClickNext} />
+              <PaginationNext href="#" onClick={e => { e.preventDefault(); onClickNext(); }} />
             </PaginationItem>
           </>
         )}
@@ -95,3 +90,5 @@ export const WidgetPagination = ({
     </Pagination>
   );
 };
+
+export default CustomPagination;

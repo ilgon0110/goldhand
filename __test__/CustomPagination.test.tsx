@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { WidgetPagination } from '@/src/widgets/Pagination';
+import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 
-describe('WidgetPagination 컴포넌트 테스트', async () => {
+describe('CustomPagination 컴포넌트 테스트', async () => {
   it('totalDataLength/maxColumnNumber 값과 동일하게 페이지 번호가 생성되는지 확인', async () => {
-    render(<WidgetPagination maxColumnNumber={5} targetPage={1} totalDataLength={21} onChangePage={() => {}} />);
+    render(<CustomPagination maxColumnNumber={5} targetPage={1} totalDataLength={21} onChangePage={() => {}} />);
 
     // 페이지 번호가 5개 생성되어야 합니다.
     for (let i = 1; i <= 5; i++) {
@@ -14,7 +14,7 @@ describe('WidgetPagination 컴포넌트 테스트', async () => {
   });
 
   it('totalDataLength/maxColumnNumber가 MAXIMUM_NUMBER_OF_PAGES보다 큰 경우 - 페이지번호, 다음, totalPage가 생성되는지 확인', async () => {
-    render(<WidgetPagination maxColumnNumber={5} targetPage={1} totalDataLength={103} onChangePage={() => {}} />);
+    render(<CustomPagination maxColumnNumber={5} targetPage={1} totalDataLength={103} onChangePage={() => {}} />);
 
     // 페이지 번호가 10개 생성되어야 합니다.
     for (let i = 1; i <= 10; i++) {
@@ -29,7 +29,7 @@ describe('WidgetPagination 컴포넌트 테스트', async () => {
   });
 
   it('현재 페이지 번호가 MAXIMUM_NUMBER_OF_PAGES보다 큰 경우만 이전 버튼이 활성화되는지 확인', async () => {
-    render(<WidgetPagination maxColumnNumber={5} targetPage={1} totalDataLength={103} onChangePage={() => {}} />);
+    render(<CustomPagination maxColumnNumber={5} targetPage={1} totalDataLength={103} onChangePage={() => {}} />);
 
     // 페이지 번호가 10개 생성되어야 합니다.
     for (let i = 1; i <= 10; i++) {
@@ -44,7 +44,7 @@ describe('WidgetPagination 컴포넌트 테스트', async () => {
   });
 
   it('totalDataLength//maxColumnNumber가 MAXIMUM_NUMBER_OF_PAGES보다 큰 경우에만 다음 버튼이 활성화되는지 확인', async () => {
-    render(<WidgetPagination maxColumnNumber={5} targetPage={1} totalDataLength={21} onChangePage={() => {}} />);
+    render(<CustomPagination maxColumnNumber={5} targetPage={1} totalDataLength={21} onChangePage={() => {}} />);
 
     // 다음 버튼이 비활성화되어야 합니다.
     expect(screen.queryByRole('link', { name: 'Go to next page' })).not.toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('WidgetPagination 컴포넌트 테스트', async () => {
 
   it('페이지 번호를 눌렀을 때 onChangePage가 호출되는지 확인', async () => {
     const handlePage = vi.fn();
-    render(<WidgetPagination maxColumnNumber={10} targetPage={1} totalDataLength={103} onChangePage={handlePage} />);
+    render(<CustomPagination maxColumnNumber={10} targetPage={1} totalDataLength={103} onChangePage={handlePage} />);
 
     await userEvent.click(screen.getByRole('link', { name: '3' }));
 

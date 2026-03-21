@@ -17,22 +17,6 @@ function makeEvent(eventId: string, event: string, data: INotificationDetailData
   return `id: ${eventId}\nevent: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 }
 
-async function checkAdmin() {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken');
-  const adminApp = getAdminAuth(firebaseAdminApp);
-
-  if (accessToken == null) return false;
-  const decodedToken = await adminApp.verifyIdToken(accessToken.value);
-  const uid = decodedToken.uid;
-
-  const adminDB = getAdminFirestore(firebaseAdminApp);
-  const userSnapshot = await adminDB.collection('users').doc(uid).get();
-  if (!userSnapshot.exists) return false;
-  const userData = userSnapshot.data() as IUserDetailData;
-  return userData.grade === 'admin';
-}
-
 async function getUserId(): Promise<string> {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken');

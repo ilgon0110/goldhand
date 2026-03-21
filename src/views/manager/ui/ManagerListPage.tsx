@@ -4,11 +4,11 @@ import { useQueryStates } from 'nuqs';
 
 import { managerListParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IApplyDetailData } from '@/src/shared/types';
+import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { formatDateToYMD } from '@/src/shared/utils';
 import { ManagerCard } from '@/src/widgets/managers';
-import { WidgetPagination } from '@/src/widgets/Pagination';
 
 interface IManagerListPageProps {
   managerListData: IApplyDetailData[] | null;
@@ -42,7 +42,7 @@ export const ManagerListPage = ({ managerListData, totalDataLength }: IManagerLi
           <EmptyState className="my-auto" description=" " title="산후관리사 지원내역이 없습니다" />
         )}
       </div>
-      <WidgetPagination
+      <CustomPagination
         maxColumnNumber={10}
         targetPage={managerListParam.page}
         totalDataLength={totalDataLength}

@@ -24,7 +24,7 @@ import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
-import { useOptimizedEventFormMutation } from '../api/useOptimizedEventFormMutation';
+import { useEventFormMutation } from '../api/useEventFormMutation';
 import { useSuspenseGetEventData } from '../api/useSuspenseGetEventData';
 import { eventFormSchema } from '../config/eventFormSchema';
 
@@ -46,7 +46,7 @@ export const EventEditPage = ({ docId }: TEventEditPageProps) => {
   const formValidation = form.formState.isValid;
 
   const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
-    useOptimizedEventFormMutation('update', docId);
+    useEventFormMutation('update', docId);
   return (
     <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}

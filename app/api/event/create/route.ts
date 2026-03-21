@@ -1,8 +1,7 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
-import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import { typedJson } from '@/src/shared/utils';
 
 interface IEventPost {
@@ -30,49 +29,34 @@ export async function POST(req: Request) {
     );
   }
 
+  const authResult = await checkAdminAuth();
+  if (!authResult.ok) {
+    if (authResult.reason === 'no_token') {
+      return typedJson<IResponseBody>(
+        { response: 'ng', message: '로그인 정보가 존재하지 않습니다.', docId: '' },
+        { status: 403 },
+      );
+    }
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '로그인 정보 확인 도중 오류가 발생하였습니다.', docId: '' },
+      { status: 401 },
+    );
+  }
+
+  if (!authResult.isAdmin) {
+    return typedJson<IResponseBody>({ response: 'ng', message: '관리자 권한이 없습니다.', docId: '' }, { status: 403 });
+  }
+
   try {
-    // 사용자 데이터 가져오기 - 관리자 권한 확인
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get('accessToken');
-
-    if (!accessToken) {
-      return typedJson<IResponseBody>(
-        {
-          response: 'ng',
-          message: '로그인 정보가 존재하지 않습니다.',
-          docId: '',
-        },
-        { status: 403 },
-      );
-    }
-
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
-    const uid = decodedToken.uid;
     const adminDB = getAdminFirestore(firebaseAdminApp);
-
-    const adminUserDocRef = adminDB.collection('users').doc(uid);
-    const adminUserDocSnap = await adminUserDocRef.get();
-    const isAdmin = adminUserDocSnap.data()?.grade === 'admin';
-
-    if (!isAdmin) {
-      return typedJson<IResponseBody>(
-        {
-          response: 'ng',
-          message: '관리자 권한이 없습니다.',
-          docId: '',
-        },
-        { status: 403 },
-      );
-    }
-
     const dataSize = await adminDB
       .collection('events')
       .get()
       .then(snapshot => snapshot.size);
 
-    return createEventPost(uid, body, dataSize);
+    return createEventPost(authResult.uid, body, dataSize);
   } catch (error) {
-    console.error('Error verifying token:', error);
+    console.error('Error creating event:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '로그인 정보 확인 도중 오류가 발생하였습니다.', docId: '' },
       { status: 401 },

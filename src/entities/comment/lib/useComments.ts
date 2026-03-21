@@ -1,3 +1,5 @@
+'use client';
+
 import type { FirestoreError, Timestamp } from 'firebase/firestore';
 import { collection, getFirestore, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';

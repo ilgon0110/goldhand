@@ -31,6 +31,7 @@ export const AuthLoginButton = ({ provider, title, iconSrc, handleClick, ...prop
           `flex h-14 w-full flex-row items-center justify-center gap-2 rounded-full px-16`,
           provider === 'kakao' ? 'bg-kakao text-black hover:bg-yellow-300' : 'bg-naver text-white hover:bg-green-600',
           props.className,
+          props.disabled && 'opacity-30',
         )}
         onClick={handleClick}
       >

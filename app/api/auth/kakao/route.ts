@@ -55,6 +55,7 @@ export async function POST(req: Request) {
       client_id: process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY!,
       redirect_uri: process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL!,
       code: code,
+      client_secret: process.env.NEXT_PUBLIC_KAKAO_CLIENT_SECRET!,
     }).toString(),
     cache: 'no-cache',
   });

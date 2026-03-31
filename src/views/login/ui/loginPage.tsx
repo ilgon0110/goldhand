@@ -56,7 +56,8 @@ export const LoginPage = () => {
 
       <div className={cn('mt-6 flex w-full flex-col justify-center gap-4', 'md:flex-row')}>
         <AuthLoginButton
-          disabled={isKakaoLoading || isNaverLoading || isNaverPending || isKakaoPending}
+          //disabled={isKakaoLoading || isNaverLoading || isNaverPending || isKakaoPending}
+          disabled
           handleClick={() => {
             router.push(
               `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL}&response_type=code`,
@@ -64,7 +65,8 @@ export const LoginPage = () => {
           }}
           iconSrc="/icon/kakaotalk.png"
           provider="kakao"
-          title="카카오로 로그인하기"
+          //title="카카오로 로그인하기"
+          title="지점 확장으로 인해 카카오톡 사업자 정보를 변경중이에요."
         />
 
         <AuthLoginButton

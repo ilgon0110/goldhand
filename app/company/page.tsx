@@ -1,3 +1,5 @@
-import { CompanyPage } from '@/src/views/company';
+const CompanyPage = () => {
+  return <div>인사말</div>;
+};
 
 export default CompanyPage;

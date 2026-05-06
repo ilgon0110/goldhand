@@ -83,7 +83,14 @@ export const useReviewFormMutation = (
     const docId = dId || uuidv4();
 
     if (!images || images.length === 0) {
-      mutate({ title: values.title, name: values.name, franchisee: values.franchisee, htmlString, docId, images: null });
+      mutate({
+        title: values.title,
+        name: values.name,
+        franchisee: values.franchisee,
+        htmlString,
+        docId,
+        images: null,
+      });
       return;
     }
 

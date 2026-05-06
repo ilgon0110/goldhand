@@ -46,6 +46,7 @@ export async function optimizeImage(
     return await new Promise<Blob>((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
+        URL.revokeObjectURL(img.src);
         const ratio = Math.min(1, maxWidth / img.width);
         const width = Math.round(img.width * ratio);
         const height = Math.round(img.height * ratio);
@@ -70,6 +71,7 @@ export async function optimizeImage(
         );
       };
       img.onerror = () => {
+        URL.revokeObjectURL(img.src);
         reject(new Error('Failed to load image for optimization'));
       };
       img.src = URL.createObjectURL(file);

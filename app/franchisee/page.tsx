@@ -1,42 +1,38 @@
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import { cn } from '@/lib/utils';
 
 import { FranchiseeCard } from './_FranchiseeCard';
+import { BRANCHES } from './franchisee.config';
 
-const FranchiseePage = () => {
-  const franchisees = [
-    {
-      src: '/goldhand_black.png',
-      title: '화성동탄점',
-      phoneNumber: '010-8381-0431',
-      description: '고운황금손 화성동탄 본점입니다.',
-      naverPlaceUrl: 'https://naver.me/FBepMjL3',
-    },
-    {
-      src: '/goldhand_black.png',
-      title: '수원점',
-      phoneNumber: '010-5536-3765',
-      description: '고운황금손 수원점입니다.',
-      naverPlaceUrl: 'https://naver.me/xpB4oXiI',
-    },
-    // Add more franchisees as needed
-  ];
+export default function FranchiseePage() {
   return (
-    <>
-      <SectionTitle title="지점 안내" />
-      <div className="mt-10 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {franchisees.map(franchisee => (
+    <div>
+      {/* 히어로 */}
+      <div className={cn('py-12 text-center')}>
+        <h1 className="text-xl font-semibold tracking-[0.4em] text-[#A88547]">─── 고운황금손 지점 안내 ───</h1>
+        <p className={cn('mx-auto mt-4 max-w-lg text-sm leading-loose text-slate-500', 'md:text-base')}>
+          보건복지부·정부바우처 등록 기관으로 운영되는 본점·지점 모두에서
+          <br />
+          동일한 기준의 산모·신생아 케어를 받으실 수 있습니다.
+        </p>
+      </div>
+      {/* 지점 목록 */}
+      <div>
+        {BRANCHES.map((branch, index) => (
           <FranchiseeCard
-            description={franchisee.description}
-            key={franchisee.title}
-            naverPlaceUrl={franchisee.naverPlaceUrl}
-            phoneNumber={franchisee.phoneNumber}
-            src={franchisee.src}
-            title={franchisee.title}
+            address={branch.address}
+            badge={branch.badge}
+            description={branch.description}
+            images={branch.images}
+            index={index}
+            key={branch.id}
+            naverPlaceUrl={branch.naverPlaceUrl}
+            phoneNumber={branch.phoneNumber}
+            region={branch.region}
+            title={branch.title}
+            total={BRANCHES.length}
           />
         ))}
       </div>
-    </>
+    </div>
   );
-};
-
-export default FranchiseePage;
+}

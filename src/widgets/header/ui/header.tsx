@@ -3,25 +3,20 @@
 import Link from 'next/link';
 
 import { useAlarm } from '@/src/shared/hooks/useAlarm';
-import { useAuth } from '@/src/shared/hooks/useAuth';
 import { useInfiniteAlarmQuery } from '@/src/shared/hooks/useInfiniteAlarmQuery';
+import type { IUserDetailData } from '@/src/shared/types';
 
 import { MobileHeader } from './_MobileHeader';
 import { WebHeader } from './_WebHeader';
 
-export const Header = () => {
-  const { isSignedIn, pending: isPending, userData } = useAuth();
-  const {
-    data: notificationData,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteAlarmQuery(userData?.userId ?? '');
-  useAlarm(userData?.userId ?? '');
+interface IHeaderProps {
+  userData: IUserDetailData | null;
+}
 
-  const notificationNoReadCount = notificationData?.pages.reduce((acc, page) => {
-    return acc + page.data.filter(item => !item.isRead).length;
-  }, 0);
+export const Header = ({ userData }: IHeaderProps) => {
+  const userId = userData?.userId;
+  const { data: notificationData, isFetching, hasNextPage, fetchNextPage } = useInfiniteAlarmQuery(userId ?? '');
+  useAlarm(userId ?? '');
 
   const onClickNextNotifications = () => {
     if (hasNextPage && !isFetching) {
@@ -42,22 +37,15 @@ export const Header = () => {
           handleClickNextNotifications={onClickNextNotifications}
           hasNextPage={hasNextPage}
           isFetching={isFetching}
-          isPending={isPending}
-          isSignedIn={isSignedIn}
           notificationData={notificationData}
-          notificationNoReadCount={notificationNoReadCount}
-          userId={userData?.userId}
+          userId={userId}
         />
-
         <MobileHeader
           handleClickNextNotifications={onClickNextNotifications}
           hasNextPage={hasNextPage}
           isFetching={isFetching}
-          isPending={isPending}
-          isSignedIn={isSignedIn}
           notificationData={notificationData}
-          notificationNoReadCount={notificationNoReadCount}
-          userId={userData?.userId}
+          userId={userId}
         />
       </header>
     </>

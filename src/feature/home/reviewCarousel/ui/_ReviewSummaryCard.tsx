@@ -2,6 +2,7 @@ import type { Timestamp } from 'firebase/firestore';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/src/shared/ui/button';
+import DefaultImage from '@/src/shared/ui/DefaultImage';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { formatDateToYMD } from '@/src/shared/utils';
 
@@ -24,15 +25,19 @@ export const ReviewSummaryCard = ({
 }: TReviewSummaryCardProps) => {
   return (
     <div className={cn('flex w-full flex-col rounded-lg border border-slate-100 bg-white shadow')}>
-      <img
-        alt={title}
-        height={200}
-        loading="lazy"
-        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        src={thumbnailSrc || '/default_image.png'}
-        style={{ objectFit: 'contain', width: 'auto', height: 200 }}
-        width={0}
-      />
+      {thumbnailSrc ? (
+        <img
+          alt={title}
+          height={200}
+          loading="lazy"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          src={thumbnailSrc}
+          style={{ objectFit: 'contain', width: '100%', height: 200 }}
+          width={0}
+        />
+      ) : (
+        <DefaultImage style={{ width: '100%', height: 200 }} />
+      )}
       <div className="flex flex-col p-6">
         <h2 className="text-xl font-bold">{<TruncateText maxLines={1} text={title} />}</h2>
         <div>

@@ -2,6 +2,7 @@ import type { Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { Skeleton } from '@/src/shared/ui/skeleton';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { formatDateToYMD } from '@/src/shared/utils';
@@ -58,20 +59,31 @@ export const EventCard = ({
       {viewMode === 'TABLE' && <span className="px-2 text-lg">{rowNumber}</span>}
       <button className={rootClass} data-testid={id} onClick={handleClick}>
         <div className={imageWrapperClass} data-testid={`${id}-${isCard ? 'card' : 'table'}-review`}>
-          <img
-            alt={thumbnail == null ? `${title} - 기본 이미지` : `${title} 썸네일`}
-            height={0}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            src={thumbnail == null ? '/default_image.png' : thumbnail}
-            style={{
-              objectFit: 'contain',
-              width: isCard ? '100%' : 'auto',
-              height: isCard ? 200 : '100%',
-              borderRadius: isCard ? '4px' : '0',
-              border: isCard ? '1px solid #e2e8f0' : 'none',
-            }}
-            width={0}
-          />
+          {thumbnail == null ? (
+            <DefaultImage
+              style={{
+                width: isCard ? '100%' : 'auto',
+                height: isCard ? 200 : '100%',
+                borderRadius: isCard ? '4px' : '0',
+                border: isCard ? '1px solid #e2e8f0' : 'none',
+              }}
+            />
+          ) : (
+            <img
+              alt={`${title} 썸네일`}
+              height={0}
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              src={thumbnail}
+              style={{
+                objectFit: 'contain',
+                width: isCard ? '100%' : 'auto',
+                height: isCard ? 200 : '100%',
+                borderRadius: isCard ? '4px' : '0',
+                border: isCard ? '1px solid #e2e8f0' : 'none',
+              }}
+              width={0}
+            />
+          )}
         </div>
         <div className={isCard ? 'mt-2 flex flex-col text-start' : 'flex flex-col text-start'}>
           <TruncateText className={cn('w-full font-bold', isCard ? 'px-4' : '')} maxLines={1} text={title} />

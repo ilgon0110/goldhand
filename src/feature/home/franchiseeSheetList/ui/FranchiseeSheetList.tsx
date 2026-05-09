@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from '@/lib/utils';
 import { franchiseeList } from '@/src/shared/config';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';

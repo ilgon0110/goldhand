@@ -90,7 +90,7 @@ export const ReviewCarousel = () => {
                   });
                 }}
                 id={item.id}
-                thumbnail={generateThumbnailUrl(item.htmlString)}
+                thumbnail={item.thumbnail}
                 title={item.title}
               />
             </div>

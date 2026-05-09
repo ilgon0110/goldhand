@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';

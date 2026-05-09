@@ -1,4 +1,3 @@
-export { ReservationApplyPage } from './apply/ui/ReservationApplyPage';
 export { getReservationDetailData } from './detail/api/getReservationDetailData';
 export { ReservationDetailPage } from './detail/ui/ReservationDetailPage';
 export { reservationFormSchema } from './form/config/reservationFormSchema';
@@ -9,4 +8,3 @@ export { getReservationListData } from './list/api/getReservationListData';
 export { passwordPostAction } from './list/api/passwordPostAction';
 export { ReservationListPage } from './list/ui/ReservationListPage';
 export { ReservationCard } from './ui/ReservationCard';
-export { ReservationPage } from './ui/reservationPage';

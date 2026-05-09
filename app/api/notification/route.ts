@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
         message: '로그인 토큰이 존재하지 않습니다.',
         data: defaultData,
         nextCursor: null,
+        noReadCount: 0,
       },
       { status: 403 },
     );
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
           message: '사용자 식별 아이디가 존재하지 않습니다.',
           data: defaultData,
           nextCursor: null,
+          noReadCount: 0,
         },
         { status: 403 },
       );
@@ -54,6 +56,7 @@ export async function GET(request: NextRequest) {
           message: '로그인 토큰이 만료되었습니다.',
           data: defaultData,
           nextCursor: null,
+          noReadCount: 0,
         },
         { status: 403 },
       );
@@ -63,6 +66,7 @@ export async function GET(request: NextRequest) {
       message: '로그인 토큰 검증 중 오류가 발생했습니다.',
       data: defaultData,
       nextCursor: null,
+      noReadCount: 0,
     });
   }
 
@@ -80,6 +84,7 @@ export async function GET(request: NextRequest) {
         message: '사용자 데이터가 존재하지 않습니다.',
         data: defaultData,
         nextCursor: null,
+        noReadCount: 0,
       });
     }
 
@@ -91,6 +96,7 @@ export async function GET(request: NextRequest) {
           message: '탈퇴한 유저입니다.',
           data: defaultData,
           nextCursor: null,
+          noReadCount: 0,
         },
         { status: 403 },
       );
@@ -131,12 +137,21 @@ export async function GET(request: NextRequest) {
       nextCursor = nextSnapshot.size > 0 ? String(page + NOTI_LIMIT) : null;
     }
 
+    // 읽지 않은 알림 개수 가져오기
+    const noReadCountSnapshot = await adminDB
+      .collection('notifications')
+      .where('userId', '==', uid)
+      .where('isRead', '==', false)
+      .get();
+    const noReadCount = noReadCountSnapshot.size;
+
     // 최종 데이터 구성
     return typedJson<INotificationResponseData>({
       response: 'ok',
       message: '알림 데이터 조회 성공',
       data: notificationsData,
       nextCursor,
+      noReadCount,
     });
   } catch (error) {
     console.error('Error fetching notification data:', error);
@@ -145,6 +160,7 @@ export async function GET(request: NextRequest) {
       message: '알림 데이터를 가져오는 중 오류가 발생했습니다.',
       data: defaultData,
       nextCursor: null,
+      noReadCount: 0,
     });
   }
 }

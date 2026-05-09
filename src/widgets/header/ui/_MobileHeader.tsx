@@ -23,9 +23,6 @@ import { UlButton } from './_UlButton';
 
 interface IMobileHeader {
   userId: string | undefined;
-  notificationNoReadCount: number | undefined;
-  isSignedIn: boolean;
-  isPending: boolean;
   handleClickNextNotifications: () => void;
   hasNextPage: boolean;
   isFetching: boolean;
@@ -34,9 +31,6 @@ interface IMobileHeader {
 
 export const MobileHeader = ({
   userId,
-  notificationNoReadCount,
-  isSignedIn,
-  isPending,
   handleClickNextNotifications: onClickNextNotifications,
   hasNextPage,
   isFetching,
@@ -44,6 +38,7 @@ export const MobileHeader = ({
 }: IMobileHeader) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
+  const notificationNoReadCount = notificationData?.pages[0]?.noReadCount ?? 0;
   useEffect(() => {
     if (typeof window === 'undefined') return;
     // 브라우저 크기 추적
@@ -93,10 +88,10 @@ export const MobileHeader = ({
                   <div className="flex flex-col gap-4 lg:hidden">
                     <Link
                       className="font-semibold leading-6 text-gray-900"
-                      href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}
+                      href={userId != null ? URLS.MYPAGE : URLS.LOGIN}
                       onClick={handleChangeMobileMenuOpen}
                     >
-                      <UlButton enText="" text={isPending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'} />
+                      <UlButton enText="" text={userId != null ? '마이페이지' : '로그인'} />
                     </Link>
                     <UlButton enText="GoldHand" text="고운황금손">
                       <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
@@ -169,15 +164,11 @@ export const MobileHeader = ({
       <Drawer direction="bottom" open={notificationMenuOpen} onOpenChange={open => setNotificationMenuOpen(open)}>
         {userId != null && (
           <DrawerTrigger
-            aria-label={
-              notificationNoReadCount != null && notificationNoReadCount > 0
-                ? `알림 ${notificationNoReadCount}개`
-                : '알림'
-            }
+            aria-label={notificationNoReadCount > 0 ? `알림 ${notificationNoReadCount}개` : '알림'}
             className={cn('absolute right-6 top-1/2 -translate-y-1/2 px-6', 'lg:hidden')}
           >
             <Bell aria-hidden="true" size={20} />
-            {notificationNoReadCount != null && notificationNoReadCount > 0 && (
+            {notificationNoReadCount > 0 && (
               <div
                 aria-hidden="true"
                 className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500"

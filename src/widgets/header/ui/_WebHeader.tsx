@@ -21,10 +21,7 @@ import { URLS } from '@/src/widgets/header';
 import { UlButton } from './_UlButton';
 
 interface IWebHeaderProps {
-  isSignedIn: boolean;
-  isPending: boolean;
   userId: string | undefined;
-  notificationNoReadCount: number | undefined;
   handleClickNextNotifications: () => void;
   hasNextPage: boolean;
   isFetching: boolean;
@@ -32,16 +29,15 @@ interface IWebHeaderProps {
 }
 
 export const WebHeader = ({
-  isSignedIn,
-  isPending,
   userId,
-  notificationNoReadCount,
   handleClickNextNotifications: onClickNextNotifications,
   hasNextPage,
   isFetching,
   notificationData,
 }: IWebHeaderProps) => {
   const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
+  const notificationNoReadCount = notificationData?.pages[0]?.noReadCount ?? 0;
+
   return (
     <Popover open={notificationMenuOpen} onOpenChange={open => setNotificationMenuOpen(open)}>
       <NavigationMenu>
@@ -136,24 +132,18 @@ export const WebHeader = ({
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink asChild className="w-40 rounded-full border border-[#0F2E16]">
-              <Link href={isSignedIn ? URLS.MYPAGE : URLS.LOGIN}>
-                {isPending ? '로딩중..' : isSignedIn ? '마이페이지' : '로그인'}
-              </Link>
+              <Link href={userId != null ? URLS.MYPAGE : URLS.LOGIN}>{userId != null ? '마이페이지' : '로그인'}</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
           {userId != null && (
             <NavigationMenuItem>
               <PopoverTrigger asChild>
                 <button
-                  aria-label={
-                    notificationNoReadCount != null && notificationNoReadCount > 0
-                      ? `알림 ${notificationNoReadCount}개`
-                      : '알림'
-                  }
+                  aria-label={notificationNoReadCount > 0 ? `알림 ${notificationNoReadCount}개` : '알림'}
                   className="relative flex items-center justify-center"
                 >
                   <Bell aria-hidden="true" size={20} />
-                  {notificationNoReadCount != null && notificationNoReadCount > 0 && (
+                  {notificationNoReadCount > 0 && (
                     <div
                       aria-hidden="true"
                       className="absolute -right-2 -top-2 inline-flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-600 p-1 text-xs font-semibold text-white duration-500"

@@ -3,13 +3,16 @@ import './globals.css';
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import localFont from 'next/font/local';
+import { cookies } from 'next/headers';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
 
-import { QueryProvider } from '@/src/app/providers/query-provider';
+import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
+import type { IUserResponseData } from '@/src/shared/types';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
 import { Header } from '@/src/widgets/header';
 
@@ -33,11 +36,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const userData = await fetcher<IUserResponseData>('/api/user', {
+    cache: 'no-cache',
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+
   return (
     <>
       <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
@@ -46,10 +57,8 @@ export default function Layout({
             <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
               <NuqsAdapter>
                 <QueryProvider>
-                  <Header />
-                  <Suspense fallback={null}>
-                    <EventModal />
-                  </Suspense>
+                  <Header userData={userData.userData} />
+                  <EventModal />
                   <main>{children}</main>
                 </QueryProvider>
               </NuqsAdapter>

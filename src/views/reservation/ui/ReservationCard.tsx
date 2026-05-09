@@ -64,7 +64,7 @@ export const ReservationCard = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const { userData } = useAuth();
+  const { data: userData } = useAuth();
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -73,7 +73,7 @@ export const ReservationCard = ({
       return;
     }
 
-    if (isSecret && author !== '비회원' && dataUserId !== userData?.userId) {
+    if (isSecret && author !== '비회원' && dataUserId !== userData?.userData?.userId) {
       setIsAlertDialogOpen(true);
       return;
     }

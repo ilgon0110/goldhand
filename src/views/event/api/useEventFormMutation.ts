@@ -45,7 +45,7 @@ export const useEventFormMutation = (
 ) => {
   const [eventFormEditor, setEventFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
-  const { userData } = useAuth();
+  const { data: userData } = useAuth();
   const router = useRouter();
 
   const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useEventImageUpload();
@@ -71,7 +71,7 @@ export const useEventFormMutation = (
   const isSubmitting = isUploading || isPending;
 
   const onSubmit = async (values: z.infer<typeof eventFormSchema>) => {
-    if (!eventFormEditor || !userData) return;
+    if (!eventFormEditor || userData == null || userData.userData == null) return;
 
     let htmlString = '';
     eventFormEditor.read(() => {
@@ -86,7 +86,7 @@ export const useEventFormMutation = (
     }
 
     const cleanedHtmlString = stripDataUriSrcs(htmlString);
-    uploadImages(userData.userId, docId, images, uploadedImages => {
+    uploadImages(userData.userData.userId, docId, images, uploadedImages => {
       mutate({
         title: values.title,
         name: values.name,

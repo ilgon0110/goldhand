@@ -45,7 +45,7 @@ export const useReviewFormMutation = (
 ) => {
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
-  const { userData } = useAuth();
+  const { data: userData } = useAuth();
   const router = useRouter();
 
   const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useReviewImageUpload();
@@ -73,7 +73,7 @@ export const useReviewFormMutation = (
   const isSubmitting = isUploading || isPending;
 
   const onSubmit = async (values: z.infer<typeof reviewFormSchema>) => {
-    if (!reviewFormEditor || !userData) return;
+    if (!reviewFormEditor || userData == null || userData.userData == null) return;
 
     let htmlString = '';
     reviewFormEditor.read(() => {
@@ -95,7 +95,7 @@ export const useReviewFormMutation = (
     }
 
     const cleanedHtmlString = stripDataUriSrcs(htmlString);
-    uploadImages(userData.userId, docId, images, uploadedImages => {
+    uploadImages(userData.userData.userId, docId, images, uploadedImages => {
       mutate({
         title: values.title,
         name: values.name,

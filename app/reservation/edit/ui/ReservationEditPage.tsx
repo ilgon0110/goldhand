@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { reservationFormSchema } from '@/src/entities/reservation';
 import { franchiseeList } from '@/src/shared/config';
 import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -26,8 +27,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { reservationFormSchema } from '../config/reservationFormSchema';
-
 export const ReservationEditPage = ({
   userData,
   consultDetailData,
@@ -38,7 +37,6 @@ export const ReservationEditPage = ({
   const searchParams = useSearchParams();
   const { executeRecaptcha } = useGoogleReCaptcha();
   const docId = searchParams.get('docId');
-  const password = searchParams.get('password');
   const router = useRouter();
 
   const form = useForm<z.infer<typeof reservationFormSchema>>({
@@ -46,7 +44,7 @@ export const ReservationEditPage = ({
     defaultValues: {
       title: consultDetailData.data.title || '',
       name: userData?.userData?.name || consultDetailData.data.name || '',
-      password: password || '',
+      password: '',
       secret: consultDetailData.data.secret || false,
       franchisee: consultDetailData.data.franchisee || '',
       phoneNumber: userData?.userData?.phoneNumber || consultDetailData.data.phoneNumber || '',

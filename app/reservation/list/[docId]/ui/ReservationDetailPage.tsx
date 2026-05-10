@@ -7,6 +7,7 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
+import { useDeletePostMutation } from '@/src/entities/reservation';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import type { IReservationResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -17,11 +18,13 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { ReservationCommentForm, ReservationCommentList, ReservationDetailContent } from '@/src/widgets/reservation';
+import {
+  detailPasswordFormSchema,
+  ReservationCommentForm,
+  ReservationCommentList,
+  ReservationDetailContent,
+} from '@/src/widgets/reservation';
 import { passwordPostAction } from '@/src/widgets/reservation/api/passwordPostAction';
-
-import { useDeletePostMutation } from '../api/deletePostAction';
-import { detailPasswordFormSchema } from '../../../../entities/comment/config/consultCommentSchema';
 
 type TReservationDetailPageProps = {
   data: IReservationResponseData;

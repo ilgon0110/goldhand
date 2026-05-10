@@ -1,9 +1,8 @@
-import { Suspense } from 'react';
-
+import { getReservationDetailData } from '@/src/entities/reservation';
 import { getUserData } from '@/src/shared/api/getUserData';
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getReservationDetailData } from '@/src/views/reservation';
-import { ReservationRecaptchaProvider } from '@/src/views/reservation';
+import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
+
+import { ReservationEditPage } from './ui/ReservationEditPage';
 
 type TPageProps = {
   params: { slug: string };
@@ -17,8 +16,8 @@ export default async function Page({ searchParams }: TPageProps) {
   });
 
   return (
-    <Suspense fallback={<LoadingBar />}>
-      <ReservationRecaptchaProvider consultDetailData={consultDetailData} userData={userData} />
-    </Suspense>
+    <MyGoogleCaptcha>
+      <ReservationEditPage consultDetailData={consultDetailData} userData={userData} />
+    </MyGoogleCaptcha>
   );
 }

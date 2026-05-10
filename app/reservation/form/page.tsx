@@ -1,8 +1,14 @@
 import { getUserData } from '@/src/shared/api/getUserData';
-import { ReservationRecaptchaProvider } from '@/src/views/reservation';
+import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
+
+import { ReservationFormPage } from './ui/ReservationFormPage';
 
 export default async function Page() {
   const userData = await getUserData();
 
-  return <ReservationRecaptchaProvider userData={userData} />;
+  return (
+    <MyGoogleCaptcha>
+      <ReservationFormPage userData={userData} />
+    </MyGoogleCaptcha>
+  );
 }

@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { reservationFormSchema } from '@/src/entities/reservation';
 import { franchiseeList } from '@/src/shared/config';
 import type { IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -26,7 +27,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { reservationFormSchema } from '@/src/views/reservation';
 import { passwordPostAction } from '@/src/views/reservation';
 
 export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {

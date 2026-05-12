@@ -15,6 +15,12 @@ export default async function Page({ searchParams }: TPageProps) {
     docId: (await searchParams).docId || '',
   });
 
+  console.log('consultDetailData', consultDetailData);
+
+  if (consultDetailData.response !== 'ok') {
+    throw new Error('예약 정보를 불러오는 중 오류가 발생하였습니다.');
+  }
+
   return (
     <MyGoogleCaptcha>
       <ReservationEditPage consultDetailData={consultDetailData} userData={userData} />

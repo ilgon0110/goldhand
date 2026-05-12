@@ -1,18 +1,12 @@
 /* eslint-disable react/jsx-handler-names */
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import { useForm } from 'react-hook-form';
-import type { z } from 'zod';
+import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
-import { reservationFormSchema } from '@/src/entities/reservation';
 import { franchiseeList } from '@/src/shared/config';
 import type { IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -25,79 +19,18 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover
 import { SectionTitle } from '@/src/shared/ui/sectionTitle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Textarea } from '@/src/shared/ui/textarea';
-import { toastError, toastSuccess } from '@/src/shared/utils';
-import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { passwordPostAction } from '@/src/views/reservation';
+
+import { useReservationCreateForm } from '../lib';
 
 export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {
-  const { executeRecaptcha } = useGoogleReCaptcha();
-  const router = useRouter();
-  const form = useForm<z.infer<typeof reservationFormSchema>>({
-    resolver: zodResolver(reservationFormSchema),
-    defaultValues: {
-      title: '',
-      name: userData?.userData?.name || '',
-      isMember: userData.userData != null,
-      secret: true,
-      franchisee: '',
-      phoneNumber: userData?.userData?.phoneNumber || '',
-      bornDate: undefined,
-      location: '',
-      content: '',
-    },
-    mode: 'onChange',
+  const {
+    form,
+    onSubmit,
+    isPending: isSubmitting,
+  } = useReservationCreateForm({
+    userData,
   });
   const formValidation = form.formState.isValid;
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const onSubmit = async (values: z.infer<typeof reservationFormSchema>) => {
-    if (!formValidation) return;
-    if (!executeRecaptcha) return;
-    try {
-      setIsSubmitting(true);
-
-      const recaptchaToken = await executeRecaptcha('join');
-      // POST 요청
-      const res = await fetch('/api/reservation/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...values,
-          userId: userData.userData?.userId ? userData.userData?.userId : null,
-          recaptchaToken,
-        }),
-      });
-      const data = await res.json();
-
-      if (data.response === 'expired') {
-        toastError('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
-        router.replace('/login');
-        return;
-      }
-
-      if (data.response === 'ok') {
-        toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
-        // 비밀번호 입력된 경우 비밀번호 검증 jwt 쿠키 저장
-        await Promise.all([
-          values.password ? passwordPostAction(data.docId, values.password) : Promise.resolve(),
-          sendViewLog(data.docId),
-        ]);
-        // 3초 후에 페이지 이동
-        setTimeout(() => {
-          router.replace(`/reservation/list/${data.docId}`);
-        }, 3000);
-      } else {
-        toastError(`상담 신청에 실패했습니다.\n${data.message}`);
-      }
-    } catch (error: any) {
-      console.error('Error:', error);
-      toastError(`상담 신청에 실패했습니다.\n${error.message}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   useEffect(() => {
     form.trigger();

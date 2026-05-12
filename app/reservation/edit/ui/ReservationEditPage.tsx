@@ -1,18 +1,13 @@
 /* eslint-disable react/jsx-handler-names */
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import { useForm } from 'react-hook-form';
-import type { z } from 'zod';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
-import { reservationFormSchema } from '@/src/entities/reservation';
 import { franchiseeList } from '@/src/shared/config';
 import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -27,6 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
+import { useReservationEditForm } from '../lib';
+
 export const ReservationEditPage = ({
   userData,
   consultDetailData,
@@ -34,73 +31,25 @@ export const ReservationEditPage = ({
   userData: IUserResponseData;
   consultDetailData: IReservationResponseData;
 }) => {
-  const searchParams = useSearchParams();
-  const { executeRecaptcha } = useGoogleReCaptcha();
-  const docId = searchParams.get('docId');
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof reservationFormSchema>>({
-    resolver: zodResolver(reservationFormSchema),
-    defaultValues: {
-      title: consultDetailData.data.title || '',
-      name: userData?.userData?.name || consultDetailData.data.name || '',
-      password: '',
-      secret: consultDetailData.data.secret || false,
-      franchisee: consultDetailData.data.franchisee || '',
-      phoneNumber: userData?.userData?.phoneNumber || consultDetailData.data.phoneNumber || '',
-      bornDate: consultDetailData.data.bornDate ? new Date(consultDetailData.data.bornDate) : undefined,
-      location: consultDetailData.data.location || '',
-      content: consultDetailData.data.content || '',
+  const {
+    form,
+    docId,
+    onSubmit,
+    isPending: isSubmitting,
+  } = useReservationEditForm({
+    consultDetailData,
+    userData,
+    onSuccess: () => {
+      toastSuccess('상담 수정이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
+      router.replace(`/reservation/list/${docId}`);
     },
-    mode: 'onChange',
+    onError: () => {
+      toastError(`상담 수정에 실패했습니다.`);
+    },
   });
   const formValidation = form.formState.isValid;
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const onSubmit = async (values: z.infer<typeof reservationFormSchema>) => {
-    if (!formValidation) return;
-    if (!executeRecaptcha) return;
-    try {
-      setIsSubmitting(true);
-
-      const recaptchaToken = await executeRecaptcha('join');
-
-      // POST 요청
-      const response = await fetch('/api/reservation/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...values,
-          userId: userData.userData?.userId || null,
-          recaptchaToken,
-          docId,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.response === 'expired') {
-        toastError('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
-        return;
-      }
-
-      if (data.response === 'ok') {
-        toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
-        // 3초 후에 페이지 이동
-        setTimeout(() => {
-          router.replace(`/reservation/list/${data.docId || docId}`);
-        }, 3000);
-      } else {
-        toastError(`상담 신청에 실패했습니다.\n${data.message}`);
-      }
-    } catch (error: any) {
-      console.error('Error:', error);
-      toastError(`상담 신청에 실패했습니다.\n${error.message}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const isMemberAndCreateMode = userData.userData?.userId != null && consultDetailData.data == null;
   const isNonMemberAndSecret =

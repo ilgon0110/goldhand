@@ -9,7 +9,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   if (accessToken?.value === undefined) {
     return typedJson<IResponsePostBody>(
       {
-        response: 'unAuthorized',
+        response: 'ng',
         message: '로그인 된 상태가 아닙니다.',
       },
       { status: 401 },
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   if (!uid)
     return typedJson<IResponsePostBody>(
       {
-        response: 'unAuthorized',
+        response: 'ng',
         message: '토큰이 만료되었거나 정상 토큰이 아닙니다.',
       },
       { status: 401 },

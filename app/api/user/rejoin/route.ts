@@ -6,7 +6,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         response: 'ng',
         message: '유저 ID가 제공되지 않았습니다.',
       },
-      { status: 200 },
+      { status: 400 },
     );
   }
 
@@ -55,10 +55,10 @@ export async function POST(req: Request) {
   } else {
     return typedJson<IResponsePostBody>(
       {
-        response: 'unAuthorized',
+        response: 'ng',
         message: '재가입 가능 대상이 아닙니다. 재가입이 불가능합니다.',
       },
-      { status: 200 },
+      { status: 403 },
     );
   }
 

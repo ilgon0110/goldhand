@@ -9,7 +9,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 
@@ -25,10 +25,10 @@ export async function POST(req: Request) {
   if (accessToken?.value === undefined) {
     return typedJson<IResponsePostBody>(
       {
-        response: 'unAuthorized',
+        response: 'ng',
         message: '로그인 된 상태가 아닙니다.',
       },
-      { status: 200 },
+      { status: 401 },
     );
   }
 
@@ -40,10 +40,10 @@ export async function POST(req: Request) {
   if (!uid)
     return typedJson<IResponsePostBody>(
       {
-        response: 'unAuthorized',
+        response: 'ng',
         message: '토큰이 만료되었거나 정상 토큰이 아닙니다.',
       },
-      { status: 200 },
+      { status: 401 },
     );
 
   // 탈퇴한 유저인지 확인
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         response: 'ng',
         message: '탈퇴한 유저입니다. 재가입 후 이용해주세요.',
       },
-      { status: 200 },
+      { status: 403 },
     );
   }
 

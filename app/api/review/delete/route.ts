@@ -11,7 +11,7 @@ interface IReviewRequestBody {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 
@@ -43,7 +43,7 @@ export async function DELETE(req: NextRequest) {
 
     if (targetData.userId !== userId) {
       return typedJson<IResponseBody>(
-        { response: 'unAuthorized', message: '게시글 삭제 권한이 없습니다.' },
+        { response: 'ng', message: '게시글 삭제 권한이 없습니다.' },
         { status: 401 },
       );
     }

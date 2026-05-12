@@ -65,7 +65,7 @@ export const useNaverLogin = ({
         const postData = await naverLoginAction(access_token);
 
         // 재가입 가능한 탈퇴 유저가 로그인 했을 시
-        if (postData.response === 'rejoin') {
+        if (postData.status === 409) {
           setRejoinUserData(postData.userData || undefined);
           setIsRejoinDialogOpen(true);
 

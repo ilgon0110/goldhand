@@ -3,9 +3,10 @@ export const dynamic = 'force-dynamic';
 import type { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 
+import { getReservationListData } from '@/src/entities/reservation';
 import { loadReservationParams } from '@/src/shared/lib/nuqs/searchParams';
 import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getReservationListData, ReservationListPage } from '@/src/views/reservation';
+import { ReservationListPage } from '@/src/views/reservation';
 
 type TPageProps = {
   searchParams: Promise<SearchParams>;

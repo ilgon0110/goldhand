@@ -22,7 +22,7 @@ export interface IConsultPost {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 

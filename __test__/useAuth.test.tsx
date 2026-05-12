@@ -39,10 +39,9 @@ describe('useAuth 테스트', () => {
     );
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    expect(result.current.pending).toBe(true);
-    expect(result.current.isSignedIn).toBe(false);
-    expect(result.current.userData).toBeNull();
-    expect(result.current.isLinked).toBe(false);
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.data?.isLinked).toBe(false);
+    expect(result.current.data?.userData).toBeNull();
   });
 
   it('사용자 데이터가 성공적으로 가져와지면 authState가 업데이트된다', async () => {
@@ -70,10 +69,9 @@ describe('useAuth 테스트', () => {
 
     // page 이동
     await waitFor(() => {
-      expect(result.current.pending).toBe(false);
-      expect(result.current.isSignedIn).toBe(true);
-      expect(result.current.userData).toEqual(mockUserData.userData);
-      expect(result.current.isLinked).toBe(true);
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.data?.userData).toEqual(mockUserData.userData);
+      expect(result.current.data?.isLinked).toBe(true);
     });
   });
 
@@ -97,10 +95,9 @@ describe('useAuth 테스트', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.pending).toBe(false);
-      expect(result.current.isSignedIn).toBe(false);
-      expect(result.current.userData).toBeNull();
-      expect(result.current.isLinked).toBe(false);
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.data?.isLinked).toBe(false);
+      expect(result.current.data?.userData).toBeNull();
     });
   });
 });

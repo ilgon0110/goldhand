@@ -10,7 +10,7 @@ import type { ICommentData, IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
   data: IReservationDetailData;
 }
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         if (uid !== data.userId) {
           return typedJson<IResponseBody>(
             {
-              response: 'unAuthorized',
+              response: 'ng',
               message: '해당 사용자가 작성한 글이 아닙니다.',
               data: defaultData,
             },

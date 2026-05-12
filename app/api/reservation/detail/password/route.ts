@@ -8,7 +8,7 @@ import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
   data: IReservationDetailData;
   reservationToken: string | null;
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       if (password === null) {
         return typedJson<IResponseBody>(
           {
-            response: 'unAuthorized',
+            response: 'ng',
             message: 'password is required',
             data: defaultData,
             reservationToken: null,
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       if (!isMatch) {
         return typedJson<IResponseBody>(
           {
-            response: 'unAuthorized',
+            response: 'ng',
             message: '비밀번호가 틀립니다.',
             data: defaultData,
             reservationToken: null,

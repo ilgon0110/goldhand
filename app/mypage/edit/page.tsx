@@ -11,10 +11,6 @@ export default async function Page() {
     throw new Error(userData.message);
   }
 
-  if (userData.response === 'unAuthorized') {
-    throw new Error('로그인이 필요합니다.');
-  }
-
   return (
     <Suspense fallback={<LoadingBar />}>
       <MyPageEditPage userData={userData} />

@@ -23,6 +23,8 @@ const config = {
       colors: {
         kakao: '#FFEB3B',
         naver: '#2DB400',
+        gold: '#A88547',
+        greenDeep: '#5C6A38',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

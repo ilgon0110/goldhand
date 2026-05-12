@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 

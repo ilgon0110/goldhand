@@ -19,7 +19,7 @@ import type { ICommentData, IMyPageData, IUserDetailData } from '@/src/shared/ty
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
   data: IMyPageData;
 }
@@ -41,7 +41,7 @@ export async function GET() {
       return typedJson<IResponseBody>({ response: 'ng', message: '로그인 토큰이 존재하지 않습니다.', data: defaultData }, { status: 403 });
     }
     if (authResult.reason === 'expired') {
-      return typedJson<IResponseBody>({ response: 'expired', message: '로그인 토큰이 만료되었습니다.', data: defaultData }, { status: 403 });
+      return typedJson<IResponseBody>({ response: 'ng', message: '로그인 토큰이 만료되었습니다.', data: defaultData }, { status: 401 });
     }
     if (authResult.reason === 'not_found') {
       return typedJson<IResponseBody>({ response: 'ng', message: '사용자 데이터가 존재하지 않습니다.', data: defaultData });

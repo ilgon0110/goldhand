@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     // 관리자이거나 본인인 경우 접근 가능
     if (!isAdmin && docData?.userId != uid) {
       return typedJson<IManagerApplyDetailResponseData>(
-        { response: 'unAuthorized', message: '접근 권한이 없습니다.', data: null },
+        { response: 'ng', message: '접근 권한이 없습니다.', data: null },
         { status: 403 },
       );
     }

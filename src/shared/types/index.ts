@@ -17,14 +17,14 @@ export interface IApplyDetailData {
 }
 
 export interface IManagerApplyListData {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   data: IApplyDetailData[] | null;
   totalDataLength: number;
 }
 
 export interface IManagerApplyDetailResponseData {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   data: IApplyDetailData | null;
 }
@@ -108,7 +108,7 @@ export interface IUserDetailData {
 }
 
 export interface IUserResponseData {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   accessToken: string | null;
   userData: IUserDetailData | null;
@@ -127,7 +127,7 @@ export interface IMyPageData {
 }
 
 export interface IMyPageResponseData {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   data: IMyPageData;
 }
@@ -263,7 +263,7 @@ export interface INotificationDetailData {
 }
 
 export interface INotificationResponseData {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   data: INotificationDetailData[] | [];
   noReadCount: number;

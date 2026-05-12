@@ -2,12 +2,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
+import ReservationApplyPage from '@/app/reservation/apply/page';
+import { ReservationFormPage } from '@/app/reservation/form/ui/ReservationFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { ReservationApplyPage } from '@/src/views/reservation/apply/ui/ReservationApplyPage';
-import { ReservationFormPage } from '@/src/views/reservation/form/ui/ReservationFormPage';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

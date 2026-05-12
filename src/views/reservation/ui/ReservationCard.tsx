@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { passwordPostAction } from '@/src/entities/reservation';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import {
   AlertDialog,
@@ -27,7 +28,6 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { toastError } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { passwordPostAction } from '@/src/views/reservation';
 
 import { detailFormSchema } from '../list/config/detailFormSchema';
 

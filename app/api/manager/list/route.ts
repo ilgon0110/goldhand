@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
   // 관리자 계정이 아니라면 해당 API 접근 불가
   if (!authResult.isAdmin) {
     return typedJson<IManagerApplyListData>(
-      { response: 'unAuthorized', message: '접근 권한이 없습니다.', data: null, totalDataLength: 0 },
+      { response: 'ng', message: '접근 권한이 없습니다.', data: null, totalDataLength: 0 },
       { status: 403 },
     );
   }

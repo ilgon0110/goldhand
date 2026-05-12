@@ -8,7 +8,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
   accessToken: string | null;
   userData: IUserDetailData | null;
@@ -30,7 +30,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 200 },
+      { status: 401 },
     );
   }
 
@@ -47,7 +47,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        { status: 401 },
       );
     }
     const app = firebaseApp;
@@ -66,7 +66,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        { status: 403 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 200 },
+      { status: 404 },
     );
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -110,26 +110,26 @@ export async function GET() {
     if (errorCode === 'auth/invalid-id-token') {
       return typedJson<IResponseBody>(
         {
-          response: 'unAuthorized',
+          response: 'ng',
           message: errorCode,
           accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        { status: 401 },
       );
     }
 
     if (errorCode === 'auth/id-token-expired') {
       return typedJson<IResponseBody>(
         {
-          response: 'unAuthorized',
+          response: 'ng',
           message: errorCode,
           accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        { status: 401 },
       );
     }
 
@@ -137,13 +137,13 @@ export async function GET() {
     if (errorCode === 'auth/user-not-found') {
       return typedJson<IResponseBody>(
         {
-          response: 'unAuthorized',
+          response: 'ng',
           message: errorCode,
           accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        { status: 401 },
       );
     }
 
@@ -155,7 +155,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 200 },
+      { status: 500 },
     );
   }
 }

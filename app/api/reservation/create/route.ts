@@ -23,7 +23,7 @@ export interface IReservationCreatePostData {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
   docId?: string;
 }
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     }
   } catch (error: any) {
     if (error.code === 'auth/id-token-expired') {
-      return typedJson<IResponseBody>({ response: 'expired', message: '토큰이 만료되었습니다.' }, { status: 401 });
+      return typedJson<IResponseBody>({ response: 'ng', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
 
     console.error('Error verifying token:', error);

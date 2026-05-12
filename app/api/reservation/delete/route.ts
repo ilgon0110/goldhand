@@ -13,7 +13,7 @@ interface IConsultPost {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 
@@ -54,7 +54,7 @@ export async function DELETE(req: NextRequest) {
       if (!isMatch) {
         return typedJson<IResponseBody>(
           {
-            response: 'unAuthorized',
+            response: 'ng',
             message: '비밀번호가 일치하지 않습니다.',
           },
           { status: 401 },
@@ -77,7 +77,7 @@ export async function DELETE(req: NextRequest) {
       // 회원일 땐 userId로 비교
       if (targetData.userId !== userId) {
         return typedJson<IResponseBody>(
-          { response: 'unAuthorized', message: '게시글 삭제 권한이 없습니다.' },
+          { response: 'ng', message: '게시글 삭제 권한이 없습니다.' },
           { status: 401 },
         );
       }

@@ -7,13 +7,14 @@ import { apiUrl } from '@/src/shared/config';
 import type { IUserDetailData } from '@/src/shared/types';
 
 interface IResponse {
-  response: 'ng' | 'ok' | 'rejoin';
+  response: 'ok' | 'ng';
   message: string;
   redirectTo: string;
   user: UserCredential | null;
   accessToken: string | null;
   email?: string | null;
   userData?: IUserDetailData | null;
+  status?: number;
 }
 
 export async function naverLoginAction(access_token: string): Promise<IResponse> {
@@ -36,7 +37,7 @@ export async function naverLoginAction(access_token: string): Promise<IResponse>
       });
     }
 
-    return postData;
+    return { ...postData, status: res.status };
   } catch (error) {
     console.error('Error fetching post data:', error);
     throw error;

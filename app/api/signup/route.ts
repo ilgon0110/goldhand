@@ -9,7 +9,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 

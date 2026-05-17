@@ -1,34 +1,37 @@
-import Image from 'next/image';
-
 import { cn } from '@/lib/utils';
 
 type TManagerWorkCardProps = {
-  iconSrc: string;
+  index: number;
   title: string;
   contentList: string[];
+  note?: string;
 };
 
-export const ManagerWorkCard = ({ iconSrc, title, contentList }: TManagerWorkCardProps) => {
+export const ManagerWorkCard = ({ index, title, contentList, note }: TManagerWorkCardProps) => {
   return (
     <div
       className={cn(
-        'flex flex-col items-start justify-center rounded-sm border border-slate-100 bg-white p-4',
-        'md:justify-normal',
+        'flex flex-col border-b border-[#E8E1D2] bg-gradient-to-b from-[#F7F2E6]/40 to-transparent p-8',
+        'md:p-9',
       )}
     >
-      <div className="flex flex-row items-center gap-4">
-        <div className="relative h-12 w-12">
-          <Image alt="Manager Work Icon" fill sizes="100vw" src={iconSrc} style={{ objectFit: 'contain' }} />
+      <div className="flex items-start gap-6">
+        <span className="min-w-[28px] pt-2 text-sm tracking-[0.18em] text-gold">{index}</span>
+        <div className="flex-1">
+          <h3 className={cn('text-xl font-semibold tracking-tight text-stone-900', 'md:text-2xl')}>{title}</h3>
+          <ul className="mt-4 flex flex-col gap-2">
+            {contentList.map(content => (
+              <li
+                className="relative pl-4 text-sm leading-relaxed text-stone-700 before:absolute before:left-0 before:top-[0.6em] before:h-px before:w-2.5 before:bg-gold"
+                key={content}
+              >
+                {content}
+              </li>
+            ))}
+          </ul>
+          {note && <p className="mt-3 text-xs text-stone-400">{note}</p>}
         </div>
-        <div className={cn('text-base font-bold text-[#728146]', 'md:text-lg')}>{title}</div>
       </div>
-      <ul className="mt-4 grid w-full grid-cols-2 gap-2 text-sm">
-        {contentList.map(content => (
-          <li className="list-none text-gray-500" key={content}>
-            {content}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };

@@ -14,7 +14,7 @@ interface IEventPost {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   docId: string;
 }

@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import type { IConsultPost } from '@/app/api/reservation/update/route';
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok';
+  response: 'ng' | 'ok';
   message: string;
 }
 

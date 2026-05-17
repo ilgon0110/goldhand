@@ -6,7 +6,7 @@ import { mockReviewDetailData } from '../review';
 import { mockUserData } from '../user';
 
 interface IMockMypageData {
-  response: 'expired' | 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   data: IMyPageData;
 }

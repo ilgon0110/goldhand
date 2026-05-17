@@ -18,7 +18,7 @@ import type { eventFormSchema } from '../config/eventFormSchema';
 import { useEventImageUpload } from './useEventImageUpload';
 
 interface IEventPostData {
-  response: 'expired' | 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   docId: string;
 }

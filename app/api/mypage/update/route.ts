@@ -13,7 +13,7 @@ interface IMyPageUpdatePost {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 

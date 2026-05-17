@@ -6,7 +6,7 @@ import { apiUrl } from '@/src/shared/config';
 import type { IReservationDetailData } from '@/src/shared/types';
 
 interface IResponse {
-  response: 'expired' | 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   data: IReservationDetailData;
   reservationToken: string | null;

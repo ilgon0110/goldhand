@@ -8,7 +8,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   accessToken: string | null;
   userData: IUserDetailData | null;
@@ -21,7 +21,7 @@ export async function GET() {
   const accessToken = cookieStore.get('accessToken');
   const adminApp = getAdminAuth(firebaseAdminApp);
 
-  if (!accessToken) {
+  if (accessToken == null || accessToken.value === '') {
     return typedJson<IResponseBody>(
       {
         response: 'ng',
@@ -30,7 +30,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 401 },
+      { status: 200 },
     );
   }
 
@@ -47,7 +47,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 401 },
+        { status: 200 },
       );
     }
     const app = firebaseApp;

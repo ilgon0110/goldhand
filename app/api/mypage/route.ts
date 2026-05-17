@@ -19,7 +19,7 @@ import type { ICommentData, IMyPageData, IUserDetailData } from '@/src/shared/ty
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   data: IMyPageData;
 }
@@ -38,18 +38,35 @@ export async function GET() {
   const authResult = await checkAdminAuth();
   if (!authResult.ok) {
     if (authResult.reason === 'no_token') {
-      return typedJson<IResponseBody>({ response: 'ng', message: '로그인 토큰이 존재하지 않습니다.', data: defaultData }, { status: 403 });
+      return typedJson<IResponseBody>(
+        { response: 'ng', message: '로그인 토큰이 존재하지 않습니다.', data: defaultData },
+        { status: 403 },
+      );
     }
     if (authResult.reason === 'expired') {
-      return typedJson<IResponseBody>({ response: 'ng', message: '로그인 토큰이 만료되었습니다.', data: defaultData }, { status: 401 });
+      return typedJson<IResponseBody>(
+        { response: 'ng', message: '로그인 토큰이 만료되었습니다.', data: defaultData },
+        { status: 401 },
+      );
     }
     if (authResult.reason === 'not_found') {
-      return typedJson<IResponseBody>({ response: 'ng', message: '사용자 데이터가 존재하지 않습니다.', data: defaultData });
+      return typedJson<IResponseBody>({
+        response: 'ng',
+        message: '사용자 데이터가 존재하지 않습니다.',
+        data: defaultData,
+      });
     }
     if (authResult.reason === 'deleted') {
-      return typedJson<IResponseBody>({ response: 'ng', message: '탈퇴한 유저입니다.', data: defaultData }, { status: 403 });
+      return typedJson<IResponseBody>(
+        { response: 'ng', message: '탈퇴한 유저입니다.', data: defaultData },
+        { status: 403 },
+      );
     }
-    return typedJson<IResponseBody>({ response: 'ng', message: '로그인 토큰 검증 중 오류가 발생했습니다.', data: defaultData });
+    return typedJson<IResponseBody>({
+      response: 'ng',
+      message: '로그인 토큰 검증 중 오류가 발생했습니다.',
+      data: defaultData,
+    });
   }
 
   const { uid, isAdmin } = authResult;

@@ -7,7 +7,7 @@ import { apiUrl } from '@/src/shared/config';
 import type { IUserDetailData } from '@/src/shared/types';
 
 interface IResponse {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   redirectTo: string;
   user: UserCredential | null;

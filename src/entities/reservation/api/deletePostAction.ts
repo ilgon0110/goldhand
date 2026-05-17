@@ -3,7 +3,7 @@
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 

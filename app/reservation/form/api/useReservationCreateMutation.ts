@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import type { IReservationCreatePostData } from '@/app/api/reservation/create/route';
 
 interface IResponseBody {
-  response: 'expired' | 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   docId?: string;
 }

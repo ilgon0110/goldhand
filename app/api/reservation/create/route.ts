@@ -23,7 +23,7 @@ export interface IReservationCreatePostData {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   docId?: string;
 }

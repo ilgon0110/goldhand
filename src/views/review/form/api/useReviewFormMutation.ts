@@ -18,7 +18,7 @@ import type { reviewFormSchema } from '../config/reviewFormSchema';
 import { useReviewImageUpload } from './useReviewImageUpload';
 
 interface IReviewPostData {
-  response: 'expired' | 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   docId: string;
 }

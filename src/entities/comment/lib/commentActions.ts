@@ -19,7 +19,7 @@ import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface ICommentResponse {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 
@@ -32,14 +32,7 @@ export async function createComment(
   const accessToken = cookieStore.get('accessToken');
 
   if (!accessToken) {
-    return typedJson<ICommentResponse>(
-      { response: 'ng', message: '로그인 후 사용해주세요.' },
-      { status: 401 },
-    );
-  }
-
-  if (!docId) {
-    return typedJson<ICommentResponse>({ response: 'ng', message: 'docId is required' }, { status: 404 });
+    return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 401 });
   }
 
   try {
@@ -48,10 +41,7 @@ export async function createComment(
     const uid = decodedToken.uid;
 
     if (!uid) {
-      return typedJson<ICommentResponse>(
-        { response: 'ng', message: '로그인 후 사용해주세요.' },
-        { status: 403 },
-      );
+      return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 403 });
     }
 
     const userDocRef = doc(db, 'users', uid);

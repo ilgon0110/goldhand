@@ -11,7 +11,7 @@ interface IEventRequestBody {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 
@@ -41,10 +41,7 @@ export async function DELETE(req: NextRequest) {
     const targetData = eventDocSnap.data() as IReviewDetailData;
 
     if (targetData.userId !== userId) {
-      return typedJson<IResponseBody>(
-        { response: 'ng', message: '게시글 삭제 권한이 없습니다.' },
-        { status: 401 },
-      );
+      return typedJson<IResponseBody>({ response: 'ng', message: '게시글 삭제 권한이 없습니다.' }, { status: 401 });
     }
 
     // 회원이면서 userId가 일치하는 경우만 삭제 가능

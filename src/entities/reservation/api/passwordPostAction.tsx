@@ -1,0 +1,40 @@
+'use server';
+
+import { cookies } from 'next/headers';
+
+import { apiUrl } from '@/src/shared/config';
+import type { IReservationDetailData } from '@/src/shared/types';
+
+interface IResponse {
+  response: 'ng' | 'ok';
+  message: string;
+  data: IReservationDetailData;
+  reservationToken: string | null;
+}
+
+export async function passwordPostAction(docId: string, password: string): Promise<IResponse> {
+  try {
+    const res = await fetch(`${apiUrl}/api/reservation/detail/password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ docId, password }),
+    });
+    const postData = await res.json();
+
+    if (postData.response === 'ok' && postData.reservationToken) {
+      // Set the access token in cookies
+      cookies().set('reservationToken', postData.reservationToken, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24, // 1 day
+        sameSite: 'strict',
+      });
+    }
+
+    return postData;
+  } catch (error) {
+    console.error('Error fetching post password:', error);
+    throw error;
+  }
+}

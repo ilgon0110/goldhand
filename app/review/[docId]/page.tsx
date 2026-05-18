@@ -1,10 +1,8 @@
-import { Suspense } from 'react';
-
 import { getReviewDetailData } from '@/src/entities/review';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { ReviewDetailPage } from '@/src/views/review';
+
+import { ReviewDetailPage } from './ui/ReviewDetailPage';
 
 type TPageProps = {
   params: Promise<{ docId: string }>;
@@ -22,9 +20,5 @@ export default async function Page({ params }: TPageProps) {
     throw new Error('Error getting document');
   }
 
-  return (
-    <Suspense fallback={<LoadingBar />}>
-      <ReviewDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />
-    </Suspense>
-  );
+  return <ReviewDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />;
 }

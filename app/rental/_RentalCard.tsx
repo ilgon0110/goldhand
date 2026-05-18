@@ -1,12 +1,29 @@
 import Image from 'next/image';
 
-export const RentalCard = ({ src, alt }: { src: string; alt: string }) => {
+import { cn } from '@/lib/utils';
+
+type TRentalCardProps = {
+  category: string;
+  name: string;
+  src: string;
+  alt: string;
+};
+
+export const RentalCard = ({ category, name, src, alt }: TRentalCardProps) => {
   return (
-    <div className="relative h-[400px] w-full rounded-lg bg-white p-2 shadow">
-      <div className="relative h-[330px] w-full rounded">
-        <Image alt={alt} fill src={src} style={{ objectFit: 'cover', borderRadius: '0.5rem' }} />
+    <article
+      className={cn(
+        'flex flex-col border border-[#E8E1D2] bg-white transition-all duration-200',
+        'hover:-translate-y-0.5 hover:border-[#D8B97B]',
+      )}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden border-b border-[#EFE9DA] bg-[#F6F1E7]">
+        <Image alt={alt} fill src={src} style={{ objectFit: 'cover' }} />
       </div>
-      <h3 className="px-4 py-2 text-lg font-bold">{alt}</h3>
-    </div>
+      <div className="flex flex-col gap-1.5 px-6 pb-7 pt-6">
+        <p className="text-[11px] font-medium tracking-[0.24em] text-[#A88547]">{category}</p>
+        <h3 className="mt-1 font-serif text-[22px] font-medium leading-snug tracking-tight text-[#1B1814]">{name}</h3>
+      </div>
+    </article>
   );
 };

@@ -6,22 +6,23 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
-interface IConsultPost {
+export interface IConsultPost {
   docId: string;
-  userId: string;
+  userId?: string;
   title: string;
-  password: string | null;
+  password?: string;
   franchisee: string;
   content: string;
   location: string;
   secret: boolean;
-  bornDate: Date | undefined;
+  bornDate?: Date;
   name: string;
   phoneNumber: string;
+  recaptchaToken: string;
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     // 비회원인 경우
     if (targetData.userId === null) {
-      if (password === null) {
+      if (password === undefined) {
         return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호를 입력해주세요.' }, { status: 401 });
       }
 

@@ -5,11 +5,11 @@ import { linkWithCredential, signInWithEmailAndPassword, signInWithPhoneNumber }
 import { http, HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
 
+import { SignupPage } from '@/app/signup/ui/SignupPage';
 import { server } from '@/src/__mock__/node';
 import type { TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
-import { SignupPage } from '@/src/views/signup';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();

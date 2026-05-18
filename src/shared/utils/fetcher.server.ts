@@ -22,7 +22,7 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
     body: options.body,
   });
 
-  if (!response.ok) {
+  if (response.status === 500) {
     const errorData = await response.json();
     throw new Error(errorData?.message || 'API 요청 실패');
   }

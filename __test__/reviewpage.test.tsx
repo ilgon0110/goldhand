@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { ReviewPage } from '@/app/review/ui/ReviewPage';
 import type { IReviewListResponseData } from '@/src/shared/types';
-import { ReviewPage } from '@/src/views/review';
 
 // sendViewLog 모킹
 vi.mock('@/src/shared/utils/verifyViewId', () => ({

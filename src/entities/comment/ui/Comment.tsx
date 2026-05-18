@@ -49,6 +49,9 @@ export const Comment = ({
     onError: () => {
       toastError('댓글 수정 실패!');
     },
+    onSettled: () => {
+      setIsEditMode(false);
+    },
   });
   const { mutate: deleteMutate, isPending } = useCommentDeleteMutation(type, {
     onSuccess: () => {
@@ -56,6 +59,9 @@ export const Comment = ({
     },
     onError: () => {
       toastError('댓글 삭제 실패!');
+    },
+    onSettled: () => {
+      setAlertDialogOpen(false);
     },
   });
 
@@ -68,32 +74,14 @@ export const Comment = ({
   });
   const formValidation = form.formState.isValid;
 
-  const handleEditClick = () => {
-    setIsEditMode(prev => !prev);
-  };
-
   const onhandleDeleteClick = async () => {
     setIsEditMode(false);
-
-    // 삭제 로직 시작
-    try {
-      deleteMutate({ userId, docId, commentId });
-    } catch {
-      toastError('댓글 삭제 중 알 수 없는 오류가 발생하였습니다.');
-    } finally {
-      setAlertDialogOpen(false);
-    }
+    deleteMutate({ userId, docId, commentId });
   };
 
   const onSubmit = async (values: z.infer<typeof commentEditSchema>) => {
     if (!formValidation) return;
-
-    // 수정 로직 시작
-    try {
-      updateMutate({ docId, commentId, comment: values.editComment });
-    } catch {
-      toastError('댓글 수정 중 알 수 없는 오류가 발생하였습니다.');
-    }
+    updateMutate({ docId, commentId, comment: values.editComment });
   };
 
   return (
@@ -114,7 +102,7 @@ export const Comment = ({
                   aria-label="댓글 수정"
                   className="text-slate-500 transition-all duration-200 hover:text-black"
                   data-testid="edit-button"
-                  onClick={handleEditClick}
+                  onClick={() => setIsEditMode(prev => !prev)}
                 >
                   <svg
                     aria-hidden="true"

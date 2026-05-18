@@ -18,7 +18,7 @@ interface IReviewRequestBody {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   docId: string;
 }
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
     if (uid !== targetData.userId) {
       return typedJson<IResponseBody>(
-        { response: 'unAuthorized', message: '후기 수정 권한이 없습니다.', docId: '' },
+        { response: 'ng', message: '후기 수정 권한이 없습니다.', docId: '' },
         { status: 403 },
       );
     }

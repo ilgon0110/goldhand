@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ok' | 'ng';
   message: string;
 }
 

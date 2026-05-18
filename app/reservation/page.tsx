@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
-import { orderCardList } from './reservation.config';
+import { orderCardList } from './config';
 
 export default function ReservationPage() {
   return (
     <>
-      <SectionTitleHero description="모든 단계는 본점·지점 동일한 기준으로 운영됩니다." label="예약 상담 · CONSULT" />
+      <SectionTitleHero description="모든 단계는 본점·지점 동일한 기준으로 운영됩니다." label="예약 상담" />
       {/* 스텝 목록 */}
       <div className="mx-auto max-w-[880px] pb-20">
         <ol className="relative m-0 list-none p-0">

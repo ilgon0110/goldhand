@@ -2,11 +2,11 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
+import { ReviewDetailPage } from '@/app/review/[docId]/ui/ReviewDetailPage';
 import { server } from '@/src/__mock__/node';
 import type { IViewCountResponseData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
-import { ReviewDetailPage } from '@/src/views/review/detail/ui/ReviewDetailPage';
 
 const pushMock = vi.fn();
 vi.mock('next/navigation', () => ({

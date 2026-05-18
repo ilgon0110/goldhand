@@ -1,12 +1,12 @@
 import { cn } from '@/lib/utils';
 import { commuteCheckList, dayoffCheckList, inHouseCheckList, onDayCheckList } from '@/src/feature/price';
 import { BasicPremiumPriceTable, SinglePriceTable } from '@/src/feature/price';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 const PricePage = () => {
   return (
     <>
-      <SectionTitle title="고운황금손 이용요금" />
+      <SectionTitleHero label="고운황금손 이용요금" />
       <div className={cn('flex flex-col justify-center gap-20', 'lg:flex-row')}>
         <div>
           <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">출퇴근형</div>

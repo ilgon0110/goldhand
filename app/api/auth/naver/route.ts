@@ -7,7 +7,7 @@ import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'rejoin';
+  response: 'ng' | 'ok';
   message: string;
   redirectTo: string;
   user: UserCredential | null;
@@ -72,14 +72,14 @@ export async function POST(req: Request) {
         if (deletedStatus === 'deleted_rejoin') {
           return typedJson<IResponsePostBody>(
             {
-              response: 'rejoin',
+              response: 'ng',
               message: '재가입 가능한 유저입니다.',
               redirectTo: '/signup/rejoin',
               user,
               accessToken,
               email: user.user.email,
             },
-            { status: 200 },
+            { status: 409 },
           );
         }
 

@@ -5,7 +5,7 @@ import type { INotificationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   type: string;
   docId: string;

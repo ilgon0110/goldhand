@@ -1,9 +1,8 @@
-import { Suspense } from 'react';
-
+import { getReservationDetailData } from '@/src/entities/reservation';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getReservationDetailData, ReservationDetailPage } from '@/src/views/reservation';
+
+import { ReservationDetailPage } from './ui/ReservationDetailPage';
 
 type TPageProps = {
   params: Promise<{ docId: string }>;
@@ -23,9 +22,5 @@ export default async function Page({ params }: TPageProps) {
     throw new Error('Error getting document');
   }
 
-  return (
-    <Suspense fallback={<LoadingBar />}>
-      <ReservationDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />
-    </Suspense>
-  );
+  return <ReservationDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />;
 }

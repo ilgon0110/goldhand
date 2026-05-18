@@ -15,7 +15,7 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 import { managerCommentSchema } from '../config/managerCommentSchema';
 
 interface IResponsePost {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
 }
 
@@ -58,7 +58,7 @@ export const ManagerCommentForm = ({ docId }: TManagerCommentFormProps) => {
       if (data.response === 'ok') {
         toastSuccess('댓글이 작성되었습니다.');
         form.reset();
-      } else if (data.response === 'unAuthorized' || data.response === 'expired') {
+      } else if (response.status === 401) {
         toastError('로그인 후 이용해주세요.');
         form.reset();
       } else {

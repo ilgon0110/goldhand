@@ -14,7 +14,7 @@ interface IEventPost {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   docId: string;
 }

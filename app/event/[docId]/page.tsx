@@ -1,9 +1,8 @@
-import { Suspense } from 'react';
-
+import { getEventDetailData } from '@/src/entities/event';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { EventDetailPage, getEventDetailData } from '@/src/views/event';
+
+import { EventDetailPage } from './ui/EventDetailPage';
 
 type TPageProps = {
   params: Promise<{ docId: string }>;
@@ -22,9 +21,5 @@ export default async function Page({ params }: TPageProps) {
     throw new Error('Error getting document');
   }
 
-  return (
-    <Suspense fallback={<LoadingBar />}>
-      <EventDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />
-    </Suspense>
-  );
+  return <EventDetailPage data={data} docId={docId} userData={userData} viewCountData={viewCountData} />;
 }

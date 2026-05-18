@@ -13,7 +13,7 @@ interface IMyPageUpdatePost {
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
 }
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     if (!userDocSnap.exists()) {
       return typedJson<IResponseBody>(
         {
-          response: 'unAuthorized',
+          response: 'ng',
           message: '사용자 정보가 존재하지 않습니다.',
         },
         { status: 403 },

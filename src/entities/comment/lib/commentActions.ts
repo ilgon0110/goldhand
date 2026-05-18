@@ -19,7 +19,7 @@ import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface ICommentResponse {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
 }
 
@@ -32,14 +32,7 @@ export async function createComment(
   const accessToken = cookieStore.get('accessToken');
 
   if (!accessToken) {
-    return typedJson<ICommentResponse>(
-      { response: 'unAuthorized', message: '로그인 후 사용해주세요.' },
-      { status: 401 },
-    );
-  }
-
-  if (!docId) {
-    return typedJson<ICommentResponse>({ response: 'ng', message: 'docId is required' }, { status: 404 });
+    return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 401 });
   }
 
   try {
@@ -48,10 +41,7 @@ export async function createComment(
     const uid = decodedToken.uid;
 
     if (!uid) {
-      return typedJson<ICommentResponse>(
-        { response: 'unAuthorized', message: '로그인 후 사용해주세요.' },
-        { status: 403 },
-      );
+      return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 403 });
     }
 
     const userDocRef = doc(db, 'users', uid);
@@ -77,7 +67,7 @@ export async function createComment(
   } catch (error) {
     console.error(`Error creating comment in ${firestoreCollection}:`, error);
     if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
-      return typedJson<ICommentResponse>({ response: 'expired', message: '토큰이 만료되었습니다.' }, { status: 401 });
+      return typedJson<ICommentResponse>({ response: 'ng', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
     return typedJson<ICommentResponse>({ response: 'ng', message: 'Error getting document' }, { status: 500 });
   }

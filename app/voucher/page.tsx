@@ -1,16 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 const VoucherPage = () => {
   return (
     <div>
-      <SectionTitle title="고운황금손 2025년 바우처 이용 안내" />
-      <div className={`mt-6 whitespace-pre-wrap break-keep text-center leading-6 text-slate-700 xl:text-lg`}>
-        {`출산가정에 건강관리사를 파견하여 산모의 산후 회복과 신생아의 양육을 지원하고\n출산가정의 경제적 부담을 경감 및 산모, 신생아 건강관리사 양성을 통해 일자리를 창출하는 제도입니다.`}
-      </div>
-      <div className="mt-10 h-[1px] w-full bg-slate-300" />
+      <SectionTitleHero
+        description="출산가정에 건강관리사를 파견하여 산모의 산후 회복과 신생아의 양육을 지원하고 출산가정의 경제적 부담을 경감 및 산모, 신생아 건강관리사 양성을 통해 일자리를 창출하는 제도입니다."
+        label="고운황금손 2025년 바우처 이용 안내"
+      />
+      <div className="h-[1px] w-full bg-slate-300" />
       <div className="mt-6 w-full text-center text-xl font-bold text-[#728146] lg:text-2xl">신청 대상</div>
       <div className={`mt-3 whitespace-pre-wrap break-keep text-center leading-7 text-slate-700 xl:text-lg`}>
         {`국내에 주민등록(주민등록을 한 재외국민 포함) 또는 외국인 등록을 둔 출산가정으로써,\n산모 또는 배우자가 생계·의료·주거·교육급여 수급자 또는 차상위계층에 해당하는 출산가정\n기준중위소득 100%이하의 출산 가정(임신 16주 이후 발생한 유산·사산의 경우도 포함)`}

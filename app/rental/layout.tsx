@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <section className="mt-6 px-4 md:px-[10vw]">{children}</section>;
+  return <section className={cn('pb-28')}>{children}</section>;
 }

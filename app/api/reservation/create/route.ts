@@ -8,28 +8,28 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
-interface IConsultPost {
+export interface IReservationCreatePostData {
   title: string;
-  password: string | null;
+  password?: string;
   franchisee: string;
   content: string;
   location: string;
   secret: boolean;
-  bornDate: Date | undefined;
+  bornDate?: Date;
   name: string;
   phoneNumber: string;
   recaptchaToken: string;
-  userId: string | null;
+  userId?: string;
 }
 
 interface IResponseBody {
-  response: 'expired' | 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   docId?: string;
 }
 
 export async function POST(req: Request) {
-  const body = (await req.json()) as IConsultPost;
+  const body = (await req.json()) as IReservationCreatePostData;
   const { title, name, userId, franchisee, phoneNumber, location, content, recaptchaToken } = body;
 
   if (!title || !content || !location || !name || !phoneNumber || !franchisee || !recaptchaToken) {
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     }
   } catch (error: any) {
     if (error.code === 'auth/id-token-expired') {
-      return typedJson<IResponseBody>({ response: 'expired', message: '토큰이 만료되었습니다.' }, { status: 401 });
+      return typedJson<IResponseBody>({ response: 'ng', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
 
     console.error('Error verifying token:', error);
@@ -97,10 +97,10 @@ export async function POST(req: Request) {
 }
 
 // 비회원일 경우
-async function createNonMemberPost(body: IConsultPost) {
+async function createNonMemberPost(body: IReservationCreatePostData) {
   const { title, name, password, secret, franchisee, phoneNumber, location, content, bornDate } = body;
   // 비밀번호 검중 후 hash
-  if (password === null || password.length < 4) {
+  if (password == null || password.length < 4) {
     return typedJson<IResponseBody>(
       { response: 'ng', message: '비밀번호는 4자리 이상이어야 합니다.' },
       { status: 400 },
@@ -147,7 +147,7 @@ async function createNonMemberPost(body: IConsultPost) {
 }
 
 // 회원일 경우
-async function createMemberPost(uid: string, body: IConsultPost) {
+async function createMemberPost(uid: string, body: IReservationCreatePostData) {
   const { title, name, secret, franchisee, phoneNumber, location, content, bornDate } = body;
 
   // firestore에 데이터 저장

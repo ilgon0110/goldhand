@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { EventPage } from '@/app/event/ui/EventPage';
 import type { IUserResponseData } from '@/src/shared/types';
-import { EventPage } from '@/src/views/event';
 
 // sendViewLog 모킹
 vi.mock('@/src/shared/utils/verifyViewId', () => ({
@@ -48,7 +48,7 @@ describe('Event Component', () => {
       />,
     );
 
-    expect(screen.getByText('고운황금손 이벤트')).toBeInTheDocument();
+    expect(screen.getByText(/고운황금손 이벤트/)).toBeInTheDocument();
 
     for (const event of eventData.eventData) {
       expect(await screen.findAllByText(event.title)).toBeTruthy();

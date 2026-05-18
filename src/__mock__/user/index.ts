@@ -1,7 +1,7 @@
 import type { IUserResponseData } from '@/src/shared/types';
 
 export const mockUserData: {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   userData: IUserResponseData['userData'] | null;
   isLinked: boolean;

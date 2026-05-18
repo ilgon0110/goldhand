@@ -5,7 +5,7 @@ interface IMockApplyDetailData extends IApplyDetailData {
 }
 
 interface IMockManagerApplyListData {
-  response: 'ng' | 'ok' | 'unAuthorized';
+  response: 'ng' | 'ok';
   message: string;
   data: IMockApplyDetailData[];
   totalDataLength: number;

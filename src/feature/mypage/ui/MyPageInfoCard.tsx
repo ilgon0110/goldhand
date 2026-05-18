@@ -1,6 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { getAuth, signOut } from 'firebase/auth';
-import { BadgeCheckIcon, BookCheck, BookX, ShieldCheckIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
@@ -9,8 +8,6 @@ import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { authKeys } from '@/src/shared/config/queryKeys';
 import type { IMyPageResponseData } from '@/src/shared/types';
-import { Badge } from '@/src/shared/ui/badge';
-import { Button } from '@/src/shared/ui/button';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
 
@@ -30,7 +27,6 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
       signOut(auth).then(() => {
         queryClient.invalidateQueries({ queryKey: authKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
-
         setTimeout(() => {
           router.replace('/');
         }, 1000);
@@ -42,98 +38,120 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   });
 
   const isAdmin = myPageData.data.userData?.grade === 'admin';
+  const isNaver = myPageData.data.userData?.provider === 'naver';
+  const isLinked = myPageData.data.isLinked;
   const [isPending, startTransition] = useTransition();
+
   return (
     <>
       {isPending && <LoadingSpinnerOverlay text="로딩 중..." />}
-      <div className="relative mt-6 w-full rounded border border-slate-300 p-3 md:p-11">
-        <div className="flex flex-col md:flex-row md:justify-between">
-          <div className="flex flex-col gap-2 text-base font-bold md:flex-row md:items-center md:text-3xl">
-            <div className="space-x-2">
-              <span>{myPageData.data.userData?.name || '이름'}</span>
-              <span className="font-medium text-[#728146]">{myPageData.data.userData?.nickname || '닉네임'}</span>
-            </div>
-            <div className="flex flex-row items-center gap-2">
-              <Badge
-                className={cn(
-                  isAdmin ? 'space-x-1 bg-purple-800 text-white' : 'space-x-1 bg-blue-500 text-white dark:bg-blue-600',
-                )}
-                variant="outline"
-              >
-                {isAdmin ? (
-                  <ShieldCheckIcon data-testid="admin-grade-badge" />
-                ) : (
-                  <BadgeCheckIcon data-testid="basic-grade-badge" />
-                )}
-                <span>{myPageData.data.userData?.grade}</span>
-              </Badge>
-              <Badge
-                className={cn(
-                  myPageData.data.userData?.provider === 'naver' ? 'bg-naver text-white' : 'bg-kakao text-black',
-                  'space-x-1',
-                )}
-                variant="outline"
-              >
-                <Image
-                  alt="icon"
-                  height={24}
-                  src={myPageData.data.userData?.provider === 'naver' ? '/icon/naver.png' : '/icon/kakaotalk.png'}
-                  width={24}
-                />
-                <span>{myPageData.data.userData?.provider}</span>
-              </Badge>
-              <Badge className={cn('space-x-1')} variant={myPageData.data.isLinked ? 'default' : 'outline'}>
-                <span>{myPageData.data.isLinked ? <BookCheck /> : <BookX color="gray" />}</span>
-                <span>{myPageData.data.isLinked ? '전화번호 인증완료' : '전화번호 미인증'}</span>
-              </Badge>
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 flex flex-col gap-4 text-sm md:mt-8 md:flex-row md:gap-9 md:text-xl">
-          <div className="space-x-2">
-            <span className="text-slate-500">전화번호</span>
-            <span>{formatPhoneNumber(myPageData.data.userData?.phoneNumber) || '미등록'}</span>
-          </div>
-          <div className="space-x-2">
-            <span className="text-slate-500">이메일</span>
-            <span>{myPageData.data.userData?.email}</span>
-          </div>
-        </div>
-      </div>
-      <div className="relative mt-4 flex flex-row justify-end gap-3">
-        <Button
-          className="absolute left-0"
-          variant="outline"
-          onClick={() => {
-            startTransition(() => {
-              logout();
-            });
-          }}
+      <section
+        aria-label="회원 정보"
+        className={cn(
+          'flex flex-wrap items-center gap-x-5 gap-y-2 border border-stone-200 bg-white px-6 py-[18px]',
+          'text-[13.5px] text-stone-700',
+        )}
+      >
+        {/* 이름 + 닉네임 */}
+        <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
+          <span className={cn('text-[15px] font-semibold tracking-[-0.005em] text-stone-900')}>
+            {myPageData.data.userData?.name || '이름'}
+          </span>
+          <span className="text-[13px] text-greenDeep">{myPageData.data.userData?.nickname || '닉네임'}</span>
+        </span>
+
+        {/* 등급 pill */}
+        <span
+          className={cn(
+            'inline-flex items-center whitespace-nowrap rounded-full px-[9px] py-[3px] text-[10.5px] font-medium tracking-[0.06em]',
+            isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-700',
+          )}
         >
-          로그아웃
-        </Button>
-        <Button
-          onClick={() => {
-            startTransition(() => {
-              router.push('/signup/phone');
-            });
-          }}
+          {isAdmin ? 'ADMIN' : 'BASIC'}
+        </span>
+
+        {/* 소셜 provider pill */}
+        <span
+          className={cn(
+            'inline-flex items-center gap-[5px] rounded-full px-[9px] py-[3px]',
+            'whitespace-nowrap text-[10.5px] font-medium tracking-[0.06em]',
+            isNaver ? 'bg-naver text-white' : 'bg-kakao text-black',
+          )}
         >
-          전화번호 인증
-        </Button>
-        <Button
-          onClick={() => {
-            startTransition(() => {
-              router.push('/mypage/edit');
-            });
-          }}
+          <Image
+            alt={`${myPageData.data.userData?.provider} icon`}
+            height={12}
+            src={isNaver ? '/icon/naver.png' : '/icon/kakaotalk.png'}
+            width={12}
+          />
+          {myPageData.data.userData?.provider}
+        </span>
+
+        {/* 전화번호 인증 pill */}
+        <span
+          className={cn(
+            'inline-flex items-center gap-[5px] rounded-full px-[9px] py-[3px]',
+            'whitespace-nowrap text-[10.5px] font-medium tracking-[0.06em]',
+            isLinked ? 'bg-greenDeep/10 text-greenDeep' : 'bg-stone-100 text-stone-500',
+          )}
         >
-          정보수정
-        </Button>
-        <Button variant="destructive" onClick={handleWithdrawModalOpen}>
-          회원탈퇴
-        </Button>
-      </div>
+          {isLinked && <span className="h-[5px] w-[5px] rounded-full bg-current" />}
+          {isLinked ? '인증완료' : '미인증'}
+        </span>
+
+        {/* 구분선 (태블릿 이상) */}
+        <span className={cn('hidden h-[18px] w-px bg-stone-200', 'md:block')} />
+
+        {/* 전화번호 */}
+        <span className="inline-flex items-center gap-2 whitespace-nowrap">
+          <span className="text-[11px] tracking-[0.1em] text-stone-400">전화</span>
+          <span className="text-stone-700">{formatPhoneNumber(myPageData.data.userData?.phoneNumber) || '미등록'}</span>
+        </span>
+
+        {/* 이메일 */}
+        <span className="inline-flex items-center gap-2 whitespace-nowrap">
+          <span className="text-[11px] tracking-[0.1em] text-stone-400">이메일</span>
+          <span className="text-stone-700">{myPageData.data.userData?.email}</span>
+        </span>
+
+        {/* 액션 링크 */}
+        <span
+          className={cn(
+            'inline-flex flex-wrap items-center gap-3.5 border-t border-stone-100 pt-2.5 text-xs',
+            'w-full',
+            'md:ml-auto md:w-auto md:flex-nowrap md:gap-[18px] md:border-t-0 md:pt-0 md:text-[12.5px]',
+          )}
+        >
+          <button
+            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-500 transition-colors hover:text-stone-900"
+            type="button"
+            onClick={() => startTransition(() => router.push('/mypage/edit'))}
+          >
+            정보 수정
+          </button>
+          <button
+            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-500 transition-colors hover:text-stone-900"
+            type="button"
+            onClick={() => startTransition(() => router.push('/signup/phone'))}
+          >
+            전화번호 인증
+          </button>
+          <button
+            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-500 transition-colors hover:text-stone-900"
+            type="button"
+            onClick={() => startTransition(() => logout())}
+          >
+            로그아웃
+          </button>
+          <button
+            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-400 transition-colors hover:text-destructive"
+            type="button"
+            onClick={handleWithdrawModalOpen}
+          >
+            탈퇴
+          </button>
+        </span>
+      </section>
     </>
   );
 };

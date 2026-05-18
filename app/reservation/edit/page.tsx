@@ -1,9 +1,8 @@
-import { Suspense } from 'react';
-
+import { getReservationDetailData } from '@/src/entities/reservation';
 import { getUserData } from '@/src/shared/api/getUserData';
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getReservationDetailData } from '@/src/views/reservation';
-import { ReservationRecaptchaProvider } from '@/src/views/reservation';
+import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
+
+import { ReservationEditPage } from './ui/ReservationEditPage';
 
 type TPageProps = {
   params: { slug: string };
@@ -16,9 +15,15 @@ export default async function Page({ searchParams }: TPageProps) {
     docId: (await searchParams).docId || '',
   });
 
+  console.log('consultDetailData', consultDetailData);
+
+  if (consultDetailData.response !== 'ok') {
+    throw new Error('예약 정보를 불러오는 중 오류가 발생하였습니다.');
+  }
+
   return (
-    <Suspense fallback={<LoadingBar />}>
-      <ReservationRecaptchaProvider consultDetailData={consultDetailData} userData={userData} />
-    </Suspense>
+    <MyGoogleCaptcha>
+      <ReservationEditPage consultDetailData={consultDetailData} userData={userData} />
+    </MyGoogleCaptcha>
   );
 }

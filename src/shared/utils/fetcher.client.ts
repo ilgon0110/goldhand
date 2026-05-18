@@ -15,10 +15,8 @@ export async function fetcher<T>(path: string, options: RequestInit = {}): Promi
 
   const result = await response.json();
 
-  console.log('API Response:', { path, options, responseStatus: response.status, result });
-
   // API 요청이 성공한 경우
-  if (response.ok) {
+  if (response.status !== 500) {
     return result as T;
   }
   // API 요청이 실패한 경우

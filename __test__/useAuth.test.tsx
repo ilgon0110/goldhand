@@ -40,8 +40,7 @@ describe('useAuth 테스트', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     expect(result.current.isPending).toBe(true);
-    expect(result.current.data?.isLinked).toBe(false);
-    expect(result.current.data?.userData).toBeNull();
+    expect(result.current.data).toBeUndefined();
   });
 
   it('사용자 데이터가 성공적으로 가져와지면 authState가 업데이트된다', async () => {

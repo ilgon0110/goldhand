@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
-import { EtiquetteCard } from './_EtiquetteCard';
-import { ManagerWorkCard } from './_ManagerWorkCard';
-import { BabyCardInfo, FamilyCardInfo, MotherCardInfo, StudentCardInfo } from './work.config';
+import { BabyCardInfo, FamilyCardInfo, MotherCardInfo, StudentCardInfo } from './config';
+import { EtiquetteCard } from './ui/_EtiquetteCard';
+import { ManagerWorkCard } from './ui/_ManagerWorkCard';
 
 const ManagerWorkPage = () => {
   return (

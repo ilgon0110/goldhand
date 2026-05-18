@@ -1,13 +1,12 @@
 export const dynamic = 'force-dynamic';
 
 import type { SearchParams } from 'nuqs/server';
-import { Suspense } from 'react';
 
 import { getReviewListData } from '@/src/entities/review';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
-import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { ReviewPage } from '@/src/views/review';
+
+import { ReviewPage } from './ui/ReviewPage';
 
 type TPageProps = {
   searchParams: Promise<SearchParams>;
@@ -18,9 +17,5 @@ export default async function Page({ searchParams }: TPageProps) {
   const data = await getReviewListData(page, franchisee);
   const userData = await getUserData();
 
-  return (
-    <Suspense fallback={<LoadingSpinnerOverlay text="후기 페이지 로딩중..." />}>
-      <ReviewPage data={data} isLogin={userData.userData != null} />
-    </Suspense>
-  );
+  return <ReviewPage data={data} isLogin={userData.userData != null} />;
 }

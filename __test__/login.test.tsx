@@ -2,13 +2,13 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
+import LoginPage from '@/app/login/page';
+import { RejoinModal } from '@/app/login/ui/RejoinModal';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { apiUrl } from '@/src/shared/config';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
-import { LoginPage } from '@/src/views/login';
-import { RejoinModal } from '@/src/views/login/ui/RejoinModal';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -36,7 +36,7 @@ vi.mock('@/src/shared/utils', async () => {
   };
 });
 
-vi.mock('@/src/views/login/api/naverLoginTokenAction', () => ({
+vi.mock('@/app/login/api/naverLoginTokenAction', () => ({
   naverLoginTokenAction: vi.fn(async (_code: string) => ({
     access_token: 'naverAccessToken',
     error_description: undefined,
@@ -55,17 +55,15 @@ describe('Login Component', () => {
   it('렌더링 테스트. 카카오, 네이버 로그인 버튼이 렌더링된다', async () => {
     renderWithQueryClient(<LoginPage />);
 
-    expect(screen.getByText('카카오로 로그인하기')).toBeInTheDocument();
+    expect(screen.getByText(/카카오톡 사업자 정보를 변경중이에요/)).toBeInTheDocument();
     expect(screen.getByText('네이버로 로그인하기')).toBeInTheDocument();
   });
 
-  it('[카카오] 로그인 버튼을 클릭하면 카카오 로그인 페이지로 이동한다', async () => {
+  it('[카카오] 카카오 로그인 버튼은 점검 중으로 비활성화 상태이다', async () => {
     renderWithQueryClient(<LoginPage />);
 
-    const kakaoButton = screen.getByRole('button', { name: /카카오로 로그인하기/ });
-    await userEvent.click(kakaoButton);
-
-    expect(pushMock).toHaveBeenCalledWith(expect.stringContaining('https://kauth.kakao.com/oauth/authorize'));
+    const kakaoButton = screen.getByRole('button', { name: /카카오톡 사업자 정보를 변경중이에요/ });
+    expect(kakaoButton).toBeDisabled();
   });
 
   it('[네이버] 로그인 버튼을 클릭하면 네이버 로그인 페이지로 이동한다', async () => {
@@ -90,7 +88,7 @@ describe('Login Component', () => {
     }));
 
     // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
+    const LoginPage = (await import('@/app/login/page')).default;
 
     renderWithQueryClient(<LoginPage />);
 
@@ -112,7 +110,7 @@ describe('Login Component', () => {
     }));
 
     // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
+    const LoginPage = (await import('@/app/login/page')).default;
 
     renderWithQueryClient(<LoginPage />);
 
@@ -135,7 +133,7 @@ describe('Login Component', () => {
     }));
 
     // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
+    const LoginPage = (await import('@/app/login/page')).default;
 
     renderWithQueryClient(<LoginPage />);
 
@@ -160,7 +158,7 @@ describe('Login Component', () => {
     }));
 
     // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
+    const LoginPage = (await import('@/app/login/page')).default;
 
     renderWithQueryClient(<LoginPage />);
 
@@ -195,13 +193,13 @@ describe('Login Component', () => {
             email: 'mock@example.com',
             userData: mockUserData.userData,
           },
-          { status: 200 },
+          { status: 409 },
         );
       }),
     );
 
     // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const { LoginPage } = await import('@/src/views/login');
+    const LoginPage = (await import('@/app/login/page')).default;
 
     renderWithQueryClient(<LoginPage />);
     expect(await screen.findByText('고운황금손에 재가입하시겠습니까?')).toBeInTheDocument();

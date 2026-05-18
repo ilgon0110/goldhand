@@ -10,13 +10,15 @@ interface IResponseBody {
 }
 
 const postReservationCreateApi = async (body: IReservationCreatePostData): Promise<IResponseBody> => {
-  return await fetch('/api/reservation/create', {
+  const res = await fetch('/api/reservation/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
-  }).then(res => res.json());
+  });
+  if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+  return res.json();
 };
 
 export const useReservationCreateMutation = (

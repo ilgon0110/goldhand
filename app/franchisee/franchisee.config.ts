@@ -29,4 +29,19 @@ export const BRANCHES = [
       string,
     ],
   },
+  {
+    id: 'yongin',
+    title: '용인점',
+    badge: '지점',
+    region: '경기 용인',
+    phoneNumber: '0507-1381-7533',
+    description: '고운황금손 용인점입니다.',
+    address: '경기 용인시 기흥구 죽전로',
+    naverPlaceUrl: 'https://naver.me/5VxlOdcK',
+    images: ['/franchisee/yongin_1.jpeg', '/franchisee/yongin_2.jpeg', '/franchisee/yongin_3.png'] as [
+      string,
+      string,
+      string,
+    ],
+  },
 ];

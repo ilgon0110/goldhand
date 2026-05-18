@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { ReviewFormPage } from '@/app/review/form/ui/ReviewFormPage';
 import type { TAliasAny } from '@/src/shared/types';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
-import { ReviewFormPage } from '@/src/views/review';
 
 // useRouter 모킹
 const pushMock = vi.fn();

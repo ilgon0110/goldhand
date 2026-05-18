@@ -1,12 +1,11 @@
 export const dynamic = 'force-dynamic';
 
 import type { SearchParams } from 'nuqs/server';
-import { Suspense } from 'react';
 
 import { getReservationListData } from '@/src/entities/reservation';
 import { loadReservationParams } from '@/src/shared/lib/nuqs/searchParams';
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { ReservationListPage } from '@/src/views/reservation';
+
+import { ReservationListPage } from './ui/ReservationListPage';
 
 type TPageProps = {
   searchParams: Promise<SearchParams>;
@@ -19,9 +18,5 @@ export default async function Page({ searchParams }: TPageProps) {
     hideSecret,
   });
 
-  return (
-    <Suspense fallback={<LoadingBar />}>
-      <ReservationListPage data={data} />
-    </Suspense>
-  );
+  return <ReservationListPage data={data} />;
 }

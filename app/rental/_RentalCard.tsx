@@ -2,14 +2,14 @@ import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
-type RentalCardProps = {
+type TRentalCardProps = {
   category: string;
   name: string;
   src: string;
   alt: string;
 };
 
-export const RentalCard = ({ category, name, src, alt }: RentalCardProps) => {
+export const RentalCard = ({ category, name, src, alt }: TRentalCardProps) => {
   return (
     <article
       className={cn(

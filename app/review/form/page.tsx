@@ -1,17 +1,13 @@
 'use client';
 
-import { Suspense } from 'react';
-
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { ReviewFormPage } from '@/src/views/review';
 import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+
+import { ReviewFormPage } from './ui/ReviewFormPage';
 
 export default function Page() {
   return (
-    <Suspense fallback={<LoadingBar />}>
-      <ImagesContext>
-        <ReviewFormPage />
-      </ImagesContext>
-    </Suspense>
+    <ImagesContext>
+      <ReviewFormPage />
+    </ImagesContext>
   );
 }

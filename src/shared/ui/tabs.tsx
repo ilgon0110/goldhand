@@ -5,38 +5,77 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root className={cn('flex flex-col gap-2', className)} data-slot="tabs" {...props} />;
-}
+const Tabs = TabsPrimitive.Root;
 
-function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
-  return (
-    <TabsPrimitive.List
-      className={cn(
-        'inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground',
-        className,
-      )}
-      data-slot="tabs-list"
-      {...props}
-    />
-  );
-}
+const TabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> & { variant?: 'default' | 'line' }
+>(({ className, variant = 'default', ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    data-variant={variant}
+    className={cn(
+      'group',
+      variant === 'default' &&
+        'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
+      variant === 'line' &&
+        'flex overflow-x-auto border-b border-stone-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+      className,
+    )}
+    {...props}
+  />
+));
+TabsList.displayName = TabsPrimitive.List.displayName;
 
-function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
-  return (
-    <TabsPrimitive.Trigger
-      className={cn(
-        "inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground transition-[color,box-shadow] focus-visible:border-ring focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:shadow-sm dark:text-muted-foreground dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 dark:data-[state=active]:text-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className,
-      )}
-      data-slot="tabs-trigger"
-      {...props}
-    />
-  );
-}
+const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      // 공통
+      'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium',
+      'ring-offset-background transition-all',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      'disabled:pointer-events-none disabled:opacity-50',
 
-function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
-  return <TabsPrimitive.Content className={cn('flex-1 outline-none', className)} data-slot="tabs-content" {...props} />;
-}
+      // default variant
+      'rounded-sm px-3 py-1.5',
+      'data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
+
+      // line variant (group context로 자동 적용)
+      'group-data-[variant=line]:rounded-none',
+      'group-data-[variant=line]:-mb-px group-data-[variant=line]:px-[22px] group-data-[variant=line]:pb-[14px] group-data-[variant=line]:pt-4',
+      'group-data-[variant=line]:border-b-2 group-data-[variant=line]:border-b-transparent',
+      'group-data-[variant=line]:bg-transparent group-data-[variant=line]:text-stone-500',
+      'group-data-[variant=line]:hover:text-stone-900',
+      'group-data-[variant=line]:data-[state=active]:border-b-gold',
+      'group-data-[variant=line]:data-[state=active]:bg-transparent',
+      'group-data-[variant=line]:data-[state=active]:font-semibold',
+      'group-data-[variant=line]:data-[state=active]:text-stone-900',
+      'group-data-[variant=line]:data-[state=active]:shadow-none',
+
+      className,
+    )}
+    {...props}
+  />
+));
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
+
+const TabsContent = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      className,
+    )}
+    {...props}
+  />
+));
+TabsContent.displayName = TabsPrimitive.Content.displayName;
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };

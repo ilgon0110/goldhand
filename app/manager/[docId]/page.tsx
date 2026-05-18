@@ -2,7 +2,9 @@ import { Suspense } from 'react';
 
 import { getUserData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
-import { getManagerApplyDetailData, ManagerApplyDetailPage } from '@/src/views/manager';
+
+import { getManagerApplyDetailData } from './api';
+import { ManagerApplyDetailPage } from './ui/ManagerApplyDetailPage';
 
 type TPageProps = {
   params: Promise<{ docId: string }>;

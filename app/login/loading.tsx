@@ -1,11 +1,8 @@
-'use client';
-
-import React from 'react';
-
-import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-
-const Loading = () => {
-  return <LoadingSpinnerOverlay text="로딩 중..." />;
-};
-
-export default Loading;
+export default function Loading() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#728146]" />
+      <p className="text-sm text-slate-500">로그인 페이지를 불러오는 중이에요...</p>
+    </div>
+  );
+}

@@ -1,24 +1,19 @@
 'use client';
 
-import { Suspense } from 'react';
+import { getEventDetailData } from '@/src/entities/event';
 
-import LoadingBar from '@/src/shared/ui/loadingBar';
-import { EventEditPage } from '@/src/views/event';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+import { EventEditPage } from './ui/EventEditPage';
 
 type TPageProps = {
   params: { docId: string };
   searchParams: { password: string };
 };
 
-export default function Page({ params }: TPageProps) {
+export default async function Page({ params }: TPageProps) {
   const { docId } = params;
+  const data = await getEventDetailData({
+    docId,
+  });
 
-  return (
-    <Suspense fallback={<LoadingBar />}>
-      <ImagesContext>
-        <EventEditPage docId={docId} />
-      </ImagesContext>
-    </Suspense>
-  );
+  return <EventEditPage data={data} docId={docId} />;
 }

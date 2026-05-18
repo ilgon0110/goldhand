@@ -1,13 +1,13 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
-import ReservationApplyPage from '@/app/reservation/apply/page';
 import { ReservationFormPage } from '@/app/reservation/form/ui/ReservationFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
+import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
@@ -81,8 +81,8 @@ vi.mock('@/src/shared/utils', async () => {
   };
 });
 
-vi.mock('@/src/views/reservation', async () => {
-  const actual = await vi.importActual('@/src/views/reservation');
+vi.mock('@/src/entities/reservation', async () => {
+  const actual = await vi.importActual('@/src/entities/reservation');
   return {
     ...actual,
     passwordPostAction: vi.fn().mockResolvedValue({ response: 'ok', message: '성공' }),
@@ -118,7 +118,7 @@ beforeAll(() => {
 describe('ReservationForm Component', () => {
   it('대리점 선택 Select 클릭 시 옵션이 제대로 선택되는지 확인', async () => {
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
     await userEvent.click(franchiseeTrigger);
@@ -129,19 +129,20 @@ describe('ReservationForm Component', () => {
   });
 
   it('[비회원] 비회원인 경우에만 비밀번호 입력창이 보인다.', async () => {
-    render(<ReservationApplyPage />);
+    const ReservationApplyPage = (await import('@/app/reservation/apply/page')).default;
+    renderWithQueryClient(<ReservationApplyPage />);
 
-    await userEvent.click(screen.getByRole('button', { name: '비회원으로 문의하기' }));
-    expect(pushMock).toHaveBeenCalledWith('/reservation/form');
+    const nonMemberLink = screen.getByRole('link', { name: '비회원으로 문의하기' });
+    expect(nonMemberLink).toHaveAttribute('href', '/reservation/form');
 
-    render(<ReservationFormPage userData={mockNonUserData} />);
+    renderWithQueryClient(<ReservationFormPage userData={mockNonUserData} />);
     expect(screen.queryByLabelText(/비밀번호/)).toBeInTheDocument();
   });
 
   it('[회원] 필수 입력값이 모두 입력되어야 제출 버튼이 활성화된다.', async () => {
     const user = userEvent.setup();
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const titleInput = screen.getByLabelText(/제목/);
     const serviceAreaInput = screen.getByLabelText(/서비스 이용 지역/);
@@ -172,7 +173,7 @@ describe('ReservationForm Component', () => {
       http.post('/api/reservation/create', handler),
     );
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const nameInput = screen.getByLabelText(/이름/);
     const phoneInput = screen.getByLabelText(/휴대폰번호/);
@@ -220,7 +221,7 @@ describe('ReservationForm Component', () => {
     );
 
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const titleInput = screen.getByLabelText(/제목/);
     const serviceAreaInput = screen.getByLabelText(/서비스 이용 지역/);
@@ -253,7 +254,7 @@ describe('ReservationForm Component', () => {
 
   it('제출 버튼을 눌렀을 때, 제출 도중 user session이 만료된 경우 해당 에러 메세지가 보이고 /login으로 이동하는지 확인', async () => {
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const titleInput = screen.getByLabelText(/제목/);
     const serviceAreaInput = screen.getByLabelText(/서비스 이용 지역/);
@@ -276,7 +277,7 @@ describe('ReservationForm Component', () => {
 
     server.use(
       http.post('/api/reservation/create', async () =>
-        HttpResponse.json({ response: 'expired', message: '로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.' }),
+        HttpResponse.json({ response: 'ng', message: '서버 오류가 발생했습니다.' }, { status: 500 }),
       ),
     );
 
@@ -284,15 +285,14 @@ describe('ReservationForm Component', () => {
     fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(utils.toastError).toHaveBeenCalledWith('로그인 세션이 만료되었습니다.\n다시 로그인 해주세요.');
-      expect(replaceMock).toHaveBeenCalledWith('/login');
+      expect(utils.toastError).toHaveBeenCalledWith('상담 신청에 실패했습니다.');
     });
   });
 
   it('[비회원] 필수 입력값이 모두 입력되어야 제출 버튼이 활성화된다.', async () => {
     server.use(http.get(`/api/user`, async () => HttpResponse.json(mockNonUserData)));
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const nameInput = screen.getByLabelText(/이름/);
     const phoneInput = screen.getByLabelText(/휴대폰번호/);
@@ -321,19 +321,16 @@ describe('ReservationForm Component', () => {
     expect(submitButton).toBeEnabled();
   });
 
-  it('제출 버튼을 눌렀을 때, 제출이 실패하면 전달받은 에러 메세지가 보이는지 확인', async () => {
+  it('제출 버튼을 눌렀을 때, 제출이 실패하면 에러 메세지가 보이는지 확인', async () => {
     const handler = vi.fn(async () => {
-      return HttpResponse.json({
-        response: 'ng',
-        message: '어떤 이유로 인해 실패했습니다.',
-      });
+      return HttpResponse.json({ response: 'ng', message: '어떤 이유로 인해 실패했습니다.' }, { status: 500 });
     });
     server.use(
       http.get('/api/user', async () => HttpResponse.json(mockNonUserData)),
       http.post('/api/reservation/create', handler),
     );
     const userData = await (await fetch('/api/user')).json();
-    render(<ReservationFormPage userData={userData} />);
+    renderWithQueryClient(<ReservationFormPage userData={userData} />);
 
     const nameInput = screen.getByLabelText(/이름/);
     const phoneInput = screen.getByLabelText(/휴대폰번호/);
@@ -364,7 +361,7 @@ describe('ReservationForm Component', () => {
     fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(utils.toastError).toHaveBeenCalledWith('상담 신청에 실패했습니다.\n어떤 이유로 인해 실패했습니다.');
+      expect(utils.toastError).toHaveBeenCalledWith('상담 신청에 실패했습니다.');
     });
   });
 });

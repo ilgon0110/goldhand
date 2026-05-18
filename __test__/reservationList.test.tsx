@@ -4,13 +4,13 @@ import { http, HttpResponse } from 'msw';
 import type { OnUrlUpdateFunction } from 'nuqs/adapters/testing';
 import { withNuqsTestingAdapter } from 'nuqs/adapters/testing';
 
+import { ReservationListPage } from '@/app/reservation/list/ui/ReservationListPage';
 import { server } from '@/src/__mock__/node';
 import { apiUrl } from '@/src/shared/config';
 import type { IReservationDetailData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-import { ReservationListPage } from '@/src/views/reservation';
 
 // sendViewLog 모킹
 vi.mock('@/src/shared/utils/verifyViewId', () => ({
@@ -291,11 +291,11 @@ describe('ReservationList Component', () => {
       }),
     });
 
-    // 비밀글 안보기 check 상태 확인
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).not.toBeChecked();
+    // 비밀글 안보기 toggle 상태 확인
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'false');
 
-    await userEvent.click(screen.getByLabelText('비밀글 안보기'));
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /비밀글 안보기/ }));
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('[비밀글] hideSecret queryParam이 true면 비밀글 안보기 체크박스가 체크 되어야 한다', async () => {
@@ -311,11 +311,11 @@ describe('ReservationList Component', () => {
       }),
     });
 
-    // 비밀글 안보기 check 상태 확인
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).toBeChecked();
+    // 비밀글 안보기 toggle 상태 확인
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'true');
 
-    await userEvent.click(screen.getByLabelText('비밀글 안보기'));
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).not.toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /비밀글 안보기/ }));
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('[비밀글] 비밀글 안보기 버튼을 눌렀을 때 hideSecret=false요청이 발생하는지 확인', async () => {
@@ -332,11 +332,11 @@ describe('ReservationList Component', () => {
       }),
     });
 
-    // 비밀글 안보기 check 상태 확인
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).toBeChecked();
+    // 비밀글 안보기 toggle 상태 확인
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'true');
 
-    await userEvent.click(screen.getByLabelText('비밀글 안보기'));
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).not.toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /비밀글 안보기/ }));
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'false');
 
     await waitFor(() => {
       expect(onUrlUpdate).toHaveBeenCalled();
@@ -359,11 +359,11 @@ describe('ReservationList Component', () => {
       }),
     });
 
-    // 비밀글 안보기 check 상태 확인
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).not.toBeChecked();
+    // 비밀글 안보기 toggle 상태 확인
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'false');
 
-    await userEvent.click(screen.getByLabelText('비밀글 안보기'));
-    expect(screen.getByRole('checkbox', { name: '비밀글 안보기' })).toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /비밀글 안보기/ }));
+    expect(screen.getByRole('button', { name: /비밀글 안보기/ })).toHaveAttribute('aria-pressed', 'true');
     await waitFor(() => {
       expect(onUrlUpdate).toHaveBeenCalled();
       const callArg = onUrlUpdate.mock.calls[onUrlUpdate.mock.calls.length - 1][0];
@@ -390,7 +390,7 @@ describe('ReservationList Component', () => {
       expect(screen.getByTestId(item.id)).toBeInTheDocument();
     }
 
-    await userEvent.click(screen.getByLabelText('비밀글 안보기'));
+    await userEvent.click(screen.getByRole('button', { name: /비밀글 안보기/ }));
 
     // 쿼리 파라미터가 바뀌었다고 가정하고, 새 데이터를 fetch해서 다시 렌더링
     // 상위 테스트에서 쿼리 파라미터가 바뀌면 새 데이터가 fetch되는거 테스트 완료
@@ -432,7 +432,7 @@ describe('ReservationList Component', () => {
       expect(screen.queryByTestId(item.id)).not.toBeInTheDocument();
     }
 
-    await userEvent.click(screen.getByLabelText('비밀글 안보기'));
+    await userEvent.click(screen.getByRole('button', { name: /비밀글 안보기/ }));
 
     // 쿼리 파라미터가 바뀌었다고 가정하고, 새 데이터를 fetch해서 다시 렌더링
     // 상위 테스트에서 쿼리 파라미터가 바뀌면 새 데이터가 fetch되는거 테스트 완료

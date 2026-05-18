@@ -2,13 +2,13 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
+import { MyPagePage } from '@/app/mypage/ui/MyPagePage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { WithdrawalModal } from '@/src/feature/mypage/ui/WithdrawalModal';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { formatPhoneNumber } from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
-import { MyPagePage } from '@/src/views/mypage';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -54,23 +54,26 @@ describe('Mypage 컴포넌트 테스트', () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     renderWithQueryClient(<MyPagePage myPageData={data} />);
 
-    expect(screen.getByText('고운황금손 마이페이지')).toBeInTheDocument();
+    expect(screen.getByText(/고운황금손 마이페이지/)).toBeInTheDocument();
     expect(screen.getByText('테스트 사용자')).toBeInTheDocument();
     expect(screen.getByText('testnick')).toBeInTheDocument();
     expect(screen.getByText(formatPhoneNumber('01012345678'))).toBeInTheDocument();
 
-    for (const apply of data?.data?.applies ?? []) {
-      expect(screen.getByTestId(apply.id)).toBeInTheDocument();
-    }
+    // applies는 null이므로 loop 미실행
 
+    // consults: 기본 탭(CONSULT)에서 표시됨
     for (const consult of data?.data?.consults ?? []) {
       expect(screen.getByTestId(consult.id)).toBeInTheDocument();
     }
 
+    // reviews: 후기 탭으로 이동 후 확인
+    await userEvent.click(screen.getByRole('tab', { name: '후기' }));
     for (const review of data?.data?.reviews ?? []) {
       expect(screen.getByTestId(review.id)).toBeInTheDocument();
     }
 
+    // comments: 댓글 탭으로 이동 후 확인
+    await userEvent.click(screen.getByRole('tab', { name: '댓글' }));
     for (const comment of data?.data?.comments ?? []) {
       expect(screen.getByTestId(comment.id)).toBeInTheDocument();
     }
@@ -98,21 +101,31 @@ describe('Mypage 컴포넌트 테스트', () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     renderWithQueryClient(<MyPagePage myPageData={data} />);
 
-    expect(screen.getByText('산후관리사 지원내역이 없습니다.')).toBeInTheDocument();
+    // 기본 탭 (CONSULT)
     expect(screen.getByText('예약 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 예약을 추가해보세요.')).toBeInTheDocument();
+
+    // 후기 탭
+    await userEvent.click(screen.getByRole('tab', { name: '후기' }));
     expect(screen.getByText('후기 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 후기를 추가해보세요.')).toBeInTheDocument();
+
+    // 댓글 탭
+    await userEvent.click(screen.getByRole('tab', { name: '댓글' }));
     expect(screen.getByText('댓글 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 댓글을 추가해보세요.')).toBeInTheDocument();
+
+    // 지원문의 탭
+    await userEvent.click(screen.getByRole('tab', { name: '지원문의' }));
+    expect(screen.getByText('산후관리사 지원내역이 없습니다.')).toBeInTheDocument();
   });
 
   it('회원 등급에 따라 grade badge가 올바르게 표시되는지 테스트', async () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     const { rerender } = renderWithQueryClient(<MyPagePage myPageData={data} />);
 
-    expect(screen.getByTestId('basic-grade-badge')).toBeInTheDocument();
-    expect(screen.queryByTestId('admin-grade-badge')).not.toBeInTheDocument();
+    expect(screen.getByText('BASIC')).toBeInTheDocument();
+    expect(screen.queryByText('ADMIN')).not.toBeInTheDocument();
 
     // 관리자 등급 테스트
     const adminData: IMyPageResponseData = {
@@ -123,8 +136,8 @@ describe('Mypage 컴포넌트 테스트', () => {
       },
     };
     rerender(<MyPagePage myPageData={adminData} />);
-    expect(screen.getByTestId('admin-grade-badge')).toBeInTheDocument();
-    expect(screen.queryByTestId('basic-grade-badge')).not.toBeInTheDocument();
+    expect(screen.getByText('ADMIN')).toBeInTheDocument();
+    expect(screen.queryByText('BASIC')).not.toBeInTheDocument();
   });
 
   it('가입한 OAuth provider에 따라 provider badge가 올바르게 표시되는지 테스트', async () => {
@@ -150,8 +163,8 @@ describe('Mypage 컴포넌트 테스트', () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     const { rerender } = renderWithQueryClient(<MyPagePage myPageData={data} />);
 
-    expect(screen.getByText('전화번호 미인증')).toBeInTheDocument();
-    expect(screen.queryByText('전화번호 인증완료')).not.toBeInTheDocument();
+    expect(screen.getByText('미인증')).toBeInTheDocument();
+    expect(screen.queryByText('인증완료')).not.toBeInTheDocument();
 
     const linkedData: IMyPageResponseData = {
       ...data,
@@ -161,8 +174,8 @@ describe('Mypage 컴포넌트 테스트', () => {
       },
     };
     rerender(<MyPagePage myPageData={linkedData} />);
-    expect(screen.getByText('전화번호 인증완료')).toBeInTheDocument();
-    expect(screen.queryByText('전화번호 미인증')).not.toBeInTheDocument();
+    expect(screen.getByText('인증완료')).toBeInTheDocument();
+    expect(screen.queryByText('미인증')).not.toBeInTheDocument();
   });
 
   it('로그아웃 버튼 클릭 시 로그아웃 함수가 호출되는지 테스트', async () => {
@@ -181,7 +194,7 @@ describe('Mypage 컴포넌트 테스트', () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     renderWithQueryClient(<MyPagePage myPageData={data} />);
 
-    const editButton = screen.getByRole('button', { name: '정보수정' });
+    const editButton = screen.getByRole('button', { name: '정보 수정' });
     expect(editButton).toBeInTheDocument();
 
     await userEvent.click(editButton);
@@ -203,7 +216,7 @@ describe('Mypage 컴포넌트 테스트', () => {
     const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     renderWithQueryClient(<MyPagePage myPageData={data} />);
 
-    const withdrawButton = screen.getByRole('button', { name: '회원탈퇴' });
+    const withdrawButton = screen.getByRole('button', { name: '탈퇴' });
     expect(withdrawButton).toBeInTheDocument();
 
     await userEvent.click(withdrawButton);
@@ -275,7 +288,9 @@ describe('Mypage 컴포넌트 테스트', () => {
     };
     renderWithQueryClient(<MyPagePage myPageData={adminData} />);
 
-    expect(screen.getByText('산후관리사 지원목록')).toBeInTheDocument();
+    // 지원목록 탭으로 이동 후 확인
+    await userEvent.click(screen.getByRole('tab', { name: '지원목록' }));
+    expect(screen.getByRole('tab', { name: '지원목록' })).toHaveAttribute('data-state', 'active');
 
     for (const manager of adminData?.data?.managersData ?? []) {
       expect(screen.getByTestId(manager.id)).toBeInTheDocument();
@@ -306,12 +321,15 @@ describe('Mypage 컴포넌트 테스트', () => {
     };
     renderWithQueryClient(<MyPagePage myPageData={adminData} />);
 
+    // 지원목록 탭으로 이동 후 확인
+    await userEvent.click(screen.getByRole('tab', { name: '지원목록' }));
+
     for (const manager of adminData?.data?.managersData ?? []) {
       const targetApply = screen.getByTestId(manager.id);
       expect(targetApply).toBeInTheDocument();
 
       await userEvent.click(targetApply);
-      waitFor(() => {
+      await waitFor(() => {
         expect(pushMock).toHaveBeenCalledWith(`/manager/${manager.id}`);
       });
     }

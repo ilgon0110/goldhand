@@ -80,19 +80,7 @@ export const ReviewCarousel = () => {
         <div className={cn('flex w-full flex-col gap-3', 'md:hidden')}>
           {data?.slice(0, 3).map(item => (
             <div className={cn('flex max-h-32 w-full flex-row px-1')} key={item.id}>
-              <ReviewCard
-                author={item.name}
-                createdAt={item.createdAt}
-                description={generateReviewDescription(item.htmlString)}
-                handleClick={() => {
-                  startTransition(() => {
-                    router.push(`/review/${item.id}`);
-                  });
-                }}
-                id={item.id}
-                thumbnail={item.thumbnail}
-                title={item.title}
-              />
+              <ReviewCard review={item} />
             </div>
           ))}
         </div>

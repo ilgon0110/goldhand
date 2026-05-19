@@ -53,7 +53,8 @@ jobs:
             cd ${{ secrets.EC2_PATH }}
             tar -xzf app.tar.gz
             rm app.tar.gz
-            yarn install --immutable
+            yarn install
+            yarn run build
 
             pm2 restart goldhand || pm2 start yarn --name goldhand -- start
 

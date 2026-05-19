@@ -2,11 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useQueryStates } from 'nuqs';
-import { useEffect, useState, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { generateReviewDescription } from '@/src/entities/review';
-import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IEventDetailData, IUserDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
@@ -24,23 +23,11 @@ interface IEventPageProps {
 
 export const EventPage = ({ eventData, userData, totalDataLength }: IEventPageProps) => {
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<'CARD' | 'TABLE'>('CARD');
   const [eventParam, setEventParam] = useQueryStates(eventParams, {
     clearOnDefault: false,
     shallow: false,
   });
   const [isPending, startTransition] = useTransition();
-  const isDesktop = useMediaQuery('(min-width: 768px)');
-
-  useEffect(() => {
-    if (!isDesktop) {
-      // 모바일 화면에서는 무조건 TABLE 모드로 설정
-      setViewMode('TABLE');
-    } else {
-      // 데스크탑 화면에서는 기본적으로 CARD 모드로 설정
-      setViewMode('CARD');
-    }
-  }, [isDesktop]);
 
   return (
     <>
@@ -52,16 +39,10 @@ export const EventPage = ({ eventData, userData, totalDataLength }: IEventPagePr
           'sm:flex-row sm:items-center sm:gap-0',
         )}
       >
-        <EventPageHeader isAdmin={userData?.grade === 'admin'} setViewMode={setViewMode} viewMode={viewMode} />
+        <EventPageHeader isAdmin={userData?.grade === 'admin'} />
       </div>
       {eventData.length > 0 ? (
-        <section
-          className={cn(
-            'mt-6 grid gap-2',
-            viewMode === 'TABLE' ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-          )}
-        >
-          {viewMode === 'TABLE' && <div className="font-bold">NO</div>}
+        <section className="mt-6 grid grid-cols-1 gap-2">
           {eventData.map(event => (
             <EventCard
               createdAt={event.createdAt}
@@ -77,7 +58,6 @@ export const EventPage = ({ eventData, userData, totalDataLength }: IEventPagePr
               rowNumber={event.rowNumber}
               thumbnail={event.thumbnail}
               title={event.title}
-              viewMode={viewMode}
             />
           ))}
         </section>

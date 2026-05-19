@@ -1,21 +1,9 @@
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // webpack: (config, options) => {
-  //   config.module.rules.push({
-  //     test: /\.mjs/,
-  //     include: /node_modules/,
-  //     type: "javascript/auto",
-  //   });
-  //   return config;
-  // },
   images: {
     remotePatterns: [
       {
@@ -33,4 +21,7 @@ const nextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+const analyze = process.env.ANALYZE === 'true';
+export default analyze
+  ? require('@next/bundle-analyzer')({ enabled: true })(nextConfig)
+  : nextConfig;

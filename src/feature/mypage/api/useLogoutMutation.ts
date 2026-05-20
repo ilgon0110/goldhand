@@ -1,7 +1,7 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { fetcher } from '@/src/shared/utils/fetcher.client';
+import { logoutAction } from './logoutAction';
 
 interface IResponsePostBody {
   response: string;
@@ -10,13 +10,7 @@ interface IResponsePostBody {
 
 export function useLogoutMutation(options?: UseMutationOptions<IResponsePostBody, Error, void>) {
   const { isPending, mutate, isSuccess, isError } = useMutation({
-    mutationFn: async () => {
-      const logoutData = await fetcher<IResponsePostBody>('/api/logout', {
-        method: 'POST',
-      });
-
-      return logoutData;
-    },
+    mutationFn: () => logoutAction(),
     ...options,
   });
 

@@ -16,9 +16,9 @@ import {
   DrawerTrigger,
 } from '@/shared/ui/drawer';
 import type { INotificationResponseData } from '@/src/shared/types';
+import { AlarmMenu } from '@/src/widgets/AlarmMenu';
 import { URLS } from '@/src/widgets/header';
 
-import { AlarmMenu } from '../../AlarmMenu';
 import { UlButton } from './_UlButton';
 
 interface IMobileHeader {

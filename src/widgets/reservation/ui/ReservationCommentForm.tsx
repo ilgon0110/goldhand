@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { useComments } from '@/src/entities/comment';
+import { useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
@@ -14,20 +14,13 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { consultCommentSchema } from '../config/consultCommentSchema';
 
-interface IResponsePost {
-  response: 'ng' | 'ok';
-  message: string;
-}
-
 type TReservationCommentFormProps = {
   docId: string;
 };
 
 export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) => {
-  const { loading: isCommentSubmitting } = useComments({
-    docId,
-    collectionName: 'consults',
-  });
+  useComments({ docId, collectionName: 'consults' });
+
   const form = useForm<z.infer<typeof consultCommentSchema>>({
     resolver: zodResolver(consultCommentSchema),
     defaultValues: {
@@ -38,35 +31,18 @@ export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) 
 
   const formValidation = form.formState.isValid;
 
-  const onSubmit = async (values: z.infer<typeof consultCommentSchema>) => {
-    if (!formValidation) return;
-    const { comment } = values;
+  const { mutate: submitComment, isPending: isCommentSubmitting } = useCommentCreateMutation('reservation', docId, {
+    onSuccess: () => {
+      toastSuccess('댓글이 작성되었습니다.');
+      form.reset();
+    },
+    onError: error => {
+      toastError(error.message || '댓글 작성 중 오류가 발생하였습니다.');
+    },
+  });
 
-    try {
-      const response = await fetch('/api/reservation/detail/comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          docId,
-          comment,
-        }),
-      });
-      const data: IResponsePost = await response.json();
-      if (data.response === 'ok') {
-        toastSuccess('댓글이 작성되었습니다.');
-        form.reset();
-      } else if (response.status === 401) {
-        toastError('로그인 후 이용해주세요.');
-        form.reset();
-      } else {
-        toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.');
-      }
-    } catch {
-      toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.');
-    }
+  const onSubmit = (values: z.infer<typeof consultCommentSchema>) => {
+    submitComment(values.comment);
   };
 
   return (

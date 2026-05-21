@@ -22,14 +22,13 @@ export interface IConsultPost {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IConsultPost;
   const { docId, userId, title, name, password, secret, franchisee, phoneNumber, location, content, bornDate } = body;
-
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
   }
@@ -64,6 +63,7 @@ export async function POST(req: NextRequest) {
         return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호가 일치하지 않습니다.' }, { status: 401 });
       }
 
+      console.log('비회원 수정 시도: 비밀번호 일치 확인 완료');
       // 비회원이면서 비밀번호가 일치하는 경우만 수정 가능
       await updateDoc(consultDocRef, {
         title,
@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         updatedAt: serverTimestamp(),
       });
+      console.log('비회원 수정 완료: Firestore 업데이트 성공');
 
       return typedJson<IResponseBody>(
         {

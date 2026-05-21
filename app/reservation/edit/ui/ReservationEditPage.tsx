@@ -51,9 +51,7 @@ export const ReservationEditPage = ({
   });
   const formValidation = form.formState.isValid;
 
-  const isMemberAndCreateMode = userData.userData?.userId != null && consultDetailData.data == null;
-  const isNonMemberAndSecret =
-    consultDetailData.data && consultDetailData.data.secret && consultDetailData.data?.userId == null;
+  const isGuestPost = consultDetailData.data?.userId == null;
 
   useEffect(() => {
     form.trigger();
@@ -103,7 +101,7 @@ export const ReservationEditPage = ({
               </FormItem>
             )}
           />
-          {(isNonMemberAndSecret || isMemberAndCreateMode) && (
+          {isGuestPost && (
             <FormField
               control={form.control}
               defaultValue={undefined}

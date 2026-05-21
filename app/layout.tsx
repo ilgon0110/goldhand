@@ -50,30 +50,28 @@ export default async function Layout({
   });
 
   return (
-    <>
-      <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
-        <body className="relative">
-          <Suspense fallback={null}>
-            <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
-              <NuqsAdapter>
-                <QueryProvider>
-                  <Header userData={userData.userData} />
-                  <EventModal />
-                  <main>{children}</main>
-                </QueryProvider>
-              </NuqsAdapter>
-              <Footer />
-              <ToastContainer />
-            </ThemeProvider>
-          </Suspense>
-          <Script src="https://developers.kakao.com/sdk/js/kakao.js" strategy="lazyOnload" />
-          <Script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" strategy="lazyOnload" />
-          <Script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
-            strategy="lazyOnload"
-          ></Script>
-        </body>
-      </html>
-    </>
+    <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
+      <body className="relative">
+        <Suspense fallback={null}>
+          <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
+            <NuqsAdapter>
+              <QueryProvider>
+                <Header userData={userData.userData} />
+                <EventModal />
+                <main>{children}</main>
+              </QueryProvider>
+            </NuqsAdapter>
+            <Footer />
+            <ToastContainer />
+          </ThemeProvider>
+        </Suspense>
+        <Script src="https://developers.kakao.com/sdk/js/kakao.js" strategy="lazyOnload" />
+        <Script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" strategy="lazyOnload" />
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          strategy="lazyOnload"
+        ></Script>
+      </body>
+    </html>
   );
 }

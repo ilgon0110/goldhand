@@ -66,7 +66,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 403 },
+        { status: 200 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function GET() {
         userData: null,
         isLinked: false,
       },
-      { status: 404 },
+      { status: 200 },
     );
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -116,7 +116,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 401 },
+        { status: 200 },
       );
     }
 
@@ -129,7 +129,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 401 },
+        { status: 200 },
       );
     }
 
@@ -143,7 +143,7 @@ export async function GET() {
           userData: null,
           isLinked: false,
         },
-        { status: 401 },
+        { status: 200 },
       );
     }
 

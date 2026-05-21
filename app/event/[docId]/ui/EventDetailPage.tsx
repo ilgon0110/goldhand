@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { cn } from '@/lib/utils';
-import { Comment, useComments } from '@/src/entities/comment';
+import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { eventCommentSchema } from '@/src/entities/event';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import type { IEventResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
@@ -28,14 +28,9 @@ type TEventDetailPageProps = {
   viewCountData: IViewCountResponseData;
 };
 
-interface IResponsePost {
-  response: 'ng' | 'ok';
-  message: string;
-}
-
 export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEventDetailPageProps) => {
   const router = useRouter();
-  const { comments, loading: isCommentSubmitting } = useComments({
+  const { comments } = useComments({
     docId,
     collectionName: 'events',
   });
@@ -56,35 +51,18 @@ export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEvent
   const formValidation = form.formState.isValid;
   const isOwner = data.data.userId === userData.userData?.userId;
 
-  const onCommentSubmit = async (values: z.infer<typeof eventCommentSchema>) => {
-    if (!formValidation) return;
-    const { comment } = values;
+  const { mutate: submitComment, isPending: isCommentSubmitting } = useCommentCreateMutation('event', docId, {
+    onSuccess: () => {
+      toastSuccess('댓글이 작성되었습니다.');
+      form.reset();
+    },
+    onError: error => {
+      toastError(error.message || '댓글 작성 중 오류가 발생하였습니다.');
+    },
+  });
 
-    try {
-      const response = await fetch('/api/event/detail/comment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          docId,
-          comment,
-        }),
-      });
-      const data: IResponsePost = await response.json();
-      if (data.response === 'ok') {
-        toastSuccess('댓글이 작성되었습니다.');
-        form.reset();
-      } else if (response.status === 401) {
-        toastError('로그인 후 이용해주세요.');
-        form.reset();
-      } else {
-        toastError('댓글 작성에 실패하였습니다.\n' + data.message);
-      }
-    } catch {
-      toastError('댓글 작성 중 알 수 없는 오류가 발생하였습니다.\n' + data.message);
-    }
+  const onCommentSubmit = (values: z.infer<typeof eventCommentSchema>) => {
+    submitComment(values.comment);
   };
 
   const onHandleEventDeleteActionClick = async () => {

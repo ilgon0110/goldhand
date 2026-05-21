@@ -8,19 +8,27 @@ interface IResponseBody {
   message: string;
 }
 
-const postReservationApi = async (body: IConsultPost): Promise<IResponseBody> => {
-  return await fetch('/api/reservation/update', {
+const postReservationEditApi = async (body: IConsultPost): Promise<IResponseBody> => {
+  const res = await fetch('/api/reservation/update', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
-  }).then(res => res.json());
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || 'API 요청 실패');
+  }
+
+  return data;
 };
 
-export const useReservationMutation = (options?: UseMutationOptions<IResponseBody, unknown, IConsultPost>) => {
+export const useReservationEditMutation = (options?: UseMutationOptions<IResponseBody, unknown, IConsultPost>) => {
   return useMutation({
-    mutationFn: postReservationApi,
+    mutationFn: postReservationEditApi,
     ...options,
   });
 };

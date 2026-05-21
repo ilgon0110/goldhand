@@ -22,14 +22,13 @@ export interface IConsultPost {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IConsultPost;
   const { docId, userId, title, name, password, secret, franchisee, phoneNumber, location, content, bornDate } = body;
-
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
   }
@@ -59,12 +58,6 @@ export async function POST(req: NextRequest) {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const isMatch = await bcrypt.compare(password, targetData.password || '');
-      if (!isMatch) {
-        return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호가 일치하지 않습니다.' }, { status: 401 });
-      }
-
-      // 비회원이면서 비밀번호가 일치하는 경우만 수정 가능
       await updateDoc(consultDocRef, {
         title,
         content,

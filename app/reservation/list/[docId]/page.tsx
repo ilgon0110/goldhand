@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+
 import { getReservationDetailData } from '@/src/entities/reservation';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { getViewCountData } from '@/src/shared/api/getViewCountData';
@@ -17,6 +19,10 @@ export default async function Page({ params }: TPageProps) {
   });
   const userData = await getUserData();
   const viewCountData = await getViewCountData({ docId });
+
+  if (data.message === 'TOKEN_EXPIRED') {
+    redirect('/reservation/list');
+  }
 
   if (data.message === 'Error getting document') {
     throw new Error('Error getting document');

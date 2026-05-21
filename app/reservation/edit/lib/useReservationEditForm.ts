@@ -8,7 +8,7 @@ import { reservationFormSchema } from '@/src/entities/reservation';
 import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
-import { useReservationMutation } from '../api';
+import { useReservationEditMutation } from '../api';
 
 interface IUseReservationEditFormProps {
   userData: IUserResponseData;
@@ -26,7 +26,7 @@ export const useReservationEditForm = ({
   const searchParams = useSearchParams();
   const { executeRecaptcha } = useGoogleReCaptcha();
   const docId = searchParams.get('docId');
-  const { mutate, isPending } = useReservationMutation();
+  const { mutate, isPending } = useReservationEditMutation();
 
   const commonDefaults = {
     title: consultDetailData.data.title || '',
@@ -39,13 +39,13 @@ export const useReservationEditForm = ({
     content: consultDetailData.data.content || '',
   };
 
-  const isMember = userData.userData?.userId != null;
+  const isGuestPost = consultDetailData.data.userId == null;
 
   const form = useForm<z.infer<typeof reservationFormSchema>>({
     resolver: zodResolver(reservationFormSchema),
-    defaultValues: isMember
-      ? { ...commonDefaults, isMember: true, password: undefined }
-      : { ...commonDefaults, isMember: false, password: '' },
+    defaultValues: isGuestPost
+      ? { ...commonDefaults, isGuestPost: true, password: '' }
+      : { ...commonDefaults, isGuestPost: false, password: undefined },
     mode: 'onChange',
   });
 
@@ -67,6 +67,7 @@ export const useReservationEditForm = ({
         secret: values.secret || false,
         docId,
         recaptchaToken,
+        userId: userData.userData?.userId,
       },
       {
         onSuccess: () => {

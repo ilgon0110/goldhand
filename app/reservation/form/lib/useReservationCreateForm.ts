@@ -27,7 +27,7 @@ export const useReservationCreateForm = ({ userData, onSuccess, onError }: IUseR
     defaultValues: {
       title: '',
       name: userData?.userData?.name || '',
-      isMember: userData.userData != null,
+      isGuestPost: userData.userData == null,
       secret: true,
       franchisee: '',
       phoneNumber: userData?.userData?.phoneNumber || '',

@@ -13,15 +13,15 @@ const commonFields = {
   content: z.string().min(1, { message: '상담 내용을 입력해주세요.' }),
 };
 
-export const reservationFormSchema = z.discriminatedUnion('isMember', [
+export const reservationFormSchema = z.discriminatedUnion('isGuestPost', [
   z.object({
     ...commonFields,
-    isMember: z.literal(true),
-    password: z.undefined(), // 회원은 password 없음
+    isGuestPost: z.literal(false), // 회원이 작성한 글 → 토큰 인증, password 없음
+    password: z.undefined(),
   }),
   z.object({
     ...commonFields,
-    isMember: z.literal(false),
-    password: z.string().min(4, { message: '4자 이상 입력해주세요.' }), // 비회원은 password 필수
+    isGuestPost: z.literal(true), // 비회원이 작성한 글 → 비밀번호 인증
+    password: z.string().min(4, { message: '4자 이상 입력해주세요.' }),
   }),
 ]);

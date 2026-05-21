@@ -119,6 +119,9 @@ export async function GET(request: NextRequest) {
     };
     return typedJson<IResponseBody>(responseData, { status: 200 });
   } catch (error) {
+    if ((error as { name?: string }).name === 'TokenExpiredError') {
+      return typedJson<IResponseBody>({ response: 'ng', message: 'TOKEN_EXPIRED', data: defaultData }, { status: 401 });
+    }
     console.error('Error getting document:', error);
     return typedJson<IResponseBody>(
       {

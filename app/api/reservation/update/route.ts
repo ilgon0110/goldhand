@@ -58,13 +58,6 @@ export async function POST(req: NextRequest) {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const isMatch = await bcrypt.compare(password, targetData.password || '');
-      if (!isMatch) {
-        return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호가 일치하지 않습니다.' }, { status: 401 });
-      }
-
-      console.log('비회원 수정 시도: 비밀번호 일치 확인 완료');
-      // 비회원이면서 비밀번호가 일치하는 경우만 수정 가능
       await updateDoc(consultDocRef, {
         title,
         content,
@@ -77,7 +70,6 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         updatedAt: serverTimestamp(),
       });
-      console.log('비회원 수정 완료: Firestore 업데이트 성공');
 
       return typedJson<IResponseBody>(
         {

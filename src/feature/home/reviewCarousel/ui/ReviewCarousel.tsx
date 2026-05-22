@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import { generateReviewDescription, generateThumbnailUrl, ReviewCard } from '@/src/entities/review';
+import { generateReviewDescription, generateThumbnailUrl } from '@/src/entities/review';
 import type { CarouselApi } from '@/src/shared/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
@@ -38,14 +38,13 @@ export const ReviewCarousel = () => {
           <SectionTitleHero description="고운황금손 이용후기를 소개합니다." label="고운황금손 이용후기" />
         </div>
       </FadeInWhenVisible>
+
       {/* 웹버전, width:768px 이상 */}
       <FadeInWhenVisible delay={0.2}>
         <Carousel
           aria-label="고운황금손 이용후기 목록"
           className={cn('hidden w-full', 'md:block')}
-          opts={{
-            align: 'start',
-          }}
+          opts={{ align: 'start' }}
           orientation="horizontal"
           setApi={setApi}
         >
@@ -75,14 +74,60 @@ export const ReviewCarousel = () => {
           <CarouselNext className={cn('hidden', 'md:inline-flex')} />
         </Carousel>
       </FadeInWhenVisible>
-      {/* 모바일버전, width:768px 미만 */}
+
+      {/* 모바일버전, width:768px 미만 — CSS scroll-snap */}
       <FadeInWhenVisible delay={0.2}>
-        <div className={cn('flex w-full flex-col gap-3', 'md:hidden')}>
-          {data?.slice(0, 3).map(item => (
-            <div className={cn('flex max-h-32 w-full flex-row px-1')} key={item.id}>
-              <ReviewCard review={item} />
-            </div>
-          ))}
+        <div className={cn('-mx-4 md:hidden')}>
+          <div
+            className={cn(
+              'flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar px-4 pb-2',
+            )}
+          >
+            {data?.slice(0, 10).map(item => (
+              <div className="snap-start shrink-0 w-[280px]" key={item.id}>
+                <ReviewSummaryCard
+                  author={item.name}
+                  content={generateReviewDescription(item.htmlString)}
+                  handleClick={() => {
+                    startTransition(() => {
+                      router.push(`/review/${item.id}`);
+                    });
+                  }}
+                  thumbnailSrc={generateThumbnailUrl(item.htmlString)}
+                  title={item.title}
+                  updatedAt={item.updatedAt}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </FadeInWhenVisible>
+
+      {/* ALL REVIEWS 링크 */}
+      <FadeInWhenVisible delay={0.3}>
+        <div className="mt-7 text-center">
+          <button
+            className={cn(
+              'inline-flex items-center gap-1.5 text-xs tracking-[0.12em] text-stone-500 transition',
+              'hover:text-gold',
+            )}
+            type="button"
+            onClick={() => startTransition(() => router.push('/review'))}
+          >
+            ALL REVIEWS
+            <svg
+              aria-hidden="true"
+              className="h-3 w-3"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.8}
+              viewBox="0 0 24 24"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
       </FadeInWhenVisible>
     </div>

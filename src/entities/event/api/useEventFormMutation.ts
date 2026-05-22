@@ -60,7 +60,10 @@ export const useEventFormMutation = (
       }),
     onSuccess: res => {
       toastSuccess('이벤트가 성공적으로 업로드되었습니다.\n잠시 후 작성한 이벤트 페이지로 이동합니다.');
-      setTimeout(() => router.replace(`/event/${res.docId}`), 3000);
+      setTimeout(() => {
+        router.replace(`/event/${res.docId}`);
+        router.refresh();
+      }, 3000);
     },
     onError: error => {
       toastError('이벤트 업로드 중 오류가 발생했습니다. : ' + error.message);

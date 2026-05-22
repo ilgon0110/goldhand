@@ -22,9 +22,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 type TEventEditPageProps = {
@@ -46,9 +45,9 @@ export const EventEditPage = ({ docId, data }: TEventEditPageProps) => {
   const { onSubmit, handleChangeEventFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
     useEventFormMutation('update', docId);
   return (
-    <ImagesContext>
+    <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
-      <SectionTitle title="고운황금손 이벤트 수정" />
+      <SectionTitleHero label="고운황금손 이벤트 수정" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -153,6 +152,6 @@ export const EventEditPage = ({ docId, data }: TEventEditPageProps) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </ImagesContext>
+    </>
   );
 };

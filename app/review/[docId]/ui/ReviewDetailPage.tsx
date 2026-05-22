@@ -20,7 +20,7 @@ import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
-import { useReviewDetailCommentMutation } from '../api';
+import { useReviewDeleteMutation, useReviewDetailCommentMutation } from '../api';
 import { reviewCommentSchema } from '../config';
 
 type TReviewDetailPageProps = {
@@ -55,9 +55,21 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
   });
 
   const [reviewUpdateAlertDialogOpen, setReviewUpdateAlertDialogOpen] = useState(false);
-  const [isReviewUpdateSubmitting, setIsReviewUpdateSubmitting] = useState(false);
   const [reviewDeleteAlertDialogOpen, setReviewDeleteAlertDialogOpen] = useState(false);
-  const [isReviewDeleteSubmitting, setIsReviewDeleteSubmitting] = useState(false);
+
+  const { mutate: deleteReview, isPending: isReviewDeleteSubmitting } = useReviewDeleteMutation({
+    onSuccess: () => {
+      toastSuccess('게시글이 삭제되었습니다.');
+      router.replace('/review');
+      router.refresh();
+    },
+    onError: error => {
+      toastError('게시글 삭제에 실패하였습니다.\n' + error.message);
+    },
+    onSettled: () => {
+      setReviewDeleteAlertDialogOpen(false);
+    },
+  });
 
   const formValidation = form.formState.isValid;
   const isOwner = data.data.userId === userData.userData?.userId;
@@ -73,33 +85,8 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
     }
   };
 
-  const onHandleReviewDeleteActionClick = async () => {
-    try {
-      setIsReviewDeleteSubmitting(true);
-      const res = await fetch(`/api/review/delete`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          docId,
-          userId: data.data.userId,
-        }),
-      });
-      const responseData = await res.json();
-      if (responseData.response === 'ok') {
-        toastSuccess('게시글이 삭제되었습니다.');
-        router.push('/review');
-      } else {
-        toastError('게시글 삭제에 실패하였습니다.\n' + responseData.message);
-      }
-    } catch (error) {
-      console.error('Error during form submission:', error);
-      toastError('게시글 삭제 중 알 수 없는 오류가 발생하였습니다.');
-    } finally {
-      setIsReviewDeleteSubmitting(false);
-      setReviewDeleteAlertDialogOpen(false);
-    }
+  const onHandleReviewDeleteActionClick = () => {
+    deleteReview({ docId, userId: data.data.userId });
   };
 
   // Firebase Analytics 이벤트 로깅
@@ -214,7 +201,7 @@ export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TRevi
       <MyAlertDialog
         description={'게시글 수정 화면으로 이동하시겠습니까?'}
         handleDeletePostClick={() => router.push(`/review/${docId}/edit`)}
-        isPending={isReviewUpdateSubmitting}
+        isPending={false}
         okButtonText={'수정하기'}
         opOpenChange={open => setReviewUpdateAlertDialogOpen(open)}
         open={reviewUpdateAlertDialogOpen}

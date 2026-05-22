@@ -65,6 +65,7 @@ export const useReservationCreateForm = ({ userData, onSuccess, onError }: IUseR
           // 3초 후에 페이지 이동
           setTimeout(() => {
             router.replace(`/reservation/list/${data.docId}`);
+            router.refresh();
           }, 3000);
 
           if (onSuccess) onSuccess();

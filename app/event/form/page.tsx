@@ -1,6 +1,13 @@
 'use client';
 
+import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+
 import { EventFormPage } from './ui/EventFormPage';
+
 export default function Page() {
-  return <EventFormPage />;
+  return (
+    <ImagesContext>
+      <EventFormPage />
+    </ImagesContext>
+  );
 }

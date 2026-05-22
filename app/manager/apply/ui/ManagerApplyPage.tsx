@@ -15,7 +15,7 @@ import { Input } from '@/shared/ui/input';
 import { franchiseeList } from '@/src/shared/config';
 import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
@@ -92,7 +92,7 @@ export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
 
   return (
     <div className="mt-6">
-      <SectionTitle title="고운황금손 산후관리사 지원하기" />
+      <SectionTitleHero label="고운황금손 산후관리사 지원하기" />
       <Form {...form}>
         <form className="mt-6 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

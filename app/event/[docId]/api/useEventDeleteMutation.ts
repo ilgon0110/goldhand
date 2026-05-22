@@ -1,5 +1,3 @@
-'use client';
-
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
@@ -10,16 +8,15 @@ interface IResponseBody {
   message: string;
 }
 
-export interface IDeletePostPayload {
+interface IDeletePayload {
   docId: string;
   userId: string | null;
-  password: string;
 }
 
-export const useDeletePostMutation = (options?: UseMutationOptions<IResponseBody, Error, IDeletePostPayload>) => {
+export const useEventDeleteMutation = (options?: UseMutationOptions<IResponseBody, Error, IDeletePayload>) => {
   return useMutation({
-    mutationFn: (payload: IDeletePostPayload) =>
-      fetcher<IResponseBody>('/api/reservation/delete', {
+    mutationFn: (payload: IDeletePayload) =>
+      fetcher<IResponseBody>('/api/event/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

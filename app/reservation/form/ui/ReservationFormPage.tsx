@@ -16,7 +16,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Textarea } from '@/src/shared/ui/textarea';
 
@@ -38,7 +38,7 @@ export const ReservationFormPage = ({ userData }: { userData: IUserResponseData 
 
   return (
     <>
-      <SectionTitle title="고운황금손 상담신청" />
+      <SectionTitleHero description="상담 신청을 작성할 수 있습니다." label="고운황금손 상담신청" />
       <Form {...form}>
         <form aria-label="상담신청폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

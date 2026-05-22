@@ -2,6 +2,7 @@ import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -103,6 +104,7 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date(),
       });
 
+      revalidatePath(`/event/${docId}`);
       return typedJson<IResponseBody>(
         { response: 'ok', message: '이벤트가 성공적으로 수정되었습니다.', docId },
         { status: 200 },

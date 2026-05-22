@@ -23,10 +23,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
-
 const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
   ssr: false,
   loading: () => <LoadingSpinnerIcon />,
@@ -47,9 +45,9 @@ export const EventFormPage = () => {
     useEventFormMutation('create');
 
   return (
-    <ImagesContext>
+    <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
-      <SectionTitle title="고운황금손 이벤트 만들기" />
+      <SectionTitleHero label="고운황금손 이벤트 만들기" />
       <Form {...form}>
         <form aria-label="이벤트폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -155,6 +153,6 @@ export const EventFormPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </ImagesContext>
+    </>
   );
 };

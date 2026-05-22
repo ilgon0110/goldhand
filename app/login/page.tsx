@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { safeLocalStorage } from '@/src/shared/storage';
 import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { toastSuccess } from '@/src/shared/utils';
 
 import { useKakaoLogin, useNaverLogin } from './api';
@@ -49,7 +49,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <SectionTitle title="고운황금손 로그인" />
+      <SectionTitleHero label="고운황금손 로그인" />
       {isNaverLoading && <LoadingSpinnerOverlay text="로그인 중..." />}
       {(isNaverPending || isKakaoPending) && <LoadingSpinnerOverlay text="회원가입 유무 확인 중..." />}
 

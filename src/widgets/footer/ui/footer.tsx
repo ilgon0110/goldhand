@@ -3,9 +3,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { FaInstagram, FaYoutube } from 'react-icons/fa6';
+import { SiNaver } from 'react-icons/si';
 
+import { cn } from '@/lib/utils';
 import { gowunDodumFont } from '@/src/shared/fonts';
 import { PrivacyModal } from '@/widgets/Privacy';
+
+const SOCIAL_LINKS = [
+  {
+    href: 'https://youtube.com/channel/UCQPWd5YKHGfxXAB8i35piEg?si=GC_H4FZqXZy1ogGW',
+    icon: FaYoutube,
+    label: 'Youtube',
+    hoverClass: 'hover:text-red-600',
+  },
+  {
+    href: 'https://blog.naver.com/goldhandkorea',
+    icon: SiNaver,
+    label: '네이버 블로그',
+    hoverClass: 'hover:text-green-500',
+  },
+  {
+    href: 'https://www.instagram.com/goldhandkorea/',
+    icon: FaInstagram,
+    label: 'Instagram',
+    hoverClass: 'hover:text-pink-500',
+  },
+];
 
 export const Footer = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
@@ -52,8 +76,27 @@ export const Footer = () => {
             개인정보처리방침
           </button>
         </div>
-        <div className="mt-8 flex w-full flex-row justify-between border-t border-gray-900/10 px-[10vw] pt-3">
-          <p className="text-sm/6 text-gray-600">&copy; 2025 고운황금손, Inc. All rights reserved.</p>
+        <div className={cn('mt-6 flex justify-end px-[10vw]')}>
+          <div className={cn('flex items-center gap-4')}>
+            {SOCIAL_LINKS.map(({ href, icon: Icon, label, hoverClass }) => (
+              <Link
+                className={cn(
+                  'flex items-center gap-1.5 rounded-full border border-gray-300 px-3 py-1.5 text-gray-500 transition-colors',
+                  'hover:border-current',
+                  hoverClass,
+                )}
+                href={href}
+                key={label}
+                target="_blank"
+              >
+                <Icon size={20} />
+                <span className={cn('hidden text-sm', 'md:inline')}>{label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4 flex w-full flex-row justify-between border-t border-gray-900/10 px-[10vw] pt-3">
+          <p className="text-sm/6 text-gray-600">&copy; 2026 고운황금손, Inc. All rights reserved.</p>
         </div>
       </footer>
     </>

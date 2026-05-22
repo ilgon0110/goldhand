@@ -10,7 +10,7 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import type { JSX } from 'react';
 import * as React from 'react';
 
-type Props = {
+type TProps = {
   id?: string;
   className?: string;
   placeholderClassName?: string;
@@ -22,7 +22,7 @@ export default function LexicalContentEditable({
   className,
   placeholder,
   placeholderClassName,
-}: Props): JSX.Element {
+}: TProps): JSX.Element {
   return (
     <ContentEditable
       aria-placeholder={placeholder}

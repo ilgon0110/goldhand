@@ -8,7 +8,7 @@ const VoucherPage = () => {
     <div>
       <SectionTitleHero
         description="출산가정에 건강관리사를 파견하여 산모의 산후 회복과 신생아의 양육을 지원하고 출산가정의 경제적 부담을 경감 및 산모, 신생아 건강관리사 양성을 통해 일자리를 창출하는 제도입니다."
-        label="고운황금손 2025년 바우처 이용 안내"
+        label="고운황금손 2026년 바우처 이용 안내"
       />
       <div className="h-[1px] w-full bg-slate-300" />
       <div className="mt-6 w-full text-center text-xl font-bold text-[#728146] lg:text-2xl">신청 대상</div>

@@ -2,7 +2,6 @@ import type { Timestamp } from 'firebase/firestore';
 
 import { cn } from '@/lib/utils';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
-import TruncateText from '@/src/shared/ui/TruncateText';
 import { formatDateToYMD } from '@/src/shared/utils';
 
 type TReviewSummaryCardProps = {
@@ -26,8 +25,8 @@ export const ReviewSummaryCard = ({
     <button
       aria-label={title}
       className={cn(
-        'flex w-full flex-col rounded-lg border border-slate-100 bg-white p-4 shadow text-left',
-        'hover:border-gold/40 hover:shadow-md transition-all',
+        'flex w-full flex-col rounded-lg border border-slate-100 bg-white p-4 text-left shadow',
+        'transition-all hover:border-gold/40 hover:shadow-md',
       )}
       type="button"
       onClick={handleClick}
@@ -35,20 +34,13 @@ export const ReviewSummaryCard = ({
       <div className="flex items-start gap-3">
         <div className="shrink-0">
           {thumbnailSrc ? (
-            <img
-              alt={title}
-              className="h-14 w-14 rounded-md object-cover"
-              loading="lazy"
-              src={thumbnailSrc}
-            />
+            <img alt={title} className="h-14 w-14 rounded-md object-cover" loading="lazy" src={thumbnailSrc} />
           ) : (
             <DefaultImage className="h-14 w-14" />
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-bold leading-tight">
-            <TruncateText maxLines={1} text={title} />
-          </h2>
+          <h2 className="truncate text-sm font-bold leading-tight">{title}</h2>
           <p className="mt-0.5 text-xs text-gray-500">
             <span>{author}</span>
             {' · '}
@@ -58,7 +50,7 @@ export const ReviewSummaryCard = ({
       </div>
       <div className="mt-3 flex-1">
         <span className="block text-3xl font-bold leading-none text-gold/30">"</span>
-        <TruncateText className="text-sm text-gray-600" maxLines={2} text={content} />
+        <p className="line-clamp-2 text-sm text-gray-600">{content}</p>
       </div>
       <div className="mt-3 flex justify-end">
         <svg

@@ -1,5 +1,6 @@
 import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date(),
       });
 
+      revalidatePath(`/review/${docId}`);
       return typedJson<IResponseBody>(
         { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.', docId },
         { status: 200 },

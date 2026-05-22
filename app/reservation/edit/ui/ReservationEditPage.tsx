@@ -17,7 +17,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
@@ -44,6 +44,7 @@ export const ReservationEditPage = ({
     onSuccess: () => {
       toastSuccess('상담 수정이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
       router.replace(`/reservation/list/${docId}`);
+      router.refresh();
     },
     onError: () => {
       toastError(`상담 수정에 실패했습니다.`);
@@ -59,7 +60,7 @@ export const ReservationEditPage = ({
 
   return (
     <>
-      <SectionTitle title="고운황금손 상담신청" />
+      <SectionTitleHero description="상담 신청을 수정할 수 있습니다." label="고운황금손 상담신청" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

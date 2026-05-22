@@ -24,7 +24,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
 
 const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
@@ -50,7 +50,7 @@ export const ReviewFormPage = () => {
   return (
     <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
-      <SectionTitle title="고운황금손 후기남기기" />
+      <SectionTitleHero description="후기를 작성할 수 있습니다." label="고운황금손 후기남기기" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField

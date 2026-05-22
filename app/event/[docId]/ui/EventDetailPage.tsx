@@ -9,6 +9,7 @@ import type z from 'zod';
 import { cn } from '@/lib/utils';
 import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { eventCommentSchema } from '@/src/entities/event';
+import { useEventDeleteMutation } from '../api/useEventDeleteMutation';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import type { IEventResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -36,9 +37,21 @@ export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEvent
   });
 
   const [eventUpdateAlertDialogOpen, setEventUpdateAlertDialogOpen] = useState(false);
-  const [isEventUpdateSubmitting, setIsEventUpdateSubmitting] = useState(false);
   const [eventDeleteAlertDialogOpen, setEventDeleteAlertDialogOpen] = useState(false);
-  const [isEventDeleteSubmitting, setIsEventDeleteSubmitting] = useState(false);
+
+  const { mutate: deleteEvent, isPending: isEventDeleteSubmitting } = useEventDeleteMutation({
+    onSuccess: () => {
+      toastSuccess('게시글이 삭제되었습니다.');
+      router.push('/event');
+      router.refresh();
+    },
+    onError: error => {
+      toastError('게시글 삭제에 실패하였습니다.\n' + error.message);
+    },
+    onSettled: () => {
+      setEventDeleteAlertDialogOpen(false);
+    },
+  });
 
   const form = useForm<z.infer<typeof eventCommentSchema>>({
     resolver: zodResolver(eventCommentSchema),
@@ -65,33 +78,8 @@ export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEvent
     submitComment(values.comment);
   };
 
-  const onHandleEventDeleteActionClick = async () => {
-    try {
-      setIsEventDeleteSubmitting(true);
-      const res = await fetch(`/api/event/delete`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          docId,
-          userId: data.data.userId,
-        }),
-      });
-      const responseData = await res.json();
-      if (responseData.response === 'ok') {
-        toastSuccess('게시글이 삭제되었습니다.');
-        router.push('/event');
-      } else {
-        toastError('게시글 삭제에 실패하였습니다.\n' + responseData.message);
-      }
-    } catch (error) {
-      console.error('Error during form submission:', error);
-      toastError('게시글 삭제 중 알 수 없는 오류가 발생하였습니다.');
-    } finally {
-      setIsEventDeleteSubmitting(false);
-      setEventDeleteAlertDialogOpen(false);
-    }
+  const onHandleEventDeleteActionClick = () => {
+    deleteEvent({ docId, userId: data.data.userId });
   };
 
   // Firebase Analytics 이벤트 로깅
@@ -197,7 +185,7 @@ export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEvent
       <MyAlertDialog
         description={'게시글 수정 화면으로 이동하시겠습니까?'}
         handleDeletePostClick={() => router.push(`/event/${docId}/edit`)}
-        isPending={isEventUpdateSubmitting}
+        isPending={false}
         okButtonText={'수정하기'}
         opOpenChange={open => setEventUpdateAlertDialogOpen(open)}
         open={eventUpdateAlertDialogOpen}

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -16,7 +17,7 @@ import Dropzone from 'react-dropzone';
 import { cn } from '@/lib/utils';
 import { Button } from '@/src/shared/ui/button';
 
-type Props = Readonly<{
+type TProps = Readonly<{
   'data-test-id'?: string;
   accept?: string;
   label: string;
@@ -32,7 +33,7 @@ export default function FileInput({
   onSubmit,
   setFile,
   'data-test-id': dataTestId,
-}: Props): JSX.Element {
+}: TProps): JSX.Element {
   const [contentImageUrl, setContentImageUrl] = useState<string | null>(null);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -79,7 +80,7 @@ export default function FileInput({
   };
 
   const imageValidator = (file: File): FileError | readonly FileError[] | null => {
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 20 * 1024 * 1024; // 20MB
     const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
     if (file.size > maxSize) {
       return {
@@ -113,7 +114,7 @@ export default function FileInput({
           <div
             {...getRootProps()}
             className={cn(
-              'flex h-[200px] w-full flex-col items-center justify-center gap-4 transition-all duration-200 ease-in-out hover:cursor-pointer',
+              'flex w-full flex-col items-center justify-center gap-4 py-6 transition-all duration-200 ease-in-out hover:cursor-pointer',
               isDragActive && isDragAccept && 'border-2 border-dashed border-blue-300 bg-blue-100',
             )}
           >
@@ -143,25 +144,20 @@ export default function FileInput({
                 >
                   <path d="M480-480ZM216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h312v72H216v528h528v-312h72v312q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm48-144h432L552-480 444-336l-72-96-108 144Zm408-312v-72h-72v-72h72v-72h72v72h72v72h-72v72h-72Z" />
                 </svg>
-                <span>최대 10mb 이하 이미지 첨부 가능</span>
+                <span>최대 20mb 이하 이미지 첨부 가능</span>
               </div>
             )}
-            {contentImageUrl ? (
-              <Button
-                className="mx-16"
-                data-test-id="image-modal-file-upload-btn"
-                onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onSubmit();
-                }}
-              >
-                업로드 완료
+            {!contentImageUrl && (
+              <Button className="mx-16" type="button">
+                이미지 업로드
               </Button>
-            ) : (
-              <Button className="mx-16">이미지 업로드</Button>
             )}
           </div>
+          {contentImageUrl && (
+            <Button className="mx-16 mt-2" data-test-id="image-modal-file-upload-btn" type="button" onClick={onSubmit}>
+              업로드 완료
+            </Button>
+          )}
         </section>
       )}
     </Dropzone>

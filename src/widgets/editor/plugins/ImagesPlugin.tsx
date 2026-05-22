@@ -49,8 +49,6 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
   const [altText, setAltText] = useState('');
   const [file, setFile] = useState<File>();
 
-  const isDisabled = src === '';
-
   const loadImage = (files: FileList | null) => {
     const reader = new FileReader();
     reader.onload = function () {
@@ -71,7 +69,7 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
   };
 
   return (
-    <div className="flex h-[300px] min-w-[300px] flex-col items-center justify-center gap-4 p-4">
+    <div className="flex min-w-[300px] flex-col items-center gap-4 p-4">
       <FileInput
         accept="image/*"
         data-test-id="image-modal-file-upload"
@@ -122,9 +120,11 @@ export function InsertImageDialog({
   return <InsertImageUploadedDialogBody onClick={onClick} />;
 }
 
+const MAX_IMAGES = 10;
+
 export function ImagesPlugin({ captionsEnabled }: { captionsEnabled?: boolean }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  const { images, setImages } = useImagesContext();
+  const { setImages } = useImagesContext();
 
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
@@ -135,6 +135,12 @@ export function ImagesPlugin({ captionsEnabled }: { captionsEnabled?: boolean })
       editor.registerCommand<InsertImagePayload>(
         INSERT_IMAGE_COMMAND,
         payload => {
+          let currentImageCount = 0;
+          editor.getEditorState()._nodeMap.forEach(node => {
+            if (node.getType() === 'image') currentImageCount++;
+          });
+          if (currentImageCount >= MAX_IMAGES) return true;
+
           const imageNode = $createImageNode(payload);
           $insertNodes([imageNode]);
           if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {

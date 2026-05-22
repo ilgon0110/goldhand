@@ -1,4 +1,5 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
+import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
@@ -47,6 +48,7 @@ export async function DELETE(req: NextRequest) {
     // 회원이면서 userId가 일치하는 경우만 삭제 가능
     await eventDocRef.delete();
 
+    revalidatePath('/event');
     return typedJson<IResponseBody>(
       {
         response: 'ok',

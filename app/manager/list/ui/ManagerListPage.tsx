@@ -6,7 +6,7 @@ import { managerListParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IApplyDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { formatDateToYMD } from '@/src/shared/utils';
 import { ManagerCard } from '@/src/widgets/managers';
 
@@ -23,7 +23,7 @@ export const ManagerListPage = ({ managerListData, totalDataLength }: IManagerLi
 
   return (
     <>
-      <SectionTitle title="산후관리사 지원내역" />
+      <SectionTitleHero label="산후관리사 지원내역" />
       <div>
         {managerListData != null ? (
           managerListData.map(item => {

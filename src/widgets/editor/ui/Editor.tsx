@@ -21,7 +21,7 @@ import { CAN_USE_DOM } from '@lexical/utils';
 import type { DOMConversionMap, EditorState, LexicalEditor, LexicalNode } from 'lexical';
 import { $getRoot, $insertNodes, $isTextNode, TextNode } from 'lexical';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import type { TAliasAny } from '@/src/shared/types';
@@ -99,17 +99,12 @@ const RichEditor = ({
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
   const { setImages } = useImagesContext();
+  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
-    const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development';
-    if (isDev) {
-      try {
-        const KEY = 'lexical_editor_content';
-        if ((window as TAliasAny)[KEY]) return;
-      } catch {
-        // ignore
-      }
-    }
+    if (hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
+
     editor.update(() => {
       if (htmlString) {
         const parser = new DOMParser();

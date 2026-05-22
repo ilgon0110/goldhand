@@ -1,5 +1,6 @@
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -93,6 +94,8 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+
+    revalidatePath(`/review`);
     return typedJson<IResponseBody>(
       { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.', docId },
       { status: 200 },

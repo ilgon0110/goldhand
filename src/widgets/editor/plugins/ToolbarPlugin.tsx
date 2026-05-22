@@ -499,6 +499,20 @@ export function ToolbarPlugin({
   const canViewerSeeInsertDropdown = !toolbarState.isImageCaption;
   const canViewerSeeInsertCodeButton = !toolbarState.isImageCaption;
 
+  const MAX_IMAGES = 10;
+  const [imageCount, setImageCount] = useState(0);
+  const isImageLimitReached = imageCount >= MAX_IMAGES;
+
+  useEffect(() => {
+    return editor.registerUpdateListener(({ editorState }) => {
+      let count = 0;
+      editorState._nodeMap.forEach(node => {
+        if (node.getType() === 'image') count++;
+      });
+      setImageCount(count);
+    });
+  }, [editor]);
+
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const onChangeImageModalOpen = useCallback((open: boolean) => {
     setImageModalOpen(open);
@@ -582,7 +596,7 @@ export function ToolbarPlugin({
       <Divider />
       <Popover open={imageModalOpen} onOpenChange={onChangeImageModalOpen}>
         <PopoverTrigger asChild>
-          <button aria-label="Add Image" className="toolbar-item">
+          <button aria-label="Add Image" className="toolbar-item" disabled={isImageLimitReached}>
             <svg
               fill="currentColor"
               height="20px"
@@ -592,6 +606,9 @@ export function ToolbarPlugin({
             >
               <path d="M480-480ZM216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h312v72H216v528h528v-312h72v312q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm48-144h432L552-480 444-336l-72-96-108 144Zm408-312v-72h-72v-72h72v-72h72v72h72v72h-72v72h-72Z" />
             </svg>
+            <span className="ml-1 text-xs tabular-nums text-gray-500">
+              {imageCount}/{MAX_IMAGES}
+            </span>
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-0">

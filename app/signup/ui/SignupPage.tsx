@@ -15,7 +15,7 @@ import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { useSignupMutation } from '../api';
@@ -155,7 +155,7 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
 
   return (
     <>
-      <SectionTitle contents="회원가입을 위해 아래 정보를 입력해주세요" title="고운황금손 회원가입" />
+      <SectionTitleHero description="회원가입을 위해 아래 정보를 입력해주세요" label="고운황금손 회원가입" />
       <button aria-hidden="true" className="hidden" id="sign-in-button" tabIndex={-1} />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>

@@ -9,7 +9,7 @@ import type { CarouselApi } from '@/src/shared/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 import { useReviewCarouselQuery } from '../api/useReviewCarouselQuery';
 import { ReviewSummaryCard } from './_ReviewSummaryCard';
@@ -35,7 +35,7 @@ export const ReviewCarousel = () => {
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
       <FadeInWhenVisible>
         <div className="mb-12 flex flex-col items-center justify-center gap-6 whitespace-pre-wrap">
-          <SectionTitle title="고운황금손 이용후기" />
+          <SectionTitleHero description="고운황금손 이용후기를 소개합니다." label="고운황금손 이용후기" />
         </div>
       </FadeInWhenVisible>
       {/* 웹버전, width:768px 이상 */}

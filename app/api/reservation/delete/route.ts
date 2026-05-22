@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { deleteDoc, doc, getDoc, getFirestore } from 'firebase/firestore';
+import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -64,6 +65,7 @@ export async function DELETE(req: NextRequest) {
       // 비회원이면서 비밀번호가 일치하는 경우만 삭제 가능
       await deleteDoc(consultDocRef);
 
+      revalidatePath('/reservation/list');
       return typedJson<IResponseBody>(
         {
           response: 'ok',
@@ -82,6 +84,7 @@ export async function DELETE(req: NextRequest) {
       // 회원이면서 userId가 일치하는 경우만 삭제 가능
       await deleteDoc(consultDocRef);
 
+      revalidatePath('/reservation/list');
       return typedJson<IResponseBody>(
         {
           response: 'ok',

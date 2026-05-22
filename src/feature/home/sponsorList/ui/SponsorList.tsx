@@ -1,13 +1,13 @@
 import Image from 'next/image';
 
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
-import { SectionTitle } from '@/src/shared/ui/sectionTitle';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 export const SponsorList = () => {
   return (
     <div className="mt-12">
       <FadeInWhenVisible>
-        <SectionTitle title="고운황금손 협력사" />
+        <SectionTitleHero description="고운황금손 협력사를 소개합니다." label="고운황금손 협력사" />
         <div className="relative mt-4 flex h-12 flex-row justify-center">
           <div className="relative h-full basis-1/5">
             <Image alt="스폰서 로고 이미지" fill sizes="75" src="/sponsor_1.png" style={{ objectFit: 'contain' }} />

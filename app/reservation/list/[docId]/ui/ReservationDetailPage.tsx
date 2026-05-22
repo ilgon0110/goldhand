@@ -95,15 +95,13 @@ export const ReservationDetailPage = ({ data, docId, userData, viewCountData }: 
   };
 
   const { mutate, isPending: isDeleteSubmitting } = useDeletePostMutation({
-    docId,
-    userId: data.data.userId,
-    password: passwordForm.getValues('password'),
     onSuccess: () => {
       toastSuccess('게시글이 삭제되었습니다.');
       router.push('/reservation/list');
+      router.refresh();
     },
     onError: error => {
-      toastError(error);
+      toastError(error.message);
     },
     onSettled: () => {
       setAlertDialogOpen(false);
@@ -169,7 +167,7 @@ export const ReservationDetailPage = ({ data, docId, userData, viewCountData }: 
       {/* 삭제 확인 알림 */}
       <MyAlertDialog
         description="삭제된 게시글은 복구할 수 없습니다."
-        handleDeletePostClick={() => mutate()}
+        handleDeletePostClick={() => mutate({ docId, userId: data.data.userId, password: passwordForm.getValues('password') })}
         isPending={isDeleteSubmitting}
         okButtonText="삭제하기"
         opOpenChange={open => setAlertDialogOpen(open)}

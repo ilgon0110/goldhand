@@ -1,4 +1,5 @@
 import { getReviewDetailData } from '@/src/entities/review';
+import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import { ReviewEditPage } from './ui/ReviewEditPage';
 
@@ -14,5 +15,9 @@ export default async function Page({ params }: TPageProps) {
     docId,
   });
 
-  return <ReviewEditPage data={data} docId={docId} />;
+  return (
+    <ImagesContext>
+      <ReviewEditPage data={data} docId={docId} />
+    </ImagesContext>
+  );
 }

@@ -64,9 +64,10 @@ type TPriceSummaryCardProps = {
   description: string;
   priceList: { type: string; week: string; price: number }[];
   iconType: TIconType;
+  featured?: boolean;
 };
 
-export const PriceSummaryCard = ({ title, description, priceList, iconType }: TPriceSummaryCardProps) => {
+export const PriceSummaryCard = ({ title, description, priceList, iconType, featured }: TPriceSummaryCardProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -74,13 +75,20 @@ export const PriceSummaryCard = ({ title, description, priceList, iconType }: TP
     <button
       aria-label={title}
       className={cn(
-        'flex w-full flex-col rounded-lg border border-slate-100 bg-white text-left',
-        'transition-all hover:border-gold/40',
+        'relative flex w-full flex-col rounded-lg border text-left transition-all',
+        featured
+          ? 'border-gold/30 bg-gradient-to-b from-[#fbf6ec] to-white hover:border-gold/50'
+          : 'border-slate-100 bg-white hover:border-gold/40',
       )}
       type="button"
       onClick={() => startTransition(() => router.push('/price'))}
     >
       {isPending && <LoadingSpinnerOverlay text="이용요금 페이지 이동중..." />}
+      {featured && (
+        <span className="absolute right-3 top-3 rounded-full border border-gold/40 bg-white px-2 py-0.5 text-[10px] font-semibold tracking-[0.14em] text-gold">
+          BEST
+        </span>
+      )}
       {/* SVG 아이콘 영역 */}
       <div className="flex h-[88px] items-center justify-center pt-5">
         <div className={cn('flex h-16 w-16 items-center justify-center rounded-full bg-gold/10 text-gold')}>

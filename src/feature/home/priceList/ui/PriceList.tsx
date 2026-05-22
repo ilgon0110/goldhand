@@ -19,6 +19,7 @@ export const PriceList = () => {
           title="출퇴근형"
         />
         <PriceSummaryCard
+          featured
           description="산모 집에서 산후관리사가 매일 함께해요"
           iconType="livein"
           priceList={[

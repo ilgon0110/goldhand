@@ -82,7 +82,7 @@ export const PriceSummaryCard = ({ title, description, priceList, iconType }: TP
     >
       {isPending && <LoadingSpinnerOverlay text="이용요금 페이지 이동중..." />}
       {/* SVG 아이콘 영역 */}
-      <div className="flex h-[88px] items-center justify-center">
+      <div className="flex h-[88px] items-center justify-center pt-5">
         <div className={cn('flex h-16 w-16 items-center justify-center rounded-full bg-gold/10 text-gold')}>
           <svg
             aria-hidden="true"

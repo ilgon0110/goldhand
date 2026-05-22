@@ -30,6 +30,16 @@ export const ReviewCarousel = () => {
     };
   }, [api]);
 
+  const reviewItems = (data ?? []).map(item => ({
+    id: item.id,
+    author: item.name,
+    content: generateReviewDescription(item.htmlString),
+    thumbnailSrc: generateThumbnailUrl(item.htmlString),
+    title: item.title,
+    updatedAt: item.updatedAt,
+    handleClick: () => startTransition(() => router.push(`/review/${item.id}`)),
+  }));
+
   return (
     <div className="w-full sm:px-20">
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
@@ -49,21 +59,17 @@ export const ReviewCarousel = () => {
           setApi={setApi}
         >
           <CarouselContent className="gap-6">
-            {data?.map((item, index) => (
+            {reviewItems.map((item, index) => (
               <CarouselItem
                 aria-current={index === currentIndex ? 'true' : undefined}
                 className={cn('basis-1/1', 'md:basis-1/2', 'xl:basis-1/3')}
                 key={item.id}
               >
                 <ReviewSummaryCard
-                  author={item.name}
-                  content={generateReviewDescription(item.htmlString)}
-                  handleClick={() => {
-                    startTransition(() => {
-                      router.push(`/review/${item.id}`);
-                    });
-                  }}
-                  thumbnailSrc={generateThumbnailUrl(item.htmlString)}
+                  author={item.author}
+                  content={item.content}
+                  handleClick={item.handleClick}
+                  thumbnailSrc={item.thumbnailSrc}
                   title={item.title}
                   updatedAt={item.updatedAt}
                 />
@@ -79,21 +85,20 @@ export const ReviewCarousel = () => {
       <FadeInWhenVisible delay={0.2}>
         <div className={cn('-mx-4 md:hidden')}>
           <div
+            aria-label="고운황금손 이용후기 목록"
             className={cn(
               'flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar px-4 pb-2',
             )}
+            role="region"
           >
-            {data?.slice(0, 10).map(item => (
+            {/* 모바일: 스크롤 목록은 최대 10개 */}
+            {reviewItems.slice(0, 10).map(item => (
               <div className="snap-start shrink-0 w-[280px]" key={item.id}>
                 <ReviewSummaryCard
-                  author={item.name}
-                  content={generateReviewDescription(item.htmlString)}
-                  handleClick={() => {
-                    startTransition(() => {
-                      router.push(`/review/${item.id}`);
-                    });
-                  }}
-                  thumbnailSrc={generateThumbnailUrl(item.htmlString)}
+                  author={item.author}
+                  content={item.content}
+                  handleClick={item.handleClick}
+                  thumbnailSrc={item.thumbnailSrc}
                   title={item.title}
                   updatedAt={item.updatedAt}
                 />

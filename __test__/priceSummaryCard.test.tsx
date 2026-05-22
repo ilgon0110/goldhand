@@ -33,12 +33,13 @@ describe('PriceSummaryCard', () => {
 
   it('카드 클릭 시 /price로 이동한다', async () => {
     render(<PriceSummaryCard {...mockProps} />);
-    await userEvent.click(screen.getByRole('button'));
+    await userEvent.click(screen.getByRole('button', { name: '출퇴근형' }));
     expect(pushMock).toHaveBeenCalledWith('/price');
+    expect(pushMock).toHaveBeenCalledTimes(1);
   });
 
-  it('"자세히 보기" 버튼이 없다', () => {
+  it('버튼에 aria-label이 있다', () => {
     render(<PriceSummaryCard {...mockProps} />);
-    expect(screen.queryByText('자세히 보기')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '출퇴근형' })).toBeInTheDocument();
   });
 });

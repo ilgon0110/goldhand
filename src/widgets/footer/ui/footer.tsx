@@ -11,9 +11,24 @@ import { gowunDodumFont } from '@/src/shared/fonts';
 import { PrivacyModal } from '@/widgets/Privacy';
 
 const SOCIAL_LINKS = [
-  { href: '#', icon: FaYoutube, label: 'Youtube', hoverClass: 'hover:text-red-600' },
-  { href: '#', icon: SiNaver, label: '네이버 블로그', hoverClass: 'hover:text-green-500' },
-  { href: '#', icon: FaInstagram, label: 'Instagram', hoverClass: 'hover:text-pink-500' },
+  {
+    href: 'https://youtube.com/channel/UCQPWd5YKHGfxXAB8i35piEg?si=GC_H4FZqXZy1ogGW',
+    icon: FaYoutube,
+    label: 'Youtube',
+    hoverClass: 'hover:text-red-600',
+  },
+  {
+    href: 'https://blog.naver.com/goldhandkorea',
+    icon: SiNaver,
+    label: '네이버 블로그',
+    hoverClass: 'hover:text-green-500',
+  },
+  {
+    href: 'https://www.instagram.com/goldhandkorea/',
+    icon: FaInstagram,
+    label: 'Instagram',
+    hoverClass: 'hover:text-pink-500',
+  },
 ];
 
 export const Footer = () => {
@@ -65,13 +80,14 @@ export const Footer = () => {
           <div className={cn('flex items-center gap-4')}>
             {SOCIAL_LINKS.map(({ href, icon: Icon, label, hoverClass }) => (
               <Link
-                key={label}
                 className={cn(
                   'flex items-center gap-1.5 rounded-full border border-gray-300 px-3 py-1.5 text-gray-500 transition-colors',
                   'hover:border-current',
                   hoverClass,
                 )}
                 href={href}
+                key={label}
+                target="_blank"
               >
                 <Icon size={20} />
                 <span className={cn('hidden text-sm', 'md:inline')}>{label}</span>

@@ -19,8 +19,8 @@ export const PriceList = () => {
           title="출퇴근형"
         />
         <PriceSummaryCard
-          featured
           description="산모 집에서 산후관리사가 매일 함께해요"
+          featured
           iconType="livein"
           priceList={[
             { type: '주5일', week: '1주', price: 1350000 },

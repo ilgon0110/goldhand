@@ -36,7 +36,7 @@ export const EventModal = () => {
   return (
     <AnimateModal isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="relative flex h-[93%] w-full flex-col">
-        <Image alt="이벤트 안내" fill src="/event/goldhand_event_01.png" style={{ objectFit: 'contain' }} />
+        <Image alt="이벤트 안내" fill src="/event/goldhand_event_02.jpg" style={{ objectFit: 'contain' }} />
       </div>
       <div className="mt-4 flex justify-end gap-2">
         <Button variant="outline" onClick={handleDontShowToday}>

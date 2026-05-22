@@ -68,10 +68,10 @@ export const ReviewCarousel = () => {
                 <ReviewSummaryCard
                   author={item.author}
                   content={item.content}
-                  handleClick={item.handleClick}
                   thumbnailSrc={item.thumbnailSrc}
                   title={item.title}
                   updatedAt={item.updatedAt}
+                  onClick={item.handleClick}
                 />
               </CarouselItem>
             ))}
@@ -86,21 +86,19 @@ export const ReviewCarousel = () => {
         <div className={cn('-mx-4 md:hidden')}>
           <div
             aria-label="고운황금손 이용후기 목록"
-            className={cn(
-              'flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar px-4 pb-2',
-            )}
+            className={cn('no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2')}
             role="region"
           >
             {/* 모바일: 스크롤 목록은 최대 10개 */}
             {reviewItems.slice(0, 10).map(item => (
-              <div className="snap-start shrink-0 w-[280px]" key={item.id}>
+              <div className="w-[280px] shrink-0 snap-start" key={item.id}>
                 <ReviewSummaryCard
                   author={item.author}
                   content={item.content}
-                  handleClick={item.handleClick}
                   thumbnailSrc={item.thumbnailSrc}
                   title={item.title}
                   updatedAt={item.updatedAt}
+                  onClick={item.handleClick}
                 />
               </div>
             ))}
@@ -119,7 +117,7 @@ export const ReviewCarousel = () => {
             type="button"
             onClick={() => startTransition(() => router.push('/review'))}
           >
-            ALL REVIEWS
+            모든 이용후기 보기
             <svg
               aria-hidden="true"
               className="h-3 w-3"

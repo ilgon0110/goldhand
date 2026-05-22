@@ -10,7 +10,7 @@ type TReviewSummaryCardProps = {
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   content: string;
   thumbnailSrc: string | null;
-  handleClick: () => void;
+  onClick: () => void;
 };
 
 export const ReviewSummaryCard = ({
@@ -19,7 +19,7 @@ export const ReviewSummaryCard = ({
   updatedAt,
   content,
   thumbnailSrc,
-  handleClick,
+  onClick: handleClick,
 }: TReviewSummaryCardProps) => {
   return (
     <button
@@ -49,7 +49,7 @@ export const ReviewSummaryCard = ({
         </div>
       </div>
       <div className="mt-3 flex-1">
-        <span className="block text-3xl font-bold leading-none text-gold/30">"</span>
+        <span className="block text-3xl font-bold leading-none text-gold/30"></span>
         <p className="line-clamp-2 text-sm text-gray-600">{content}</p>
       </div>
       <div className="mt-3 flex justify-end">

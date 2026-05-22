@@ -24,6 +24,7 @@ export const ReviewSummaryCard = ({
 }: TReviewSummaryCardProps) => {
   return (
     <button
+      aria-label={title}
       className={cn(
         'flex w-full flex-col rounded-lg border border-slate-100 bg-white p-4 shadow text-left',
         'hover:border-gold/40 hover:shadow-md transition-all',
@@ -41,7 +42,7 @@ export const ReviewSummaryCard = ({
               src={thumbnailSrc}
             />
           ) : (
-            <DefaultImage style={{ width: 56, height: 56 }} />
+            <DefaultImage className="h-14 w-14" />
           )}
         </div>
         <div className="min-w-0 flex-1">
@@ -61,6 +62,7 @@ export const ReviewSummaryCard = ({
       </div>
       <div className="mt-3 flex justify-end">
         <svg
+          aria-hidden="true"
           className="h-4 w-4 text-gold"
           fill="none"
           stroke="currentColor"

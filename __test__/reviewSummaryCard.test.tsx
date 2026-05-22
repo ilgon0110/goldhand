@@ -30,8 +30,8 @@ describe('ReviewSummaryCard', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('"자세히 보기" 버튼이 없다', () => {
+  it('content 텍스트를 렌더링한다', () => {
     render(<ReviewSummaryCard {...mockProps} />);
-    expect(screen.queryByText('자세히 보기')).not.toBeInTheDocument();
+    expect(screen.getByText('산후도우미가 너무 친절했고 아이를 잘 돌봐주었습니다.')).toBeInTheDocument();
   });
 });

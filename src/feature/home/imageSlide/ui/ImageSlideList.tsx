@@ -55,13 +55,13 @@ export function ImageSlideList() {
         )}
       >
         <span
-          className={cn(`break-keep text-left text-3xl leading-relaxed text-white`, 'xl:text-[48px]')}
+          className={cn('break-keep text-left leading-relaxed text-white', 'text-2xl', 'md:text-3xl', 'xl:text-[48px]')}
           style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
         >
           사랑의 마음으로, 고운황금손
         </span>
         <div
-          className={cn('flex flex-col space-y-1 text-base text-white', 'md:text-2xl')}
+          className={cn('flex flex-col space-y-1 text-white', 'text-xs', 'md:text-2xl')}
           style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
         >
           <span>아기를 맞이하는 순간 고운황금손이 기쁨으로 다가가겠습니다.</span>

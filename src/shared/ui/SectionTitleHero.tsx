@@ -1,16 +1,24 @@
 import { cn } from '@/lib/utils';
 
-type SectionTitleHeroProps = {
+type TSectionTitleHeroProps = {
   label: string;
   description?: React.ReactNode;
 };
 
-export default function SectionTitleHero({ label, description }: SectionTitleHeroProps) {
+export default function SectionTitleHero({ label, description }: TSectionTitleHeroProps) {
   return (
     <div className={cn('py-12 text-center')}>
-      <h1 className="text-xl font-semibold tracking-[0.4em] text-[#A88547]">─── {label} ───</h1>
+      <h1
+        className={cn(
+          'whitespace-nowrap font-semibold text-[#A88547]',
+          'text-sm tracking-[0.2em]',
+          'md:text-xl md:tracking-[0.4em]',
+        )}
+      >
+        ─── {label} ───
+      </h1>
       {description && (
-        <p className={cn('mx-auto mt-4 max-w-lg text-sm leading-loose text-slate-500', 'md:text-base')}>
+        <p className={cn('mx-auto mt-4 max-w-lg text-xs leading-loose text-slate-500', 'md:text-base')}>
           {description}
         </p>
       )}

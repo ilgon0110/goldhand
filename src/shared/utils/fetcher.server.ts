@@ -11,6 +11,10 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
   const cookiesObj = parse(rawCookie);
   const accessToken = cookiesObj['accessToken'];
 
+  if (!accessToken) {
+    throw new Error('인증 토큰이 없습니다. 로그인 후 이용해주세요.');
+  }
+
   const response = await fetch(`${apiUrl}${path}`, {
     ...options,
     method: options.method || 'GET',

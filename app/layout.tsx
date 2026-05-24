@@ -3,7 +3,6 @@ import './globals.css';
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import localFont from 'next/font/local';
-import { cookies } from 'next/headers';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Suspense } from 'react';
@@ -11,8 +10,7 @@ import { ToastContainer } from 'react-toastify';
 
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
-import type { IUserResponseData } from '@/src/shared/types';
-import { fetcher } from '@/src/shared/utils/fetcher.client';
+import { getUserData } from '@/src/shared/api/getUserData';
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
 import { Header } from '@/src/widgets/header';
 
@@ -41,13 +39,7 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = cookies();
-  const userData = await fetcher<IUserResponseData>('/api/user', {
-    cache: 'no-cache',
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
+  const userData = await getUserData();
 
   return (
     <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>

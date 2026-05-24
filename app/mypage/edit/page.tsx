@@ -1,9 +1,9 @@
-import { getUserData } from '@/src/shared/api/getUserData';
+import { getUserLoginData } from '@/src/shared/api/getUserData';
 
 import { MyPageEditPage } from './ui/MyPageEditPage';
 
 export default async function Page() {
-  const userData = await getUserData();
+  const userData = await getUserLoginData();
 
   if (userData.response === 'ng') {
     throw new Error(userData.message);

@@ -1,6 +1,6 @@
 import type { SearchParams } from 'nuqs/server';
 
-import { getUserData } from '@/src/shared/api/getUserData';
+import { getUserLoginData } from '@/src/shared/api/getUserData';
 import { loadManagerListParams } from '@/src/shared/lib/nuqs/searchParams';
 
 import { getManagerListData } from './api';
@@ -11,7 +11,7 @@ type TPageProps = {
 };
 
 export default async function Page({ searchParams }: TPageProps) {
-  const userData = await getUserData();
+  const userData = await getUserLoginData();
   const { page } = await loadManagerListParams(searchParams);
   const data = await getManagerListData(page);
 

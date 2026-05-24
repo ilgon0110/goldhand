@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { getUserData } from '@/src/shared/api/getUserData';
+import { getUserLoginData } from '@/src/shared/api/getUserData';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 
 import { getManagerApplyDetailData } from './api';
@@ -12,7 +12,7 @@ type TPageProps = {
 
 export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
-  const userData = await getUserData();
+  const userData = await getUserLoginData();
   const data = await getManagerApplyDetailData({
     docId,
   });

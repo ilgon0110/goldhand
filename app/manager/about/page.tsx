@@ -1,180 +1,267 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { gowunDodumFont } from '@/shared/fonts';
+import SectionTitleHero from '@/shared/ui/SectionTitleHero';
 
 import { policyList, ruleList } from './config';
-import { ValueCard } from './ui';
+import { PromiseCard } from './ui';
+
+const PROMISES = [
+  {
+    index: 'I',
+    title: '전문성',
+    sub: 'EXPERTISE',
+    desc: '전문 교육을 수료한 관리사가 신생아 돌보기와 산모 건강 관리를 책임집니다.',
+  },
+  {
+    index: 'II',
+    title: '안전성',
+    sub: 'SAFETY',
+    desc: '배상보험 가입 및 정밀 건강검진을 받은 관리사가 안전한 서비스를 제공합니다.',
+  },
+  {
+    index: 'III',
+    title: '맞춤 케어',
+    sub: 'TAILORED CARE',
+    desc: '각 가정의 라이프스타일과 필요에 맞춘 세심한 케어 계획을 제안합니다.',
+  },
+];
 
 const Page = () => {
   return (
-    <main className="mt-12">
-      {/* HERO */}
-      <section className="mx-auto max-w-6xl rounded-2xl bg-gradient-to-b from-[rgba(242,244,238,0.6)] to-white p-6 shadow-sm">
-        <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-2">
-          <div>
-            <h1
+    <div className="flex flex-col items-center">
+      {/* 1. Hero */}
+      <SectionTitleHero
+        description="전문 교육과 배상보험을 갖춘, 가정 방문 산후 케어 전문인입니다."
+        label="산후관리사란?"
+      />
+
+      {/* 2. Lede */}
+      <div className={cn('mx-auto max-w-[680px] px-6 text-center')}>
+        <p className={cn('break-keep text-sm leading-[1.95] text-stone-700', 'md:text-base')}>
+          출산 후, 몸의 회복이 중요한 시기인 산욕기(분만 종료 후 6~8주간)에 산모님이 가정에서 편안하게 산후관리를 하실
+          수 있도록 도와드리기 위해, 산모 영양·건강관리, 신생아 돌보기 등 전문 교육을 수료하고 배상보험에 가입되어
+          가정방문 산후관리 서비스를 제공하는 전문인입니다.
+        </p>
+        <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+          {['전문교육 이수', '배상보험 가입', '맞춤형 가정 케어'].map(tag => (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#E8E1D2] px-3.5 py-1.5 text-xs tracking-[0.04em] text-stone-500"
+              key={tag}
+            >
+              <span className="h-1 w-1 rounded-full bg-gold" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. Gold Rule */}
+      <div className="flex justify-center py-[72px]">
+        <div className="h-14 w-px bg-gold" />
+      </div>
+
+      {/* 4. Pull Quote */}
+      <div className={cn('mx-auto max-w-[800px] px-6 text-center')}>
+        <div className={cn(`${gowunDodumFont.className} mb-[18px] text-5xl leading-none text-gold/50`)}>&ldquo;</div>
+        <p
+          className={cn(
+            `${gowunDodumFont.className} break-keep text-[21px] leading-relaxed tracking-tight text-stone-900`,
+            'md:text-3xl',
+          )}
+        >
+          산모님의 가장 회복이 중요한 시기,
+          <br />
+          믿을 수 있는 손길이 가정으로 찾아갑니다.
+        </p>
+        <div className="mt-[22px] text-[11px] tracking-[0.32em] text-gold">─── 고운황금손의 약속 ───</div>
+      </div>
+
+      {/* 5. Three Promises */}
+      <section className={cn('mx-auto mt-24 w-full max-w-5xl px-6', 'md:px-8')}>
+        <div className="mb-12 text-center">
+          <p className="mb-[18px] text-[11px] tracking-[0.4em] text-gold">OUR PROMISE</p>
+          <p className={cn('mt-4 text-sm text-stone-400', 'md:text-base')}>
+            고운황금손의 모든 관리사는 다음을 약속드립니다.
+          </p>
+        </div>
+        <div className={cn('grid border-t border-[#E8E1D2]', 'md:grid-cols-3')}>
+          {PROMISES.map((promise, idx) => (
+            <div
               className={cn(
-                `text-xl font-extrabold leading-tight text-[#2f4320] ${gowunDodumFont.className}`,
-                'sm:text-2xl',
-                'md:text-3xl',
+                'border-b border-[#E8E1D2]',
+                idx < PROMISES.length - 1 && 'md:border-r md:border-[#E8E1D2]',
+              )}
+              key={promise.index}
+            >
+              <PromiseCard {...promise} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. Qualifications */}
+      <section className={cn('mx-auto mt-24 w-full max-w-5xl px-6', 'md:px-8')} id="qualifications">
+        <div className="mb-12 text-center">
+          <p className="mb-[18px] text-[11px] tracking-[0.4em] text-gold">QUALIFICATIONS</p>
+          <h2
+            className={cn(
+              `${gowunDodumFont.className} text-3xl font-medium tracking-tight text-stone-900`,
+              'md:text-4xl',
+            )}
+          >
+            산후관리사 자격조건
+          </h2>
+          <p className={cn('mt-4 text-sm text-stone-400', 'md:text-base')}>
+            산후관리사로 활동하기 위한 주요 자격 및 교육 요건입니다.
+          </p>
+        </div>
+        <div className={cn('grid gap-10 border-t border-[#E8E1D2] pt-14', 'md:grid-cols-[1.2fr_1fr] md:gap-[72px]')}>
+          <ol className="m-0 list-none p-0">
+            {ruleList.map(({ number, contents }) => (
+              <li
+                className={cn(
+                  'grid items-start gap-3.5 border-b border-[#EFE9DA] py-[18px]',
+                  'grid-cols-[36px_1fr]',
+                  'first:border-t first:border-[#EFE9DA]',
+                  'md:grid-cols-[56px_1fr] md:gap-5 md:py-[22px]',
+                )}
+                key={number}
+              >
+                <div className={cn(`${gowunDodumFont.className} pt-1 text-[13px] tracking-[0.18em] text-gold`)}>
+                  {number}
+                </div>
+                <div className="break-keep text-[15px] leading-[1.75] text-stone-700">{contents}</div>
+              </li>
+            ))}
+          </ol>
+
+          <aside className="relative border border-[#E8E1D2] bg-gradient-to-b from-[rgba(247,242,230,0.5)] to-transparent p-6 md:p-8">
+            <div className="absolute -left-px top-6 h-8 w-[3px] bg-gold" />
+            <p className="mb-3.5 text-[11px] tracking-[0.32em] text-gold">EDUCATION &amp; INSURANCE</p>
+            <h3
+              className={cn(
+                `${gowunDodumFont.className} mb-[18px] text-[19px] font-medium tracking-tight text-stone-900`,
+                'md:text-[22px]',
               )}
             >
-              산후관리사란?
-            </h1>
-            <p className={cn('mt-4 max-w-xl text-sm text-slate-700', 'sm:text-base')}>
-              출산 후, 몸의 회복이 중요한 시기인 산욕기(분만종료 후 6~8주간)에 산모님이 가정에서 편안하게 산후관리를
-              하실 수 있도록 도와드리기 위해 산모 영양/건강관리, 신생아 돌보기 등 전문교육을 수료하고 배상보험에
-              가입되어 가정방문 산후관리 서비스를 제공하는 전문인입니다.
+              교육 &amp; 보장
+            </h3>
+            <p className="text-sm leading-[1.85] text-stone-700">
+              모든 관리사는 정기 교육을 받고 배상보험에 가입되어 있습니다.
             </p>
-
-            <div className="mt-6 flex flex-wrap gap-3 text-xs text-slate-600">
-              <span className="rounded-full bg-[rgba(114,129,70,0.08)] px-2 py-1">전문교육 이수</span>
-              <span className="rounded-full bg-[rgba(114,129,70,0.08)] px-2 py-1">배상보험 가입</span>
-              <span className="rounded-full bg-[rgba(114,129,70,0.08)] px-2 py-1">맞춤형 가정 케어</span>
-            </div>
-          </div>
-
-          <div className="relative h-64 w-full overflow-hidden rounded-xl md:h-80">
-            <Image
-              alt="산후관리사가 아기와 엄마를 돌보는 모습"
-              fill
-              priority
-              sizes="(max-width: 640px) 100vw, 50vw"
-              src="/handwithbaby.jpg"
-              style={{ objectFit: 'cover' }}
-            />
-            {/* subtle overlay */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.08)] to-transparent" />
-          </div>
-        </div>
-      </section>
-
-      {/* KEY VALUES */}
-      <section className="mx-auto mt-10 max-w-6xl">
-        <div className="grid gap-6 rounded-2xl bg-white p-6 shadow-sm md:grid-cols-3">
-          <ValueCard
-            desc="전문 교육을 수료한 관리사가 신생아 돌보기와 산모 건강 관리를 책임집니다."
-            icon="🏥"
-            title="전문성"
-          />
-          <ValueCard
-            desc="배상보험 가입 및 정밀 건강검진을 받은 관리사가 안전한 서비스를 제공합니다."
-            icon="🛡️"
-            title="안전성"
-          />
-          <ValueCard
-            desc="각 가정의 라이프스타일과 필요에 맞춘 세심한 케어 계획을 제안합니다."
-            icon="🤝"
-            title="맞춤 케어"
-          />
-        </div>
-      </section>
-
-      {/* QUALIFICATIONS / RULES */}
-      <section className="mx-auto mt-12 max-w-6xl" id="qualifications">
-        <div className={cn('grid items-start gap-8', 'md:grid-cols-2')}>
-          <div>
-            <h2 className={cn(`text-xl font-bold text-[#2f4320] ${gowunDodumFont.className}`, 'md:text-2xl')}>
-              산후관리사 자격조건
-            </h2>
-            <p className="mt-2 text-sm text-slate-700">산후관리사로 활동하기 위한 주요 자격 및 교육 요건입니다.</p>
-
-            <ul className="mt-6 space-y-4">
-              {ruleList.map(({ number, contents }) => (
-                <li key={number}>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#728146] text-sm font-semibold text-white">
-                      {number}
-                    </div>
-                    <div className="text-sm text-slate-700">{contents}</div>
-                  </div>
+            <p className="mt-2 text-sm leading-[1.85] text-stone-700">
+              안전한 가정방문 서비스를 제공하기 위해 정기적인 교육을 진행합니다.
+            </p>
+            <div className="my-[22px] h-px bg-[#E8E1D2]" />
+            <ul className="m-0 flex list-none flex-col gap-3 p-0">
+              {['위생 및 응급처치 교육', '신생아 관리 실습', '고객 응대 및 윤리 교육'].map(item => (
+                <li className="relative pl-[22px] text-sm leading-[1.7] text-stone-700" key={item}>
+                  <span className="absolute left-0 top-[9px] block h-px w-2.5 bg-gold" />
+                  <span className="absolute left-1 top-[5px] block h-[9px] w-px bg-gold" />
+                  {item}
                 </li>
               ))}
             </ul>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-xl border border-slate-100 bg-[rgba(242,244,238,0.6)] p-4">
-              <h3 className="text-lg font-semibold text-[#728146]">교육 & 보장</h3>
-              <p className="mt-2 text-sm text-slate-700">
-                모든 관리사는 정기 교육을 받고 배상보험에 가입되어 있습니다.
-              </p>
-              <p className="mt-1 text-sm text-slate-700">
-                안전한 가정방문 서비스를 제공하기 위해 정기적인 교육을 진행합니다.
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                <li>• 위생 및 응급처치 교육</li>
-                <li>• 신생아 관리 실습</li>
-                <li>• 고객 응대 및 윤리 교육</li>
-              </ul>
-            </div>
-
-            <div className="rounded-xl p-4 shadow-sm">
-              <Image
-                alt="산후관리 서비스 예시"
-                className="rounded-md"
-                height={340}
-                src="/food_review_1.png"
-                width={600}
-              />
-            </div>
-          </div>
+          </aside>
         </div>
       </section>
 
-      {/* POLICIES / RULES */}
-      <section className="mx-auto mt-12 max-w-6xl">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <h2 className={cn(`text-xl font-bold text-[#2f4320] ${gowunDodumFont.className}`, 'md:text-2xl')}>
+      {/* 7. Code of Conduct */}
+      <section className="mt-24 w-full">
+        <div className="mb-12 text-center">
+          <p className="mb-[18px] text-[11px] tracking-[0.4em] text-gold">CODE OF CONDUCT</p>
+          <h2
+            className={cn(
+              `${gowunDodumFont.className} text-3xl font-medium tracking-tight text-stone-900`,
+              'md:text-4xl',
+            )}
+          >
             산후관리사 준수사항
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-700">
-            관리사 활동 중 회사 절차를 따르지 않고 임의로 수행한 행위에 대해서는 회사가 책임을 지지 않습니다.
+          <p className={cn('mx-auto mt-4 max-w-[640px] break-keep px-6 text-sm text-stone-400', 'md:text-base')}>
+            관리사 활동 중 회사 절차를 따르지 않고 임의로 수행한 행위에 대해서는 회사가 책임을 지지 않으며, 적발 시 내부
+            규정에 따라 조치됩니다.
           </p>
-          <p className="text-sm leading-relaxed text-slate-700">적발 시 내부 규정에 따라 조치됩니다.</p>
-          <div className={cn('mt-6 grid gap-4', 'md:grid-cols-2')}>
-            {policyList.map(({ number, contents }) => (
-              <div className="flex items-center gap-4 rounded-lg border p-4" key={number}>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#728146] font-bold text-white">
+        </div>
+        <div className={cn('mx-auto max-w-[880px] px-6')}>
+          <div className={cn('grid', 'md:grid-cols-2')}>
+            {policyList.map(({ number, title, contents }, idx) => (
+              <div
+                className={cn(
+                  'grid items-start gap-3.5 border-t border-[#E8E1D2] py-[22px]',
+                  'grid-cols-[36px_1fr]',
+                  'md:grid-cols-[56px_1fr] md:gap-5 md:px-7 md:py-7',
+                  idx % 2 === 0 && 'md:border-r md:border-[#E8E1D2]',
+                  idx === policyList.length - 1 && 'border-b',
+                  idx === policyList.length - 2 && idx % 2 === 0 && 'border-b',
+                )}
+                key={number}
+              >
+                <div className={cn(`${gowunDodumFont.className} pt-1 text-[13px] tracking-[0.18em] text-gold`)}>
                   {number}
                 </div>
-                <div className="text-sm text-slate-700">{contents}</div>
+                <div>
+                  <p
+                    className={cn(
+                      `${gowunDodumFont.className} mb-1.5 text-[15px] font-medium leading-[1.5] tracking-tight text-stone-900`,
+                      'md:text-base',
+                    )}
+                  >
+                    {title}
+                  </p>
+                  <p className="break-keep text-sm leading-[1.85] text-stone-700">{contents}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA / 상담 */}
-      <section className="sticky bottom-4 mx-auto mt-12 max-w-6xl">
+      {/* 8. CTA */}
+      <div className={cn('mx-auto mt-[120px] w-full max-w-[880px] px-6')}>
         <div
           className={cn(
-            'flex flex-row items-center justify-between gap-6 rounded-2xl bg-[linear-gradient(90deg,#f7fbf6,#f7fbf6)] px-4 py-6 shadow',
-            'sm:px-8',
+            'relative grid gap-6 border border-[#E8E1D2] bg-gradient-to-b from-[rgba(247,242,230,0.6)] to-transparent p-8',
+            'md:grid-cols-[1fr_auto] md:items-center md:p-12',
           )}
         >
+          <div className="absolute left-8 top-0 h-px w-9 bg-gold" />
           <div>
-            <h3 className={cn(`text-lg font-semibold text-[#2f4320] ${gowunDodumFont.className}`)}>
+            <p className="mb-3 text-[11px] tracking-[0.4em] text-gold">CONSULTATION</p>
+            <h3
+              className={cn(
+                `${gowunDodumFont.className} mb-2.5 text-xl font-medium leading-[1.5] tracking-tight text-stone-900`,
+                'md:text-2xl',
+              )}
+            >
               상담이 필요하신가요?
             </h3>
-            <p className="mt-2 text-sm text-slate-700">간단한 정보만 입력하면 빠른 상담 연락을 드립니다.</p>
+            <p className="max-w-[32rem] break-keep text-sm leading-[1.8] text-stone-500">
+              간단한 정보만 입력하시면, 가장 빠른 시간 내에 상담 연락을 드립니다.
+            </p>
           </div>
-          <div className="flex gap-3">
-            <Link
-              className="rounded-md bg-[#728146] px-4 py-2 text-sm font-semibold text-white shadow transition hover:shadow-md"
-              href="/reservation"
-            >
-              상담 요청
-            </Link>
-          </div>
+          <Link
+            className="inline-flex items-center gap-2.5 border border-gold px-6 py-3.5 text-[13px] font-medium tracking-[0.18em] text-[#8B6B30] transition-colors hover:bg-gold hover:text-white"
+            href="/reservation"
+          >
+            상담 요청
+            <span className={gowunDodumFont.className}>→</span>
+          </Link>
         </div>
-      </section>
+      </div>
 
-      {/* small footer spacing */}
-      <div className="mt-12" />
-    </main>
+      {/* 9. Closing */}
+      <div className={cn('mx-auto mt-24 max-w-[720px] px-6 pb-32 text-center')}>
+        <p className={cn(`${gowunDodumFont.className} break-keep text-lg leading-[1.7] text-stone-700`, 'md:text-xl')}>
+          산모님의 가장 고운 시기에,
+          <br />
+          가장 다정한 손길이 함께합니다.
+        </p>
+        <p className="mt-7 text-[11px] tracking-[0.4em] text-gold">─── 고운황금손 ───</p>
+      </div>
+    </div>
   );
 };
 

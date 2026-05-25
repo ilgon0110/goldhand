@@ -1,1 +1,1 @@
-export * from './_ValueCard';
+export { PromiseCard } from './_PromiseCard';

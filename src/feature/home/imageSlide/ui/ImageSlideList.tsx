@@ -61,7 +61,7 @@ export function ImageSlideList() {
           사랑의 마음으로, 고운황금손
         </span>
         <div
-          className={cn('flex flex-col space-y-1 text-white', 'text-xs', 'md:text-2xl')}
+          className={cn('mt-1 flex flex-col space-y-1 text-white', 'text-xs', 'md:mt-2 md:text-2xl')}
           style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
         >
           <span>아기를 맞이하는 순간 고운황금손이 기쁨으로 다가가겠습니다.</span>

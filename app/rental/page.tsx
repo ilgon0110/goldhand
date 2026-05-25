@@ -76,7 +76,7 @@ const RentalPage = () => {
             구매해 주셔야 합니다.
           </p>
           <div className="text-right">
-            <p className="mb-1 text-[10px] font-medium tracking-[0.24em] text-[#A88547]">ROUND-TRIP SHIPPING</p>
+            <p className="mb-1 text-[10px] font-medium tracking-[0.24em] text-[#A88547]">왕복 택배비</p>
             <p className="font-serif text-[22px] tracking-tight text-[#1B1814]">10,000원</p>
           </div>
         </div>

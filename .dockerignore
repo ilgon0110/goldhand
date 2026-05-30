@@ -8,6 +8,10 @@ __test__
 *.md
 *.pdf
 .env*
-.yarn/cache
+.yarn
 .swc
 tsconfig.tsbuildinfo
+goldhand-firebase-adminsdk.json
+coverage
+.agents
+.claude

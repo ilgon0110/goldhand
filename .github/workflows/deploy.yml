@@ -55,7 +55,7 @@ jobs:
             NEXT_PUBLIC_FIREBASE_APP_ID NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID \
             NEXT_PUBLIC_RECAPTCHA_SITE_KEY NEXT_PUBLIC_DEFAULT_PASSWORD \
             NEXT_PUBLIC_KAKAO_CALLBACK_URL NEXT_PUBLIC_VIEWER_SECRET; do
-            [ -z "${!var}" ] && MISSING="$MISSING $var"
+            [ -z "${!var}" ] && MISSING="${MISSING:+$MISSING }$var"
           done
           if [ -n "$MISSING" ]; then
             echo "::error::Missing required secrets:$MISSING"
@@ -69,7 +69,7 @@ jobs:
           IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/goldhand"
           SHA="${{ github.sha }}"
 
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
+          printf '%s\n' "${{ secrets.DOCKERHUB_TOKEN }}" | \
             docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
           docker build \

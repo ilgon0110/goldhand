@@ -33,6 +33,7 @@ IMAGE_TAG="${NEW_TAG}" docker compose up -d --force-recreate
 # ── 헬스체크 (24회 × 5초 = 120초) ──────────────────────────────────
 echo "▶ Waiting for health check..."
 NEW_CONTAINER_ID=$(docker compose ps -q nextjs 2>/dev/null || echo "")
+[ -n "${NEW_CONTAINER_ID}" ] || { echo "✗ Cannot find nextjs container after deploy"; exit 1; }
 for i in $(seq 1 24); do
   HEALTH=$(docker inspect --format='{{.State.Health.Status}}' "${NEW_CONTAINER_ID}" 2>/dev/null || echo "unknown")
   if [ "${HEALTH}" = "healthy" ]; then

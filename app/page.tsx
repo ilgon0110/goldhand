@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 
 import { cn } from '@/lib/utils';
 import { FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
+import { EventModal } from '@/src/widgets/event/ui/EventModal';
 
 const ReviewCarousel = dynamic(
   () => import('@/src/feature/home/reviewCarousel/ui/ReviewCarousel').then(m => m.ReviewCarousel),
@@ -11,6 +12,7 @@ const ReviewCarousel = dynamic(
 export default function Home() {
   return (
     <>
+      <EventModal />
       <section>
         <ImageSlideList />
       </section>

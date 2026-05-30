@@ -21,7 +21,7 @@ export async function getUserData(): Promise<IUserResponseData> {
 
 // 로그인이 되어있을 때 로그인한 유저의 데이터를 가져올 때 사용
 export async function getUserLoginData(): Promise<IUserResponseData> {
-  const result = await authFetcher<IUserResponseData>('/api/user/login', {
+  const result = await authFetcher<IUserResponseData>('/api/user', {
     cache: 'no-store',
   });
 

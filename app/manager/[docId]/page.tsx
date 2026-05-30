@@ -1,7 +1,4 @@
-import { Suspense } from 'react';
-
 import { getUserLoginData } from '@/src/shared/api/getUserData';
-import LoadingBar from '@/src/shared/ui/loadingBar';
 
 import { getManagerApplyDetailData } from './api';
 import { ManagerApplyDetailPage } from './ui/ManagerApplyDetailPage';
@@ -21,9 +18,5 @@ export default async function Page({ params }: TPageProps) {
     throw new Error('접근 권한이 없습니다.');
   }
 
-  return (
-    <Suspense fallback={<LoadingBar />}>
-      <ManagerApplyDetailPage managerApplyDetailData={data.data} userId={userData.userData.userId} />
-    </Suspense>
-  );
+  return <ManagerApplyDetailPage managerApplyDetailData={data.data} userId={userData.userData.userId} />;
 }

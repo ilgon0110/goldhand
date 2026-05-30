@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Deploy to EC2
 
 on:
@@ -11,52 +12,112 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Enable Corepack and install correct Yarn version
+      # ── initialize ──────────────────────────────────────────────
+      - name: Initialize — validate required secrets
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_KEY: ${{ secrets.EC2_KEY }}
+          EC2_PATH: ${{ secrets.EC2_PATH }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_LOCAL_API_URL: ${{ secrets.NEXT_PUBLIC_LOCAL_API_URL }}
+          NEXT_PUBLIC_ENVIRONMENT: ${{ secrets.NEXT_PUBLIC_ENVIRONMENT }}
+          NEXT_PUBLIC_NAVER_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_NAVER_CLIENT_ID }}
+          NEXT_PUBLIC_NAVER_CALLBACK_URL: ${{ secrets.NEXT_PUBLIC_NAVER_CALLBACK_URL }}
+          NEXT_PUBLIC_STATE_STRING: ${{ secrets.NEXT_PUBLIC_STATE_STRING }}
+          NEXT_PUBLIC_FIREBASE_SERVICE_ACCOUNT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_SERVICE_ACCOUNT_ID }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          NEXT_PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }}
+          NEXT_PUBLIC_DEFAULT_PASSWORD: ${{ secrets.NEXT_PUBLIC_DEFAULT_PASSWORD }}
+          NEXT_PUBLIC_KAKAO_CALLBACK_URL: ${{ secrets.NEXT_PUBLIC_KAKAO_CALLBACK_URL }}
+          NEXT_PUBLIC_VIEWER_SECRET: ${{ secrets.NEXT_PUBLIC_VIEWER_SECRET }}
         run: |
-          corepack enable
-          corepack prepare yarn@4.9.2 --activate
+          MISSING=""
+          for var in \
+            EC2_HOST EC2_USER EC2_KEY EC2_PATH \
+            DOCKERHUB_USERNAME DOCKERHUB_TOKEN \
+            NEXT_PUBLIC_API_URL NEXT_PUBLIC_LOCAL_API_URL \
+            NEXT_PUBLIC_ENVIRONMENT NEXT_PUBLIC_NAVER_CLIENT_ID \
+            NEXT_PUBLIC_NAVER_CALLBACK_URL NEXT_PUBLIC_STATE_STRING \
+            NEXT_PUBLIC_FIREBASE_SERVICE_ACCOUNT_ID NEXT_PUBLIC_FIREBASE_API_KEY \
+            NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN NEXT_PUBLIC_FIREBASE_PROJECT_ID \
+            NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID \
+            NEXT_PUBLIC_FIREBASE_APP_ID NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID \
+            NEXT_PUBLIC_RECAPTCHA_SITE_KEY NEXT_PUBLIC_DEFAULT_PASSWORD \
+            NEXT_PUBLIC_KAKAO_CALLBACK_URL NEXT_PUBLIC_VIEWER_SECRET; do
+            [ -z "${!var}" ] && MISSING="$MISSING $var"
+          done
+          if [ -n "$MISSING" ]; then
+            echo "::error::Missing required secrets:$MISSING"
+            exit 1
+          fi
+          echo "✓ All required secrets present"
 
-      - name: Create .env file
+      # ── build ───────────────────────────────────────────────────
+      - name: Build — Docker image & push to Docker Hub
         run: |
-          printf '%s' "${{ secrets.ENV_FILE }}" > .env
-          chmod 600 .env
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/goldhand"
+          SHA="${{ github.sha }}"
 
-      - name: Install dependencies
-        run: yarn install
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
+            docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Build project
-        run: yarn run build
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL="${{ secrets.NEXT_PUBLIC_API_URL }}" \
+            --build-arg NEXT_PUBLIC_LOCAL_API_URL="${{ secrets.NEXT_PUBLIC_LOCAL_API_URL }}" \
+            --build-arg NEXT_PUBLIC_ENVIRONMENT="${{ secrets.NEXT_PUBLIC_ENVIRONMENT }}" \
+            --build-arg NEXT_PUBLIC_NAVER_CLIENT_ID="${{ secrets.NEXT_PUBLIC_NAVER_CLIENT_ID }}" \
+            --build-arg NEXT_PUBLIC_NAVER_CALLBACK_URL="${{ secrets.NEXT_PUBLIC_NAVER_CALLBACK_URL }}" \
+            --build-arg NEXT_PUBLIC_STATE_STRING="${{ secrets.NEXT_PUBLIC_STATE_STRING }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_SERVICE_ACCOUNT_ID="${{ secrets.NEXT_PUBLIC_FIREBASE_SERVICE_ACCOUNT_ID }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_API_KEY="${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID="${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_APP_ID="${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}" \
+            --build-arg NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID="${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}" \
+            --build-arg NEXT_PUBLIC_RECAPTCHA_SITE_KEY="${{ secrets.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }}" \
+            --build-arg NEXT_PUBLIC_DEFAULT_PASSWORD="${{ secrets.NEXT_PUBLIC_DEFAULT_PASSWORD }}" \
+            --build-arg NEXT_PUBLIC_KAKAO_CALLBACK_URL="${{ secrets.NEXT_PUBLIC_KAKAO_CALLBACK_URL }}" \
+            --build-arg NEXT_PUBLIC_VIEWER_SECRET="${{ secrets.NEXT_PUBLIC_VIEWER_SECRET }}" \
+            -t "$IMAGE:latest" \
+            -t "$IMAGE:$SHA" \
+            -f docker/Dockerfile .
 
-      - name: Archive build files
-        run: |
-          tar -czf app.tar.gz package.json yarn.lock public .next .env next.config.mjs
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:$SHA"
 
-      - name: Upload to EC2
-        uses: appleboy/scp-action@v0.1.3
+      # ── deploy ──────────────────────────────────────────────────
+      - name: Deploy — upload configs to EC2
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: 'app.tar.gz'
-          target: '${{ secrets.EC2_PATH }}'
+          source: "docker-compose.yml,docker/nginx.conf,scripts/deploy.sh"
+          target: "${{ secrets.EC2_PATH }}"
 
-      - name: SSH Deploy on EC2
+      - name: Deploy — execute on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            export PATH=/home/ubuntu/.nvm/versions/node/v23.5.0/bin:$PATH
-            cd ${{ secrets.EC2_PATH }}
-            tar -xzf app.tar.gz
-            rm app.tar.gz
-            yarn install
-            yarn run build
-
-            pm2 restart goldhand || pm2 start yarn --name goldhand -- start
-
-            sudo systemctl enable nginx
-            sudo systemctl reload nginx
+            cd "${{ secrets.EC2_PATH }}"
+            chmod +x scripts/deploy.sh
+            export DOCKERHUB_USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
+            export DOCKERHUB_TOKEN="${{ secrets.DOCKERHUB_TOKEN }}"
+            export IMAGE_TAG="${{ github.sha }}"
+            bash scripts/deploy.sh

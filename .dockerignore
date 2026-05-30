@@ -1,0 +1,13 @@
+# .dockerignore
+node_modules
+.next
+.git
+.github
+docs
+__test__
+*.md
+*.pdf
+.env*
+.yarn/cache
+.swc
+tsconfig.tsbuildinfo

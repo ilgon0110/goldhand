@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - feature/cicd
 
 jobs:
   deploy:
@@ -106,8 +105,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: "docker-compose.yml,docker/nginx.conf,scripts/deploy.sh"
-          target: "${{ secrets.EC2_PATH }}"
+          source: 'docker-compose.yml,docker/nginx.conf,scripts/deploy.sh'
+          target: '${{ secrets.EC2_PATH }}'
 
       - name: Deploy — execute on EC2
         uses: appleboy/ssh-action@v1.0.3

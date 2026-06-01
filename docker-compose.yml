@@ -6,6 +6,7 @@ services:
       - "443:443"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - nextjs
     restart: unless-stopped

@@ -1,21 +1,18 @@
 import admin from 'firebase-admin';
-import { getApps, initializeApp } from 'firebase-admin/app';
+import { type App, getApps, initializeApp } from 'firebase-admin/app';
 
-// 수정된 방식
-const raw = process.env.GOOGLE_APPLICATION_CREDENTIALS ?? '';
-const serviceAccount = JSON.parse(raw.startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf-8'));
+function createAdminApp(): App {
+  if (getApps().length > 0) return getApps()[0];
+  const raw = process.env.GOOGLE_APPLICATION_CREDENTIALS ?? '';
+  const serviceAccount = JSON.parse(raw.startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf-8'));
+  return initializeApp({ credential: admin.credential.cert(serviceAccount) });
+}
 
-//const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!);
-
-const firebaseConfig = {
-  credential: admin.credential.cert(serviceAccount),
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
-
-// Initialize Firebase
-export const firebaseAdminApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Proxy를 사용해 첫 속성 접근 시점(런타임)에 초기화 — 빌드 시점엔 실행되지 않음
+export const firebaseAdminApp: App = new Proxy({} as App, {
+  get(_, prop) {
+    const app = createAdminApp();
+    const value = Reflect.get(app, prop as string);
+    return typeof value === 'function' ? value.bind(app) : value;
+  },
+});

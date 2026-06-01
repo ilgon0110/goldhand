@@ -1,0 +1,17 @@
+# .dockerignore
+node_modules
+.next
+.git
+.github
+docs
+__test__
+*.md
+*.pdf
+.env*
+.yarn
+.swc
+tsconfig.tsbuildinfo
+goldhand-firebase-adminsdk.json
+coverage
+.agents
+.claude

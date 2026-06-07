@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { getUserData } from '@/src/shared/api/getUserData';
+import { OAuthSuccessHandler } from '@/src/shared/ui/OAuthSuccessHandler';
 import { Header } from '@/src/widgets/header';
 
 const Footer = dynamic(() => import('@/src/widgets/footer/ui/footer').then(mod => mod.Footer), { ssr: false });
@@ -47,6 +48,7 @@ export default async function Layout({
           <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
             <NuqsAdapter>
               <QueryProvider>
+                <OAuthSuccessHandler />
                 <Header userData={userData.userData} />
                 <main>{children}</main>
               </QueryProvider>

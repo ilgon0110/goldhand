@@ -11,7 +11,7 @@ import { authFetcher } from '../utils/fetcher.server';
 export async function getUserData(): Promise<IUserResponseData> {
   const cookieStore = cookies();
   const userData = await fetcher<IUserResponseData>('/api/user', {
-    cache: 'no-cache',
+    cache: 'no-store',
     headers: {
       Cookie: cookieStore.toString(),
     },

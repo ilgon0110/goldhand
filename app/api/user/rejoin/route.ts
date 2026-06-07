@@ -1,16 +1,60 @@
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, getFirestore, Timestamp, updateDoc } from 'firebase/firestore';
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
+
+interface IResponseGetBody {
+  response: 'ng' | 'ok';
+  message: string;
+  userData: IUserDetailData | null;
+}
 
 interface IResponsePostBody {
   response: 'ng' | 'ok';
   message: string;
 }
 
-export async function GET() {}
+export async function GET() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken');
+
+  if (accessToken == null || accessToken.value == null || accessToken.value === '') {
+    return typedJson<IResponseGetBody>(
+      { response: 'ng', message: '로그인 토큰이 존재하지 않습니다.', userData: null },
+      { status: 401 },
+    );
+  }
+
+  try {
+    const adminApp = getAdminAuth(firebaseAdminApp);
+    const { uid } = await adminApp.verifyIdToken(accessToken.value);
+
+    const db = getFirestore(firebaseApp);
+    const snap = await getDoc(doc(db, 'users', uid));
+
+    if (!snap.exists() || !snap.data().isDeleted) {
+      return typedJson<IResponseGetBody>(
+        { response: 'ng', message: '탈퇴 유저 정보를 찾을 수 없습니다.', userData: null },
+        { status: 404 },
+      );
+    }
+
+    return typedJson<IResponseGetBody>(
+      { response: 'ok', message: '탈퇴 유저 정보 확인', userData: { ...snap.data(), userId: uid } as IUserDetailData },
+      { status: 200 },
+    );
+  } catch {
+    return typedJson<IResponseGetBody>(
+      { response: 'ng', message: '인증에 실패했습니다.', userData: null },
+      { status: 401 },
+    );
+  }
+}
 
 export async function POST(req: Request) {
   const app = firebaseApp;

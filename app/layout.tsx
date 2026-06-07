@@ -10,7 +10,6 @@ import { ToastContainer } from 'react-toastify';
 
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
-import { getUserData } from '@/src/shared/api/getUserData';
 import { OAuthSuccessHandler } from '@/src/shared/ui/OAuthSuccessHandler';
 import { Header } from '@/src/widgets/header';
 
@@ -39,8 +38,6 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userData = await getUserData();
-
   return (
     <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
       <body className="relative">
@@ -49,7 +46,7 @@ export default async function Layout({
             <NuqsAdapter>
               <QueryProvider>
                 <OAuthSuccessHandler />
-                <Header userData={userData.userData} />
+                <Header />
                 <main>{children}</main>
               </QueryProvider>
             </NuqsAdapter>

@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 
 interface ILogoutResponse {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
 }
 

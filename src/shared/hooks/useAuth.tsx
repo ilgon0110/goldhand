@@ -15,6 +15,5 @@ export function useAuth() {
   return useQuery({
     queryKey: authKeys.all,
     queryFn: fetchAuth,
-    retry: false,
   });
 }

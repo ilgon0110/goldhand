@@ -1,5 +1,4 @@
 import { doc, getFirestore, setDoc, Timestamp } from 'firebase/firestore';
-import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '@/src/entities/user';
@@ -11,6 +10,7 @@ const ACCESS_TOKEN_OPTIONS = {
   httpOnly: true,
   maxAge: 60 * 60 * 24 * 7,
   sameSite: 'strict' as const,
+  secure: process.env.NODE_ENV === 'production',
 };
 
 async function saveUserProfile(uid: string, email: string) {
@@ -97,7 +97,6 @@ export async function GET(request: Request) {
         return NextResponse.redirect(new URL('/login?naver_error=account_deleted', origin));
       }
 
-      revalidatePath('/', 'layout');
       const res = NextResponse.redirect(new URL('/?naver_success=true', origin));
       res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
       return res;
@@ -107,7 +106,6 @@ export async function GET(request: Request) {
     await saveUserProfile(newUser.user.uid, email);
     const newAccessToken = await newUser.user.getIdToken();
 
-    revalidatePath('/', 'layout');
     const res = NextResponse.redirect(new URL('/?naver_success=true', origin));
     res.cookies.set('accessToken', newAccessToken, ACCESS_TOKEN_OPTIONS);
     return res;

@@ -7,7 +7,7 @@ import type { ICommentData, IEventDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   data: IEventDetailData;
 }

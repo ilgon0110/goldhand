@@ -1,3 +1,5 @@
+'use server';
+
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
@@ -13,7 +15,7 @@ export async function checkAdminAuth(): Promise<TAdminAuthResult> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
 
-  if (!accessToken) {
+  if (accessToken == null || accessToken.value.trim() === '') {
     return { ok: false, reason: 'no_token' };
   }
 

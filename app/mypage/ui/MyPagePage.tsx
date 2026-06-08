@@ -2,16 +2,15 @@
 
 import { useState } from 'react';
 
+import { useGetMyPageData } from '@/src/entities/mypage';
 import { MyPageInfoCard, MyPagePostList, WithdrawalModal } from '@/src/feature/mypage';
-import type { IMyPageResponseData } from '@/src/shared/types';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
-type TMyPageDataProps = {
-  myPageData: IMyPageResponseData;
-};
-
-export const MyPagePage = ({ myPageData }: TMyPageDataProps) => {
+export const MyPagePage = () => {
+  const { data: myPageData } = useGetMyPageData();
   const [withDrawalModalOpen, setWithDrawalModalOpen] = useState(false);
+
+  if (myPageData == null) return null;
 
   return (
     <>

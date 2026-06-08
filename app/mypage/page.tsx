@@ -1,12 +1,17 @@
-import { getMyPageData } from './api';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+
+import { getMyPageData } from '@/src/entities/mypage';
+import { myPageKeys } from '@/src/shared/config/queryKeys';
+
 import { MyPagePage } from './ui/MyPagePage';
 
 export default async function Page() {
-  const data = await getMyPageData();
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({ queryKey: myPageKeys.all, queryFn: getMyPageData });
 
-  if (data.response !== 'ok') {
-    throw new Error(data.message || '마이페이지 데이터를 불러오는 중 오류가 발생했습니다.');
-  }
-
-  return <MyPagePage myPageData={data} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MyPagePage />
+    </HydrationBoundary>
+  );
 }

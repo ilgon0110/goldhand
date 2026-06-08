@@ -12,7 +12,12 @@ export async function POST(req: NextRequest) {
     return new Response('unauthorized', { status: 401 });
   }
 
-  let payload: { path: string; headers?: Record<string, string>; body: unknown };
+  let payload: {
+    path: string;
+    method?: 'GET' | 'POST';
+    headers?: Record<string, string>;
+    body?: unknown;
+  };
   try {
     payload = await req.json();
   } catch {
@@ -23,14 +28,16 @@ export async function POST(req: NextRequest) {
     return new Response('missing path', { status: 400 });
   }
 
+  const method = payload.method ?? 'POST';
+
   try {
     const res = await fetch(`${BIZTALK_API_URL}${payload.path}`, {
-      method: 'POST',
+      method,
       headers: {
         'Content-Type': 'application/json',
         ...(payload.headers ?? {}),
       },
-      body: JSON.stringify(payload.body),
+      ...(method === 'POST' ? { body: JSON.stringify(payload.body) } : {}),
     });
 
     const data = await res.json();

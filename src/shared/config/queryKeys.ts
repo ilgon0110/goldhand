@@ -31,4 +31,8 @@ const myPageKeys = {
   all: ['myPage'] as const,
 };
 
-export { authKeys, eventKeys, myPageKeys, notificationKeys, reviewKeys };
+const userKeys = {
+  all: ['user'] as const,
+};
+
+export { authKeys, eventKeys, myPageKeys, notificationKeys, reviewKeys, userKeys };

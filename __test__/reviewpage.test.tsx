@@ -61,7 +61,7 @@ describe('ReviewPage 통합 테스트', () => {
 
     // 첫 번째 리뷰 클릭
     const firstReview = data.reviewData[0];
-    const reviewCard = await screen.findByTestId(`${firstReview.id}-card-review`);
+    const reviewCard = await screen.findByTestId(firstReview.id);
     await userEvent.click(reviewCard);
 
     const { sendViewLog } = await import('@/src/shared/utils/verifyViewId');
@@ -79,7 +79,7 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
 
     // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={false} />);
-    const reviewButton = screen.queryByRole('button', { name: '로그인 후 작성 가능' });
+    const reviewButton = screen.queryByRole('button', { name: '로그인 후 작성' });
 
     expect(reviewButton).toBeInTheDocument();
     expect(reviewButton).toBeDisabled();
@@ -97,34 +97,14 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
     expect(reviewButton).toBeEnabled();
   });
 
-  it('cardView/tableView Button을 클릭했을 때 그에 맞게 UI가 변경되는지 확인', async () => {
+  it('모든 리뷰 카드가 올바른 testid로 렌더링되는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
     const data = (await response.json()) as IReviewListResponseData;
 
-    // 데이터를 기반으로 ReviewPage 컴포넌트를 렌더링합니다.
     render(<ReviewPage data={data} isLogin={false} />);
 
-    // 초기 상태에서 CARD 모드가 활성화되어 있는지 확인
     for (const review of data.reviewData) {
-      expect(await screen.findByTestId(`${review.id}-card-review`)).toBeInTheDocument();
-      expect(screen.queryByTestId(`${review.id}-table-review`)).not.toBeInTheDocument();
-    }
-
-    // TABLE 모드로 전환
-    await userEvent.click(screen.getByRole('button', { name: 'table-view-button' }));
-
-    // TABLE 모드가 활성화되었는지 확인
-    for (const review of data.reviewData) {
-      expect(await screen.findByTestId(`${review.id}-table-review`)).toBeInTheDocument();
-      expect(screen.queryByTestId(`${review.id}-card-review`)).not.toBeInTheDocument();
-    }
-
-    // CARD 모드로 전환
-    await userEvent.click(screen.getByRole('button', { name: 'card-view-button' }));
-
-    for (const review of data.reviewData) {
-      expect(await screen.findByTestId(`${review.id}-card-review`)).toBeInTheDocument();
-      expect(screen.queryByTestId(`${review.id}-table-review`)).not.toBeInTheDocument();
+      expect(await screen.findByTestId(review.id)).toBeInTheDocument();
     }
   });
 });

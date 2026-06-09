@@ -7,7 +7,7 @@ import { MyPagePage } from './ui/MyPagePage';
 
 export default async function Page() {
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({ queryKey: myPageKeys.all, queryFn: getMyPageData });
+  await queryClient.fetchQuery({ queryKey: myPageKeys.all, queryFn: getMyPageData });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

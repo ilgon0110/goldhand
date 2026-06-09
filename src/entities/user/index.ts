@@ -1,1 +1,1 @@
-export { checkUserDeletedStatus, signUpUser, trySignIn } from './lib/socialAuth';
+export * from './api';

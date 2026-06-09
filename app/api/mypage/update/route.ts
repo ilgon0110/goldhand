@@ -1,7 +1,9 @@
 import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IMyPageUpdatePost {
@@ -25,25 +27,30 @@ export async function POST(req: NextRequest) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'userId is required' }, { status: 400 });
   }
 
-  // Update logic here...
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-
+    const db = getFirestore(firebaseApp);
     const userDocRef = doc(db, 'users', userId);
     const userDocSnap = await getDoc(userDocRef);
 
     if (!userDocSnap.exists()) {
       return typedJson<IResponseBody>(
-        {
-          response: 'ng',
-          message: '사용자 정보가 존재하지 않습니다.',
-        },
+        { response: 'ng', message: '사용자 정보가 존재하지 않습니다.' },
         { status: 403 },
       );
     }
 
-    // Update user data
+    const userRecord = await getAdminAuth(firebaseAdminApp).getUser(userId);
+    const providerIds = userRecord.providerData.map(provider => provider.providerId);
+    const isLinked = providerIds.includes('password') && providerIds.includes('phone');
+
+    const currentEmail = userDocSnap.data()?.email as string | undefined;
+    if (!isLinked && email !== currentEmail) {
+      return typedJson<IResponseBody>(
+        { response: 'ng', message: '본인인증이 완료된 사용자만 이메일을 수정할 수 있습니다.' },
+        { status: 403 },
+      );
+    }
+
     try {
       await updateDoc(userDocRef, {
         ...userDocSnap.data(),
@@ -59,10 +66,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       console.error('Error updating user data:', error);
       return typedJson<IResponseBody>(
-        {
-          response: 'ng',
-          message: '사용자 정보를 업데이트하는 데 실패했습니다.',
-        },
+        { response: 'ng', message: '사용자 정보를 업데이트하는 데 실패했습니다.' },
         { status: 500 },
       );
     }

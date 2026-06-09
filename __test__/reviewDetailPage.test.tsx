@@ -9,9 +9,13 @@ import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const pushMock = vi.fn();
+const replaceMock = vi.fn();
+const refreshMock = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: pushMock,
+    replace: replaceMock,
+    refresh: refreshMock,
   }),
 }));
 
@@ -152,8 +156,9 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
 
     // 삭제가 성공하면 리뷰 목록 페이지로 이동
     // 모달이 닫히고 나서 push가 호출되므로, 약간의 딜레이를 줌
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(pushMock).toHaveBeenCalledWith('/review');
+    await waitFor(() => {
+      expect(replaceMock).toHaveBeenCalledWith('/review');
+    });
   });
 
   it('게시글 삭제가 실패하면 api의 에러 메시지가 표시된다.', async () => {

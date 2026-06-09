@@ -1,10 +1,11 @@
 import { doc, getFirestore, setDoc, Timestamp } from 'firebase/firestore';
 import { NextResponse } from 'next/server';
 
-import { checkUserDeletedStatus, signUpUser, trySignIn } from '@/src/entities/user';
 import { apiUrl } from '@/src/shared/config';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import type { IUserDetailData } from '@/src/shared/types';
+
+import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
 
 const ACCESS_TOKEN_OPTIONS = {
   httpOnly: true,

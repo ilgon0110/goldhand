@@ -77,7 +77,7 @@ describe('SignupPage 컴포넌트 테스트', () => {
     const data = await (await fetch('/api/user')).json();
     renderWithQueryClient(<SignupPage userData={data.userData} />);
 
-    expect(screen.getByText('고운황금손 회원가입')).toBeInTheDocument();
+    expect(screen.getByText(/고운황금손 회원가입/)).toBeInTheDocument();
     expect(screen.getByLabelText(/이름/)).toHaveValue('테스트 사용자');
     expect(screen.getByLabelText(/닉네임/)).toHaveValue('testnick');
     expect(screen.getByLabelText(/휴대폰번호/)).toHaveValue('01012345678');

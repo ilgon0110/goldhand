@@ -1,13 +1,17 @@
-import { getUserLoginData } from '@/src/shared/api/getUserData';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+
+import { getMyPageData } from '@/src/entities/mypage';
+import { myPageKeys } from '@/src/shared/config/queryKeys';
 
 import { MyPageEditPage } from './ui/MyPageEditPage';
 
 export default async function Page() {
-  const userData = await getUserLoginData();
+  const queryClient = new QueryClient();
+  await queryClient.fetchQuery({ queryKey: myPageKeys.all, queryFn: getMyPageData });
 
-  if (userData.response === 'ng') {
-    throw new Error(userData.message);
-  }
-
-  return <MyPageEditPage userData={userData} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MyPageEditPage />
+    </HydrationBoundary>
+  );
 }

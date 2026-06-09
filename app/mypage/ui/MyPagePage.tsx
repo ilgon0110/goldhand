@@ -10,8 +10,6 @@ export const MyPagePage = () => {
   const { data: myPageData } = useGetMyPageData();
   const [withDrawalModalOpen, setWithDrawalModalOpen] = useState(false);
 
-  if (myPageData == null) return null;
-
   return (
     <>
       <WithdrawalModal isOpen={withDrawalModalOpen} setIsOpen={setWithDrawalModalOpen} />

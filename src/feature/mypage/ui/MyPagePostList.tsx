@@ -28,8 +28,8 @@ export const MyPagePostList = ({ myPageData }: IMyPagePostListProps) => {
           <TabsTrigger value="CONSULT">상담</TabsTrigger>
           <TabsTrigger value="REVIEW">후기</TabsTrigger>
           <TabsTrigger value="COMMENT">댓글</TabsTrigger>
-          <TabsTrigger value="MANAGER">지원목록</TabsTrigger>
-          <TabsTrigger value="APPLY">지원문의</TabsTrigger>
+          {isAdmin && <TabsTrigger value="MANAGER">지원목록</TabsTrigger>}
+          <TabsTrigger value="APPLY">지원서</TabsTrigger>
         </TabsList>
       </Tabs>
       {isAdmin && title === 'MANAGER' && (
@@ -58,8 +58,8 @@ export const MyPagePostList = ({ myPageData }: IMyPagePostListProps) => {
           getDate={item => item.updatedAt}
           getId={item => item.id}
           getLabel={item => item.content}
-          tag="문의"
-          title="산후관리사 지원문의"
+          tag="지원서"
+          title="내 산후관리사 지원내역"
           onClickItem={item => {
             startTransition(() => {
               router.push(`/manager/${item.id}`);

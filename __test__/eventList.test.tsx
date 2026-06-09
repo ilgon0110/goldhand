@@ -69,7 +69,7 @@ describe('Event Component', () => {
     );
     // 첫 번째 이벤트 클릭
     const firstEvent = eventData.eventData[0];
-    const eventCard = await screen.findByTestId(`${firstEvent.id}-card-review`);
+    const eventCard = await screen.findByTestId(firstEvent.id);
     await userEvent.click(eventCard);
 
     const { sendViewLog } = await import('@/src/shared/utils/verifyViewId');
@@ -128,10 +128,10 @@ describe('Event Component', () => {
       />,
     );
 
-    const allTab = screen.getByText('전체');
-    const upcomingTab = screen.getByText('예정');
-    const ongoingTab = screen.getByText('진행중');
-    const endedTab = screen.getByText('종료');
+    const allTab = screen.getByRole('tab', { name: '전체' });
+    const upcomingTab = screen.getByRole('tab', { name: '예정' });
+    const ongoingTab = screen.getByRole('tab', { name: '진행중' });
+    const endedTab = screen.getByRole('tab', { name: '종료' });
 
     // 초기 상태는 '전체' 탭이 선택된 상태
     expect(allTab).toHaveAttribute('data-state', 'active');
@@ -149,7 +149,7 @@ describe('Event Component', () => {
     expect(endedTab).toHaveAttribute('data-state', 'active');
   });
 
-  it('cardView/tableView Button을 클릭했을 때 그에 맞게 UI가 변경되는지 확인', async () => {
+  it('모든 이벤트 카드가 올바른 testid로 렌더링되는지 확인', async () => {
     const eventData = await (await fetch('/api/event')).json();
     const userData: IUserResponseData = await (await fetch('/api/user')).json();
 
@@ -161,27 +161,8 @@ describe('Event Component', () => {
       />,
     );
 
-    // 초기 상태에서 CARD 모드가 활성화되어 있는지 확인
     for (const event of eventData.eventData) {
-      expect(await screen.findByTestId(`${event.id}-card-review`)).toBeInTheDocument();
-      expect(screen.queryByTestId(`${event.id}-table-review`)).not.toBeInTheDocument();
-    }
-
-    // TABLE 모드로 전환
-    await userEvent.click(screen.getByRole('button', { name: 'table-view-button' }));
-
-    // TABLE 모드가 활성화되었는지 확인
-    for (const event of eventData.eventData) {
-      expect(await screen.findByTestId(`${event.id}-table-review`)).toBeInTheDocument();
-      expect(screen.queryByTestId(`${event.id}-card-review`)).not.toBeInTheDocument();
-    }
-
-    // CARD 모드로 전환
-    await userEvent.click(screen.getByRole('button', { name: 'card-view-button' }));
-
-    for (const event of eventData.eventData) {
-      expect(await screen.findByTestId(`${event.id}-card-review`)).toBeInTheDocument();
-      expect(screen.queryByTestId(`${event.id}-table-review`)).not.toBeInTheDocument();
+      expect(await screen.findByTestId(event.id)).toBeInTheDocument();
     }
   });
 });

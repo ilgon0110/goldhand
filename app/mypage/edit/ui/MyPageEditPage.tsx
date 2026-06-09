@@ -2,12 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import type { IUserResponseData } from '@/src/shared/types';
+import { useGetMyPageData } from '@/src/entities/mypage';
+import { useUpdateMyPageMutation } from '@/src/feature/mypage';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
@@ -16,63 +16,40 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { myPageFormSchema } from '../config';
 
-type TMyPageEditPageProps = {
-  userData: IUserResponseData;
-};
-
-export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
+export const MyPageEditPage = () => {
+  const { data: myPageData } = useGetMyPageData();
+  const isLinked = myPageData.data.isLinked;
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: updateMyPage, isPending } = useUpdateMyPageMutation({
+    onSuccess: () => {
+      toastSuccess('정보가 수정되었습니다.\n잠시 후 마이페이지로 이동합니다.');
+      setTimeout(() => router.push('/mypage'), 1000);
+    },
+    onError: error => {
+      toastError(error.message || '정보 수정에 실패했습니다. 다시 시도해주세요.');
+    },
+  });
   const form = useForm<z.infer<typeof myPageFormSchema>>({
     resolver: zodResolver(myPageFormSchema),
     defaultValues: {
-      name: userData.userData?.name || '',
-      nickname: userData.userData?.nickname || '',
-      email: userData.userData?.email || '',
+      name: myPageData?.data.userData?.name || '',
+      nickname: myPageData?.data.userData?.nickname || '',
+      email: myPageData?.data.userData?.email || '',
     },
     mode: 'onChange',
   });
   const formValidation = form.formState.isValid;
 
-  const onSubmit = async (values: z.infer<typeof myPageFormSchema>) => {
+  const onSubmit = (values: z.infer<typeof myPageFormSchema>) => {
     if (!formValidation) return;
-    try {
-      setIsSubmitting(true);
-      const response = await (
-        await fetch('/api/mypage/update', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...values,
-            userId: userData.userData?.userId || '',
-          }),
-        })
-      ).json();
-
-      if (response.response === 'ok') {
-        toastSuccess('정보가 수정되었습니다.\n잠시 후 마이페이지로 이동합니다.');
-        setIsSubmitting(false);
-        setTimeout(() => {
-          router.push('/mypage');
-        }, 1000);
-      } else {
-        toastError(response.message || '정보 수정에 실패했습니다. 다시 시도해주세요.');
-        setIsSubmitting(false);
-      }
-    } catch {
-      toastError('정보 수정에 실패했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    updateMyPage({ ...values, userId: myPageData?.data.userData?.userId || '' });
   };
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
-          defaultValue={userData.userData?.name || ''}
+          defaultValue={myPageData?.data.userData?.name || ''}
           name="name"
           render={({ field }) => (
             <FormItem>
@@ -87,7 +64,7 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
         />
         <FormField
           control={form.control}
-          defaultValue={userData.userData?.nickname || ''}
+          defaultValue={myPageData?.data.userData?.nickname || ''}
           name="nickname"
           render={({ field }) => (
             <FormItem>
@@ -103,15 +80,15 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
 
         <FormField
           control={form.control}
-          defaultValue={userData?.userData?.email || ''}
+          defaultValue={myPageData?.data.userData?.email || ''}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>이메일</FormLabel>
               <FormControl>
-                <Input placeholder="이메일을 입력해주세요." {...field} />
+                <Input disabled={!isLinked} placeholder="이메일을 입력해주세요." {...field} />
               </FormControl>
-              <FormDescription></FormDescription>
+              {!isLinked && <FormDescription>본인인증이 완료된 사용자만 이메일을 수정할 수 있습니다.</FormDescription>}
               <FormMessage />
             </FormItem>
           )}
@@ -124,7 +101,7 @@ export const MyPageEditPage = ({ userData }: TMyPageEditPageProps) => {
           disabled={!formValidation}
           type="submit"
         >
-          {isSubmitting ? <LoadingSpinnerIcon /> : '정보수정'}
+          {isPending ? <LoadingSpinnerIcon /> : '정보수정'}
         </Button>
       </form>
     </Form>

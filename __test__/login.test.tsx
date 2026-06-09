@@ -6,7 +6,6 @@ import LoginPage from '@/app/login/page';
 import { RejoinModal } from '@/app/login/ui/RejoinModal';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
-import { apiUrl } from '@/src/shared/config';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
@@ -55,15 +54,15 @@ describe('Login Component', () => {
   it('렌더링 테스트. 카카오, 네이버 로그인 버튼이 렌더링된다', async () => {
     renderWithQueryClient(<LoginPage />);
 
-    expect(screen.getByText(/카카오톡 사업자 정보를 변경중이에요/)).toBeInTheDocument();
+    expect(screen.getByText('카카오로 로그인하기')).toBeInTheDocument();
     expect(screen.getByText('네이버로 로그인하기')).toBeInTheDocument();
   });
 
-  it('[카카오] 카카오 로그인 버튼은 점검 중으로 비활성화 상태이다', async () => {
+  it('[카카오] 카카오 로그인 버튼이 렌더링되고 활성화 상태이다', async () => {
     renderWithQueryClient(<LoginPage />);
 
-    const kakaoButton = screen.getByRole('button', { name: /카카오톡 사업자 정보를 변경중이에요/ });
-    expect(kakaoButton).toBeDisabled();
+    const kakaoButton = screen.getByRole('button', { name: /카카오로 로그인하기/ });
+    expect(kakaoButton).toBeEnabled();
   });
 
   it('[네이버] 로그인 버튼을 클릭하면 네이버 로그인 페이지로 이동한다', async () => {
@@ -76,132 +75,54 @@ describe('Login Component', () => {
   });
 
   it('[카카오] 로그인 실패 시 에러 메시지가 표시된다', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
     vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-      }),
+      useRouter: () => ({ push: pushMock, replace: replaceMock }),
       usePathname: () => '/login',
-      useSearchParams: () => new URLSearchParams('error=access_denied&error_description=로그인 실패 이유'),
+      useSearchParams: () => new URLSearchParams('kakao_error=로그인 실패 이유'),
       useParams: () => ({ shopId: 'shopId' }),
     }));
 
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
     const LoginPage = (await import('@/app/login/page')).default;
-
     renderWithQueryClient(<LoginPage />);
 
-    //await userEvent.click(kakaoButton);
     expect(utils.toastError).toHaveBeenCalledWith('로그인 실패 이유');
   });
 
   it('[네이버] 로그인 실패 시 에러 메시지가 표시된다', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
     vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-      }),
+      useRouter: () => ({ push: pushMock, replace: replaceMock }),
       usePathname: () => '/login',
-      // 네이버나 카카오나 오류 파라미터는 동일함
-      useSearchParams: () => new URLSearchParams('error=access_denied&error_description=로그인 실패 이유'),
+      useSearchParams: () => new URLSearchParams('naver_error=로그인 실패 이유'),
       useParams: () => ({ shopId: 'shopId' }),
     }));
 
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
     const LoginPage = (await import('@/app/login/page')).default;
-
     renderWithQueryClient(<LoginPage />);
 
-    //await userEvent.click(kakaoButton);
     expect(utils.toastError).toHaveBeenCalledWith('로그인 실패 이유');
   });
 
-  it('[카카오] 로그인 성공 시 메인 페이지로 리다이렉트된다.', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
-    const routerMock = vi.fn();
-    vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-        replace: routerMock,
-      }),
-      usePathname: () => '/login',
-      useSearchParams: () => new URLSearchParams('code=abc123&state=kakao'),
-      useParams: () => ({ shopId: 'shopId' }),
-    }));
-
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const LoginPage = (await import('@/app/login/page')).default;
-
-    renderWithQueryClient(<LoginPage />);
-
-    await waitFor(() => {
-      expect(routerMock).toHaveBeenCalledWith('/');
-    });
-  });
-
-  it('[네이버] 로그인 성공 시 메인 페이지로 리다이렉트된다.', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
-    const routerMock = vi.fn();
-    vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-        replace: routerMock,
-      }),
-      usePathname: () => '/login',
-      //state가 goldhand면 네이버 로그인
-      useSearchParams: () => new URLSearchParams('code=abc123&state=goldhand'),
-      useParams: () => ({ shopId: 'shopId' }),
-    }));
-
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
-    const LoginPage = (await import('@/app/login/page')).default;
-
-    renderWithQueryClient(<LoginPage />);
-
-    await waitFor(() => {
-      expect(routerMock).toHaveBeenCalledWith('/');
-    });
-  });
-
   it('[공통] 로그인을 시도한 유저가 탈퇴한 지 3년 이내 유저라면, 재가입 모달이 표시된다', async () => {
-    // 1. 해당 테스트에서만 useSearchParams 모킹
-    // oAuth로그인 처리가 다 끝난 후 Redirect URL로 리다이렉트된 상황 가정
-    const routerMock = vi.fn();
     vi.doMock('next/navigation', () => ({
-      useRouter: () => ({
-        push: pushMock,
-        replace: routerMock,
-      }),
+      useRouter: () => ({ push: pushMock, replace: replaceMock }),
       usePathname: () => '/login',
-      useSearchParams: () => new URLSearchParams('code=abc123&state=goldhand'),
+      useSearchParams: () => new URLSearchParams('rejoin=true'),
       useParams: () => ({ shopId: 'shopId' }),
     }));
 
     server.use(
-      http.post(`${apiUrl}/api/auth/naver`, async () => {
-        return HttpResponse.json(
-          {
-            response: 'rejoin',
-            message: '재가입 가능한 유저입니다.',
-            redirectTo: '/signup/rejoin',
-            user: null,
-            accessToken: null,
-            email: 'mock@example.com',
-            userData: mockUserData.userData,
-          },
-          { status: 409 },
-        );
+      http.get('/api/user/rejoin', async () => {
+        return HttpResponse.json({
+          response: 'ok',
+          message: '탈퇴 유저 정보 확인',
+          userData: mockUserData.userData,
+        });
       }),
     );
 
-    // 2. 모킹된 모듈로 LoginPage를 다시 import
     const LoginPage = (await import('@/app/login/page')).default;
-
     renderWithQueryClient(<LoginPage />);
+
     expect(await screen.findByText('고운황금손에 재가입하시겠습니까?')).toBeInTheDocument();
   });
 

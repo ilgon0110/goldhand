@@ -1,11 +1,14 @@
+import { QueryClient } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
+import { Suspense } from 'react';
 
 import { MyPagePage } from '@/app/mypage/ui/MyPagePage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { WithdrawalModal } from '@/src/feature/mypage/ui/WithdrawalModal';
+import { myPageKeys } from '@/src/shared/config/queryKeys';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { formatPhoneNumber } from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
@@ -49,30 +52,37 @@ vi.mock('@/src/feature/mypage/api/useWithdrawalMutation', () => ({
   }),
 }));
 
+async function renderMyPage(overrideData?: IMyPageResponseData) {
+  const data: IMyPageResponseData = overrideData ?? (await (await fetch('/api/mypage')).json());
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient.setQueryData(myPageKeys.all, data);
+  const result = renderWithQueryClient(
+    <Suspense fallback={null}>
+      <MyPagePage />
+    </Suspense>,
+    { queryClient },
+  );
+  return { ...result, queryClient, data };
+}
+
 describe('Mypage 컴포넌트 테스트', () => {
   it('렌더링 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    const { data } = await renderMyPage();
 
     expect(screen.getByText(/고운황금손 마이페이지/)).toBeInTheDocument();
     expect(screen.getByText('테스트 사용자')).toBeInTheDocument();
     expect(screen.getByText('testnick')).toBeInTheDocument();
     expect(screen.getByText(formatPhoneNumber('01012345678'))).toBeInTheDocument();
 
-    // applies는 null이므로 loop 미실행
-
-    // consults: 기본 탭(CONSULT)에서 표시됨
     for (const consult of data?.data?.consults ?? []) {
       expect(screen.getByTestId(consult.id)).toBeInTheDocument();
     }
 
-    // reviews: 후기 탭으로 이동 후 확인
     await userEvent.click(screen.getByRole('tab', { name: '후기' }));
     for (const review of data?.data?.reviews ?? []) {
       expect(screen.getByTestId(review.id)).toBeInTheDocument();
     }
 
-    // comments: 댓글 탭으로 이동 후 확인
     await userEvent.click(screen.getByRole('tab', { name: '댓글' }));
     for (const comment of data?.data?.comments ?? []) {
       expect(screen.getByTestId(comment.id)).toBeInTheDocument();
@@ -98,101 +108,92 @@ describe('Mypage 컴포넌트 테스트', () => {
       }),
     );
 
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    await renderMyPage();
 
-    // 기본 탭 (CONSULT)
     expect(screen.getByText('예약 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 예약을 추가해보세요.')).toBeInTheDocument();
 
-    // 후기 탭
     await userEvent.click(screen.getByRole('tab', { name: '후기' }));
     expect(screen.getByText('후기 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 후기를 추가해보세요.')).toBeInTheDocument();
 
-    // 댓글 탭
     await userEvent.click(screen.getByRole('tab', { name: '댓글' }));
     expect(screen.getByText('댓글 내역이 없습니다.')).toBeInTheDocument();
     expect(screen.getByText('새로운 댓글을 추가해보세요.')).toBeInTheDocument();
 
-    // 지원문의 탭
-    await userEvent.click(screen.getByRole('tab', { name: '지원문의' }));
+    await userEvent.click(screen.getByRole('tab', { name: '지원서' }));
     expect(screen.getByText('산후관리사 지원내역이 없습니다.')).toBeInTheDocument();
   });
 
   it('회원 등급에 따라 grade badge가 올바르게 표시되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    const { rerender } = renderWithQueryClient(<MyPagePage myPageData={data} />);
+    const { data, queryClient, rerender } = await renderMyPage();
 
     expect(screen.getByText('BASIC')).toBeInTheDocument();
     expect(screen.queryByText('ADMIN')).not.toBeInTheDocument();
 
-    // 관리자 등급 테스트
     const adminData: IMyPageResponseData = {
       ...data,
-      data: {
-        ...data.data,
-        userData: { ...data.data.userData!, grade: 'admin' },
-      },
+      data: { ...data.data, userData: { ...data.data.userData!, grade: 'admin' } },
     };
-    rerender(<MyPagePage myPageData={adminData} />);
+    queryClient.setQueryData(myPageKeys.all, adminData);
+    rerender(
+      <Suspense fallback={null}>
+        <MyPagePage />
+      </Suspense>,
+    );
     expect(screen.getByText('ADMIN')).toBeInTheDocument();
     expect(screen.queryByText('BASIC')).not.toBeInTheDocument();
   });
 
   it('가입한 OAuth provider에 따라 provider badge가 올바르게 표시되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    const { rerender } = renderWithQueryClient(<MyPagePage myPageData={data} />);
+    const { data, queryClient, rerender } = await renderMyPage();
 
     expect(screen.getByText('kakao')).toBeInTheDocument();
     expect(screen.queryByText('naver')).not.toBeInTheDocument();
 
     const naverProviderData: IMyPageResponseData = {
       ...data,
-      data: {
-        ...data.data,
-        userData: { ...data.data.userData!, provider: 'naver' },
-      },
+      data: { ...data.data, userData: { ...data.data.userData!, provider: 'naver' } },
     };
-    rerender(<MyPagePage myPageData={naverProviderData} />);
+    queryClient.setQueryData(myPageKeys.all, naverProviderData);
+    rerender(
+      <Suspense fallback={null}>
+        <MyPagePage />
+      </Suspense>,
+    );
     expect(screen.getByText('naver')).toBeInTheDocument();
     expect(screen.queryByText('kakao')).not.toBeInTheDocument();
   });
 
   it('전화번호 인증 상태에 따라 인증 badge가 올바르게 표시되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    const { rerender } = renderWithQueryClient(<MyPagePage myPageData={data} />);
+    const { data, queryClient, rerender } = await renderMyPage();
 
     expect(screen.getByText('미인증')).toBeInTheDocument();
     expect(screen.queryByText('인증완료')).not.toBeInTheDocument();
 
-    const linkedData: IMyPageResponseData = {
-      ...data,
-      data: {
-        ...data.data,
-        isLinked: true,
-      },
-    };
-    rerender(<MyPagePage myPageData={linkedData} />);
+    const linkedData: IMyPageResponseData = { ...data, data: { ...data.data, isLinked: true } };
+    queryClient.setQueryData(myPageKeys.all, linkedData);
+    rerender(
+      <Suspense fallback={null}>
+        <MyPagePage />
+      </Suspense>,
+    );
     expect(screen.getByText('인증완료')).toBeInTheDocument();
     expect(screen.queryByText('미인증')).not.toBeInTheDocument();
   });
 
   it('로그아웃 버튼 클릭 시 로그아웃 함수가 호출되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    await renderMyPage();
 
     const logoutButton = screen.getByRole('button', { name: '로그아웃' });
     expect(logoutButton).toBeInTheDocument();
 
-    // 로그아웃 버튼 클릭 시 로그아웃 함수가 호출되는지 테스트
     await userEvent.click(logoutButton);
     expect(logoutMock).toHaveBeenCalled();
   });
 
   it('정보수정 버튼 클릭 시 /mypage/edit으로 라우팅되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    await renderMyPage();
 
     const editButton = screen.getByRole('button', { name: '정보 수정' });
     expect(editButton).toBeInTheDocument();
@@ -202,8 +203,7 @@ describe('Mypage 컴포넌트 테스트', () => {
   });
 
   it('전화번호 인증 버튼 클릭 시 /signup/phone으로 라우팅되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    await renderMyPage();
 
     const phoneAuthButton = screen.getByRole('button', { name: '전화번호 인증' });
     expect(phoneAuthButton).toBeInTheDocument();
@@ -213,8 +213,7 @@ describe('Mypage 컴포넌트 테스트', () => {
   });
 
   it('회원탈퇴 버튼 클릭 시 회원탈퇴 모달이 열리는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    await renderMyPage();
 
     const withdrawButton = screen.getByRole('button', { name: '탈퇴' });
     expect(withdrawButton).toBeInTheDocument();
@@ -238,7 +237,6 @@ describe('Mypage 컴포넌트 테스트', () => {
     const setIsOpenMock = vi.fn();
     renderWithQueryClient(<WithdrawalModal isOpen={true} setIsOpen={setIsOpenMock} />);
 
-    // 약관동의 안하면 버튼명이 '개인정보 처리 방침에 동의해주세요'로 바뀌고 disabled
     const withdrawButton = screen.getByRole('button', { name: '개인정보 처리 방침에 동의해주세요' });
     expect(screen.queryByText('회원탈퇴')).not.toBeInTheDocument();
     expect(withdrawButton).toBeInTheDocument();
@@ -274,21 +272,14 @@ describe('Mypage 컴포넌트 테스트', () => {
     expect(withdrawMock).toHaveBeenCalled();
   });
 
-  // 관리자 계정 전용 테스트
   it('관리자 계정일 때 산후관리사 지원목록이 올바르게 표시되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-
-    // 관리자 등급 테스트
+    const baseData: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     const adminData: IMyPageResponseData = {
-      ...data,
-      data: {
-        ...data.data,
-        userData: { ...data.data.userData!, grade: 'admin' },
-      },
+      ...baseData,
+      data: { ...baseData.data, userData: { ...baseData.data.userData!, grade: 'admin' } },
     };
-    renderWithQueryClient(<MyPagePage myPageData={adminData} />);
+    await renderMyPage(adminData);
 
-    // 지원목록 탭으로 이동 후 확인
     await userEvent.click(screen.getByRole('tab', { name: '지원목록' }));
     expect(screen.getByRole('tab', { name: '지원목록' })).toHaveAttribute('data-state', 'active');
 
@@ -298,8 +289,7 @@ describe('Mypage 컴포넌트 테스트', () => {
   });
 
   it('관리자 계정이 아닐 때 산후관리사 지원목록이 표시되지 않는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-    renderWithQueryClient(<MyPagePage myPageData={data} />);
+    const { data } = await renderMyPage();
 
     expect(screen.queryByText('산후관리사 지원목록')).not.toBeInTheDocument();
 
@@ -309,19 +299,13 @@ describe('Mypage 컴포넌트 테스트', () => {
   });
 
   it('관리자 계정일 때 산후관리사 지원목록을 클릭하면 해당 지원서 상세페이지로 라우팅되는지 테스트', async () => {
-    const data: IMyPageResponseData = await (await fetch('/api/mypage')).json();
-
-    // 관리자 등급 테스트
+    const baseData: IMyPageResponseData = await (await fetch('/api/mypage')).json();
     const adminData: IMyPageResponseData = {
-      ...data,
-      data: {
-        ...data.data,
-        userData: { ...data.data.userData!, grade: 'admin' },
-      },
+      ...baseData,
+      data: { ...baseData.data, userData: { ...baseData.data.userData!, grade: 'admin' } },
     };
-    renderWithQueryClient(<MyPagePage myPageData={adminData} />);
+    await renderMyPage(adminData);
 
-    // 지원목록 탭으로 이동 후 확인
     await userEvent.click(screen.getByRole('tab', { name: '지원목록' }));
 
     for (const manager of adminData?.data?.managersData ?? []) {

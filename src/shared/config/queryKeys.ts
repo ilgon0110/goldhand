@@ -27,4 +27,12 @@ const eventKeys = {
   editDetail: (docId: string) => [...eventKeys.all, 'editDetail', { docId }] as const,
 };
 
-export { authKeys, eventKeys, notificationKeys, reviewKeys };
+const myPageKeys = {
+  all: ['myPage'] as const,
+};
+
+const userKeys = {
+  all: ['user'] as const,
+};
+
+export { authKeys, eventKeys, myPageKeys, notificationKeys, reviewKeys, userKeys };

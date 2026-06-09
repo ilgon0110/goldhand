@@ -93,7 +93,7 @@ export interface ICommentData {
 export interface IUserDetailData {
   phoneNumber: string;
   email: string;
-  grade: string;
+  grade: 'admin' | 'basic';
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   nickname: string;
   name: string;

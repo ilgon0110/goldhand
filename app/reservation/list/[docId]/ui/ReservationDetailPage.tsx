@@ -7,9 +7,10 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { useDeletePostMutation } from '@/src/entities/reservation';
+import { passwordPostAction, useDeletePostMutation, useGetReservationDetailData } from '@/src/entities/reservation';
+import { useGetUserData } from '@/src/entities/user';
+import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
-import type { IReservationResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/src/shared/ui/form';
@@ -24,16 +25,15 @@ import {
   ReservationCommentList,
   ReservationDetailContent,
 } from '@/src/widgets/reservation';
-import { passwordPostAction } from '@/src/widgets/reservation/api/passwordPostAction';
 
 type TReservationDetailPageProps = {
-  data: IReservationResponseData;
   docId: string;
-  userData: IUserResponseData;
-  viewCountData: IViewCountResponseData;
 };
 
-export const ReservationDetailPage = ({ data, docId, userData, viewCountData }: TReservationDetailPageProps) => {
+export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) => {
+  const { data } = useGetReservationDetailData(docId);
+  const { data: userData } = useGetUserData();
+  const { data: viewCountData } = useGetViewCountData(docId);
   const router = useRouter();
   const [updateButtonName, setUpdateButtonName] = useState<'DELETE' | 'EDIT'>('EDIT');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -167,7 +167,9 @@ export const ReservationDetailPage = ({ data, docId, userData, viewCountData }: 
       {/* 삭제 확인 알림 */}
       <MyAlertDialog
         description="삭제된 게시글은 복구할 수 없습니다."
-        handleDeletePostClick={() => mutate({ docId, userId: data.data.userId, password: passwordForm.getValues('password') })}
+        handleDeletePostClick={() =>
+          mutate({ docId, userId: data.data.userId, password: passwordForm.getValues('password') })
+        }
         isPending={isDeleteSubmitting}
         okButtonText="삭제하기"
         opOpenChange={open => setAlertDialogOpen(open)}

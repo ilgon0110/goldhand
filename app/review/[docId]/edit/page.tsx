@@ -1,23 +1,30 @@
+// app/review/[docId]/edit/page.tsx
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+
 import { getReviewDetailData } from '@/src/entities/review';
+import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import { ReviewEditPage } from './ui/ReviewEditPage';
 
 type TPageProps = {
-  params: { docId: string };
-  searchParams: { password: string };
+  params: Promise<{ docId: string }>;
 };
 
 export default async function Page({ params }: TPageProps) {
-  const { docId } = params;
+  const { docId } = await params;
+  const queryClient = new QueryClient();
 
-  const data = await getReviewDetailData({
-    docId,
+  await queryClient.fetchQuery({
+    queryKey: reviewKeys.detail(docId),
+    queryFn: () => getReviewDetailData({ docId }),
   });
 
   return (
-    <ImagesContext>
-      <ReviewEditPage data={data} docId={docId} />
-    </ImagesContext>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ImagesContext>
+        <ReviewEditPage docId={docId} />
+      </ImagesContext>
+    </HydrationBoundary>
   );
 }

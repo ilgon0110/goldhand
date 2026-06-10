@@ -2,32 +2,30 @@
 
 import { useQueryStates } from 'nuqs';
 
+import { useGetEventListData } from '@/src/entities/event';
+import { useGetUserData } from '@/src/entities/user';
 import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
-import type { IEventDetailData, IUserDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { EventCard, EventPageHeader } from '@/src/widgets/event';
 
-interface IEventPageProps {
-  eventData: IEventDetailData[];
-  userData: IUserDetailData | null;
-  totalDataLength: number;
-}
-
-export const EventPage = ({ eventData, userData, totalDataLength }: IEventPageProps) => {
+export const EventPage = () => {
   const [eventParam, setEventParam] = useQueryStates(eventParams, {
     clearOnDefault: false,
     shallow: false,
   });
 
+  const { data } = useGetEventListData({ page: eventParam.page, status: eventParam.status });
+  const { data: userResponse } = useGetUserData();
+
   return (
     <>
       <SectionTitleHero label="고운황금손 이벤트" />
-      <EventPageHeader isAdmin={userData?.grade === 'admin'} totalDataLength={totalDataLength} />
-      {eventData.length > 0 ? (
+      <EventPageHeader isAdmin={userResponse.userData?.grade === 'admin'} totalDataLength={data.totalDataLength} />
+      {data.eventData.length > 0 ? (
         <section className="mt-2">
-          {eventData.map(event => (
+          {data.eventData.map(event => (
             <EventCard event={event} key={event.id} />
           ))}
         </section>
@@ -38,7 +36,7 @@ export const EventPage = ({ eventData, userData, totalDataLength }: IEventPagePr
         <CustomPagination
           maxColumnNumber={10}
           targetPage={eventParam.page}
-          totalDataLength={totalDataLength}
+          totalDataLength={data.totalDataLength}
           onChangePage={page => setEventParam({ page })}
         />
       </section>

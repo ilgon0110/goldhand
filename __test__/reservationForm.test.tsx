@@ -1,10 +1,13 @@
+import { QueryClient } from '@tanstack/react-query';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
+import { Suspense } from 'react';
 
 import { ReservationFormPage } from '@/app/reservation/form/ui/ReservationFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
+import { userKeys } from '@/src/shared/config/queryKeys';
 import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
@@ -118,7 +121,14 @@ beforeAll(() => {
 describe('ReservationForm Component', () => {
   it('대리점 선택 Select 클릭 시 옵션이 제대로 선택되는지 확인', async () => {
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
     await userEvent.click(franchiseeTrigger);
@@ -135,14 +145,28 @@ describe('ReservationForm Component', () => {
     const nonMemberLink = screen.getByRole('link', { name: '비회원으로 문의하기' });
     expect(nonMemberLink).toHaveAttribute('href', '/reservation/form');
 
-    renderWithQueryClient(<ReservationFormPage userData={mockNonUserData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, mockNonUserData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
     expect(screen.queryByLabelText(/비밀번호/)).toBeInTheDocument();
   });
 
   it('[회원] 필수 입력값이 모두 입력되어야 제출 버튼이 활성화된다.', async () => {
     const user = userEvent.setup();
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const titleInput = screen.getByLabelText(/제목/);
     const serviceAreaInput = screen.getByLabelText(/서비스 이용 지역/);
@@ -173,7 +197,14 @@ describe('ReservationForm Component', () => {
       http.post('/api/reservation/create', handler),
     );
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const nameInput = screen.getByLabelText(/이름/);
     const phoneInput = screen.getByLabelText(/휴대폰번호/);
@@ -221,7 +252,14 @@ describe('ReservationForm Component', () => {
     );
 
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const titleInput = screen.getByLabelText(/제목/);
     const serviceAreaInput = screen.getByLabelText(/서비스 이용 지역/);
@@ -254,7 +292,14 @@ describe('ReservationForm Component', () => {
 
   it('제출 버튼을 눌렀을 때, 제출 도중 user session이 만료된 경우 해당 에러 메세지가 보이고 /login으로 이동하는지 확인', async () => {
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const titleInput = screen.getByLabelText(/제목/);
     const serviceAreaInput = screen.getByLabelText(/서비스 이용 지역/);
@@ -292,7 +337,14 @@ describe('ReservationForm Component', () => {
   it('[비회원] 필수 입력값이 모두 입력되어야 제출 버튼이 활성화된다.', async () => {
     server.use(http.get(`/api/user`, async () => HttpResponse.json(mockNonUserData)));
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const nameInput = screen.getByLabelText(/이름/);
     const phoneInput = screen.getByLabelText(/휴대폰번호/);
@@ -330,7 +382,14 @@ describe('ReservationForm Component', () => {
       http.post('/api/reservation/create', handler),
     );
     const userData = await (await fetch('/api/user')).json();
-    renderWithQueryClient(<ReservationFormPage userData={userData} />);
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
 
     const nameInput = screen.getByLabelText(/이름/);
     const phoneInput = screen.getByLabelText(/휴대폰번호/);

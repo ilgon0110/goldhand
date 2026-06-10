@@ -14,17 +14,17 @@ const authKeys = {
 
 const reviewKeys = {
   all: ['reviews'] as const,
+  lists: () => [...reviewKeys.all, 'list'] as const,
+  list: (params: { page: number; franchisee: string }) => [...reviewKeys.lists(), params] as const,
   carousel: () => [...reviewKeys.all, 'carousel'] as const,
   detail: (docId: string) => [...reviewKeys.all, 'detail', { docId }] as const,
-  editDetail: (docId: string) => [...reviewKeys.all, 'editDetail', { docId }] as const,
 };
 
 const eventKeys = {
   all: ['events'] as const,
   lists: () => [...eventKeys.all, 'list'] as const,
-  list: (category: string) => [...eventKeys.lists(), { category }] as const,
+  list: (params: { page: number; status: string }) => [...eventKeys.lists(), params] as const,
   detail: (docId: string) => [...eventKeys.all, 'detail', { docId }] as const,
-  editDetail: (docId: string) => [...eventKeys.all, 'editDetail', { docId }] as const,
 };
 
 const myPageKeys = {
@@ -35,4 +35,16 @@ const userKeys = {
   all: ['user'] as const,
 };
 
-export { authKeys, eventKeys, myPageKeys, notificationKeys, reviewKeys, userKeys };
+const reservationKeys = {
+  all: ['reservations'] as const,
+  lists: () => [...reservationKeys.all, 'list'] as const,
+  list: (params: { page: number; hideSecret: string }) => [...reservationKeys.lists(), params] as const,
+  detail: (docId: string) => [...reservationKeys.all, 'detail', { docId }] as const,
+};
+
+const viewCountKeys = {
+  all: ['viewCount'] as const,
+  detail: (docId: string) => [...viewCountKeys.all, 'detail', { docId }] as const,
+};
+
+export { authKeys, eventKeys, myPageKeys, notificationKeys, reservationKeys, reviewKeys, userKeys, viewCountKeys };

@@ -2,20 +2,24 @@
 
 import { useQueryStates } from 'nuqs';
 
-import { ReviewCard } from '@/src/entities/review';
+import { ReviewCard, useGetReviewListData } from '@/src/entities/review';
+import { useGetUserData } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
-import type { IReviewListResponseData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { ReviewPageHeader } from '@/src/widgets/review';
 
-export const ReviewPage = ({ data, isLogin }: { data: IReviewListResponseData; isLogin: boolean }) => {
+export const ReviewPage = () => {
   const [reviewParam, setReviewParam] = useQueryStates(reviewParams, {
     clearOnDefault: false,
     shallow: false,
   });
+
+  const { data } = useGetReviewListData({ page: reviewParam.page, franchisee: reviewParam.franchisee });
+  const { data: userData } = useGetUserData();
+  const isLogin = userData.userData != null;
 
   return (
     <>

@@ -11,5 +11,11 @@ export const getReviewDetailData = async ({ docId }: { docId: string }): Promise
     cache: 'no-store',
   });
 
-  return res.json();
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || 'API 요청 실패');
+  }
+
+  return data;
 };

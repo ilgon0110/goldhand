@@ -1,24 +1,29 @@
-'use client';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import { getEventDetailData } from '@/src/entities/event';
+import { eventKeys } from '@/src/shared/config/queryKeys';
 import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import { EventEditPage } from './ui/EventEditPage';
 
 type TPageProps = {
-  params: { docId: string };
-  searchParams: { password: string };
+  params: Promise<{ docId: string }>;
 };
 
 export default async function Page({ params }: TPageProps) {
-  const { docId } = params;
-  const data = await getEventDetailData({
-    docId,
+  const { docId } = await params;
+  const queryClient = new QueryClient();
+
+  await queryClient.fetchQuery({
+    queryKey: eventKeys.detail(docId),
+    queryFn: () => getEventDetailData({ docId }),
   });
 
   return (
-    <ImagesContext>
-      <EventEditPage data={data} docId={docId} />
-    </ImagesContext>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ImagesContext>
+        <EventEditPage docId={docId} />
+      </ImagesContext>
+    </HydrationBoundary>
   );
 }

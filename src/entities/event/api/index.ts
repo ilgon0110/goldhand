@@ -1,4 +1,5 @@
 export * from './loader';
 export * from './useEventFormMutation';
 export * from './useEventImageUpload';
-export * from './useGetEventData';
+export * from './useGetEventDetailData';
+export * from './useGetEventListData';

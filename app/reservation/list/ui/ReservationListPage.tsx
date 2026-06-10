@@ -4,24 +4,17 @@ import { useRouter } from 'next/navigation';
 import { useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
+import { useGetReservationListData } from '@/src/entities/reservation';
 import { reservationParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IReservationDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { formatDateToYMD } from '@/src/shared/utils';
 
-import { ReservationCard } from './ReservationCard';
-
 interface IConsultData extends IReservationDetailData {
   id: string;
 }
 
-type TReservationListPageProps = {
-  data: {
-    message: string;
-    consultData: IConsultData[] | null;
-    totalDataLength: number;
-  };
-};
+import { ReservationCard } from './ReservationCard';
 
 const LockIcon = () => (
   <svg className="h-[13px] w-[13px]" fill="currentColor" viewBox="0 -960 960 960">
@@ -51,12 +44,13 @@ const PlusIcon = () => (
 
 const formatDotDate = (dateStr: string) => dateStr.replace(/-/g, ' · ');
 
-export const ReservationListPage = ({ data }: TReservationListPageProps) => {
+export const ReservationListPage = () => {
   const router = useRouter();
   const [consultParam, setConsultParam] = useQueryStates(reservationParams, {
     clearOnDefault: false,
     shallow: false,
   });
+  const { data } = useGetReservationListData({ page: consultParam.page, hideSecret: consultParam.hideSecret });
 
   const isHideSecret = consultParam.hideSecret === 'true';
 
@@ -120,7 +114,7 @@ export const ReservationListPage = ({ data }: TReservationListPageProps) => {
       {/* 리스트 */}
       {data.consultData != null && data.consultData.length > 0 ? (
         <ul className="m-0 list-none p-0">
-          {data.consultData.map(item => (
+          {(data.consultData as IConsultData[]).map(item => (
             <ReservationCard
               author={item.userId ? '회원' : '비회원'}
               content={item.content}

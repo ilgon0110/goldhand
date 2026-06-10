@@ -6,9 +6,8 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { reviewFormSchema, useReviewFormMutation } from '@/src/entities/review';
+import { reviewFormSchema, useGetReviewDetailData, useReviewFormMutation } from '@/src/entities/review';
 import { franchiseeList } from '@/src/shared/config';
-import type { IReviewResponseData } from '@/src/shared/types';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -29,10 +28,10 @@ import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 type TReviewEditPageProps = {
   docId: string;
-  data: IReviewResponseData;
 };
 
-export const ReviewEditPage = ({ docId, data }: TReviewEditPageProps) => {
+export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
+  const { data } = useGetReviewDetailData(docId);
   const form = useForm<z.infer<typeof reviewFormSchema>>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {

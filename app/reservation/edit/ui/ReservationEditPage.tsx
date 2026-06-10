@@ -8,8 +8,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
+import { useGetReservationDetailData } from '@/src/entities/reservation';
+import { useGetUserData } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
-import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Calendar } from '@/src/shared/ui/calendar';
 import { Checkbox } from '@/src/shared/ui/checkbox';
@@ -24,27 +25,21 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { useReservationEditForm } from '../lib';
 
-export const ReservationEditPage = ({
-  userData,
-  consultDetailData,
-}: {
-  userData: IUserResponseData;
-  consultDetailData: IReservationResponseData;
-}) => {
+export const ReservationEditPage = ({ docId }: { docId: string }) => {
+  const { data: consultDetailData } = useGetReservationDetailData(docId);
+  const { data: userData } = useGetUserData();
   const router = useRouter();
 
   const {
     form,
-    docId,
     onSubmit,
     isPending: isSubmitting,
   } = useReservationEditForm({
     consultDetailData,
     userData,
     onSuccess: () => {
-      toastSuccess('상담 수정이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
+      toastSuccess('상담 수정이 완료되었습니다.');
       router.replace(`/reservation/list/${docId}`);
-      router.refresh();
     },
     onError: () => {
       toastError(`상담 수정에 실패했습니다.`);

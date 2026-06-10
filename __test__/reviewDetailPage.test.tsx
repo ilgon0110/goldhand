@@ -1,10 +1,13 @@
+import { QueryClient } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
+import { Suspense } from 'react';
 
 import { ReviewDetailPage } from '@/app/review/[docId]/ui/ReviewDetailPage';
 import { server } from '@/src/__mock__/node';
-import type { IViewCountResponseData } from '@/src/shared/types';
+import { reviewKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
+import type { IReviewResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
@@ -19,30 +22,18 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-vi.mock('@/src/entities/comment', () => {
-  return {
-    Comment: () => <div>Comment Mock Component</div>,
-    useComments: () => ({
-      comments: [],
-      loading: false,
-    }),
-  };
-});
+vi.mock('@/src/entities/comment', () => ({
+  Comment: () => <div>Comment Mock Component</div>,
+  useComments: () => ({ comments: [], loading: false }),
+}));
 
-vi.mock('@/src/widgets/editor/ui/Editor', () => {
-  return {
-    Editor: () => <div>Editor Mock Component</div>,
-  };
-});
+vi.mock('@/src/widgets/editor/ui/Editor', () => ({
+  Editor: () => <div>Editor Mock Component</div>,
+}));
 
 vi.mock('@/src/shared/utils', async () => {
-  // 원본 모듈 import
   const actual = await vi.importActual('@/src/shared/utils');
-  return {
-    ...actual,
-    toastSuccess: vi.fn(),
-    toastError: vi.fn(),
-  };
+  return { ...actual, toastSuccess: vi.fn(), toastError: vi.fn() };
 });
 
 const mockViewCountData: IViewCountResponseData = {
@@ -51,13 +42,24 @@ const mockViewCountData: IViewCountResponseData = {
   data: { totalViewCount: 100 },
 };
 
+async function renderReviewDetail(reviewData: IReviewResponseData, userData: IUserResponseData) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient.setQueryData(reviewKeys.detail('docId'), reviewData);
+  queryClient.setQueryData(userKeys.all, userData);
+  queryClient.setQueryData(viewCountKeys.detail('docId'), mockViewCountData);
+  return renderWithQueryClient(
+    <Suspense fallback={null}>
+      <ReviewDetailPage docId="docId" />
+    </Suspense>,
+    { queryClient },
+  );
+}
+
 describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('렌더링 테스트', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    renderWithQueryClient(
-      <ReviewDetailPage data={reviewData} docId="docId" userData={userData} viewCountData={mockViewCountData} />,
-    );
+    await renderReviewDetail(reviewData, userData);
 
     expect(screen.getByText('Test Title')).toBeInTheDocument();
   });
@@ -65,9 +67,7 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('수정하기 버튼을 눌렀을 때 확인 모달이 뜨고, 확인을 누르면 수정 페이지로 이동한다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    renderWithQueryClient(
-      <ReviewDetailPage data={reviewData} docId="docId" userData={userData} viewCountData={mockViewCountData} />,
-    );
+    await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '수정하기' }));
     expect(screen.getByText('게시글 수정')).toBeInTheDocument();
@@ -79,9 +79,7 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('삭제하기 버튼을 눌렀을 때 확인 모달이 뜨고, 취소를 누르면 모달이 닫힌다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    renderWithQueryClient(
-      <ReviewDetailPage data={reviewData} docId="docId" userData={userData} viewCountData={mockViewCountData} />,
-    );
+    await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
     expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
@@ -98,27 +96,20 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
       const { docId, userId } = (await request.json()) as { docId: string; userId: string };
       if (docId !== 'docId' || userId !== userData.userData.userId) {
         return HttpResponse.json(
-          {
-            response: 'ng',
-            message: '게시글 정보와 유저 정보가 일치하지 않습니다.',
-          },
+          { response: 'ng', message: '게시글 정보와 유저 정보가 일치하지 않습니다.' },
           { status: 400 },
         );
       }
-
       return HttpResponse.json({ response: 'ok', message: '삭제 성공' });
     });
     server.use(http.delete('/api/review/delete', handler));
-    renderWithQueryClient(
-      <ReviewDetailPage data={reviewData} docId="docId" userData={userData} viewCountData={mockViewCountData} />,
-    );
+    await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
     expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
 
-    //expect(handler).toHaveBeenCalledWith('/api/review/delete', expect.any(Object));
     await waitFor(async () => {
       expect(handler).toHaveBeenCalled();
       const req = handler.mock.calls as unknown as { request: Request }[][];
@@ -134,28 +125,18 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
       const { docId, userId } = (await request.json()) as { docId: string; userId: string };
       if (docId !== 'docId' || userId !== userData.userData.userId) {
         return HttpResponse.json(
-          {
-            response: 'ng',
-            message: '게시글 정보와 유저 정보가 일치하지 않습니다.',
-          },
+          { response: 'ng', message: '게시글 정보와 유저 정보가 일치하지 않습니다.' },
           { status: 400 },
         );
       }
-
       return HttpResponse.json({ response: 'ok', message: '삭제 성공' });
     });
     server.use(http.delete('/api/review/delete', handler));
-    renderWithQueryClient(
-      <ReviewDetailPage data={reviewData} docId="docId" userData={userData} viewCountData={mockViewCountData} />,
-    );
+    await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
-    expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
-
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
 
-    // 삭제가 성공하면 리뷰 목록 페이지로 이동
-    // 모달이 닫히고 나서 push가 호출되므로, 약간의 딜레이를 줌
     await waitFor(() => {
       expect(replaceMock).toHaveBeenCalledWith('/review');
     });
@@ -164,23 +145,14 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('게시글 삭제가 실패하면 api의 에러 메시지가 표시된다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    const handler = vi.fn(async () => {
-      return HttpResponse.json(
-        {
-          response: 'ng',
-          message: '게시글 정보와 유저 정보가 일치하지 않습니다.',
-        },
-        { status: 400 },
-      );
-    });
-    server.use(http.delete('/api/review/delete', handler));
-    renderWithQueryClient(
-      <ReviewDetailPage data={reviewData} docId="docId" userData={userData} viewCountData={mockViewCountData} />,
+    server.use(
+      http.delete('/api/review/delete', async () =>
+        HttpResponse.json({ response: 'ng', message: '게시글 정보와 유저 정보가 일치하지 않습니다.' }, { status: 400 }),
+      ),
     );
+    await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
-    expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
-
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
 
     await waitFor(() => {

@@ -1,23 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-
 import { cn } from '@/lib/utils';
-import type { IMyPageResponseData } from '@/src/shared/types';
+import { DEFAULT_ALARM_SETTINGS, useUpdateKakaoAlarmSettingMutation } from '@/src/entities/mypage';
+import type { IKakaoAlarmSettings, IMyPageResponseData } from '@/src/shared/types';
 import { Switch } from '@/src/shared/ui/switch';
+import { toastError, toastSuccess } from '@/src/shared/utils';
 
 interface IMyPageKaKaoAlarmSettingProps {
   myPageData: IMyPageResponseData;
 }
 
-interface IAlarmState {
-  comment: boolean;
-  news: boolean;
-  newPost: boolean;
-  editPost: boolean;
-  newComment: boolean;
-  editComment: boolean;
-}
+const ALARM_LABELS: Record<keyof IKakaoAlarmSettings, string> = {
+  alarmComment: '댓글',
+  alarmNews: '소식',
+  alarmNewPost: '새 게시글',
+  alarmEditPost: '게시글 수정',
+  alarmNewComment: '댓글 생성',
+  alarmEditComment: '댓글 수정',
+};
 
 interface INotifyRowProps {
   title: string;
@@ -42,17 +42,28 @@ const NotifyRow = ({ title, help, checked, onCheckedChange: handleCheckedChange 
 
 export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSettingProps) => {
   const isAdmin = myPageData.data.userData?.grade === 'admin';
+  const alarms: IKakaoAlarmSettings = {
+    ...DEFAULT_ALARM_SETTINGS,
+    ...myPageData.data.userData?.kakaoAlarmSettings,
+  };
 
-  const [alarms, setAlarms] = useState<IAlarmState>({
-    comment: true,
-    news: true,
-    newPost: true,
-    editPost: false,
-    newComment: true,
-    editComment: false,
+  const { mutate } = useUpdateKakaoAlarmSettingMutation({
+    onSuccess: (_, vars) => {
+      const label = ALARM_LABELS[vars.key];
+      if (vars.value) {
+        toastSuccess(`${label}알람 수신 동의 완료되었습니다.`);
+      } else {
+        toastSuccess(`${label}알람 수신 거부 완료되었습니다.`);
+      }
+    },
+    onError: err => {
+      toastError(err.message || '알람 설정 도중 에러가 발생하였습니다.');
+    },
   });
 
-  const handleToggle = (key: keyof IAlarmState) => (v: boolean) => setAlarms(prev => ({ ...prev, [key]: v }));
+  const handleToggle = (key: keyof IKakaoAlarmSettings) => (value: boolean) => {
+    mutate({ key, value });
+  };
 
   return (
     <section aria-label="카카오톡 알림 설정" className={cn('mt-6 px-4', 'md:px-0')}>
@@ -79,16 +90,16 @@ export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSetting
           </div>
           <div className="px-5">
             <NotifyRow
-              checked={alarms.comment}
+              checked={alarms.alarmComment}
               help="내 게시글이나 댓글에 누군가 댓글을 달면 알림을 보내드려요."
               title="댓글 알림 받기"
-              onCheckedChange={handleToggle('comment')}
+              onCheckedChange={handleToggle('alarmComment')}
             />
             <NotifyRow
-              checked={alarms.news}
+              checked={alarms.alarmNews}
               help="새 소식, 이벤트, 공지사항을 알림으로 알려드려요."
               title="고운황금손 소식 받기"
-              onCheckedChange={handleToggle('news')}
+              onCheckedChange={handleToggle('alarmNews')}
             />
           </div>
         </div>
@@ -122,28 +133,28 @@ export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSetting
             </div>
             <div className="px-5">
               <NotifyRow
-                checked={alarms.newPost}
+                checked={alarms.alarmNewPost}
                 help="새 게시글이 등록되면 알림을 보내드려요."
                 title="새 게시글 알림 받기"
-                onCheckedChange={handleToggle('newPost')}
+                onCheckedChange={handleToggle('alarmNewPost')}
               />
               <NotifyRow
-                checked={alarms.editPost}
+                checked={alarms.alarmEditPost}
                 help="게시글이 수정되면 알림을 보내드려요."
                 title="게시글 수정 알림 받기"
-                onCheckedChange={handleToggle('editPost')}
+                onCheckedChange={handleToggle('alarmEditPost')}
               />
               <NotifyRow
-                checked={alarms.newComment}
+                checked={alarms.alarmNewComment}
                 help="새 댓글이 생성되면 알림을 보내드려요."
                 title="댓글 생성 알림 받기"
-                onCheckedChange={handleToggle('newComment')}
+                onCheckedChange={handleToggle('alarmNewComment')}
               />
               <NotifyRow
-                checked={alarms.editComment}
+                checked={alarms.alarmEditComment}
                 help="댓글이 수정되면 알림을 보내드려요."
                 title="댓글 수정 알림 받기"
-                onCheckedChange={handleToggle('editComment')}
+                onCheckedChange={handleToggle('alarmEditComment')}
               />
             </div>
           </div>

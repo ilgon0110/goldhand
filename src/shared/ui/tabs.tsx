@@ -12,8 +12,6 @@ const TabsList = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> & { variant?: 'default' | 'line' }
 >(({ className, variant = 'default', ...props }, ref) => (
   <TabsPrimitive.List
-    ref={ref}
-    data-variant={variant}
     className={cn(
       'group',
       variant === 'default' &&
@@ -22,6 +20,8 @@ const TabsList = React.forwardRef<
         'flex overflow-x-auto border-b border-stone-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
       className,
     )}
+    data-variant={variant}
+    ref={ref}
     {...props}
   />
 ));
@@ -32,7 +32,6 @@ const TabsTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Trigger
-    ref={ref}
     className={cn(
       // 공통
       'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium',
@@ -58,6 +57,7 @@ const TabsTrigger = React.forwardRef<
 
       className,
     )}
+    ref={ref}
     {...props}
   />
 ));
@@ -68,11 +68,11 @@ const TabsContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
-    ref={ref}
     className={cn(
       'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       className,
     )}
+    ref={ref}
     {...props}
   />
 ));

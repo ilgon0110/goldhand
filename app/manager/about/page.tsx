@@ -71,9 +71,9 @@ const Page = () => {
             'md:text-3xl',
           )}
         >
-          산모님의 가장 회복이 중요한 시기,
+          산모님의 회복이 가장 중요한 시기,
           <br />
-          믿을 수 있는 손길이 가정으로 찾아갑니다.
+          고운황금손이 가정으로 찾아갑니다.
         </p>
         <div className="mt-[22px] text-[11px] tracking-[0.32em] text-gold">─── 고운황금손의 약속 ───</div>
       </div>
@@ -257,7 +257,7 @@ const Page = () => {
         <p className={cn(`${gowunDodumFont.className} break-keep text-lg leading-[1.7] text-stone-700`, 'md:text-xl')}>
           산모님의 가장 고운 시기에,
           <br />
-          가장 다정한 손길이 함께합니다.
+          고운황금손의 다정한 손길이 함께합니다.
         </p>
         <p className="mt-7 text-[11px] tracking-[0.4em] text-gold">─── 고운황금손 ───</p>
       </div>

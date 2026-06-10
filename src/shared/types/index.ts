@@ -90,6 +90,15 @@ export interface ICommentData {
 }
 
 // 사용자(User) 관련 타입 정의
+export interface IKakaoAlarmSettings {
+  alarmComment: boolean;
+  alarmNews: boolean;
+  alarmNewPost: boolean;
+  alarmEditPost: boolean;
+  alarmNewComment: boolean;
+  alarmEditComment: boolean;
+}
+
 export interface IUserDetailData {
   phoneNumber: string;
   email: string;
@@ -105,6 +114,7 @@ export interface IUserDetailData {
   kakaoId: string | null;
   kakaoEmail: string | null;
   fcmTokens?: string[] | null;
+  kakaoAlarmSettings?: IKakaoAlarmSettings;
 }
 
 export interface IUserResponseData {

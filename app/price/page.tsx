@@ -7,7 +7,7 @@ const PricePage = () => {
   return (
     <>
       <SectionTitleHero label="고운황금손 이용요금" />
-      <div className={cn('flex flex-col justify-center gap-20', 'lg:flex-row')}>
+      <div className={cn('flex flex-col gap-20', 'lg:flex-row lg:justify-between')}>
         <div>
           <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">출퇴근형</div>
           <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">산후관리사가 산모 집으로 방문해요.</div>
@@ -44,7 +44,7 @@ const PricePage = () => {
         </div>
       </div>
       <div className="mt-10 h-[1px] w-full bg-slate-200" />
-      <div className={cn('flex flex-col justify-center gap-20', 'lg:flex-row')}>
+      <div className={cn('flex flex-col gap-20', 'lg:flex-row lg:justify-between')}>
         <div>
           <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">오전, 오후 돌봄</div>
           <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">오전 및 오후에만 돌봐드려요.</div>
@@ -73,7 +73,7 @@ const PricePage = () => {
         09:00 ~ 15:00 / 10:00 ~ 16:00 (근무시간 외 1시간 당 20,000원)
       </div>
       {/* 요금 안내 표 */}
-      <div className="mt-6 w-full overflow-x-auto">
+      <div className="mx-auto mt-6 w-full overflow-x-auto">
         <table className="w-full min-w-[600px] border border-gray-300 text-center text-sm md:text-base">
           <thead>
             <tr>

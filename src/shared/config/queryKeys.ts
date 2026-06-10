@@ -23,9 +23,8 @@ const reviewKeys = {
 const eventKeys = {
   all: ['events'] as const,
   lists: () => [...eventKeys.all, 'list'] as const,
-  list: (category: string) => [...eventKeys.lists(), { category }] as const,
+  list: (params: { page: number; status: string }) => [...eventKeys.lists(), params] as const,
   detail: (docId: string) => [...eventKeys.all, 'detail', { docId }] as const,
-  editDetail: (docId: string) => [...eventKeys.all, 'editDetail', { docId }] as const,
 };
 
 const myPageKeys = {

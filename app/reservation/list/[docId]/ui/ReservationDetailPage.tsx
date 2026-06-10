@@ -7,7 +7,7 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { useDeletePostMutation, useGetReservationDetailData } from '@/src/entities/reservation';
+import { passwordPostAction, useDeletePostMutation, useGetReservationDetailData } from '@/src/entities/reservation';
 import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
@@ -25,7 +25,6 @@ import {
   ReservationCommentList,
   ReservationDetailContent,
 } from '@/src/widgets/reservation';
-import { passwordPostAction } from '@/src/widgets/reservation/api/passwordPostAction';
 
 type TReservationDetailPageProps = {
   docId: string;

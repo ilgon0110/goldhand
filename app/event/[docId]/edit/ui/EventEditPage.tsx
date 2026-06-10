@@ -6,8 +6,7 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { cn } from '@/lib/utils';
-import { eventFormSchema, useEventFormMutation } from '@/src/entities/event';
-import type { IEventResponseData } from '@/src/shared/types';
+import { eventFormSchema, useEventFormMutation, useGetEventDetailData } from '@/src/entities/event';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -28,10 +27,10 @@ import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 type TEventEditPageProps = {
   docId: string;
-  data: IEventResponseData;
 };
 
-export const EventEditPage = ({ docId, data }: TEventEditPageProps) => {
+export const EventEditPage = ({ docId }: TEventEditPageProps) => {
+  const { data } = useGetEventDetailData(docId);
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {

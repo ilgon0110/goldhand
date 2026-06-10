@@ -8,10 +8,10 @@ import type z from 'zod';
 
 import { cn } from '@/lib/utils';
 import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
-import { eventCommentSchema } from '@/src/entities/event';
-import { useEventDeleteMutation } from '../api/useEventDeleteMutation';
+import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event';
+import { useGetUserData } from '@/src/entities/user';
+import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
-import type { IEventResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
@@ -22,14 +22,16 @@ import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
+import { useEventDeleteMutation } from '../api/useEventDeleteMutation';
+
 type TEventDetailPageProps = {
-  data: IEventResponseData;
   docId: string;
-  userData: IUserResponseData;
-  viewCountData: IViewCountResponseData;
 };
 
-export const EventDetailPage = ({ data, docId, userData, viewCountData }: TEventDetailPageProps) => {
+export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
+  const { data } = useGetEventDetailData(docId);
+  const { data: userData } = useGetUserData();
+  const { data: viewCountData } = useGetViewCountData(docId);
   const router = useRouter();
   const { comments } = useComments({
     docId,

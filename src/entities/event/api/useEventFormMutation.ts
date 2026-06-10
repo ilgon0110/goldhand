@@ -2,13 +2,14 @@
 
 import { $generateHtmlFromNodes } from '@lexical/html';
 import type { UseMutationOptions } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { LexicalEditor } from 'lexical';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
+import { eventKeys } from '@/src/shared/config/queryKeys';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
@@ -43,6 +44,7 @@ export const useEventFormMutation = (
   dId?: string,
   options?: UseMutationOptions<IEventPostData, Error, IEventFormMutationProps>,
 ) => {
+  const queryClient = useQueryClient();
   const [eventFormEditor, setEventFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
   const { data: userData } = useAuth();
@@ -59,6 +61,7 @@ export const useEventFormMutation = (
         cache: 'no-store',
       }),
     onSuccess: res => {
+      queryClient.invalidateQueries({ queryKey: eventKeys.all });
       toastSuccess('이벤트가 성공적으로 업로드되었습니다.\n잠시 후 작성한 이벤트 페이지로 이동합니다.');
       setTimeout(() => {
         router.replace(`/event/${res.docId}`);

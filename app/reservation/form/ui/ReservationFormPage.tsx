@@ -7,8 +7,8 @@ import { CalendarIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
+import { useGetUserData } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
-import type { IUserResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Calendar } from '@/src/shared/ui/calendar';
 import { Checkbox } from '@/src/shared/ui/checkbox';
@@ -22,7 +22,8 @@ import { Textarea } from '@/src/shared/ui/textarea';
 
 import { useReservationCreateForm } from '../lib';
 
-export const ReservationFormPage = ({ userData }: { userData: IUserResponseData }) => {
+export const ReservationFormPage = () => {
+  const { data: userData } = useGetUserData();
   const {
     form,
     onSubmit,

@@ -35,4 +35,16 @@ const userKeys = {
   all: ['user'] as const,
 };
 
-export { authKeys, eventKeys, myPageKeys, notificationKeys, reviewKeys, userKeys };
+const reservationKeys = {
+  all: ['reservations'] as const,
+  lists: () => [...reservationKeys.all, 'list'] as const,
+  list: (params: { page: number; hideSecret: string }) => [...reservationKeys.lists(), params] as const,
+  detail: (docId: string) => [...reservationKeys.all, 'detail', { docId }] as const,
+};
+
+const viewCountKeys = {
+  all: ['viewCount'] as const,
+  detail: (docId: string) => [...viewCountKeys.all, 'detail', { docId }] as const,
+};
+
+export { authKeys, eventKeys, myPageKeys, notificationKeys, reservationKeys, reviewKeys, userKeys, viewCountKeys };

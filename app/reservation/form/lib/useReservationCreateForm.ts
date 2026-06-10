@@ -60,13 +60,9 @@ export const useReservationCreateForm = ({ userData, onSuccess, onError }: IUseR
             values.password ? passwordPostAction(data.docId, values.password) : Promise.resolve(),
             sendViewLog(data.docId),
           ]);
-          toastSuccess('상담 신청이 완료되었습니다.\n잠시 후 작성글 페이지로 이동합니다.');
+          toastSuccess('상담 신청이 완료되었습니다.');
+          router.replace(`/reservation/list/${data.docId}`);
           // 비밀번호 입력된 경우 비밀번호 검증 jwt 쿠키 저장
-          // 3초 후에 페이지 이동
-          setTimeout(() => {
-            router.replace(`/reservation/list/${data.docId}`);
-            router.refresh();
-          }, 3000);
 
           if (onSuccess) onSuccess();
         },

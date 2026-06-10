@@ -14,9 +14,10 @@ const authKeys = {
 
 const reviewKeys = {
   all: ['reviews'] as const,
+  lists: () => [...reviewKeys.all, 'list'] as const,
+  list: (params: { page: number; franchisee: string }) => [...reviewKeys.lists(), params] as const,
   carousel: () => [...reviewKeys.all, 'carousel'] as const,
   detail: (docId: string) => [...reviewKeys.all, 'detail', { docId }] as const,
-  editDetail: (docId: string) => [...reviewKeys.all, 'editDetail', { docId }] as const,
 };
 
 const eventKeys = {

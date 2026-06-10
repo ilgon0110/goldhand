@@ -8,8 +8,10 @@ import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { Comment, useComments } from '@/src/entities/comment';
+import { useGetReviewDetailData } from '@/src/entities/review';
+import { useGetUserData } from '@/src/entities/user';
+import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
-import type { IReviewResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
@@ -24,13 +26,13 @@ import { useReviewDeleteMutation, useReviewDetailCommentMutation } from '../api'
 import { reviewCommentSchema } from '../config';
 
 type TReviewDetailPageProps = {
-  data: IReviewResponseData;
   docId: string;
-  userData: IUserResponseData;
-  viewCountData: IViewCountResponseData;
 };
 
-export const ReviewDetailPage = ({ data, docId, userData, viewCountData }: TReviewDetailPageProps) => {
+export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
+  const { data } = useGetReviewDetailData(docId);
+  const { data: userData } = useGetUserData();
+  const { data: viewCountData } = useGetViewCountData(docId);
   const form = useForm<z.infer<typeof reviewCommentSchema>>({
     resolver: zodResolver(reviewCommentSchema),
     defaultValues: {

@@ -2,13 +2,14 @@
 
 import { $generateHtmlFromNodes } from '@lexical/html';
 import type { UseMutationOptions } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { LexicalEditor } from 'lexical';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
+import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
@@ -48,6 +49,7 @@ export const useReviewFormMutation = (
   const { data: userData } = useAuth();
   const router = useRouter();
 
+  const queryClient = useQueryClient();
   const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useReviewImageUpload();
 
   const { mutate, isPending } = useMutation({
@@ -59,6 +61,7 @@ export const useReviewFormMutation = (
         cache: 'no-store',
       }),
     onSuccess: res => {
+      queryClient.invalidateQueries({ queryKey: reviewKeys.all });
       toastSuccess('후기가 성공적으로 업로드되었습니다.\n잠시 후 작성후기로 이동합니다.');
       setTimeout(() => {
         router.replace(`/review/${res.docId}`);

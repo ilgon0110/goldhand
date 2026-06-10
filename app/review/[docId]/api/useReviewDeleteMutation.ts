@@ -1,6 +1,7 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 interface IResponseBody {
@@ -14,6 +15,8 @@ interface IDeletePayload {
 }
 
 export const useReviewDeleteMutation = (options?: UseMutationOptions<IResponseBody, Error, IDeletePayload>) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: IDeletePayload) =>
       fetcher<IResponseBody>('/api/review/delete', {
@@ -22,6 +25,9 @@ export const useReviewDeleteMutation = (options?: UseMutationOptions<IResponseBo
         body: JSON.stringify(payload),
         cache: 'no-store',
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: reviewKeys.all });
+    },
     ...options,
   });
 };

@@ -114,7 +114,7 @@ export interface IUserDetailData {
   kakaoId: string | null;
   kakaoEmail: string | null;
   fcmTokens?: string[] | null;
-  kakaoAlarmSettings?: IKakaoAlarmSettings;
+  kakaoAlarmSettings: IKakaoAlarmSettings;
 }
 
 export interface IUserResponseData {

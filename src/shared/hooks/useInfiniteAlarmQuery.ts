@@ -15,5 +15,6 @@ export const useInfiniteAlarmQuery = (userId: string) => {
     initialPageParam: 1,
     getNextPageParam: lastPage => lastPage.nextCursor,
     enabled: !!userId,
+    refetchInterval: 1000 * 30, // 30초마다 새로고침
   });
 };

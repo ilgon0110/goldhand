@@ -30,6 +30,14 @@ async function saveUserProfile(uid: string, email: string) {
     deletedAt: null,
     kakaoId: uid,
     kakaoEmail: email,
+    kakaoAlarmSettings: {
+      alarmComment: false,
+      alarmNews: false,
+      alarmNewPost: false,
+      alarmEditPost: false,
+      alarmNewComment: false,
+      alarmEditComment: false,
+    },
   };
   await setDoc(doc(db, 'users', uid), defaultUserData);
 }

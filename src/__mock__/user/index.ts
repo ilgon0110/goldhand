@@ -28,6 +28,14 @@ export const mockUserData: {
     provider: 'kakao',
     kakaoId: 'kakao-test-id',
     kakaoEmail: 'kakao-test@example.com',
+    kakaoAlarmSettings: {
+      alarmComment: true,
+      alarmNews: false,
+      alarmNewPost: true,
+      alarmEditPost: false,
+      alarmNewComment: true,
+      alarmEditComment: false,
+    },
   },
   isLinked: true,
 };

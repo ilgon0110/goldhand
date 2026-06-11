@@ -1,5 +1,8 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
+
 import { cn } from '@/lib/utils';
 import { DEFAULT_ALARM_SETTINGS, useUpdateKakaoAlarmSettingMutation } from '@/src/entities/mypage';
 import type { IKakaoAlarmSettings, IMyPageResponseData } from '@/src/shared/types';
@@ -40,6 +43,34 @@ const NotifyRow = ({ title, help, checked, onCheckedChange: handleCheckedChange 
   </div>
 );
 
+const KakaoAlarmLinkFallback = () => (
+  <section aria-label="카카오톡 알림 설정" className={cn('mt-6 px-4', 'md:px-0')}>
+    <div className="mb-5">
+      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-stone-900">카카오톡 알림 설정</h2>
+      <p className="mt-1 text-[13.5px] text-stone-500">받고 싶은 알림만 켜고 끄세요. 변경 사항은 즉시 저장됩니다.</p>
+    </div>
+    <div className="flex flex-col items-center gap-4 border border-stone-200 bg-white px-5 py-10 text-center">
+      <Image alt="카카오톡" height={40} src="/icon/kakaotalk.png" width={40} />
+      <div className="flex flex-col gap-1">
+        <span className="text-[15px] font-semibold text-stone-900">전화번호 인증이 필요합니다</span>
+        <span className="text-[13px] text-stone-500">
+          카카오톡 알림은 전화번호 인증을 완료한 회원에게만 제공됩니다.
+        </span>
+      </div>
+      <Link
+        className={cn(
+          'mt-2 inline-flex items-center justify-center px-6 py-2.5',
+          'bg-kakao text-[13.5px] font-semibold text-stone-900',
+          'transition-opacity hover:opacity-80',
+        )}
+        href="/signup/phone"
+      >
+        지금 인증하기
+      </Link>
+    </div>
+  </section>
+);
+
 export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSettingProps) => {
   const isAdmin = myPageData.data.userData?.grade === 'admin';
   const alarms: IKakaoAlarmSettings = {
@@ -64,6 +95,10 @@ export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSetting
   const handleToggle = (key: keyof IKakaoAlarmSettings) => (value: boolean) => {
     mutate({ key, value });
   };
+
+  if (!myPageData.data.isLinked) {
+    return <KakaoAlarmLinkFallback />;
+  }
 
   return (
     <section aria-label="카카오톡 알림 설정" className={cn('mt-6 px-4', 'md:px-0')}>

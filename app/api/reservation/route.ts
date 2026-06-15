@@ -13,6 +13,7 @@ import {
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -28,6 +29,10 @@ export async function GET(request: NextRequest) {
   const hideSecret = searchParams.get('hideSecret');
   const PAGE_SIZE = 10;
   const preloadCount = 1;
+
+  const authResult = await checkAdminAuth();
+  const isAdmin = authResult.ok && authResult.isAdmin;
+  const currentUserId = authResult.ok ? authResult.uid : null;
 
   const totalToFetch = PAGE_SIZE * preloadCount;
   const startAtIndex = (page - 1) * PAGE_SIZE;
@@ -60,10 +65,25 @@ export async function GET(request: NextRequest) {
     }
 
     const snapShot = await getDocs(paginatedQuery);
-    const consults = snapShot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const consults = snapShot.docs.map(doc => {
+      const data = { id: doc.id, ...doc.data() };
+
+      // 비밀글이면서 admin도 아니고 작성자 본인도 아닌 경우 민감 필드 마스킹
+      if (data.secret && !isAdmin && (currentUserId === null || currentUserId !== data.userId)) {
+        return {
+          ...data,
+          title: '비밀글입니다.',
+          content: '',
+          name: '',
+          phoneNumber: '',
+          bornDate: null,
+          location: '',
+          password: null,
+        };
+      }
+
+      return data;
+    });
 
     return typedJson<IResponseBody>({ message: 'ok', consultData: consults, totalDataLength }, { status: 200 });
   } catch (error: any) {

@@ -6,7 +6,7 @@ import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { authKeys } from '@/src/shared/config/queryKeys';
+import { authKeys, userKeys } from '@/src/shared/config/queryKeys';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
@@ -25,7 +25,8 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   const { mutate: logout } = useLogoutMutation({
     onSuccess: data => {
       signOut(auth).then(() => {
-        queryClient.invalidateQueries({ queryKey: authKeys.all });
+        queryClient.removeQueries({ queryKey: authKeys.all });
+        queryClient.removeQueries({ queryKey: userKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
         setTimeout(() => {
           router.replace('/');

@@ -51,3 +51,5 @@ rule.mjs
 # docs
 /docs
 비즈톡*
+
+.vscode

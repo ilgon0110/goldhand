@@ -70,17 +70,21 @@ export const ReservationCard = ({
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const { data: userData } = useAuth();
+  const isAdmin = userData?.userData?.grade === 'admin';
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
-    if (isSecret && author === '비회원') {
-      setIsPasswordDialogOpen(true);
-      return;
-    }
 
-    if (isSecret && author !== '비회원' && dataUserId !== userData?.userData?.userId) {
-      setIsAlertDialogOpen(true);
-      return;
+    if (!isAdmin) {
+      if (isSecret && author === '비회원') {
+        setIsPasswordDialogOpen(true);
+        return;
+      }
+
+      if (isSecret && author !== '비회원' && dataUserId !== userData?.userData?.userId) {
+        setIsAlertDialogOpen(true);
+        return;
+      }
     }
 
     // 조회수 기록

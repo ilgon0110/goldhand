@@ -68,33 +68,50 @@ export async function GET(request: NextRequest) {
     const data = docSnap.data() as IReservationDetailData;
 
     if (data.secret) {
-      // 비밀글&비회원
-      if (data.userId == null) {
-        const decoded = jwt.verify(reservationToken?.value || '', process.env.JWT_SECRET!) as { docId: string } | null;
-        if (reservationToken == null || decoded == null || decoded.docId !== docId) {
-          return typedJson<IResponseBody>(
-            {
-              response: 'ng',
-              message: '비밀글 인증에 실패하였습니다.',
-              data: defaultData,
-            },
-            { status: 403 },
-          );
+      let isAdmin = false;
+      let verifiedUid: string | null = null;
+
+      if (accessToken?.value) {
+        try {
+          const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+          verifiedUid = decodedToken.uid;
+          const userDocRef = doc(db, 'users', verifiedUid);
+          const userDocSnap = await getDoc(userDocRef);
+          isAdmin = userDocSnap.exists() && userDocSnap.data().grade === 'admin';
+        } catch {
+          // 토큰 검증 실패 시 isAdmin, verifiedUid 기본값 유지
         }
       }
-      // 비밀글&회원
-      else {
-        const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value || '');
-        const uid = decodedToken.uid;
-        if (uid !== data.userId) {
-          return typedJson<IResponseBody>(
-            {
-              response: 'ng',
-              message: '해당 사용자가 작성한 글이 아닙니다.',
-              data: defaultData,
-            },
-            { status: 403 },
-          );
+
+      if (!isAdmin) {
+        // 비밀글&비회원
+        if (data.userId == null) {
+          const decoded = jwt.verify(reservationToken?.value || '', process.env.JWT_SECRET!) as {
+            docId: string;
+          } | null;
+          if (reservationToken == null || decoded == null || decoded.docId !== docId) {
+            return typedJson<IResponseBody>(
+              {
+                response: 'ng',
+                message: '비밀글 인증에 실패하였습니다.',
+                data: defaultData,
+              },
+              { status: 403 },
+            );
+          }
+        }
+        // 비밀글&회원
+        else {
+          if (verifiedUid == null || verifiedUid !== data.userId) {
+            return typedJson<IResponseBody>(
+              {
+                response: 'ng',
+                message: '해당 사용자가 작성한 글이 아닙니다.',
+                data: defaultData,
+              },
+              { status: 403 },
+            );
+          }
         }
       }
     }

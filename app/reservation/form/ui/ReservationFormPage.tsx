@@ -148,7 +148,7 @@ export const ReservationFormPage = () => {
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger data-testid="franchisee-select-trigger">
+                    <SelectTrigger aria-label="대리점 선택" data-testid="franchisee-select-trigger">
                       <SelectValue placeholder="상담받으실 대리점을 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>

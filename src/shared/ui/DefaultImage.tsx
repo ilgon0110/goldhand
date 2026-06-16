@@ -12,6 +12,7 @@ export default function DefaultImage({ className, style }: TDefaultImageProps) {
     <div className={cn('flex items-center justify-center bg-slate-100', className)} style={style}>
       <div className="flex flex-col items-center gap-1 text-slate-300">
         <svg
+          aria-hidden="true"
           className="h-5 w-5"
           fill="none"
           stroke="currentColor"

@@ -77,9 +77,10 @@ export const FranchiseeCard = ({
           <Link
             className="text-sm text-[#2DB400] underline underline-offset-4 hover:opacity-80"
             href={naverPlaceUrl}
+            rel="noopener noreferrer"
             target="_blank"
           >
-            네이버 플레이스 이동하기 →
+            네이버 플레이스 이동하기 →<span className="sr-only">(새 탭에서 열림)</span>
           </Link>
         </div>
       </div>

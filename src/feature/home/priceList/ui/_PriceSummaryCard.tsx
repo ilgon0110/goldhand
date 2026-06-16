@@ -109,7 +109,7 @@ export const PriceSummaryCard = ({ title, description, priceList, iconType, feat
       {/* 텍스트 + 가격 */}
       <div className="flex h-full flex-col justify-between p-4">
         <div>
-          <h2 className="text-lg font-bold">{title}</h2>
+          <p className="text-lg font-bold">{title}</p>
           <p className="text-sm text-gray-600">{description}</p>
         </div>
         <div className="flex flex-col">

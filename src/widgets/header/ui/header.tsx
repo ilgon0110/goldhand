@@ -41,8 +41,9 @@ export const Header = () => {
         )}
       >
         공식 사이트가 아닌 개발 중인 사이트 입니다.{' '}
-        <Link className="font-normal text-[#0000b5]" href="https://goldbaby.itpage.kr/">
+        <Link className="font-normal text-[#0000b5]" href="https://goldbaby.itpage.kr/" rel="noopener noreferrer" target="_blank">
           공식 사이트 이동하기
+          <span className="sr-only">(새 탭에서 열림)</span>
         </Link>
       </div>
       <header className="relative mx-auto max-w-7xl py-2">

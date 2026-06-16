@@ -22,7 +22,7 @@ export const RentalCard = ({ category, name, src, alt }: TRentalCardProps) => {
       </div>
       <div className="flex flex-col gap-1.5 px-6 pb-7 pt-6">
         <p className="text-[11px] font-medium tracking-[0.24em] text-[#A88547]">{category}</p>
-        <h3 className="mt-1 font-serif text-[22px] font-medium leading-snug tracking-tight text-[#1B1814]">{name}</h3>
+        <h2 className="mt-1 font-serif text-[22px] font-medium leading-snug tracking-tight text-[#1B1814]">{name}</h2>
       </div>
     </article>
   );

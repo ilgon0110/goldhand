@@ -15,7 +15,7 @@ export default function SectionTitleHero({ label, description }: TSectionTitleHe
           'md:text-xl md:tracking-[0.4em]',
         )}
       >
-        ─── {label} ───
+        <span aria-hidden="true">─── </span>{label}<span aria-hidden="true"> ───</span>
       </h1>
       {description && (
         <p className={cn('mx-auto mt-4 max-w-lg text-xs leading-loose text-slate-500', 'md:text-base')}>

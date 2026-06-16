@@ -161,7 +161,7 @@ export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="대리점 선택">
                       <SelectValue placeholder="지원하실 대리점을 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>

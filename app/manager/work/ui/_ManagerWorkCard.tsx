@@ -18,7 +18,7 @@ export const ManagerWorkCard = ({ index, title, contentList, note }: TManagerWor
       <div className="flex items-start gap-6">
         <span className="min-w-[28px] pt-2 text-sm tracking-[0.18em] text-gold">{index}</span>
         <div className="flex-1">
-          <h3 className={cn('text-xl font-semibold tracking-tight text-stone-900', 'md:text-2xl')}>{title}</h3>
+          <h2 className={cn('text-xl font-semibold tracking-tight text-stone-900', 'md:text-2xl')}>{title}</h2>
           <ul className="mt-4 flex flex-col gap-2">
             {contentList.map(content => (
               <li

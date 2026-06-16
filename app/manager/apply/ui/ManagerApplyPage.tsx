@@ -207,7 +207,7 @@ export const ManagerApplyPage = ({ userData }: IManagerApplyPageProps) => {
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    className="h-40 resize-none text-sm"
+                    className="h-40 resize-none"
                     maxLength={700}
                     placeholder="자기소개를 작성해주세요. (700자 이하)"
                     {...field}

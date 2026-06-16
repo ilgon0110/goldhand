@@ -21,9 +21,9 @@ export const PrivacyModal = ({ isOpen, setIsOpen }: TPrivacyModalProps) => {
 
   return (
     <AnimateModal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <Label>개정 이전 내용 조회</Label>
-      <Select value={date} onValueChange={setDate}>
-        <SelectTrigger className="mt-2 w-full">
+      <Label htmlFor="privacy-version-select">개정 이전 내용 조회</Label>
+      <Select value={date} onValueChange={value => setDate(value)}>
+        <SelectTrigger aria-label="개정 이전 내용 조회" className="mt-2 w-full" id="privacy-version-select">
           <SelectValue placeholder={privacyVersionDateList[0].date} />
         </SelectTrigger>
         <SelectContent>

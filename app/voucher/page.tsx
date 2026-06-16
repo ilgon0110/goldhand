@@ -30,8 +30,9 @@ const VoucherPage = () => {
         <span>산모의 주민등록 주소지 관할 시·군·구 보건소</span>
         <span>
           온라인신청 : 복지로{' '}
-          <Link className="text-blue-500 underline" href="https://www.bokjiro.go.kr/ssis-tbu/index.do" target="_blank">
+          <Link className="text-blue-500 underline" href="https://www.bokjiro.go.kr/ssis-tbu/index.do" rel="noopener noreferrer" target="_blank">
             www.bokjiro.go.kr
+            <span className="sr-only">(새 탭에서 열림)</span>
           </Link>
         </span>
         <span className="font-bold text-[#728146]">(단,바우처 유효기간은 원칙적으로 출산일로부터 60일 이내)</span>
@@ -52,8 +53,15 @@ const VoucherPage = () => {
         <span>가족관계증명서 : 외국인 산모, 부부간 주소시 다를 시</span>
       </div>
       <div className="mt-10 h-[1px] w-full bg-slate-300" />
-      <div className="relative mt-6 h-[100vh] w-full">
-        <Image alt="정부바우처 이용요금표" fill sizes="100vw" src="/voucher_price_table.png" />
+      <div className="mt-6 w-full">
+        <Image
+          alt="정부바우처 이용요금표"
+          height={905}
+          sizes="100vw"
+          src="/voucher_price_table.png"
+          style={{ width: '100%', height: 'auto' }}
+          width={1280}
+        />
       </div>
     </div>
   );

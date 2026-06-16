@@ -8,7 +8,6 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
-import prettier from 'eslint-plugin-prettier';
 import eslintCustomRules from './src/shared/config/eslint/rule.mjs';
 
 export default tseslint.config(
@@ -23,7 +22,6 @@ export default tseslint.config(
     },
 
     plugins: {
-      prettier,
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,

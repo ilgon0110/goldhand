@@ -40,7 +40,7 @@ export const ReviewSummaryCard = ({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="truncate text-sm font-bold leading-tight">{title}</h2>
+          <p className="truncate text-sm font-bold leading-tight">{title}</p>
           <p className="mt-0.5 text-xs text-gray-500">
             <span>{author}</span>
             {' · '}

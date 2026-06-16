@@ -61,6 +61,7 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
       <button
         className={cn(gridClass, 'group text-left transition-colors duration-150 hover:bg-stone-50')}
         data-testid={review.id}
+        type="button"
         onClick={() => {
           startTransition(async () => {
             await sendViewLog(review.id);

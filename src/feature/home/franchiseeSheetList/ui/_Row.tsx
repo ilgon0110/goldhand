@@ -28,9 +28,11 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
             'md:basis-1/5',
           )}
           href={naverPlaceUrl}
+          rel="noopener noreferrer"
           target="_blank"
         >
           네이버 플레이스 이동하기
+          <span className="sr-only">(새 탭에서 열림)</span>
         </Link>
       </div>
       {/* 모바일뷰 */}
@@ -48,9 +50,11 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
                     'hover:opacity-80',
                   )}
                   href={naverPlaceUrl}
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   네이버 플레이스 이동하기
+                  <span className="sr-only">(새 탭에서 열림)</span>
                 </Link>
               </div>
             </AccordionContent>

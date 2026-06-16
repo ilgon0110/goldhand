@@ -13,13 +13,16 @@ export default function Home() {
   return (
     <>
       <EventModal />
-      <section>
+      <section aria-label="메인 이미지 슬라이드">
         <ImageSlideList />
       </section>
-      <section>
+      <section aria-label="서비스 소개">
         <MainTitle />
       </section>
-      <section className={cn('mx-auto mt-24 max-w-7xl space-y-24 px-4', 'sm:space-y-48')}>
+      <section
+        aria-label="이용후기, 지점 소개, 이용요금, 협력사"
+        className={cn('mx-auto mt-24 max-w-7xl space-y-24 px-4', 'sm:space-y-48')}
+      >
         <ReviewCarousel />
         <FranchiseeSheetList />
         <PriceList />

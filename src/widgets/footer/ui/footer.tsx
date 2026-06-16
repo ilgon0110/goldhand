@@ -80,6 +80,7 @@ export const Footer = () => {
           <div className={cn('flex items-center gap-4')}>
             {SOCIAL_LINKS.map(({ href, icon: Icon, label, hoverClass }) => (
               <Link
+                aria-label={`${label} (새 탭에서 열림)`}
                 className={cn(
                   'flex items-center gap-1.5 rounded-full border border-gray-300 px-3 py-1.5 text-gray-500 transition-colors',
                   'hover:border-current',
@@ -87,10 +88,11 @@ export const Footer = () => {
                 )}
                 href={href}
                 key={label}
+                rel="noopener noreferrer"
                 target="_blank"
               >
-                <Icon size={20} />
-                <span className={cn('hidden text-sm', 'md:inline')}>{label}</span>
+                <Icon aria-hidden="true" size={20} />
+                <span aria-hidden="true" className={cn('hidden text-sm', 'md:inline')}>{label}</span>
               </Link>
             ))}
           </div>

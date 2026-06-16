@@ -96,7 +96,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="대리점 선택">
                       <SelectValue placeholder="이용했던 대리점을 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>

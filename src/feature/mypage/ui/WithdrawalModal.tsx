@@ -57,9 +57,9 @@ export function WithdrawalModal({ isOpen, setIsOpen }: TWithdrawalModalProps) {
         <h2 className="mb-4 text-xl font-semibold">회원 탈퇴</h2>
         <div className="flex space-x-4">
           <div>
-            <Label>개인정보 처리방침</Label>
+            <Label htmlFor="privacy-select">개인정보 처리방침</Label>
             <Select value={date} onValueChange={setDate}>
-              <SelectTrigger className="mt-2 w-full">
+              <SelectTrigger aria-label="개인정보 처리방침 버전 선택" className="mt-2 w-full" id="privacy-select">
                 <SelectValue placeholder={privacyVersionDateList[0].date} />
               </SelectTrigger>
               <SelectContent>

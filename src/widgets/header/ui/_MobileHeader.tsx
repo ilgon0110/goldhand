@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
 import {
   Drawer,
   DrawerContent,
@@ -80,7 +81,7 @@ export const MobileHeader = ({
                   <DrawerTitle className="mb-4 flex items-center justify-center font-medium">
                     <div className="relative h-8 w-32">
                       <Link href={URLS.HOME}>
-                        <Image alt="home_logo" fill sizes="75" src="/logo_green.png" />
+                        <Image alt="고운황금손 로고" fill sizes="75" src="/logo_green.png" />
                       </Link>
                     </div>
                   </DrawerTitle>
@@ -93,52 +94,74 @@ export const MobileHeader = ({
                     >
                       <UlButton enText="" text={userId != null ? '마이페이지' : '로그인'} />
                     </Link>
-                    <UlButton enText="GoldHand" text="고운황금손">
-                      <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
-                        <Link href={URLS.COMPANY} onClick={handleChangeMobileMenuOpen}>
-                          인사말
-                        </Link>
-                        <Link href={URLS.FRANCHISEE} onClick={handleChangeMobileMenuOpen}>
-                          지점소개
-                        </Link>
-                      </div>
-                    </UlButton>
-                    <UlButton enText="Service" text="산후관리사">
-                      <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
-                        <Link href={URLS.MANAGER.ABOUT} onClick={handleChangeMobileMenuOpen}>
-                          산후관리사란?
-                        </Link>
-                        <Link href={URLS.MANAGER.WORK} onClick={handleChangeMobileMenuOpen}>
-                          산후관리사가 하는 일
-                        </Link>
-                        <Link href={URLS.MANAGER.APPLY} onClick={handleChangeMobileMenuOpen}>
-                          산후관리사 지원하기
-                        </Link>
-                      </div>
-                    </UlButton>
-                    <UlButton enText="Price" text="이용안내">
-                      <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
-                        <Link href={URLS.RENTAL} onClick={handleChangeMobileMenuOpen}>
-                          대여물품
-                        </Link>
-                        <Link href={URLS.PRICE} onClick={handleChangeMobileMenuOpen}>
-                          이용요금
-                        </Link>
-                        <Link href={URLS.VOUCHER} onClick={handleChangeMobileMenuOpen}>
-                          정부지원바우처
-                        </Link>
-                      </div>
-                    </UlButton>
-                    <UlButton enText="Consult" text="예약상담">
-                      <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
-                        <Link href={URLS.RESERVATION.APPLY} onClick={handleChangeMobileMenuOpen}>
-                          상담신청
-                        </Link>
-                        <Link href={URLS.RESERVATION.LIST} onClick={handleChangeMobileMenuOpen}>
-                          신청목록
-                        </Link>
-                      </div>
-                    </UlButton>
+                    <Accordion className="text-black" collapsible type="single">
+                      <AccordionItem className="border-b-0" value="goldhand">
+                        <AccordionTrigger className="relative flex items-center justify-center py-2 text-base font-semibold">
+                          고운황금손
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+                            <Link href={URLS.COMPANY} onClick={handleChangeMobileMenuOpen}>
+                              인사말
+                            </Link>
+                            <Link href={URLS.FRANCHISEE} onClick={handleChangeMobileMenuOpen}>
+                              지점소개
+                            </Link>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem className="border-b-0" value="service">
+                        <AccordionTrigger className="relative flex items-center justify-center py-2 text-base font-semibold">
+                          산후관리사
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+                            <Link href={URLS.MANAGER.ABOUT} onClick={handleChangeMobileMenuOpen}>
+                              산후관리사란?
+                            </Link>
+                            <Link href={URLS.MANAGER.WORK} onClick={handleChangeMobileMenuOpen}>
+                              산후관리사가 하는 일
+                            </Link>
+                            <Link href={URLS.MANAGER.APPLY} onClick={handleChangeMobileMenuOpen}>
+                              산후관리사 지원하기
+                            </Link>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem className="border-b-0" value="price">
+                        <AccordionTrigger className="relative flex items-center justify-center py-2 text-base font-semibold">
+                          이용안내
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+                            <Link href={URLS.RENTAL} onClick={handleChangeMobileMenuOpen}>
+                              대여물품
+                            </Link>
+                            <Link href={URLS.PRICE} onClick={handleChangeMobileMenuOpen}>
+                              이용요금
+                            </Link>
+                            <Link href={URLS.VOUCHER} onClick={handleChangeMobileMenuOpen}>
+                              정부지원바우처
+                            </Link>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem className="border-b-0" value="consult">
+                        <AccordionTrigger className="relative flex items-center justify-center py-2 text-base font-semibold">
+                          예약상담
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="flex w-full flex-col items-center justify-center gap-6 py-6 text-base font-semibold leading-6 text-gray-900">
+                            <Link href={URLS.RESERVATION.APPLY} onClick={handleChangeMobileMenuOpen}>
+                              상담신청
+                            </Link>
+                            <Link href={URLS.RESERVATION.LIST} onClick={handleChangeMobileMenuOpen}>
+                              신청목록
+                            </Link>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                     <Link
                       className="text-sm font-semibold leading-6 text-gray-900"
                       href={URLS.REVIEW}

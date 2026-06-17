@@ -46,7 +46,7 @@ export const WebHeader = ({
             <div className="flex items-center justify-center lg:flex-1">
               <Link className="-m-1.5 p-1.5" href={URLS.HOME}>
                 <span className="sr-only">고운황금손</span>
-                <Image alt="home_logo" height={36} sizes="75" src="/logo_green.png" width={128} />
+                <Image alt="고운황금손 로고" height={36} sizes="75" src="/logo_green.png" width={128} />
               </Link>
             </div>
           </NavigationMenuItem>

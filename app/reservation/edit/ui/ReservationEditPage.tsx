@@ -227,11 +227,7 @@ export const ReservationEditPage = ({ docId }: { docId: string }) => {
                   상담 내용 <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Textarea
-                    className="h-40 resize-none text-sm"
-                    placeholder="상담하고 싶은 내용을 입력해주세요."
-                    {...field}
-                  />
+                  <Textarea className="h-40 resize-none" placeholder="상담하고 싶은 내용을 입력해주세요." {...field} />
                 </FormControl>
                 <FormDescription></FormDescription>
                 <FormMessage />

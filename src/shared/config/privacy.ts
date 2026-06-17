@@ -295,7 +295,7 @@ export const privacyContent: {
       },
       {
         styleClass: '',
-        value: `- 전화번호 : 010-5536-3765 `,
+        value: `- 전화번호 : 010-4437-0431 `,
       },
       {
         styleClass: '',

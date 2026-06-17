@@ -19,7 +19,7 @@ export const BRANCHES = [
     title: '수원점',
     badge: '지점',
     region: '경기 수원',
-    phoneNumber: '010-5536-3765',
+    phoneNumber: '010-4437-0431',
     description: '고운황금손 수원점입니다.',
     address: '경기도 수원시 팔달구 인계로',
     naverPlaceUrl: 'https://naver.me/xpB4oXiI',

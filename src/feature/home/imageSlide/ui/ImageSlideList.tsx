@@ -25,7 +25,7 @@ export function ImageSlideList() {
         <CarouselContent className="absolute top-0 -z-10 h-[100vh] w-[100vw]">
           <CarouselItem className="relative h-full w-full">
             <Image
-              alt="고운황금손 이미지 슬라이드 1번"
+              alt="수원 산후도우미 고운황금손 메인 이미지"
               fill
               placeholder="blur"
               priority
@@ -36,7 +36,7 @@ export function ImageSlideList() {
           </CarouselItem>
           <CarouselItem className="relative h-full w-full">
             <Image
-              alt="고운황금손 이미지 슬라이드 2번"
+              alt="광교 용인 산후도우미 고운황금손 서비스"
               fill
               loading="lazy"
               placeholder="blur"

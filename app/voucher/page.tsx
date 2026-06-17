@@ -30,7 +30,12 @@ const VoucherPage = () => {
         <span>산모의 주민등록 주소지 관할 시·군·구 보건소</span>
         <span>
           온라인신청 : 복지로{' '}
-          <Link className="text-blue-500 underline" href="https://www.bokjiro.go.kr/ssis-tbu/index.do" rel="noopener noreferrer" target="_blank">
+          <Link
+            className="text-blue-500 underline"
+            href="https://www.bokjiro.go.kr/ssis-tbu/index.do"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             www.bokjiro.go.kr
             <span className="sr-only">(새 탭에서 열림)</span>
           </Link>
@@ -58,7 +63,7 @@ const VoucherPage = () => {
           alt="정부바우처 이용요금표"
           height={905}
           sizes="100vw"
-          src="/voucher_price_table.png"
+          src="/voucher_price_table_26.jpg"
           style={{ width: '100%', height: 'auto' }}
           width={1280}
         />

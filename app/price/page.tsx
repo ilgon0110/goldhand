@@ -13,9 +13,9 @@ const PricePage = () => {
           <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">산후관리사가 산모 집으로 방문해요.</div>
           <div className="w-full overflow-x-auto">
             <BasicPremiumPriceTable
-              basicPriceList={[850000, 1500000, 2250000, 3000000]}
+              basicPriceList={[900000, 1600000, 2400000, 3200000]}
               iconMode={false}
-              premiumPriceList={[900000, 1600000, 2400000, 3200000]}
+              premiumPriceList={[950000, 1700000, 2550000, 3400000]}
             />
           </div>
           {commuteCheckList.map(checkList => (
@@ -29,10 +29,10 @@ const PricePage = () => {
           <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">산모 집에서 산후관리사가 함께해요.</div>
           <div className="w-full overflow-x-auto">
             <BasicPremiumPriceTable
-              basicPriceList={[1350000, 2450000, 3600000, 4800000]}
+              basicPriceList={[1450000, 2600000, 3900000, 5200000]}
               basicTitle="주5일 입주형"
               iconMode={false}
-              premiumPriceList={[1600000, 3000000, 4500000, 6000000]}
+              premiumPriceList={[1650000, 3100000, 4650000, 6200000]}
               premiumTitle="주6일 입주형"
             />
           </div>
@@ -48,7 +48,7 @@ const PricePage = () => {
         <div>
           <div className="mt-6 w-full text-center text-lg font-bold lg:text-2xl">오전, 오후 돌봄</div>
           <div className="mb-2 mt-1 text-center text-slate-700 lg:text-lg">오전 및 오후에만 돌봐드려요.</div>
-          <SinglePriceTable priceList={[600000, 1150000, 1700000, 2200000]} title="오전, 오후 돌봄" />
+          <SinglePriceTable priceList={[620000, 1180000, 1770000, 2360000]} title="오전, 오후 돌봄" />
           {dayoffCheckList.map(checkList => (
             <div className="ml-2 mt-2 text-sm text-slate-700 lg:text-base" key={checkList}>
               {checkList}
@@ -81,44 +81,64 @@ const PricePage = () => {
               <th className="col-span-2 border-r border-white bg-slate-200 px-4 py-2" colSpan={2} scope="colgroup">
                 구 분
               </th>
-              <th className="border-r border-white bg-slate-200 px-4 py-2" scope="col">출퇴근형</th>
-              <th className="bg-slate-200 px-4 py-2" scope="col">입주형</th>
+              <th className="border-r border-white bg-slate-200 px-4 py-2" scope="col">
+                출퇴근형
+              </th>
+              <th className="bg-slate-200 px-4 py-2" scope="col">
+                입주형
+              </th>
             </tr>
           </thead>
           <tbody>
             {/* 큰아이 추가비용 */}
             <tr>
-              <th className="row-span-6 border border-gray-300 py-4 align-middle font-bold" rowSpan={6} scope="rowgroup">
+              <th
+                className="row-span-6 border border-gray-300 py-4 align-middle font-bold"
+                rowSpan={6}
+                scope="rowgroup"
+              >
                 큰아이
                 <br />
                 추가비용
               </th>
-              <th className="border border-gray-300 py-2 font-normal" scope="row">미취학 20개월 미만</th>
+              <th className="border border-gray-300 py-2 font-normal" scope="row">
+                미취학 20개월 미만
+              </th>
               <td className="border border-gray-300 py-2">15,000원</td>
               <td className="border border-gray-300 py-2">20,000원</td>
             </tr>
             <tr>
-              <th className="border border-gray-300 py-2 font-normal" scope="row">미취학 20개월 이상</th>
+              <th className="border border-gray-300 py-2 font-normal" scope="row">
+                미취학 20개월 이상
+              </th>
               <td className="border border-gray-300 py-2">10,000원</td>
               <td className="border border-gray-300 py-2">15,000원</td>
             </tr>
             <tr>
-              <th className="border border-gray-300 py-2 font-normal" scope="row">어린이집 유치원</th>
+              <th className="border border-gray-300 py-2 font-normal" scope="row">
+                어린이집 유치원
+              </th>
               <td className="border border-gray-300 py-2">6,000원</td>
               <td className="border border-gray-300 py-2">10,000원</td>
             </tr>
             <tr>
-              <th className="border border-gray-300 py-2 font-normal" scope="row">어린이집 방학</th>
+              <th className="border border-gray-300 py-2 font-normal" scope="row">
+                어린이집 방학
+              </th>
               <td className="border border-gray-300 py-2">10,000원</td>
               <td className="border border-gray-300 py-2">20,000원</td>
             </tr>
             <tr>
-              <th className="border border-gray-300 py-2 font-normal" scope="row">초등학교 이상 학생</th>
+              <th className="border border-gray-300 py-2 font-normal" scope="row">
+                초등학교 이상 학생
+              </th>
               <td className="border border-gray-300 py-2">5,000원</td>
               <td className="border border-gray-300 py-2">8,000원</td>
             </tr>
             <tr>
-              <th className="border border-gray-300 py-2 font-normal" scope="row">초등학교 이상 학생 방학</th>
+              <th className="border border-gray-300 py-2 font-normal" scope="row">
+                초등학교 이상 학생 방학
+              </th>
               <td className="border border-gray-300 py-2">6,000원</td>
               <td className="border border-gray-300 py-2">10,000원</td>
             </tr>

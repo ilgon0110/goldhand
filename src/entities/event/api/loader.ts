@@ -1,8 +1,11 @@
+import { notFound } from 'next/navigation';
+
+import { apiUrl } from '@/src/shared/config';
 import type { IEventListResponseData, IEventResponseData } from '@/src/shared/types';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 export const getEventDetailData = async ({ docId }: { docId: string }): Promise<IEventResponseData> => {
-  const res: IEventResponseData = await fetcher(`/api/event/detail?docId=${docId}`, {
+  const res = await fetch(`${apiUrl}/api/event/detail?docId=${docId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -11,7 +14,17 @@ export const getEventDetailData = async ({ docId }: { docId: string }): Promise<
     cache: 'no-store',
   });
 
-  return res;
+  if (res.status === 404) {
+    notFound();
+  }
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || 'API 요청 실패');
+  }
+
+  return data as IEventResponseData;
 };
 
 export async function getEventListData(page: number, status: string): Promise<IEventListResponseData> {

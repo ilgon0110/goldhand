@@ -1,7 +1,6 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -11,9 +10,8 @@ import { ToastContainer } from 'react-toastify';
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { OAuthSuccessHandler } from '@/src/shared/ui/OAuthSuccessHandler';
+import { Footer } from '@/src/widgets/footer/ui/footer';
 import { Header } from '@/src/widgets/header';
-
-const Footer = dynamic(() => import('@/src/widgets/footer/ui/footer').then(mod => mod.Footer), { ssr: false });
 
 const pretendard = localFont({
   src: [

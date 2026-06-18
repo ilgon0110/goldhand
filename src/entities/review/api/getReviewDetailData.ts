@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { apiUrl } from '@/src/shared/config';
 import type { IReviewResponseData } from '@/src/shared/types';
 
@@ -10,6 +12,10 @@ export const getReviewDetailData = async ({ docId }: { docId: string }): Promise
     credentials: 'include',
     cache: 'no-store',
   });
+
+  if (res.status === 404) {
+    notFound();
+  }
 
   const data = await res.json();
 

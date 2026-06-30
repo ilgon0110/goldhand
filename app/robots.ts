@@ -4,8 +4,8 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      allow: '/',
-      disallow: ['/api/', '/manager/', '/mypage/', '/reservation/', '/signup/', '/login/'],
+      allow: ['/', '/manager/about', '/manager/work', '/reservation', '/reservation/apply'],
+      disallow: ['/api/', '/manager/', '/mypage/', '/reservation/list/', '/reservation/edit/', '/signup/', '/login/'],
     },
     sitemap: 'https://nicegoldhand.com/sitemap.xml',
   };

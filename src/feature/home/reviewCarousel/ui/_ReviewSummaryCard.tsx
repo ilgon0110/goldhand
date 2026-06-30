@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { Timestamp } from 'firebase/firestore';
 
 import { cn } from '@/lib/utils';
@@ -34,7 +35,15 @@ export const ReviewSummaryCard = ({
       <div className="flex items-start gap-3">
         <div className="shrink-0">
           {thumbnailSrc ? (
-            <img alt={title} className="h-14 w-14 rounded-md object-cover" loading="lazy" src={thumbnailSrc} />
+            <Image
+                alt={title}
+                className="h-14 w-14 rounded-md object-cover"
+                height={56}
+                loading="lazy"
+                sizes="56px"
+                src={thumbnailSrc}
+                width={56}
+              />
           ) : (
             <DefaultImage className="h-14 w-14" />
           )}

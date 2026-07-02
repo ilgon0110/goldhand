@@ -40,6 +40,8 @@ export const ReviewCarousel = () => {
     handleClick: () => startTransition(() => router.push(`/review/${item.id}`)),
   }));
 
+  if (data?.length === 0) return null;
+
   return (
     <div className="w-full sm:px-20">
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}

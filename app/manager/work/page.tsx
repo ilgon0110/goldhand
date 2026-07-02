@@ -43,7 +43,6 @@ const ManagerWorkPage = () => {
       {/* 5. Care Areas */}
       <section className={cn('mx-auto mt-20 w-full max-w-5xl px-6', 'md:px-8')}>
         <div className="mb-12 text-center">
-          <p className="mb-4 text-xs tracking-[0.4em] text-gold">CARE AREAS</p>
           <p className={cn('mt-4 text-sm text-stone-400', 'md:text-base')}>
             산모와 신생아의 회복을 중심으로, 가족 모두의 일상이 평온하도록 도와드립니다.
           </p>
@@ -65,7 +64,6 @@ const ManagerWorkPage = () => {
       {/* 6. Etiquette */}
       <section className={cn('mx-auto mt-20 w-full max-w-3xl px-6', 'md:px-8')}>
         <div className="mb-12 text-center">
-          <p className="mb-4 text-xs tracking-[0.4em] text-gold">ETIQUETTE</p>
           <h2 className={cn('text-3xl font-semibold tracking-tight text-stone-900', 'md:text-4xl')}>
             산후관리사에 대한
             <br />
@@ -103,16 +101,6 @@ const ManagerWorkPage = () => {
           </EtiquetteCard>
         </div>
       </section>
-
-      {/* 7. Closing */}
-      <div className={cn('mx-auto mt-24 max-w-xl px-6 pb-32 text-center')}>
-        <p className={cn('break-keep text-lg leading-loose text-stone-700', 'md:text-xl')}>
-          산모님의 가장 고운 시기에,
-          <br />
-          가장 다정한 손길이 함께합니다.
-        </p>
-        <p className="mt-7 text-xs tracking-[0.4em] text-gold">─── 고운황금손 ───</p>
-      </div>
     </div>
   );
 };

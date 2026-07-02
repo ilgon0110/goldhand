@@ -79,9 +79,8 @@ const Page = () => {
       </div>
 
       {/* 5. Three Promises */}
-      <section className={cn('mx-auto mt-24 w-full max-w-5xl px-6', 'md:px-8')}>
+      <section className={cn('mx-auto mt-8 w-full max-w-5xl px-6', 'md:px-8')}>
         <div className="mb-12 text-center">
-          <p className="mb-[18px] text-[11px] tracking-[0.4em] text-gold">OUR PROMISE</p>
           <p className={cn('mt-4 text-sm text-stone-400', 'md:text-base')}>
             고운황금손의 모든 관리사는 다음을 약속드립니다.
           </p>
@@ -104,7 +103,6 @@ const Page = () => {
       {/* 6. Qualifications */}
       <section className={cn('mx-auto mt-24 w-full max-w-5xl px-6', 'md:px-8')} id="qualifications">
         <div className="mb-12 text-center">
-          <p className="mb-[18px] text-[11px] tracking-[0.4em] text-gold">QUALIFICATIONS</p>
           <h2
             className={cn(
               `${gowunDodumFont.className} text-3xl font-medium tracking-tight text-stone-900`,
@@ -171,7 +169,6 @@ const Page = () => {
       {/* 7. Code of Conduct */}
       <section className="mt-24 w-full">
         <div className="mb-12 text-center">
-          <p className="mb-[18px] text-[11px] tracking-[0.4em] text-gold">CODE OF CONDUCT</p>
           <h2
             className={cn(
               `${gowunDodumFont.className} text-3xl font-medium tracking-tight text-stone-900`,
@@ -229,7 +226,7 @@ const Page = () => {
         >
           <div className="absolute left-8 top-0 h-px w-9 bg-gold" />
           <div>
-            <p className="mb-3 text-[11px] tracking-[0.4em] text-gold">CONSULTATION</p>
+            <p className="mb-3 text-[11px] tracking-[0.4em] text-gold">예약 상담</p>
             <h3
               className={cn(
                 `${gowunDodumFont.className} mb-2.5 text-xl font-medium leading-[1.5] tracking-tight text-stone-900`,
@@ -250,16 +247,6 @@ const Page = () => {
             <span className={gowunDodumFont.className}>→</span>
           </Link>
         </div>
-      </div>
-
-      {/* 9. Closing */}
-      <div className={cn('mx-auto mt-24 max-w-[720px] px-6 pb-32 text-center')}>
-        <p className={cn(`${gowunDodumFont.className} break-keep text-lg leading-[1.7] text-stone-700`, 'md:text-xl')}>
-          산모님의 가장 고운 시기에,
-          <br />
-          고운황금손의 다정한 손길이 함께합니다.
-        </p>
-        <p className="mt-7 text-[11px] tracking-[0.4em] text-gold">─── 고운황금손 ───</p>
       </div>
     </div>
   );

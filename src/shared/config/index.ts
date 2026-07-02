@@ -1,4 +1,4 @@
-export const franchiseeList = ['전체', '화성동탄점', '수원점', '용인점'];
+export const franchiseeList = ['전체', '수원점', '용인점'];
 export type TFranchiseeList = (typeof franchiseeList)[number];
 export const apiUrl =
   process.env.NEXT_PUBLIC_ENVIRONMENT === 'production'

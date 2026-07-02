@@ -10,9 +10,9 @@ const RentalPage = () => {
       <SectionTitleHero
         description={
           <>
-            산모님께 꼭 필요한 세 가지 물품을
+            산모님께 꼭 필요한 물품을
             <br />
-            서비스 기간 동안 무료로 대여해 드립니다.
+            서비스 기간 동안 무료로 대여해 드려요.
           </>
         }
         label="고운황금손 대여물품"
@@ -23,14 +23,6 @@ const RentalPage = () => {
         <div className="h-12 w-px bg-[#A88547]" />
       </div>
 
-      {/* Price stamp */}
-      <div className={cn('mx-auto flex flex-col items-center gap-1.5', 'px-6')}>
-        <p className="text-[11px] font-medium tracking-[0.4em] text-[#A88547]">RENTAL · COMPLIMENTARY</p>
-        <p className={cn('font-serif text-3xl font-medium tracking-tight text-[#1B1814]', 'md:text-4xl')}>
-          대여 비용 전액 무료
-        </p>
-      </div>
-
       {/* Products grid */}
       <section className={cn('mx-auto mt-16 grid max-w-[1200px] grid-cols-1 gap-8', 'md:grid-cols-3 md:gap-7', 'px-8')}>
         {RENTAL_ITEMS.map(item => (
@@ -39,12 +31,7 @@ const RentalPage = () => {
       </section>
 
       {/* Notes */}
-      <div className={cn('mx-auto mt-20 max-w-[880px]', 'px-8')}>
-        <div className="pb-8 text-center">
-          <p className="mb-3.5 text-[11px] font-medium tracking-[0.4em] text-[#A88547]">RENTAL NOTES</p>
-          <h2 className="font-serif text-2xl font-medium tracking-tight text-[#1B1814]">이용 안내</h2>
-        </div>
-
+      <div className={cn('mx-auto mt-8 max-w-[880px]', 'px-8')}>
         <div className="border border-[#E8E1D2] bg-white px-8 py-2">
           {RENTAL_NOTES.map((note, i) => (
             <div

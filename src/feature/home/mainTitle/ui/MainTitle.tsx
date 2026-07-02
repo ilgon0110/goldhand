@@ -39,7 +39,7 @@ export function MainTitle() {
           <TitleCard contents="전문 교육을 이수한 산후도우미 수" icon={<GrUserFemale size={48} />} title="100+" />
           <TitleCard contents="고운황금손 만족후기" icon={<MdPlace size={48} />} title="500+" />
         </div>
-        <p className={cn('mt-3 text-xs text-slate-400', 'md:text-sm')}>* 위 수치는 본점 기준입니다.</p>
+        <p className={cn('mt-3 text-xs text-slate-400', 'md:text-sm')}>* 위 수치는 화성동탄점(본점) 기준입니다.</p>
       </FadeInWhenVisible>
     </div>
   );

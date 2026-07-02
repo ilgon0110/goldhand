@@ -38,7 +38,7 @@ const Row = ({ title, address, phoneNumber, naverPlaceUrl }: TRowProps) => {
       {/* 모바일뷰 */}
       <div className={cn('px-2', 'md:hidden')}>
         <Accordion collapsible type="single">
-          <AccordionItem value="item-1">
+          <AccordionItem value="item-1" className="border-none">
             <AccordionTrigger className="relative flex items-center justify-start text-base">{title}</AccordionTrigger>
             <AccordionContent>
               <div className="mt-2 flex flex-col gap-2">

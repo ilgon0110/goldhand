@@ -5,10 +5,7 @@ export const dynamic = 'force-dynamic';
 const CompanyPage = () => {
   return (
     <article className="mx-auto max-w-3xl">
-      <SectionTitleHero
-        description="광교·용인·수원 산모신생아 케어 전문기업"
-        label="수원 산후도우미 고운황금손 대표 인사말"
-      />
+      <SectionTitleHero label="수원 산후도우미 고운황금손 대표 인사말" />
       <div className="space-y-6 text-base leading-relaxed text-gray-700 md:text-lg">
         <p>저희 고운황금손을 찾아주신 분들께 진심으로 감사드립니다.</p>
         <p>

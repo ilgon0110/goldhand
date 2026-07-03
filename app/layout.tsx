@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: 'https://nicegoldhand.com',
     siteName: '고운황금손',
-    title: '수원 산후도우미 고운황금손 | 광교·용인 산모신생아 케어',
+    title: '수원산후도우미 광교산후도우미 고운황금손',
     description: '보건복지부 인증 수원 산후도우미 고운황금손. 광교·용인·수원 전지역 정부바우처 산모신생아 돌봄 서비스.',
     images: [{ url: '/logo_green.png', width: 128, height: 36, alt: '고운황금손 로고' }],
   },

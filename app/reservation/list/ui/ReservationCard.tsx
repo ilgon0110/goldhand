@@ -157,7 +157,7 @@ export const ReservationCard = ({
                     isSecret && 'text-stone-400',
                   )}
                 >
-                  {isSecret ? '비밀글입니다' : title}
+                  {title}
                 </p>
                 <div className="inline-flex shrink-0 items-center gap-2">
                   {spot && (

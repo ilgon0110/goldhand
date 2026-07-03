@@ -59,7 +59,7 @@ export default function ReservationPage() {
                     </a>
                     <a
                       className="inline-flex items-center gap-2 rounded-full bg-[#FAE100] px-3.5 py-2 text-sm font-semibold text-[#3C1E1E] transition-all hover:bg-[#f0d600]"
-                      href="http://pf.kakao.com/_tvkwxj"
+                      href="https://pf.kakao.com/_cpdEX"
                       rel="noreferrer"
                       target="_blank"
                     >

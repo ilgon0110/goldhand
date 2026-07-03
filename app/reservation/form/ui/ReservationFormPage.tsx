@@ -180,7 +180,9 @@ export const ReservationFormPage = () => {
                 <FormControl>
                   <Input placeholder="제목을 입력해주세요." {...field} />
                 </FormControl>
-                <FormDescription></FormDescription>
+                <FormDescription className="font-bold text-violet-500">
+                  비밀글을 선택하셔도 제목은 공개됩니다.
+                </FormDescription>
                 <FormMessage>{form.formState.errors.title?.message}</FormMessage>
               </FormItem>
             )}

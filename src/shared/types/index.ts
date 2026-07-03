@@ -35,6 +35,7 @@ export interface IReservationDetailData {
   content: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
+  isPinned: boolean;
   location: string;
   name: string;
   password: string | null;
@@ -58,6 +59,7 @@ export interface IReviewDetailData {
   htmlString: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
+  isPinned: boolean;
   name: string;
   title: string;
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
@@ -232,6 +234,7 @@ export interface IEventDetailData {
   thumbnail: string | null;
   htmlString: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
+  isPinned: boolean;
   name: string;
   title: string;
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;

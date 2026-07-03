@@ -9,6 +9,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       id: 'e5e24cb4-cd38-4263-8eb2-a714b9ab2680',
       userId: '1',
+      isPinned: true,
       htmlString:
         '<p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">새로운 계정으로 후기남기기</span></p><p class="PlaygroundEditorTheme__paragraph"><div><img src="https://firebasestorage.googleapis.com/v0/b/goldhand-5fd6c.firebasestorage.app/o/reviews%2FgzNS6LQqjoPiJDNB5GftFrTGY7B3%2Fe5e24cb4-cd38-4263-8eb2-a714b9ab2680%2F5?alt=media&token=f876a028-ca44-488e-8550-bc9469897078" alt="" width="inherit" height="inherit" id="5"></div></p><p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">부릉</span></p>',
       name: '야야',
@@ -27,6 +28,7 @@ export const mockReviewData: IReviewListResponseData = {
     {
       thumbnail: null,
       id: '1e8cbb13-472e-448a-ab42-55f2ad7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -47,6 +49,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f2ad7af6df',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -66,6 +69,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f2er7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -85,6 +89,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-a232-55f2ad7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -104,6 +109,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-df8a-ab42-55f2ad7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -123,6 +129,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8dfb13-472e-448a-ab42-55f2ad7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -142,6 +149,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-4cva-ab42-55f2ad7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -161,6 +169,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f2ty7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -180,6 +189,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-52d2ad7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -199,6 +209,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f26f7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -218,6 +229,7 @@ export const mockReviewData: IReviewListResponseData = {
       thumbnail: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55faxd7af65e',
+      isPinned: false,
       createdAt: {
         seconds: 1753097297,
         nanoseconds: 543000000,
@@ -241,6 +253,7 @@ export const mockReviewDetailData: IReviewResponseData = {
   message: '리뷰 상세 조회 성공',
   data: {
     thumbnail: null,
+    isPinned: false,
     createdAt: {
       seconds: 1753097297,
       nanoseconds: 543000000,

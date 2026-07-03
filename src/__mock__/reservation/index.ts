@@ -21,6 +21,7 @@ export const mockReservationListData: IReservationListPageProps = {
       },
       bornDate: '2025-06-30T15:00:00.000Z',
       userId: null,
+      isPinned: true,
       secret: true,
       location: '호호',
       franchisee: '전체',
@@ -38,6 +39,7 @@ export const mockReservationListData: IReservationListPageProps = {
       id: '7fabf408-8b79-42b5-a91c-a1eefb532a01',
       bornDate: '2025-07-02T15:00:00.000Z',
       name: '김일곤',
+      isPinned: false,
       createdAt: {
         seconds: 1753957744,
         nanoseconds: 372000000,
@@ -64,6 +66,7 @@ export const mockReservationListData: IReservationListPageProps = {
       title: '1231',
       name: 'ㅇㄹㅁㅇㄹ',
       location: '231231',
+      isPinned: false,
       updatedAt: {
         seconds: 1752670537,
         nanoseconds: 412000000,
@@ -86,6 +89,7 @@ export const mockReservationListData: IReservationListPageProps = {
       content: 'ㅇㄹㅁㄴㄹㅁㅇㄴ',
       userId: null,
       franchisee: '화성동탄점',
+      isPinned: false,
       updatedAt: {
         seconds: 1752669918,
         nanoseconds: 182000000,
@@ -101,6 +105,7 @@ export const mockReservationListData: IReservationListPageProps = {
       id: 'f81b29a6-59f0-4cd9-b43a-ca330a7827d9',
       bornDate: null,
       userId: null,
+      isPinned: false,
       createdAt: {
         seconds: 1752669562,
         nanoseconds: 643000000,
@@ -128,6 +133,7 @@ export const mockReservationListData: IReservationListPageProps = {
         nanoseconds: 56000000,
       },
       secret: true,
+      isPinned: false,
       createdAt: {
         seconds: 1752666021,
         nanoseconds: 56000000,
@@ -148,6 +154,7 @@ export const mockReservationListData: IReservationListPageProps = {
       bornDate: '2025-07-09T15:00:00.000Z',
       secret: true,
       name: '김일곤',
+      isPinned: false,
       updatedAt: {
         seconds: 1752662181,
         nanoseconds: 734000000,
@@ -172,6 +179,7 @@ export const mockReservationListData: IReservationListPageProps = {
       name: '김일곤',
       franchisee: '전체',
       secret: true,
+      isPinned: false,
       updatedAt: {
         seconds: 1751802487,
         nanoseconds: 813000000,
@@ -193,6 +201,7 @@ export const mockReservationListData: IReservationListPageProps = {
       content: '응애 애기가 태어났어용\n수정했어용 한번 더 수정헀어용 한번더..',
       name: '김일곤',
       userId: '1ㅌㅊㅍㅌㄹㄹㄱ2',
+      isPinned: false,
       createdAt: {
         seconds: 1751545750,
         nanoseconds: 883000000,
@@ -207,6 +216,7 @@ export const mockReservationListData: IReservationListPageProps = {
       phoneNumber: '01055362578',
       secret: true,
       location: '인계동',
+      isPinned: false,
       createdAt: {
         seconds: 1751457946,
         nanoseconds: 789000000,

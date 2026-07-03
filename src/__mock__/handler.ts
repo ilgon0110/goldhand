@@ -93,6 +93,7 @@ export const handlers = [
       htmlString: '',
       createdAt: Timestamp.now(),
       franchisee: '',
+      isPinned: false,
       name: '',
       title: '',
       updatedAt: Timestamp.now(),

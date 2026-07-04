@@ -18,6 +18,7 @@ const defaultData: IEventDetailData = {
   htmlString: '',
   createdAt: Timestamp.now(),
   rowNumber: 0,
+  isPinned: false,
   name: '',
   title: '',
   updatedAt: Timestamp.now(),

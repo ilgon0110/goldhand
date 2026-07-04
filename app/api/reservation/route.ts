@@ -68,11 +68,11 @@ export async function GET(request: NextRequest) {
     const consults = snapShot.docs.map(doc => {
       const data = { id: doc.id, ...doc.data() };
 
-      // 비밀글이면서 admin도 아니고 작성자 본인도 아닌 경우 민감 필드 마스킹
+      // 비밀글이면서 admin도 아니고 작성자 본인도 아닌 경우 민감 필드 마스킹(제목은 그대로)
       if (data.secret && !isAdmin && (currentUserId === null || currentUserId !== data.userId)) {
         return {
           ...data,
-          title: '비밀글입니다.',
+          title: data.title,
           content: '',
           name: '',
           phoneNumber: '',

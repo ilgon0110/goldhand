@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { generateReviewDescription } from '@/src/entities/review';
+import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { IEventDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { Skeleton } from '@/src/shared/ui/skeleton';
@@ -29,6 +31,10 @@ export const EventCard = ({ event }: TEventCardProps) => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const { data: authData } = useAuth();
+  const isAdmin = authData?.userData?.grade === 'admin';
+  const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('event');
 
   const chip = STATUS_CHIP[event.status];
   const description = generateReviewDescription(event.htmlString);
@@ -62,12 +68,27 @@ export const EventCard = ({ event }: TEventCardProps) => {
   }
 
   return (
-    <button
-      className={cn(gridClass, 'group text-left transition-colors duration-150 hover:bg-stone-50')}
+    <div
+      className={cn(
+        gridClass,
+        'group text-left transition-colors duration-150',
+        event.isPinned ? PINNED_CARD_CLASS : 'hover:bg-stone-50',
+      )}
       data-testid={event.id}
+      role="button"
+      tabIndex={0}
       onClick={async () => {
         await sendViewLog(event.id);
         router.push(`/event/${event.id}`);
+      }}
+      onKeyDown={async e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === ' ') {
+            e.preventDefault();
+          }
+          await sendViewLog(event.id);
+          router.push(`/event/${event.id}`);
+        }
       }}
     >
       {/* 순번 — 2행 span */}
@@ -111,6 +132,12 @@ export const EventCard = ({ event }: TEventCardProps) => {
         >
           {event.title}
         </p>
+        <PinToggleButton
+          isAdmin={isAdmin}
+          isLoading={isPinToggling}
+          isPinned={event.isPinned}
+          onToggle={() => togglePin({ docId: event.id, isPinned: !event.isPinned })}
+        />
         <span
           className={cn(
             'inline-flex shrink-0 items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em]',
@@ -146,6 +173,6 @@ export const EventCard = ({ event }: TEventCardProps) => {
           {formattedDate}
         </p>
       </div>
-    </button>
+    </div>
   );
 };

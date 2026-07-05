@@ -31,11 +31,7 @@ export const ReviewPage = () => {
         totalDataLength={data.totalDataLength}
       />
       {data.reviewData.length > 0 ? (
-        <section className="mt-2">
-          {data.reviewData.map(review => (
-            <ReviewCard key={review.id} review={review} />
-          ))}
-        </section>
+        data.reviewData.map(review => <ReviewCard key={review.id} review={review} />)
       ) : (
         <EmptyState className="mt-4" description="등록된 후기가 없습니다." title="새로운 후기를 등록해보세요" />
       )}

@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
+import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { passwordPostAction } from '@/src/entities/reservation';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import {
@@ -45,6 +46,7 @@ type TReservationCardProps = {
   isSecret: boolean;
   content: string;
   dataUserId: string | null; // 추가된 부분: 데이터의 userId
+  isPinned: boolean;
 };
 
 export const ReservationCard = ({
@@ -56,6 +58,7 @@ export const ReservationCard = ({
   isSecret,
   content,
   dataUserId,
+  isPinned,
 }: TReservationCardProps) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof detailFormSchema>>({
@@ -71,10 +74,9 @@ export const ReservationCard = ({
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const { data: userData } = useAuth();
   const isAdmin = userData?.userData?.grade === 'admin';
+  const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('reservation');
 
-  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-
+  const navigateToDetail = () => {
     if (!isAdmin) {
       if (isSecret && author === '비회원') {
         setIsPasswordDialogOpen(true);
@@ -95,6 +97,20 @@ export const ReservationCard = ({
 
     // 비밀글이 아닌 경우 상세 페이지로 이동
     router.push(`/reservation/list/${docId}`);
+  };
+
+  const handleOnClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    navigateToDetail();
+  };
+
+  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (e.key === ' ') {
+        e.preventDefault();
+      }
+      navigateToDetail();
+    }
   };
 
   // 비밀글인 경우 비밀번호 검증 후 상세 페이지로 이동
@@ -132,17 +148,19 @@ export const ReservationCard = ({
       <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
         <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
           <li className="list-none">
-            <button
+            <div
               aria-disabled={isSecret}
               className={cn(
                 'group grid w-full items-baseline border-b border-stone-200 text-left transition-colors duration-150',
                 'grid-cols-[16px_1fr] gap-x-2.5 gap-y-1 px-1 py-3.5',
                 'md:grid-cols-[18px_1fr_auto] md:gap-x-3.5',
-                'hover:bg-stone-50',
+                isPinned ? PINNED_CARD_CLASS : 'hover:bg-stone-50',
               )}
               data-testid={docId}
-              type="button"
+              role="button"
+              tabIndex={0}
               onClick={handleOnClick}
+              onKeyDown={handleOnKeyDown}
             >
               {/* 자물쇠 (2행) */}
               <div className="row-span-2 flex items-center justify-center self-center text-gold">
@@ -175,6 +193,12 @@ export const ReservationCard = ({
                   >
                     {author}
                   </span>
+                  <PinToggleButton
+                    isAdmin={isAdmin}
+                    isLoading={isPinToggling}
+                    isPinned={isPinned}
+                    onToggle={() => togglePin({ docId, isPinned: !isPinned })}
+                  />
                 </div>
               </div>
 
@@ -197,7 +221,7 @@ export const ReservationCard = ({
                   {createdAt}
                 </p>
               </div>
-            </button>
+            </div>
           </li>
 
           {/* 비밀번호 입력 모달 */}

@@ -9,6 +9,7 @@ import type z from 'zod';
 import { cn } from '@/lib/utils';
 import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event';
+import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
@@ -65,6 +66,8 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
 
   const formValidation = form.formState.isValid;
   const isOwner = data.data.userId === userData.userData?.userId;
+  const isAdmin = userData.userData?.grade === 'admin';
+  const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('event');
 
   const { mutate: submitComment, isPending: isCommentSubmitting } = useCommentCreateMutation('event', docId, {
     onSuccess: () => {
@@ -108,6 +111,12 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
         <Editor editable={false} htmlString={data.data.htmlString} onEditorChange={() => {}} />
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />
+      <PinToggleButton
+        isAdmin={isAdmin}
+        isLoading={isPinToggling}
+        isPinned={data.data.isPinned}
+        onToggle={() => togglePin({ docId, isPinned: !data.data.isPinned })}
+      />
       {isOwner && (
         <div className="flex w-full justify-end space-x-4">
           <Button
@@ -173,6 +182,7 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
               content={item.comment}
               createdAt={item.createdAt}
               docId={docId}
+              isAuthorAdmin={item.isAuthorAdmin}
               isCommentOwner={item.userId === userData.userData?.userId}
               key={item.id}
               type="event"

@@ -19,6 +19,7 @@ const defaultData: IEventDetailData = {
   createdAt: Timestamp.now(),
   rowNumber: 0,
   isPinned: false,
+  pinnedAt: null,
   name: '',
   title: '',
   updatedAt: Timestamp.now(),

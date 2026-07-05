@@ -1,19 +1,9 @@
 import type { FirestoreDataConverter } from 'firebase/firestore';
-import {
-  collection,
-  getCountFromServer,
-  getDocs,
-  getFirestore,
-  limit,
-  orderBy,
-  query,
-  startAt,
-  where,
-} from 'firebase/firestore';
+import { where } from 'firebase/firestore';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { getPinnedFirstListClient } from '@/src/shared/lib/pin/getPinnedFirstList';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -28,47 +18,21 @@ export async function GET(request: NextRequest) {
   const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
   const hideSecret = searchParams.get('hideSecret');
   const PAGE_SIZE = 10;
-  const preloadCount = 1;
 
   const authResult = await checkAdminAuth();
   const isAdmin = authResult.ok && authResult.isAdmin;
   const currentUserId = authResult.ok ? authResult.uid : null;
 
-  const totalToFetch = PAGE_SIZE * preloadCount;
-  const startAtIndex = (page - 1) * PAGE_SIZE;
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-    const consultDocRef = collection(db, 'consults').withConverter(consultConverter);
-
-    // 쿼리 베이스 설정
-    const baseQuery = query(
-      consultDocRef,
-      orderBy('createdAt', 'desc'),
-      ...(hideSecret === 'true' ? [where('secret', '==', false)] : []),
+    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListClient<IReservationDetailData>(
+      'consults',
+      consultConverter,
+      hideSecret === 'true' ? [where('secret', '==', false)] : [],
+      page,
+      PAGE_SIZE,
     );
 
-    // 먼저 전체 필터링된 데이터 수를 가져오기 (페이지네이션 계산용)
-    const filteredSnap = await getDocs(baseQuery);
-    const totalDataLength = (await getCountFromServer(baseQuery)).data().count;
-    let paginatedQuery = baseQuery;
-
-    if (startAtIndex > 0) {
-      const startAtDoc = filteredSnap.docs[startAtIndex];
-      if (startAtDoc) {
-        paginatedQuery = query(paginatedQuery, startAt(startAtDoc), limit(totalToFetch));
-      } else {
-        paginatedQuery = query(paginatedQuery, limit(totalToFetch));
-      }
-    } else {
-      paginatedQuery = query(paginatedQuery, limit(totalToFetch));
-    }
-
-    const snapShot = await getDocs(paginatedQuery);
-    const consults = snapShot.docs.map(doc => {
-      const data = { id: doc.id, ...doc.data() };
-
-      // 비밀글이면서 admin도 아니고 작성자 본인도 아닌 경우 민감 필드 마스킹(제목은 그대로)
+    const maskSecretFields = (data: IReservationDetailData & { id: string }) => {
       if (data.secret && !isAdmin && (currentUserId === null || currentUserId !== data.userId)) {
         return {
           ...data,
@@ -81,19 +45,16 @@ export async function GET(request: NextRequest) {
           password: null,
         };
       }
-
       return data;
-    });
+    };
+
+    const consults = [...pinnedItems, ...pageItems].map(maskSecretFields);
 
     return typedJson<IResponseBody>({ message: 'ok', consultData: consults, totalDataLength }, { status: 200 });
   } catch (error: any) {
     console.error('Error getting document:', error);
     return typedJson<IResponseBody>(
-      {
-        message: 'Error getting document',
-        consultData: [],
-        totalDataLength: 0,
-      },
+      { message: 'Error getting document', consultData: [], totalDataLength: 0 },
       { status: 500 },
     );
   }

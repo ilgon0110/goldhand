@@ -50,6 +50,7 @@ export const useReservationCreateMutation = (
         location: variables.location,
         franchisee: variables.franchisee,
         isPinned: false,
+        pinnedAt: null,
         secret: variables.secret,
         name: variables.name,
         phoneNumber: variables.phoneNumber,

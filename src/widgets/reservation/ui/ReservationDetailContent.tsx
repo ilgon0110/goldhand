@@ -1,6 +1,7 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
+import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import type { IReservationDetailData, IViewCountData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
@@ -12,6 +13,7 @@ type TReservationDetailContentProps = {
   reservationDetailData: IReservationDetailData;
   viewCountData: IViewCountData | null;
   isOwner: boolean;
+  isAdmin: boolean;
   onChangeDialogOpen: (open: boolean) => void;
   onChangeUpdateButtonName: (name: 'DELETE' | 'EDIT') => void;
   onChangeAlertDialogOpen: (open: boolean) => void;
@@ -22,6 +24,7 @@ export const ReservationDetailContent = ({
   reservationDetailData,
   viewCountData,
   isOwner,
+  isAdmin,
   onChangeDialogOpen,
   onChangeUpdateButtonName,
   onChangeAlertDialogOpen,
@@ -29,6 +32,7 @@ export const ReservationDetailContent = ({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const author = reservationDetailData.userId ? reservationDetailData.name : '비회원';
+  const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('reservation');
 
   const formatToYYYYMMDD = (dateInput: string | Date): string => {
     const date = new Date(dateInput);
@@ -97,6 +101,12 @@ export const ReservationDetailContent = ({
         </div>
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />
+      <PinToggleButton
+        isAdmin={isAdmin}
+        isLoading={isPinToggling}
+        isPinned={reservationDetailData.isPinned}
+        onToggle={() => togglePin({ docId, isPinned: !reservationDetailData.isPinned })}
+      />
       {isOwner && (
         <div className="flex w-full justify-end space-x-4">
           <Button

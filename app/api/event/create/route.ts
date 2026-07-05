@@ -87,6 +87,8 @@ const createEventPost = async (uid: string, body: IEventPost, dataSize: number) 
         userId: uid,
         htmlString: imageSrcAppliedHtmlString,
         status,
+        isPinned: false,
+        pinnedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });

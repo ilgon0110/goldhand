@@ -111,4 +111,14 @@ describe('ReviewPageHeader 컴포넌트 테스트', async () => {
       expect(await screen.findByTestId(review.id)).toBeInTheDocument();
     }
   });
+
+  it('고정된 리뷰 카드에는 고정 배지가 보인다', async () => {
+    const response = await fetch('/api/review?page=1&franchisee=전체');
+    const data = (await response.json()) as IReviewListResponseData;
+    const pinnedItem = { ...data.reviewData[0], isPinned: true };
+
+    renderReviewPage({ ...data, reviewData: [pinnedItem, ...data.reviewData.slice(1)] });
+
+    expect(await screen.findByTestId('pin-badge')).toBeInTheDocument();
+  });
 });

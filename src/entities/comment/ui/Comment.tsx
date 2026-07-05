@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
+import { cn } from '@/lib/utils';
 import { commentEditSchema } from '@/src/entities/comment/config/commentEditSchema';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
@@ -22,6 +23,7 @@ type TCommentProps = {
   docId: string;
   commentId: string;
   isCommentOwner: boolean;
+  isAuthorAdmin: boolean;
   content: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -33,6 +35,7 @@ export const Comment = ({
   docId,
   commentId,
   isCommentOwner,
+  isAuthorAdmin,
   content,
   createdAt,
   updatedAt,
@@ -86,13 +89,20 @@ export const Comment = ({
 
   return (
     <>
-      <div className="flex w-full flex-row gap-4">
+      <div
+        className={cn(
+          'flex w-full flex-row gap-4',
+          isAuthorAdmin && 'rounded-r-md border-l-[3px] border-l-violet-400 bg-violet-50 p-2',
+        )}
+      >
         <div className="relative mt-2 flex h-6 w-6 items-center justify-center">
           <Image alt="댓글 프로필 이미지" fill sizes="100%" src="/icon/avatar_placeholder.png" />
         </div>
         <div className="w-full">
           <div className="flex flex-row gap-2 text-sm">
-            <span>회원</span>
+            <span className={cn(isAuthorAdmin && 'font-semibold text-violet-700')}>
+              {isAuthorAdmin ? '관리자' : '회원'}
+            </span>
             <span className="text-slate-500">{getRelativeTimeFromTimestamp(createdAt)}</span>
             <span className="text-slate-500">{formatDateToHMS(updatedAt)}</span>
             {isUpdated && <span>수정됨</span>}

@@ -121,6 +121,7 @@ export const ReservationListPage = () => {
               createdAt={formatDotDate(formatDateToYMD(item.createdAt))}
               dataUserId={item.userId}
               docId={item.id}
+              isPinned={item.isPinned}
               isSecret={item.secret}
               key={item.id}
               spot={item.franchisee}

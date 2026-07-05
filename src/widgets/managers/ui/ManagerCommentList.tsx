@@ -27,6 +27,7 @@ export const ManagerCommentList = ({ docId, userId }: TManagerCommentListProps) 
               content={item.comment}
               createdAt={item.createdAt}
               docId={docId}
+              isAuthorAdmin={item.isAuthorAdmin}
               isCommentOwner={item.userId === userId}
               key={item.id}
               type="manager"

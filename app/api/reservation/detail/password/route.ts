@@ -25,6 +25,7 @@ const defaultData: IReservationDetailData = {
   createdAt: Timestamp.now(),
   franchisee: '',
   isPinned: false,
+  pinnedAt: null,
   location: '',
   name: '',
   password: null,

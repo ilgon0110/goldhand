@@ -18,7 +18,7 @@ const SOCIAL_LINKS = [
     hoverClass: 'hover:text-red-600',
   },
   {
-    href: 'https://blog.naver.com/goldhandkorea',
+    href: 'https://blog.naver.com/goldhandkorea/224269264686',
     icon: SiNaver,
     label: '네이버 블로그',
     hoverClass: 'hover:text-green-500',
@@ -92,7 +92,9 @@ export const Footer = () => {
                 target="_blank"
               >
                 <Icon aria-hidden="true" size={20} />
-                <span aria-hidden="true" className={cn('hidden text-sm', 'md:inline')}>{label}</span>
+                <span aria-hidden="true" className={cn('hidden text-sm', 'md:inline')}>
+                  {label}
+                </span>
               </Link>
             ))}
           </div>

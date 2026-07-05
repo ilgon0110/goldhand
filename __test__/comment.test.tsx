@@ -41,6 +41,7 @@ describe('Comment 컴포넌트 테스트', () => {
           content={comment.comment}
           createdAt={comment.createdAt}
           docId="docId"
+          isAuthorAdmin={false}
           isCommentOwner={comment.userId === 'userId'}
           type="review"
           updatedAt={comment.updatedAt}
@@ -59,6 +60,7 @@ describe('Comment 컴포넌트 테스트', () => {
           content={comment.comment}
           createdAt={comment.createdAt}
           docId="docId"
+          isAuthorAdmin={false}
           isCommentOwner={comment.userId === 'userId'}
           type="review"
           updatedAt={comment.updatedAt}
@@ -79,6 +81,7 @@ describe('Comment 컴포넌트 테스트', () => {
           content={comment.comment}
           createdAt={comment.createdAt}
           docId="docId"
+          isAuthorAdmin={false}
           isCommentOwner={comment.userId === 'differentUserId'}
           type="review"
           updatedAt={comment.updatedAt}
@@ -99,6 +102,7 @@ describe('Comment 컴포넌트 테스트', () => {
           content={comment.comment}
           createdAt={comment.createdAt}
           docId="docId"
+          isAuthorAdmin={false}
           isCommentOwner={comment.userId === 'userId'}
           type="review"
           updatedAt={comment.updatedAt}
@@ -119,6 +123,7 @@ describe('Comment 컴포넌트 테스트', () => {
           content={comment.comment}
           createdAt={comment.createdAt}
           docId="docId"
+          isAuthorAdmin={false}
           isCommentOwner={comment.userId === 'userId'}
           type="review"
           updatedAt={comment.updatedAt}
@@ -142,6 +147,7 @@ describe('Comment 컴포넌트 테스트', () => {
           content={comment.comment}
           createdAt={comment.createdAt}
           docId="docId"
+          isAuthorAdmin={false}
           isCommentOwner={comment.userId === 'userId'}
           type="review"
           updatedAt={comment.updatedAt}
@@ -155,5 +161,42 @@ describe('Comment 컴포넌트 테스트', () => {
       await userEvent.click(screen.getByRole('button', { name: '취소하기' }));
       expect(screen.queryByText('댓글을 삭제하시겠습니까?')).not.toBeInTheDocument();
     }
+  });
+
+  it('isAuthorAdmin이 true이면 "관리자"로 표기되고, false이면 "회원"으로 표기된다.', () => {
+    const [comment] = mockCommentData;
+
+    const { unmount } = renderWithQueryClient(
+      <Comment
+        commentId={comment.id}
+        content={comment.comment}
+        createdAt={comment.createdAt}
+        docId="docId"
+        isAuthorAdmin={true}
+        isCommentOwner={false}
+        type="review"
+        updatedAt={comment.updatedAt}
+        userId="userId"
+      />,
+    );
+    expect(screen.getByText('관리자')).toBeInTheDocument();
+    expect(screen.queryByText('회원')).not.toBeInTheDocument();
+    unmount();
+
+    renderWithQueryClient(
+      <Comment
+        commentId={comment.id}
+        content={comment.comment}
+        createdAt={comment.createdAt}
+        docId="docId"
+        isAuthorAdmin={false}
+        isCommentOwner={false}
+        type="review"
+        updatedAt={comment.updatedAt}
+        userId="userId"
+      />,
+    );
+    expect(screen.getByText('회원')).toBeInTheDocument();
+    expect(screen.queryByText('관리자')).not.toBeInTheDocument();
   });
 });

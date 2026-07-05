@@ -27,6 +27,7 @@ export const ReservationCommentList = ({ docId, userId }: TReservationCommentLis
               content={item.comment}
               createdAt={item.createdAt}
               docId={docId}
+              isAuthorAdmin={item.isAuthorAdmin}
               isCommentOwner={item.userId === userId}
               key={item.id}
               type="reservation"

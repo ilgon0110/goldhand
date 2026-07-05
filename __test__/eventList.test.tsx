@@ -131,4 +131,13 @@ describe('Event Component', () => {
       expect(await screen.findByTestId(event.id)).toBeInTheDocument();
     }
   });
+
+  it('고정된 이벤트 카드에는 고정 배지가 보인다', async () => {
+    const eventListData = (await (await fetch('/api/event')).json()) as IEventListResponseData;
+    const pinnedItem = { ...eventListData.eventData[0], isPinned: true };
+
+    renderEventPage({ ...eventListData, eventData: [pinnedItem, ...eventListData.eventData.slice(1)] });
+
+    expect(await screen.findByTestId('pin-badge')).toBeInTheDocument();
+  });
 });

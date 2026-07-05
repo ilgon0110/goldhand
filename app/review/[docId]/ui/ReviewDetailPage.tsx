@@ -8,6 +8,7 @@ import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { Comment, useComments } from '@/src/entities/comment';
+import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetReviewDetailData } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
@@ -75,6 +76,8 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
 
   const formValidation = form.formState.isValid;
   const isOwner = data.data.userId === userData.userData?.userId;
+  const isAdmin = userData.userData?.grade === 'admin';
+  const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('review');
 
   const onCommentSubmit = async (values: z.infer<typeof reviewCommentSchema>) => {
     if (!formValidation) return;
@@ -118,6 +121,12 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         </div>
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />
+      <PinToggleButton
+        isAdmin={isAdmin}
+        isLoading={isPinToggling}
+        isPinned={data.data.isPinned}
+        onToggle={() => togglePin({ docId, isPinned: !data.data.isPinned })}
+      />
       {isOwner && (
         <div className="flex w-full justify-end space-x-4">
           <Button
@@ -189,6 +198,7 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
               content={item.comment}
               createdAt={item.createdAt}
               docId={docId}
+              isAuthorAdmin={item.isAuthorAdmin}
               isCommentOwner={item.userId === userData.userData?.userId}
               key={item.id}
               type="review"

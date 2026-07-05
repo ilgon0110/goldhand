@@ -17,6 +17,7 @@ const defaultData: IReviewDetailData = {
   createdAt: Timestamp.now(),
   franchisee: '',
   isPinned: false,
+  pinnedAt: null,
   name: '',
   title: '',
   updatedAt: Timestamp.now(),

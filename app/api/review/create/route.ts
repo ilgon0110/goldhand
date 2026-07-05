@@ -91,6 +91,8 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
       franchisee,
       userId: uid,
       htmlString: imageSrcAppliedHtmlString,
+      isPinned: false,
+      pinnedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

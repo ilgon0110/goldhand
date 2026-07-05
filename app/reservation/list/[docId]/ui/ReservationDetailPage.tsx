@@ -122,6 +122,7 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
         {/* 예약 내용 */}
         <ReservationDetailContent
           docId={docId}
+          isAdmin={userData.userData?.grade === 'admin'}
           isOwner={data.data.userId ? data.data.userId === userData.userData?.userId : true}
           reservationDetailData={data.data}
           viewCountData={viewCountData.data}

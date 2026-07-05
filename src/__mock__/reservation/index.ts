@@ -22,6 +22,10 @@ export const mockReservationListData: IReservationListPageProps = {
       bornDate: '2025-06-30T15:00:00.000Z',
       userId: null,
       isPinned: true,
+      pinnedAt: {
+        seconds: 1753970558,
+        nanoseconds: 95000000,
+      },
       secret: true,
       location: '호호',
       franchisee: '전체',
@@ -40,6 +44,7 @@ export const mockReservationListData: IReservationListPageProps = {
       bornDate: '2025-07-02T15:00:00.000Z',
       name: '김일곤',
       isPinned: false,
+      pinnedAt: null,
       createdAt: {
         seconds: 1753957744,
         nanoseconds: 372000000,
@@ -67,6 +72,7 @@ export const mockReservationListData: IReservationListPageProps = {
       name: 'ㅇㄹㅁㅇㄹ',
       location: '231231',
       isPinned: false,
+      pinnedAt: null,
       updatedAt: {
         seconds: 1752670537,
         nanoseconds: 412000000,
@@ -90,6 +96,7 @@ export const mockReservationListData: IReservationListPageProps = {
       userId: null,
       franchisee: '화성동탄점',
       isPinned: false,
+      pinnedAt: null,
       updatedAt: {
         seconds: 1752669918,
         nanoseconds: 182000000,
@@ -106,6 +113,7 @@ export const mockReservationListData: IReservationListPageProps = {
       bornDate: null,
       userId: null,
       isPinned: false,
+      pinnedAt: null,
       createdAt: {
         seconds: 1752669562,
         nanoseconds: 643000000,
@@ -134,6 +142,7 @@ export const mockReservationListData: IReservationListPageProps = {
       },
       secret: true,
       isPinned: false,
+      pinnedAt: null,
       createdAt: {
         seconds: 1752666021,
         nanoseconds: 56000000,
@@ -155,6 +164,7 @@ export const mockReservationListData: IReservationListPageProps = {
       secret: true,
       name: '김일곤',
       isPinned: false,
+      pinnedAt: null,
       updatedAt: {
         seconds: 1752662181,
         nanoseconds: 734000000,
@@ -180,6 +190,7 @@ export const mockReservationListData: IReservationListPageProps = {
       franchisee: '전체',
       secret: true,
       isPinned: false,
+      pinnedAt: null,
       updatedAt: {
         seconds: 1751802487,
         nanoseconds: 813000000,
@@ -202,6 +213,7 @@ export const mockReservationListData: IReservationListPageProps = {
       name: '김일곤',
       userId: '1ㅌㅊㅍㅌㄹㄹㄱ2',
       isPinned: false,
+      pinnedAt: null,
       createdAt: {
         seconds: 1751545750,
         nanoseconds: 883000000,
@@ -217,6 +229,7 @@ export const mockReservationListData: IReservationListPageProps = {
       secret: true,
       location: '인계동',
       isPinned: false,
+      pinnedAt: null,
       createdAt: {
         seconds: 1751457946,
         nanoseconds: 789000000,

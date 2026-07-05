@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
+import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
+import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { IReviewDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
@@ -15,13 +17,17 @@ import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 import { generateReviewDescription } from '../lib/util';
 
 type TReviewCardProps = {
-  review: IReviewDetailData & { id: string };
+  review: IReviewDetailData & { id: string; isAuthorAdmin: boolean };
 };
 
 export const ReviewCard = ({ review }: TReviewCardProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
+
+  const { data: authData } = useAuth();
+  const isAdmin = authData?.userData?.grade === 'admin';
+  const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('review');
 
   const description = generateReviewDescription(review.htmlString);
   const formattedDate = formatDateToYMD(review.createdAt);
@@ -58,15 +64,29 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
   return (
     <>
       {isPending && <LoadingSpinnerOverlay text="페이지 이동 중..." />}
-      <button
-        className={cn(gridClass, 'group text-left transition-colors duration-150 hover:bg-stone-50')}
+      <div
+        className={cn(
+          gridClass,
+          'group text-left transition-colors duration-150',
+          review.isPinned ? PINNED_CARD_CLASS : 'hover:bg-stone-50',
+        )}
         data-testid={review.id}
-        type="button"
+        role="button"
+        tabIndex={0}
         onClick={() => {
           startTransition(async () => {
             await sendViewLog(review.id);
             router.push(`/review/${review.id}`);
           });
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            startTransition(async () => {
+              await sendViewLog(review.id);
+              router.push(`/review/${review.id}`);
+            });
+          }
         }}
       >
         {/* 썸네일 — 2행 span */}
@@ -94,10 +114,23 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
             {review.title}
           </p>
           <div className="inline-flex shrink-0 items-center gap-2">
+            <PinToggleButton
+              isAdmin={isAdmin}
+              isLoading={isPinToggling}
+              isPinned={review.isPinned}
+              onToggle={() => togglePin({ docId: review.id, isPinned: !review.isPinned })}
+            />
             <span className="whitespace-nowrap rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em] text-stone-500">
               {review.franchisee}
             </span>
-            <span className="whitespace-nowrap rounded-full border border-greenDeep/25 bg-greenDeep/10 px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em] text-greenDeep">
+            <span
+              className={cn(
+                'whitespace-nowrap rounded-full border px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em]',
+                review.isAuthorAdmin
+                  ? 'border-violet-300/40 bg-violet-100 text-violet-700'
+                  : 'border-greenDeep/25 bg-greenDeep/10 text-greenDeep',
+              )}
+            >
               {review.name}
             </span>
           </div>
@@ -122,7 +155,7 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
             {formattedDate}
           </p>
         </div>
-      </button>
+      </div>
     </>
   );
 };

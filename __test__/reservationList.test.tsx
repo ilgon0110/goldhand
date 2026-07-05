@@ -290,4 +290,14 @@ describe('ReservationList Component', () => {
       expect(await screen.findByTestId(item.id)).toBeInTheDocument();
     }
   });
+
+  it('고정된 예약글 카드에는 고정 배지가 보인다', async () => {
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
+    const pinnedItem = { ...data.consultData[0], isPinned: true };
+
+    renderList({ ...data, consultData: [pinnedItem, ...data.consultData.slice(1)] });
+
+    expect(await screen.findByTestId('pin-badge')).toBeInTheDocument();
+  });
 });

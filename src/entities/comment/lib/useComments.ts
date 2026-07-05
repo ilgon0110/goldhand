@@ -5,6 +5,7 @@ import { collection, getFirestore, onSnapshot, orderBy, query } from 'firebase/f
 import { useEffect, useState } from 'react';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { fetcher } from '@/src/shared/utils/fetcher.client';
 
 type TCommentProps = {
   docId: string;
@@ -17,6 +18,7 @@ type TComment = {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   comment: string;
+  isAuthorAdmin: boolean;
 };
 
 type TUseCommentsResult = {
@@ -24,6 +26,33 @@ type TUseCommentsResult = {
   loading: boolean;
   error: FirestoreError | null;
 };
+
+interface IAuthorGradesResponseBody {
+  response: 'ng' | 'ok';
+  message: string;
+  adminUserIds: string[];
+}
+
+// 작성자의 admin 여부는 서버에서 판별한다 — users 문서(PII 포함)를 클라이언트로 직접 내려주지 않기 위함.
+async function getAdminUserIdSet(userIds: string[]): Promise<Set<string>> {
+  const uniqueUserIds = Array.from(new Set(userIds));
+  if (uniqueUserIds.length === 0) {
+    return new Set();
+  }
+
+  try {
+    const response = await fetcher<IAuthorGradesResponseBody>('/api/comment/author-grades', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userIds: uniqueUserIds }),
+      cache: 'no-store',
+    });
+    return new Set(response.adminUserIds);
+  } catch (error) {
+    console.error('Error fetching author grades:', error);
+    return new Set();
+  }
+}
 
 export function useComments({ docId, collectionName }: TCommentProps): TUseCommentsResult {
   const [comments, setComments] = useState<TComment[]>([]);
@@ -40,14 +69,16 @@ export function useComments({ docId, collectionName }: TCommentProps): TUseComme
     const unsubscribe = onSnapshot(
       q,
       snapshot => {
-        const updated = snapshot.docs.map(doc => ({
+        const rawComments = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-        })) as TComment[];
+        })) as Omit<TComment, 'isAuthorAdmin'>[];
 
-        setComments(updated);
-        setLoading(false);
-        setError(null);
+        getAdminUserIdSet(rawComments.map(item => item.userId)).then(adminUserIds => {
+          setComments(rawComments.map(item => ({ ...item, isAuthorAdmin: adminUserIds.has(item.userId) })));
+          setLoading(false);
+          setError(null);
+        });
       },
       err => {
         setError(err);

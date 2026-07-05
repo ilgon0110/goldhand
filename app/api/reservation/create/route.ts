@@ -126,6 +126,8 @@ async function createNonMemberPost(body: IReservationCreatePostData) {
       franchisee,
       password: hashedPassword,
       userId: null,
+      isPinned: false,
+      pinnedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -167,6 +169,8 @@ async function createMemberPost(uid: string, body: IReservationCreatePostData) {
       franchisee,
       password: null,
       userId: uid,
+      isPinned: false,
+      pinnedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

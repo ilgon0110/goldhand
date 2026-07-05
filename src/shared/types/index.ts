@@ -36,6 +36,7 @@ export interface IReservationDetailData {
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
   isPinned: boolean;
+  pinnedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null;
   location: string;
   name: string;
   password: string | null;
@@ -60,6 +61,7 @@ export interface IReviewDetailData {
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   franchisee: string;
   isPinned: boolean;
+  pinnedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null;
   name: string;
   title: string;
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
@@ -70,7 +72,7 @@ export interface IReviewDetailData {
 export interface IReviewListResponseData {
   response: 'ng' | 'ok';
   message: string;
-  reviewData: (IReviewDetailData & { id: string })[] | [];
+  reviewData: (IReviewDetailData & { id: string; isAuthorAdmin: boolean })[] | [];
   totalDataLength: number;
 }
 
@@ -235,6 +237,7 @@ export interface IEventDetailData {
   htmlString: string;
   createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   isPinned: boolean;
+  pinnedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null;
   name: string;
   title: string;
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;

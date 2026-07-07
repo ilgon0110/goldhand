@@ -6,7 +6,7 @@ import type { IReservationDetailData, IViewCountData } from '@/src/shared/types'
 import { Button } from '@/src/shared/ui/button';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { formatDateToYMD } from '@/src/shared/utils';
+import { formatDateToYMD, formatPhoneNumber } from '@/src/shared/utils';
 
 type TReservationDetailContentProps = {
   docId: string;
@@ -31,7 +31,11 @@ export const ReservationDetailContent = ({
 }: TReservationDetailContentProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const author = reservationDetailData.userId ? reservationDetailData.name : '비회원';
+  const author = reservationDetailData.name;
+  const isGuestPost = !reservationDetailData.userId;
+  // 비회원 글은 userId가 없어 isOwner가 항상 true이므로(수정/삭제 시 비밀번호로 검증),
+  // 작성자 정보(이름/연락처)는 실제 회원 본인이거나 관리자인 경우에만 노출한다.
+  const canViewAuthorInfo = (Boolean(reservationDetailData.userId) && isOwner) || isAdmin;
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('reservation');
 
   const formatToYYYYMMDD = (dateInput: string | Date): string => {
@@ -48,7 +52,7 @@ export const ReservationDetailContent = ({
     // 비회원의 경우 비밀번호 검증
     e.stopPropagation();
     onChangeUpdateButtonName('EDIT');
-    if (author === '비회원') {
+    if (isGuestPost) {
       onChangeDialogOpen(true);
     } else {
       // 수정 Form으로 이동
@@ -62,7 +66,7 @@ export const ReservationDetailContent = ({
     // 비회원의 경우 비밀번호 검증
     e.stopPropagation();
     onChangeUpdateButtonName('DELETE');
-    if (author === '비회원') {
+    if (isGuestPost) {
       onChangeDialogOpen(true);
     } else {
       // 삭제 Modal 호출
@@ -76,10 +80,23 @@ export const ReservationDetailContent = ({
       <div className="relative flex flex-col gap-2">
         <h3 className="text-xl font-bold md:text-3xl">{reservationDetailData.title}</h3>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="space-x-2">
-            <span className="text-slate-500">{reservationDetailData.franchisee}</span>
-            <span>{author}</span>
-            <span>{formatDateToYMD(reservationDetailData.createdAt)}</span>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <span className="whitespace-nowrap text-slate-500">
+              <span className="font-bold">지점:</span> {reservationDetailData.franchisee}
+            </span>
+            {canViewAuthorInfo && (
+              <span className="whitespace-nowrap">
+                <span className="font-bold">작성자:</span> {author}
+              </span>
+            )}
+            {canViewAuthorInfo && (
+              <span className="whitespace-nowrap">
+                <span className="font-bold">연락처:</span> {formatPhoneNumber(reservationDetailData.phoneNumber)}
+              </span>
+            )}
+            <span className="whitespace-nowrap">
+              <span className="font-bold">작성일:</span> {formatDateToYMD(reservationDetailData.createdAt)}
+            </span>
           </div>
           <div className="flex flex-row items-center gap-1 text-slate-500 sm:ml-auto">
             <ViewIcon />

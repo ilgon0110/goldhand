@@ -33,7 +33,9 @@ export async function GET(request: NextRequest) {
     );
 
     const maskSecretFields = (data: IReservationDetailData & { id: string }) => {
-      if (data.secret && !isAdmin && (currentUserId === null || currentUserId !== data.userId)) {
+      const isOwner = currentUserId !== null && currentUserId === data.userId;
+
+      if (data.secret && !isAdmin && !isOwner) {
         return {
           ...data,
           title: data.title,
@@ -45,7 +47,9 @@ export async function GET(request: NextRequest) {
           password: null,
         };
       }
-      return data;
+
+      // 리스트 UI에서는 연락처를 전혀 사용하지 않으므로 권한과 무관하게 항상 마스킹
+      return { ...data, phoneNumber: '' };
     };
 
     const consults = [...pinnedItems, ...pageItems].map(maskSecretFields);

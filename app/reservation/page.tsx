@@ -39,11 +39,25 @@ export default function ReservationPage() {
 
                 {/* Step 1 연락 chip */}
                 {index === 0 && (
-                  <div className="mt-3.5 flex flex-wrap gap-2">
+                  <div className={cn('mt-3.5 flex flex-col gap-2', 'md:flex-row md:flex-wrap')}>
+                    <Link
+                      className={cn(
+                        'flex w-full items-center justify-center gap-2 rounded-full bg-[#728146] px-3.5 py-2 text-sm font-semibold text-white transition-colors',
+                        'hover:bg-[#062E16]',
+                        'md:inline-flex md:w-auto md:justify-start',
+                      )}
+                      href="/reservation/apply"
+                    >
+                      <svg fill="none" height={14} stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" width={14}>
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                      <span>예약상담 신청하기</span>
+                    </Link>
                     <a
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-full border border-[#E8E1D2] bg-white px-3.5 py-2 text-sm text-[#1B1814] transition-all',
+                        'flex w-full items-center justify-center gap-2 rounded-full border border-[#E8E1D2] bg-white px-3.5 py-2 text-sm text-[#1B1814] transition-all',
                         'hover:border-[#A88547] hover:bg-[#F6F1E7]',
+                        'md:inline-flex md:w-auto md:justify-start',
                       )}
                       href="tel:01044370431"
                     >
@@ -58,7 +72,10 @@ export default function ReservationPage() {
                       <span className="font-serif tracking-wide">010-4437-0431</span>
                     </a>
                     <a
-                      className="inline-flex items-center gap-2 rounded-full bg-[#FAE100] px-3.5 py-2 text-sm font-semibold text-[#3C1E1E] transition-all hover:bg-[#f0d600]"
+                      className={cn(
+                        'flex w-full items-center justify-center gap-2 rounded-full bg-[#FAE100] px-3.5 py-2 text-sm font-semibold text-[#3C1E1E] transition-all hover:bg-[#f0d600]',
+                        'md:inline-flex md:w-auto md:justify-start',
+                      )}
                       href="https://pf.kakao.com/_cpdEX"
                       rel="noreferrer"
                       target="_blank"
@@ -71,7 +88,7 @@ export default function ReservationPage() {
                       >
                         <path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.7 1.78 5.07 4.45 6.43-.18.6-1.05 3.42-1.08 3.6 0 0-.02.18.1.24.12.07.27.02.27.02.18-.03 3.4-2.22 3.97-2.6.74.1 1.5.16 2.29.16 5.52 0 10-3.48 10-7.85S17.52 3 12 3z" />
                       </svg>
-                      <span>카카오톡 채널</span>
+                      <span className="truncate">카카오톡 채널</span>
                     </a>
                   </div>
                 )}

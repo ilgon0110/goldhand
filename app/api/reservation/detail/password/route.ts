@@ -71,33 +71,44 @@ export async function POST(request: NextRequest) {
 
     const data = docSnap.data() as IReservationDetailData;
 
+    // 회원이 작성한 글은 password 기반 인증 대상이 아니므로(소유권은 userId로만 판별) 무조건 거부
+    if (data.userId != null) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '회원이 작성한 게시글은 비밀번호로 접근할 수 없습니다.',
+          data: defaultData,
+          reservationToken: null,
+        },
+        { status: 403 },
+      );
+    }
+
     // 비회원 - 비밀번호 검증
-    if (data.userId == null) {
-      if (password === null) {
-        return typedJson<IResponseBody>(
-          {
-            response: 'ng',
-            message: 'password is required',
-            data: defaultData,
-            reservationToken: null,
-          },
-          { status: 400 },
-        );
-      }
+    if (password === null) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: 'password is required',
+          data: defaultData,
+          reservationToken: null,
+        },
+        { status: 400 },
+      );
+    }
 
-      const isMatch = await bcrypt.compare(password, data.password || '');
+    const isMatch = await bcrypt.compare(password, data.password || '');
 
-      if (!isMatch) {
-        return typedJson<IResponseBody>(
-          {
-            response: 'ng',
-            message: '비밀번호가 틀립니다.',
-            data: defaultData,
-            reservationToken: null,
-          },
-          { status: 403 },
-        );
-      }
+    if (!isMatch) {
+      return typedJson<IResponseBody>(
+        {
+          response: 'ng',
+          message: '비밀번호가 틀립니다.',
+          data: defaultData,
+          reservationToken: null,
+        },
+        { status: 403 },
+      );
     }
 
     // 인증 토큰을 쿠키에 저장 - 클라이언트 서버 액션에서 저장할 예정

@@ -24,7 +24,7 @@ export function MainTitle() {
             <p>서비스 전 상담부터 종료까지, 체계적인 관리로 운영됩니다.</p>
           </div>
           <p className={cn('mt-4 font-bold', 'text-xl', 'md:text-3xl')}>
-            믿고 맡길 수 있는 산후 도우미를 찾고 계시다면, 고운황금손이 답입니다.
+            믿고 맡길 수 있는 산후 도우미를 찾고 계시다면, 고운황금손이 정답입니다.
           </p>
         </div>
       </FadeInWhenVisible>
@@ -37,7 +37,7 @@ export function MainTitle() {
         >
           <TitleCard contents="산모 신생아 케어 서비스 이용자 수" icon={<PiUsersFourFill size={48} />} title="3,000+" />
           <TitleCard contents="전문 교육을 이수한 산후도우미 수" icon={<GrUserFemale size={48} />} title="200+" />
-          <TitleCard contents="고운황금손 만족후기" icon={<MdPlace size={48} />} title="500+" />
+          <TitleCard contents="고운황금손 만족후기" icon={<MdPlace size={48} />} title="1,000+" />
         </div>
         <p className={cn('mt-3 text-xs text-slate-400', 'md:text-sm')}>* 위 수치는 화성동탄점(본점) 기준입니다.</p>
       </FadeInWhenVisible>

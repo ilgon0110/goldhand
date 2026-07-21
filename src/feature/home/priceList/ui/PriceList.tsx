@@ -11,6 +11,7 @@ export const PriceList = () => {
       <div className={cn('mt-12 grid grid-cols-1 gap-6', 'md:grid-cols-2', 'xl:grid-cols-4')}>
         <PriceSummaryCard
           description="산후관리사가 산모 집으로 직접 찾아와요"
+          featured
           iconType="commute"
           priceList={[
             { type: '베이직', week: '1주', price: 850000 },
@@ -20,7 +21,6 @@ export const PriceList = () => {
         />
         <PriceSummaryCard
           description="산모 집에서 산후관리사가 매일 함께해요"
-          featured
           iconType="livein"
           priceList={[
             { type: '주5일', week: '1주', price: 1350000 },

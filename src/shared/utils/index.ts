@@ -136,7 +136,7 @@ export function toastInfo(comment: string) {
 
 export function toastError(comment: string) {
   return toast.error(comment, {
-    position: 'top-center',
+    position: 'top-right',
     autoClose: 3000,
     transition: Bounce,
     hideProgressBar: false,
@@ -150,7 +150,7 @@ export function toastError(comment: string) {
 
 export function toastSuccess(comment: string) {
   return toast.success(comment, {
-    position: 'top-center',
+    position: 'top-right',
     autoClose: 3000,
     transition: Bounce,
     hideProgressBar: false,

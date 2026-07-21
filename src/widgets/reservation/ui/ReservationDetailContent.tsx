@@ -114,7 +114,7 @@ export const ReservationDetailContent = ({
         </div>
         <div className="mb-4 flex flex-col gap-1">
           <span className="text-xl font-bold">상담내용</span>
-          <p>{reservationDetailData.content}</p>
+          <p className="whitespace-pre-wrap break-words">{reservationDetailData.content}</p>
         </div>
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />

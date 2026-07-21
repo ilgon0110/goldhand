@@ -6,6 +6,7 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/shared/ui/tabs';
 
 import { MyPageSection } from './_MyPageSection';
+import { MyPageUserList } from './_MyPageUserList';
 
 interface IMyPagePostListProps {
   myPageData: IMyPageResponseData;
@@ -27,6 +28,7 @@ export const MyPagePostList = ({ myPageData }: IMyPagePostListProps) => {
           <TabsTrigger value="COMMENT">댓글</TabsTrigger>
           {isAdmin && <TabsTrigger value="MANAGER">지원목록</TabsTrigger>}
           <TabsTrigger value="APPLY">지원서</TabsTrigger>
+          {isAdmin && <TabsTrigger value="USER_LIST">사용자 목록</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="CONSULT">
@@ -123,6 +125,12 @@ export const MyPagePostList = ({ myPageData }: IMyPagePostListProps) => {
             }}
           />
         </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="USER_LIST">
+            <MyPageUserList />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   );

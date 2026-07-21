@@ -92,7 +92,10 @@ export const ReservationEditPage = ({ docId }: { docId: string }) => {
                     minLength={6}
                   />
                 </FormControl>
-                <FormDescription></FormDescription>
+                <FormDescription>
+                  본인이 연락받으실 번호를 입력해주세요. 상담 답변 등록 안내를 위해 이용되며, 타인의 번호를 입력하여 발생하는 문제에 대한
+                  책임은 입력자에게 있습니다.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

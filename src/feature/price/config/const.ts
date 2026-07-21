@@ -1,4 +1,4 @@
-export const basicPriceList = ['850,000/1주', '1,500,000/2주', '2,250,000/3주', '3,000,000/4주'];
+export const basicPriceList = [900000, 1600000, 2400000, 3200000];
 
 export const commuteCheckList = [
   '1주·2주·3주·4주 단위별 금액이 상이합니다.',
@@ -28,15 +28,15 @@ export const onDayCheckList = [
   '1일부터 3일까지 이용 가능합니다.',
 ];
 
-export const premiumPriceList = ['900,000/1주', '1,600,000/2주', '2,400,000/3주', '3,200,000/4주'];
+export const premiumPriceList = [950000, 1700000, 2550000, 3400000];
 
-export const premiumHouseFiveDayPriceList = ['1,350,000/1주', '2,450,000/2주', '3,600,000/3주', '4,800,000/4주'];
+export const premiumHouseFiveDayPriceList = [1450000, 2600000, 3900000, 5200000];
 
-export const premiumHouseSixDayPriceList = ['1,600,000/1주', '3,000,000/2주', '4,500,000/3주', '6,000,000/4주'];
+export const premiumHouseSixDayPriceList = [1650000, 3100000, 4650000, 6200000];
 
 export const premiumHouseSixDayCheckList = ['일요일 19시 출근 ~ 금요일 15시 퇴근', '주 6일제 이용시 토요일 15시 퇴근'];
 
-export const costEffectivenessPriceList = ['600,000/1주', '1,150,000/2주', '1,700,000/3주', '2,200,000/4주'];
+export const costEffectivenessPriceList = [620000, 1180000, 1770000, 2360000];
 
 export const costEffectivenessCheckList = [
   '점심식사 제공',
@@ -44,7 +44,7 @@ export const costEffectivenessCheckList = [
   '큰아이 및 성인, 휴일 추가비는 종일제 기준으로 50%만 적용',
 ];
 
-export const oneDayPriceList = ['200,000/8시간'];
+export const oneDayPriceList = [200000];
 
 export const oneDayCheckList = ['1일부터 3일 까지 이용 가능'];
 

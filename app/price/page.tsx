@@ -1,6 +1,18 @@
 import { cn } from '@/lib/utils';
-import { commuteCheckList, dayoffCheckList, inHouseCheckList, onDayCheckList } from '@/src/feature/price';
-import { BasicPremiumPriceTable, SinglePriceTable } from '@/src/feature/price';
+import {
+  BasicPremiumPriceTable,
+  basicPriceList,
+  commuteCheckList,
+  costEffectivenessPriceList,
+  dayoffCheckList,
+  inHouseCheckList,
+  onDayCheckList,
+  oneDayPriceList,
+  premiumHouseFiveDayPriceList,
+  premiumHouseSixDayPriceList,
+  premiumPriceList,
+  SinglePriceTable,
+} from '@/src/feature/price';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 function NotesList({ items }: { items: string[] }) {
@@ -32,9 +44,7 @@ const PricePage = () => {
       {/* 주간 케어 요금 */}
       <section className={cn('mx-auto px-8')}>
         <div className={cn('py-11 text-center')}>
-          <h2 className={cn('text-3xl font-medium tracking-tight', 'md:text-4xl')}>
-            주간 케어 요금
-          </h2>
+          <h2 className={cn('text-3xl font-medium tracking-tight', 'md:text-4xl')}>주간 케어 요금</h2>
           <p className="mt-4 text-sm leading-relaxed text-inkLight">
             기간 단위로 이용하시는 출퇴근형과 입주형 요금입니다.
           </p>
@@ -47,10 +57,7 @@ const PricePage = () => {
               <h3 className="text-2xl font-medium tracking-normal">출퇴근형</h3>
               <p className="mt-2 text-sm text-inkLight">산후관리사가 산모님 댁으로 방문해요.</p>
             </div>
-            <BasicPremiumPriceTable
-              basicPriceList={[900000, 1600000, 2400000, 3200000]}
-              premiumPriceList={[950000, 1700000, 2550000, 3400000]}
-            />
+            <BasicPremiumPriceTable basicPriceList={basicPriceList} premiumPriceList={premiumPriceList} />
             <NotesList items={commuteCheckList} />
           </div>
 
@@ -61,9 +68,9 @@ const PricePage = () => {
               <p className="mt-2 text-sm text-inkLight">산모님 댁에서 산후관리사가 함께해요.</p>
             </div>
             <BasicPremiumPriceTable
-              basicPriceList={[1450000, 2600000, 3900000, 5200000]}
+              basicPriceList={premiumHouseFiveDayPriceList}
               basicTitle="주5일 입주형"
-              premiumPriceList={[1650000, 3100000, 4650000, 6200000]}
+              premiumPriceList={premiumHouseSixDayPriceList}
               premiumTitle="주6일 입주형"
             />
             <NotesList items={inHouseCheckList} />
@@ -79,9 +86,7 @@ const PricePage = () => {
       {/* 단기 돌봄 요금 */}
       <section className={cn('mx-auto px-8')}>
         <div className={cn('py-11 text-center')}>
-          <h2 className={cn('text-3xl font-medium tracking-tight', 'md:text-4xl')}>
-            단기 돌봄 요금
-          </h2>
+          <h2 className={cn('text-3xl font-medium tracking-tight', 'md:text-4xl')}>단기 돌봄 요금</h2>
           <p className="mt-4 text-sm leading-relaxed text-inkLight">
             필요한 시간만큼 가볍게 이용하실 수 있는 단기 케어입니다.
           </p>
@@ -94,7 +99,7 @@ const PricePage = () => {
               <h3 className="text-2xl font-medium tracking-normal">오전·오후 돌봄</h3>
               <p className="mt-2 text-sm text-inkLight">오전 또는 오후 시간대에만 돌봐드려요.</p>
             </div>
-            <SinglePriceTable priceList={[620000, 1180000, 1770000, 2360000]} title="오전·오후 돌봄" />
+            <SinglePriceTable priceList={costEffectivenessPriceList} title="오전·오후 돌봄" />
             <NotesList items={dayoffCheckList} />
           </div>
 
@@ -104,7 +109,7 @@ const PricePage = () => {
               <h3 className="text-2xl font-medium tracking-normal">하루돌봄</h3>
               <p className="mt-2 text-sm text-inkLight">원하시는 날, 하루만 돌봐드려요.</p>
             </div>
-            <SinglePriceTable priceList={[200000]} title="하루돌봄" />
+            <SinglePriceTable priceList={oneDayPriceList} title="하루돌봄" />
             <NotesList items={onDayCheckList} />
           </div>
         </div>
@@ -146,78 +151,130 @@ const PricePage = () => {
             </thead>
             <tbody>
               <tr>
-                <th
-                  className="bg-paper2 font-semibold text-inkMid"
-                  rowSpan={6}
-                  scope="rowgroup"
-                >
+                <th className="bg-paper2 font-semibold text-inkMid" rowSpan={6} scope="rowgroup">
                   큰아이
                   <br />
                   추가비용
                 </th>
-                <th className="text-left text-inkLight font-normal pl-5" scope="row">미취학 20개월 미만</th>
-                <td className="">15,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">20,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <th className="pl-5 text-left font-normal text-inkLight" scope="row">
+                  미취학 20개월 미만
+                </th>
+                <td className="">
+                  15,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  20,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="text-left text-inkLight font-normal pl-5" scope="row">미취학 20개월 이상</th>
-                <td className="">10,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">15,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <th className="pl-5 text-left font-normal text-inkLight" scope="row">
+                  미취학 20개월 이상
+                </th>
+                <td className="">
+                  10,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  15,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="text-left text-inkLight font-normal pl-5" scope="row">어린이집·유치원</th>
-                <td className="">6,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">10,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <th className="pl-5 text-left font-normal text-inkLight" scope="row">
+                  어린이집·유치원
+                </th>
+                <td className="">
+                  6,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  10,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="text-left text-inkLight font-normal pl-5" scope="row">어린이집 방학</th>
-                <td className="">10,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">20,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <th className="pl-5 text-left font-normal text-inkLight" scope="row">
+                  어린이집 방학
+                </th>
+                <td className="">
+                  10,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  20,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="text-left text-inkLight font-normal pl-5" scope="row">초등학교 이상 학생</th>
-                <td className="">5,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">8,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <th className="pl-5 text-left font-normal text-inkLight" scope="row">
+                  초등학교 이상 학생
+                </th>
+                <td className="">
+                  5,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  8,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="text-left text-inkLight font-normal pl-5" scope="row">초등학교 이상 학생 방학</th>
-                <td className="">6,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">10,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <th className="pl-5 text-left font-normal text-inkLight" scope="row">
+                  초등학교 이상 학생 방학
+                </th>
+                <td className="">
+                  6,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  10,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="bg-paper2 font-semibold text-left text-inkMid pl-5" colSpan={2} scope="row">
+                <th className="bg-paper2 pl-5 text-left font-semibold text-inkMid" colSpan={2} scope="row">
                   남편 재택근무 및 성인가족 추가
                 </th>
-                <td className="">5,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">6,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <td className="">
+                  5,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  6,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="bg-paper2 font-semibold text-left text-inkMid pl-5" colSpan={2} scope="row">
+                <th className="bg-paper2 pl-5 text-left font-semibold text-inkMid" colSpan={2} scope="row">
                   시간연장 (시간당)
                 </th>
-                <td className="">20,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">20,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <td className="">
+                  20,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  20,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="bg-paper2 font-semibold text-left text-inkMid pl-5" colSpan={2} scope="row">
+                <th className="bg-paper2 pl-5 text-left font-semibold text-inkMid" colSpan={2} scope="row">
                   명절 휴일 추가
                 </th>
-                <td className="">100,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">100,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <td className="">
+                  100,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  100,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="bg-paper2 font-semibold text-left text-inkMid pl-5" colSpan={2} scope="row">
+                <th className="bg-paper2 pl-5 text-left font-semibold text-inkMid" colSpan={2} scope="row">
                   관리사 지정 추가
                 </th>
-                <td className="">10,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">10,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <td className="">
+                  10,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  10,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
               <tr>
-                <th className="bg-paper2 font-semibold text-left text-inkMid pl-5" colSpan={2} scope="row">
+                <th className="bg-paper2 pl-5 text-left font-semibold text-inkMid" colSpan={2} scope="row">
                   쌍둥이 케어
                 </th>
-                <td className="">50,000<span className="ml-px text-xs text-inkLight">원</span></td>
-                <td className="">60,000<span className="ml-px text-xs text-inkLight">원</span></td>
+                <td className="">
+                  50,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
+                <td className="">
+                  60,000<span className="ml-px text-xs text-inkLight">원</span>
+                </td>
               </tr>
             </tbody>
           </table>

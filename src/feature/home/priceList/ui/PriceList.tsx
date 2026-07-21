@@ -1,4 +1,12 @@
 import { cn } from '@/lib/utils';
+import {
+  basicPriceList,
+  costEffectivenessPriceList,
+  oneDayPriceList,
+  premiumHouseFiveDayPriceList,
+  premiumHouseSixDayPriceList,
+  premiumPriceList,
+} from '@/src/feature/price';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
@@ -14,8 +22,8 @@ export const PriceList = () => {
           featured
           iconType="commute"
           priceList={[
-            { type: '베이직', week: '1주', price: 850000 },
-            { type: '프리미엄', week: '1주', price: 900000 },
+            { type: '베이직', week: '1주', price: basicPriceList[0] },
+            { type: '프리미엄', week: '1주', price: premiumPriceList[0] },
           ]}
           title="출퇴근형"
         />
@@ -23,21 +31,21 @@ export const PriceList = () => {
           description="산모 집에서 산후관리사가 매일 함께해요"
           iconType="livein"
           priceList={[
-            { type: '주5일', week: '1주', price: 1350000 },
-            { type: '주6일', week: '1주', price: 1600000 },
+            { type: '주5일', week: '1주', price: premiumHouseFiveDayPriceList[0] },
+            { type: '주6일', week: '1주', price: premiumHouseSixDayPriceList[0] },
           ]}
           title="입주형"
         />
         <PriceSummaryCard
           description="오전 및 오후에만 돌봐드려요"
           iconType="halfday"
-          priceList={[{ type: '반일', week: '1주', price: 600000 }]}
+          priceList={[{ type: '반일', week: '1주', price: costEffectivenessPriceList[0] }]}
           title="오전, 오후 돌봄"
         />
         <PriceSummaryCard
           description="원하는 날 하루만 돌봐드려요"
           iconType="dayone"
-          priceList={[{ type: '8시간', week: '하루', price: 200000 }]}
+          priceList={[{ type: '8시간', week: '하루', price: oneDayPriceList[0] }]}
           title="하루돌봄"
         />
       </div>

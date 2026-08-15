@@ -175,7 +175,7 @@ export const Comment = ({
                 </form>
               </Form>
             ) : (
-              <p>{content}</p>
+              <p className="whitespace-pre-wrap break-words">{content}</p>
             )}
           </div>
         </div>

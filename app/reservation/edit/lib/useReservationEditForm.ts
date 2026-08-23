@@ -4,7 +4,7 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
-import { reservationFormSchema } from '@/src/entities/reservation';
+import { reservationEditFormSchema } from '@/src/entities/reservation';
 import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
@@ -41,17 +41,17 @@ export const useReservationEditForm = ({
 
   const isGuestPost = consultDetailData.data.userId == null;
 
-  const form = useForm<z.infer<typeof reservationFormSchema>>({
-    resolver: zodResolver(reservationFormSchema),
+  const form = useForm<z.infer<typeof reservationEditFormSchema>>({
+    resolver: zodResolver(reservationEditFormSchema),
     defaultValues: isGuestPost
-      ? { ...commonDefaults, isGuestPost: true, password: '' }
-      : { ...commonDefaults, isGuestPost: false, password: undefined },
+      ? { ...commonDefaults, isGuestPost: true, oldPassword: '', password: '' }
+      : { ...commonDefaults, isGuestPost: false, oldPassword: undefined, password: undefined },
     mode: 'onChange',
   });
 
   const formValidation = form.formState.isValid;
 
-  const onSubmit = async (values: z.infer<typeof reservationFormSchema>) => {
+  const onSubmit = async (values: z.infer<typeof reservationEditFormSchema>) => {
     if (!formValidation) return;
     if (!executeRecaptcha) return;
     if (docId == null) {
@@ -64,6 +64,7 @@ export const useReservationEditForm = ({
       {
         ...values,
         password: values.password || undefined,
+        oldPassword: values.oldPassword || undefined,
         secret: values.secret || false,
         docId,
         recaptchaToken,

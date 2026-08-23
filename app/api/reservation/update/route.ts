@@ -1,9 +1,9 @@
-import bcrypt from 'bcryptjs';
 import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -12,6 +12,7 @@ export interface IConsultPost {
   userId?: string;
   title: string;
   password?: string;
+  oldPassword?: string;
   franchisee: string;
   content: string;
   location: string;
@@ -29,7 +30,20 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IConsultPost;
-  const { docId, userId, title, name, password, secret, franchisee, phoneNumber, location, content, bornDate } = body;
+  const {
+    docId,
+    userId,
+    title,
+    name,
+    password,
+    oldPassword,
+    secret,
+    franchisee,
+    phoneNumber,
+    location,
+    content,
+    bornDate,
+  } = body;
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
   }
@@ -54,11 +68,18 @@ export async function POST(req: NextRequest) {
 
     // 비회원인 경우
     if (targetData.userId === null) {
-      if (password === undefined) {
+      if (password === undefined || oldPassword === undefined) {
         return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호를 입력해주세요.' }, { status: 401 });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const verifyResult = await verifyAndRotateGuestPassword(oldPassword, password, targetData.password);
+      if (!verifyResult.ok) {
+        return typedJson<IResponseBody>(
+          { response: 'ng', message: '기존 비밀번호가 일치하지 않습니다.' },
+          { status: 401 },
+        );
+      }
+
       await updateDoc(consultDocRef, {
         title,
         content,
@@ -68,7 +89,7 @@ export async function POST(req: NextRequest) {
         bornDate: bornDate === undefined ? null : bornDate,
         name,
         phoneNumber,
-        password: hashedPassword,
+        password: verifyResult.newHashedPassword,
         updatedAt: serverTimestamp(),
       });
 

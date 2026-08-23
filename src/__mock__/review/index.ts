@@ -7,6 +7,8 @@ export const mockReviewData: IReviewListResponseData = {
   reviewData: [
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       id: 'e5e24cb4-cd38-4263-8eb2-a714b9ab2680',
       userId: '1',
       isPinned: true,
@@ -29,6 +31,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       id: '1e8cbb13-472e-448a-ab42-55f2ad7af65e',
       isPinned: false,
       pinnedAt: null,
@@ -51,6 +55,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f2ad7af6df',
       isPinned: false,
@@ -73,6 +79,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f2er7af65e',
       isPinned: false,
@@ -95,6 +103,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-a232-55f2ad7af65e',
       isPinned: false,
@@ -117,6 +127,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-df8a-ab42-55f2ad7af65e',
       isPinned: false,
@@ -139,6 +151,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8dfb13-472e-448a-ab42-55f2ad7af65e',
       isPinned: false,
@@ -161,6 +175,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-4cva-ab42-55f2ad7af65e',
       isPinned: false,
@@ -183,6 +199,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f2ty7af65e',
       isPinned: false,
@@ -205,6 +223,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-52d2ad7af65e',
       isPinned: false,
@@ -227,6 +247,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55f26f7af65e',
       isPinned: false,
@@ -249,6 +271,8 @@ export const mockReviewData: IReviewListResponseData = {
     },
     {
       thumbnail: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: null,
       id: '1e8cbb13-472e-448a-ab42-55faxd7af65e',
       isPinned: false,
@@ -277,6 +301,8 @@ export const mockReviewDetailData: IReviewResponseData = {
   message: '리뷰 상세 조회 성공',
   data: {
     thumbnail: null,
+    phoneNumber: null,
+    phoneHash: null,
     isPinned: false,
     pinnedAt: null,
     createdAt: {

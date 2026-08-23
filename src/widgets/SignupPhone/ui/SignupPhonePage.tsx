@@ -9,14 +9,14 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { cn } from '@/lib/utils';
+import { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
 import {
   PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
   PhoneAuthFields,
-  phoneAuthFormSchema,
   useLinkPhoneToCurrentUser,
   usePhoneAuthCodeSendMutation,
   useRecaptcha,
-} from '@/src/entities/phoneAuth';
+} from '@/src/entities/phoneAuth/client';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form } from '@/src/shared/ui/form';

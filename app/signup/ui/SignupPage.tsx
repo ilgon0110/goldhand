@@ -14,7 +14,7 @@ import {
   useLinkPhoneToCurrentUser,
   usePhoneAuthCodeSendMutation,
   useRecaptcha,
-} from '@/src/entities/phoneAuth';
+} from '@/src/entities/phoneAuth/client';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';

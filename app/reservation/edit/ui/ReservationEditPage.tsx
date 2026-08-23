@@ -41,8 +41,8 @@ export const ReservationEditPage = ({ docId }: { docId: string }) => {
       toastSuccess('상담 수정이 완료되었습니다.');
       router.replace(`/reservation/list/${docId}`);
     },
-    onError: () => {
-      toastError(`상담 수정에 실패했습니다.`);
+    onError: error => {
+      toastError(error.message || '상담 수정에 실패했습니다.');
     },
   });
   const formValidation = form.formState.isValid;

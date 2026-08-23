@@ -10,14 +10,14 @@ import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { Comment, useComments } from '@/src/entities/comment';
+import { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
 import {
   PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
   PhoneAuthFields,
-  phoneAuthFormSchema,
   useConfirmPhoneAuthCode,
   usePhoneAuthCodeSendMutation,
   useRecaptcha,
-} from '@/src/entities/phoneAuth';
+} from '@/src/entities/phoneAuth/client';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetReviewDetailData } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';

@@ -202,7 +202,7 @@ describe('ReservationEdit Component', () => {
     fireEvent.submit(submitButton.closest('form')!);
 
     await waitFor(() => {
-      expect(utils.toastError).toHaveBeenCalledWith('상담 수정에 실패했습니다.');
+      expect(utils.toastError).toHaveBeenCalledWith('기존 비밀번호가 일치하지 않습니다.');
     });
   });
 });

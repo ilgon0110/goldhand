@@ -16,7 +16,7 @@ import {
   useConfirmPhoneAuthCode,
   usePhoneAuthCodeSendMutation,
   useRecaptcha,
-} from '@/src/entities/phoneAuth';
+} from '@/src/entities/phoneAuth/client';
 import { reviewFormSchema, useReviewFormMutation } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';

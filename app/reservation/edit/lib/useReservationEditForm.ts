@@ -14,7 +14,7 @@ interface IUseReservationEditFormProps {
   userData: IUserResponseData;
   consultDetailData: IReservationResponseData;
   onSuccess?: () => void;
-  onError?: () => void;
+  onError?: (error: Error) => void;
 }
 
 export const useReservationEditForm = ({
@@ -74,8 +74,8 @@ export const useReservationEditForm = ({
         onSuccess: () => {
           if (onSuccess) onSuccess();
         },
-        onError: () => {
-          if (onError) onError();
+        onError: error => {
+          if (onError) onError(error);
         },
       },
     );

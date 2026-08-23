@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         { status: 403 },
       );
     }
-    return updateReviewPost(reviewDocRef, body);
+    return updateReviewPost(reviewDocRef, body, targetData.thumbnail);
   }
 
   if (authResult.reason !== 'no_token') {
@@ -98,19 +98,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return updateReviewPost(reviewDocRef, body);
+  return updateReviewPost(reviewDocRef, body, targetData.thumbnail);
 }
 
 async function updateReviewPost(
   reviewDocRef: ReturnType<typeof doc>,
   body: IReviewRequestBody,
+  previousThumbnail: string | null,
 ): Promise<Response> {
   const { title, name, franchisee, htmlString, docId, images } = body;
   const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImageSrcs(htmlString, images);
 
   try {
     await updateDoc(reviewDocRef, {
-      thumbnail: thumbnailUrl,
+      thumbnail: thumbnailUrl ?? previousThumbnail,
       title,
       name,
       franchisee,

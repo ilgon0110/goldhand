@@ -11,7 +11,7 @@ interface IResponseBody {
 
 interface IDeletePayload {
   docId: string;
-  userId: string | null;
+  phoneIdToken?: string;
 }
 
 export const useReviewDeleteMutation = (options?: UseMutationOptions<IResponseBody, Error, IDeletePayload>) => {

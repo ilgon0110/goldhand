@@ -2,11 +2,21 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { ConfirmationResult } from 'firebase/auth';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { reviewFormSchema, useGetReviewDetailData, useReviewFormMutation } from '@/src/entities/review';
+import {
+  PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
+  PhoneAuthFields,
+  useConfirmPhoneAuthCode,
+  usePhoneAuthCodeSendMutation,
+  useRecaptcha,
+} from '@/src/entities/phoneAuth';
+import { reviewEditFormSchema, useGetReviewDetailData, useReviewFormMutation } from '@/src/entities/review';
+import { useGetUserData } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
 import {
   AlertDialog,
@@ -32,25 +42,108 @@ type TReviewEditPageProps = {
 
 export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   const { data } = useGetReviewDetailData(docId);
-  const form = useForm<z.infer<typeof reviewFormSchema>>({
-    resolver: zodResolver(reviewFormSchema),
-    defaultValues: {
-      title: data.data.title,
-      name: data.data.name,
-      franchisee: data.data.franchisee,
-    },
+  const { data: userData } = useGetUserData();
+  const isAdmin = userData.userData?.grade === 'admin';
+  const isGuestPost = data.data.userId == null;
+  // 관리자가 비회원 글을 수정할 땐 SMS 재인증이 필요 없다.
+  const requiresPhoneAuth = isGuestPost && !isAdmin;
+
+  const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
+  const confirmationResultRef = useRef<ConfirmationResult | null>(null);
+  const phoneIdTokenRef = useRef<string | null>(null);
+
+  const form = useForm<z.infer<typeof reviewEditFormSchema>>({
+    resolver: zodResolver(reviewEditFormSchema),
+    defaultValues: requiresPhoneAuth
+      ? {
+          isGuestPost: true,
+          title: data.data.title,
+          name: data.data.name,
+          franchisee: data.data.franchisee,
+          phoneNumber: '',
+          authCode: '',
+        }
+      : {
+          isGuestPost: false,
+          title: data.data.title,
+          name: data.data.name,
+          franchisee: data.data.franchisee,
+        },
     mode: 'onChange',
   });
   const formValidation = form.formState.isValid;
+  const phoneNumberError = !!form.formState.errors.phoneNumber;
+  const authCodeError = !!form.formState.errors.authCode;
+
+  useRecaptcha(PHONE_AUTH_RECAPTCHA_CONTAINER_ID);
+
+  const {
+    mutate: sendAuthCode,
+    isPending: isSendingSms,
+    sendSmsSuccessMessage,
+  } = usePhoneAuthCodeSendMutation({
+    onSuccess: res => {
+      confirmationResultRef.current = res;
+    },
+    onError: () => {
+      form.setError('phoneNumber', {
+        type: 'manual',
+        message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
+      });
+    },
+  });
+
+  const handleSendClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setIsAuthCodeOpen(true);
+    sendAuthCode(form.getValues('phoneNumber') || '');
+  };
+
+  const {
+    isSuccess: authCodeSuccess,
+    mutate: confirmAuthCode,
+    isPending: isConfirming,
+    getErrorMessage,
+  } = useConfirmPhoneAuthCode({
+    onSuccess: async result => {
+      phoneIdTokenRef.current = await result.user.getIdToken();
+    },
+  });
+
+  const handleConfirmClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (authCodeSuccess) return;
+    await confirmAuthCode(form.getValues('authCode') || '', confirmationResultRef.current);
+
+    const errorMessage = getErrorMessage();
+    if (errorMessage === 'auth/invalid-verification-code') {
+      form.setError('authCode', {
+        type: 'manual',
+        message: '인증코드가 일치하지 않습니다.',
+      });
+    } else if (errorMessage) {
+      form.setError('authCode', {
+        type: 'manual',
+        message: '알 수 없는 오류가 발생했습니다.',
+      });
+    }
+  };
+
   const { onSubmit, handleChangeReviewFormEditor, isSubmitting, imageProgress, resetImageProgress, isOptimizing } =
     useReviewFormMutation('update', docId);
+
+  const handleSubmit = form.handleSubmit(values => onSubmit(values, phoneIdTokenRef.current));
+  const canSubmit = formValidation && (!requiresPhoneAuth || authCodeSuccess);
 
   return (
     <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
       <SectionTitleHero description="후기를 수정할 수 있습니다." label="고운황금손 후기수정" />
+      {requiresPhoneAuth && (
+        <button aria-hidden="true" className="hidden" id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID} tabIndex={-1} />
+      )}
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(values => onSubmit(values))}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <FormField
             control={form.control}
             defaultValue={data.data.name}
@@ -68,6 +161,26 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
               </FormItem>
             )}
           />
+          {requiresPhoneAuth && (
+            <>
+              <PhoneAuthFields
+                authCodeError={authCodeError}
+                authCodeName="authCode"
+                authCodeSuccess={authCodeSuccess}
+                control={form.control}
+                isAuthCodeOpen={isAuthCodeOpen}
+                isConfirming={isConfirming}
+                isSendingSms={isSendingSms}
+                phoneNumberError={phoneNumberError}
+                phoneNumberName="phoneNumber"
+                sendSmsConfirmSuccessMessage={authCodeSuccess ? '인증코드가 확인되었습니다.' : ''}
+                sendSmsSuccessMessage={sendSmsSuccessMessage}
+                onConfirmClick={handleConfirmClick}
+                onSendClick={handleSendClick}
+              />
+              <p className="text-xs text-slate-500">본인 확인을 위해 작성 시 사용한 휴대폰번호로 재인증해주세요.</p>
+            </>
+          )}
           <FormField
             control={form.control}
             defaultValue={data.data.title}
@@ -120,9 +233,9 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
             <Button
               className={cn(
                 'transition-all duration-300 ease-in-out',
-                formValidation ? '' : 'cursor-not-allowed opacity-20',
+                canSubmit ? '' : 'cursor-not-allowed opacity-20',
               )}
-              disabled={!formValidation}
+              disabled={!canSubmit}
               type="submit"
             >
               {isSubmitting ? <LoadingSpinnerIcon /> : '후기 수정하기'}

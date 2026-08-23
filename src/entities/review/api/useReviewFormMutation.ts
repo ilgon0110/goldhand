@@ -7,7 +7,6 @@ import type { LexicalEditor } from 'lexical';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type z from 'zod';
 
 import { useGetUserData } from '@/src/entities/user';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
@@ -15,7 +14,6 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
-import type { reviewFormSchema } from '../config';
 import { useReviewImageUpload } from './useReviewImageUpload';
 
 interface IReviewPostData {
@@ -32,6 +30,14 @@ interface IReviewFormMutationProps {
   docId: string;
   images: { key: string; url: string }[] | null;
   phoneIdToken?: string;
+}
+
+// create/edit 스키마가 다르므로(agreePersonalInfo 등), onSubmit은 실제 사용하는 필드만 구조적으로 요구한다.
+interface IReviewFormSubmitValues {
+  title: string;
+  name: string;
+  franchisee: string;
+  isGuestPost: boolean;
 }
 
 function stripDataUriSrcs(html: string): string {
@@ -79,7 +85,7 @@ export const useReviewFormMutation = (
 
   const isSubmitting = isUploading || isPending;
 
-  const onSubmit = async (values: z.infer<typeof reviewFormSchema>, phoneIdToken?: string | null) => {
+  const onSubmit = async (values: IReviewFormSubmitValues, phoneIdToken?: string | null) => {
     if (!reviewFormEditor) return;
 
     let htmlString = '';

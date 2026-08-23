@@ -38,3 +38,20 @@ export const reviewFormSchema = z.discriminatedUnion('isGuestPost', [
     }),
   }),
 ]);
+
+// 수정 폼 전용: 개인정보 동의는 최초 작성 시 1회만 받으므로 재요구하지 않는다.
+// isGuestPost는 "이 수정 요청에 SMS 재인증이 필요한지"를 의미한다(관리자가 비회원 글을 수정할 땐 불필요).
+export const reviewEditFormSchema = z.discriminatedUnion('isGuestPost', [
+  z.object({
+    ...commonFields,
+    isGuestPost: z.literal(false),
+    phoneNumber: z.undefined(),
+    authCode: z.undefined(),
+  }),
+  z.object({
+    ...commonFields,
+    isGuestPost: z.literal(true),
+    phoneNumber: phoneAuthFormSchema.shape.phoneNumber,
+    authCode: phoneAuthFormSchema.shape.authCode,
+  }),
+]);

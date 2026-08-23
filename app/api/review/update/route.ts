@@ -1,11 +1,12 @@
 import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { applyReviewImageSrcs } from '@/src/shared/lib/applyReviewImageSrcs';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
+import { verifyPhoneIdToken } from '@/src/shared/lib/verifyPhoneIdToken';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -16,6 +17,7 @@ interface IReviewRequestBody {
   htmlString: string;
   docId: string;
   images: { key: string; url: string }[] | null;
+  phoneIdToken?: string;
 }
 
 interface IResponseBody {
@@ -26,7 +28,7 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IReviewRequestBody;
-  const { docId, title, franchisee, htmlString, name } = body;
+  const { docId, title, franchisee, htmlString, name, phoneIdToken } = body;
 
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required', docId: '' }, { status: 400 });
@@ -39,106 +41,90 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
-
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const db = getFirestore(firebaseApp);
   const reviewDocRef = doc(db, 'reviews', docId);
   const docSnap = await getDoc(reviewDocRef);
 
   if (!docSnap.exists()) {
     return typedJson<IResponseBody>(
-      {
-        response: 'ng',
-        message: '해당 docId를 가진 게시글이 존재하지 않습니다.',
-        docId: '',
-      },
+      { response: 'ng', message: '해당 docId를 가진 게시글이 존재하지 않습니다.', docId: '' },
       { status: 404 },
     );
   }
 
   const targetData = docSnap.data() as IReviewDetailData;
 
-  // 글 작성자 uid 확인
-  try {
-    if (!accessToken) {
-      return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
-    }
-
-    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
-    if (uid !== targetData.userId) {
+  // 관리자 또는 회원(작성자 본인)
+  const authResult = await checkAdminAuth();
+  if (authResult.ok) {
+    if (!authResult.isAdmin && authResult.uid !== targetData.userId) {
       return typedJson<IResponseBody>(
         { response: 'ng', message: '후기 수정 권한이 없습니다.', docId: '' },
         { status: 403 },
       );
     }
+    return updateReviewPost(reviewDocRef, body);
+  }
 
-    // 탈퇴한 유저인지 확인
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
-    const targetUserData = userDocSnap.data();
-    if (targetUserData?.isDeleted) {
-      return typedJson<IResponseBody>(
-        {
-          response: 'ng',
-          message: '탈퇴한 유저는 리뷰를 수정할 수 없습니다.',
-          docId: '',
-        },
-        { status: 403 },
-      );
-    }
+  if (authResult.reason !== 'no_token') {
+    const message = authResult.reason === 'expired' ? 'expired' : 'Unauthorized';
+    return typedJson<IResponseBody>({ response: 'ng', message, docId: '' }, { status: 401 });
+  }
 
-    // Update logic here...
-    const { title, name, franchisee, htmlString, docId, images } = body;
-
-    // thumbnail 제외한 이미지 src 적용
-    const filteredImages = (images || []).filter(image => image.key !== 'thumbnail');
-    const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, filteredImages);
-    const thumbnailImage = (images || []).find(image => image.key === 'thumbnail');
-
-    try {
-      await updateDoc(reviewDocRef, {
-        ...targetData,
-        thumbnail: thumbnailImage ? thumbnailImage.url : null,
-        title,
-        name,
-        franchisee,
-        htmlString: imageSrcAppliedHtmlString,
-        updatedAt: new Date(),
-      });
-
-      revalidatePath(`/review/${docId}`);
-      return typedJson<IResponseBody>(
-        { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.', docId },
-        { status: 200 },
-      );
-    } catch (error) {
-      console.error('Error updating review post:', error);
-      return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 수정에 실패했습니다.', docId }, { status: 500 });
-    }
-  } catch (error) {
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
-      return typedJson<IResponseBody>({ response: 'ng', message: 'expired', docId: '' }, { status: 401 });
-    }
-
-    console.error('Error verifying token:', error);
+  // 비회원(accessToken 없음) - 회원 글은 접근 불가
+  if (targetData.userId !== null) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
   }
+
+  if (!phoneIdToken) {
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '휴대폰 인증이 필요합니다.', docId: '' },
+      { status: 401 },
+    );
+  }
+
+  const verifyResult = await verifyPhoneIdToken(phoneIdToken);
+  if (!verifyResult.ok) {
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '휴대폰 인증에 실패했습니다.', docId: '' },
+      { status: 401 },
+    );
+  }
+
+  if (hashPhoneNumber(verifyResult.phoneNumber) !== targetData.phoneHash) {
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '본인 확인에 실패했습니다.', docId: '' },
+      { status: 403 },
+    );
+  }
+
+  return updateReviewPost(reviewDocRef, body);
 }
 
-function applyFireImageSrc(html: string, fireImage: { key: string; url: string }[]) {
-  return html.replace(/<img([^>]*?)id=["']([^"']+)["']([^>]*)>/gi, (match, beforeId, id, afterId) => {
-    const image = fireImage.find(img => img.key === id);
-    if (image && image.url) {
-      // src 속성이 이미 있다면 교체
-      if (/src=["'][^"']*["']/.test(match)) {
-        return match.replace(/src=["'][^"']*["']/, `src="${image.url}"`);
-      } else {
-        // src 속성이 없으면 추가
-        return `<img${beforeId} src="${image.url}" id="${id}"${afterId}>`;
-      }
-    }
-    return match; // 매칭 안 되면 원본 유지
-  });
+async function updateReviewPost(
+  reviewDocRef: ReturnType<typeof doc>,
+  body: IReviewRequestBody,
+): Promise<Response> {
+  const { title, name, franchisee, htmlString, docId, images } = body;
+  const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImageSrcs(htmlString, images);
+
+  try {
+    await updateDoc(reviewDocRef, {
+      thumbnail: thumbnailUrl,
+      title,
+      name,
+      franchisee,
+      htmlString: imageSrcAppliedHtmlString,
+      updatedAt: new Date(),
+    });
+
+    revalidatePath(`/review/${docId}`);
+    return typedJson<IResponseBody>(
+      { response: 'ok', message: '리뷰가 성공적으로 수정되었습니다.', docId },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error('Error updating review post:', error);
+    return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 수정에 실패했습니다.', docId }, { status: 500 });
+  }
 }

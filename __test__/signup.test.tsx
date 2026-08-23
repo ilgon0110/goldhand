@@ -27,7 +27,7 @@ vi.mock('firebase/auth', async () => {
   const actual = await vi.importActual<TAliasAny>('firebase/auth');
 
   return {
-    getAuth: vi.fn(),
+    getAuth: vi.fn(() => ({ languageCode: null })),
     RecaptchaVerifier: vi.fn(() => ({
       render: vi.fn(() => Promise.resolve(1)),
       clear: vi.fn(),

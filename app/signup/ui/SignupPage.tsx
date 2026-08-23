@@ -2,14 +2,19 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ConfirmationResult } from 'firebase/auth';
-import { getAuth, RecaptchaVerifier } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { firebaseApp } from '@/src/shared/config/firebase';
+import {
+  PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
+  PhoneAuthFields,
+  useLinkPhoneToCurrentUser,
+  usePhoneAuthCodeSendMutation,
+  useRecaptcha,
+} from '@/src/entities/phoneAuth';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
@@ -20,7 +25,6 @@ import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { useSignupMutation } from '../api';
 import { signUpFormSchema } from '../config';
-import { useAuthCodeConfirmMutation, usePhoneNumberConfirmMutation } from '../lib';
 
 interface ISignupPageProps {
   userData: IUserDetailData | null;
@@ -44,18 +48,10 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
   const phoneNumberError = !!form.formState.errors.phoneNumber;
   const authCodeError = !!form.formState.errors.authCode;
 
+  useRecaptcha(PHONE_AUTH_RECAPTCHA_CONTAINER_ID);
+
   useEffect(() => {
     form.trigger();
-
-    const auth = getAuth(firebaseApp);
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
-      size: 'invisible',
-      callback: () => {},
-      'expired-callback': () => {
-        console.warn('reCAPTCHA expired, re-initializing');
-        //initializeRecaptcha();
-      },
-    });
   }, [form]);
 
   // 1. 핸드폰 번호로 인증번호 발송 훅
@@ -63,7 +59,7 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
     mutate,
     isPending: isSendingSms,
     sendSmsSuccessMessage,
-  } = usePhoneNumberConfirmMutation({
+  } = usePhoneAuthCodeSendMutation({
     onSuccess: res => {
       confirmationResultRef.current = res;
     },
@@ -89,12 +85,12 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
     isPending: isConfirming,
     getErrorMessage,
     sendSmsConfirmSuccessMessage,
-  } = useAuthCodeConfirmMutation(userData);
+  } = useLinkPhoneToCurrentUser(userData);
 
   const handleAuthConfirmClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // 항상 최상단에서 방지
 
-    await authCodeConfirmMutate(form.getValues(), confirmationResultRef.current);
+    await authCodeConfirmMutate(form.getValues('authCode'), confirmationResultRef.current);
 
     const errorMessage = getErrorMessage();
     if (errorMessage === 'linking-failed') {
@@ -156,7 +152,7 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
   return (
     <>
       <SectionTitleHero description="회원가입을 위해 아래 정보를 입력해주세요" label="고운황금손 회원가입" />
-      <button aria-hidden="true" className="hidden" id="sign-in-button" tabIndex={-1} />
+      <button aria-hidden="true" className="hidden" id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID} tabIndex={-1} />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -189,91 +185,21 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
               </FormItem>
             )}
           />
-          <FormField
+          <PhoneAuthFields
+            authCodeError={authCodeError}
+            authCodeName="authCode"
+            authCodeSuccess={authCodeSuccess}
             control={form.control}
-            defaultValue={userData?.phoneNumber || ''}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="phoneNumber">휴대폰번호</FormLabel>
-                <FormControl>
-                  <div className="flex flex-row gap-6">
-                    <Input
-                      id="phoneNumber"
-                      placeholder="휴대폰번호를 입력해주세요. (예:01012345678)"
-                      {...field}
-                      maxLength={12}
-                      minLength={6}
-                      required
-                    />
-                    <Button
-                      className={cn(
-                        'transition-all duration-300 ease-in-out',
-                        phoneNumberError && 'cursor-not-allowed opacity-20',
-                        sendSmsSuccessMessage && 'bg-green-500',
-                      )}
-                      disabled={phoneNumberError}
-                      onClick={e => handleAuthClick(e)}
-                    >
-                      {isSendingSms ? (
-                        <LoadingSpinnerIcon />
-                      ) : sendSmsSuccessMessage != '' ? (
-                        '인증번호 발송완료'
-                      ) : (
-                        '인증받기'
-                      )}
-                    </Button>
-                  </div>
-                </FormControl>
-                <FormDescription>{sendSmsSuccessMessage}</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+            isAuthCodeOpen={isAuthCodeOpen}
+            isConfirming={isConfirming}
+            isSendingSms={isSendingSms}
+            phoneNumberError={phoneNumberError}
+            phoneNumberName="phoneNumber"
+            sendSmsConfirmSuccessMessage={sendSmsConfirmSuccessMessage}
+            sendSmsSuccessMessage={sendSmsSuccessMessage}
+            onConfirmClick={handleAuthConfirmClick}
+            onSendClick={handleAuthClick}
           />
-          {isAuthCodeOpen && (
-            <FormField
-              control={form.control}
-              defaultValue={''}
-              name="authCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="authCode">인증코드</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row gap-6">
-                      <Input
-                        id="authCode"
-                        placeholder="수신받은 인증코드를 입력해주세요."
-                        {...field}
-                        maxLength={6}
-                        minLength={6}
-                      />
-                      <Button
-                        className={cn(
-                          'transition-all duration-300 ease-in-out',
-                          authCodeError && 'cursor-not-allowed opacity-20',
-                          sendSmsConfirmSuccessMessage && 'bg-green-500',
-                        )}
-                        disabled={authCodeError}
-                        onClick={e => handleAuthConfirmClick(e)}
-                      >
-                        {isConfirming ? (
-                          <LoadingSpinnerIcon />
-                        ) : sendSmsConfirmSuccessMessage != '' ? (
-                          '인증완료'
-                        ) : sendSmsConfirmSuccessMessage == '' ? (
-                          '인증하기'
-                        ) : (
-                          '인증확인'
-                        )}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormDescription>{sendSmsConfirmSuccessMessage}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
           <FormField
             control={form.control}
             defaultValue={userData?.email || ''}

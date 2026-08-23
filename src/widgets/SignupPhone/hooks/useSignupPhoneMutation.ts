@@ -2,8 +2,8 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import type z from 'zod';
 
+import type { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
-import type { signupPhoneFormSchema } from '@/widgets/SignupPhone';
 
 interface IResponsePostBody {
   response: string;
@@ -11,7 +11,7 @@ interface IResponsePostBody {
 }
 
 export function useSignupPhoneMutation(
-  values: z.infer<typeof signupPhoneFormSchema>,
+  values: z.infer<typeof phoneAuthFormSchema>,
   options?: UseMutationOptions<IResponsePostBody, Error, void>,
 ) {
   const { isPending, mutate, isSuccess, isError } = useMutation({

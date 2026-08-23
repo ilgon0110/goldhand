@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const signupPhoneFormSchema = z.object({
+export const phoneAuthFormSchema = z.object({
   phoneNumber: z.string().refine(
     value => {
       const phoneRegex = /^(010|011|016|017|018|019)\d{3,4}\d{4}$/;

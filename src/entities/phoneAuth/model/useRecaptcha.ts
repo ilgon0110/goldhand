@@ -14,10 +14,11 @@ declare global {
   }
 }
 
-export function useRecaptcha(containerId: string = 'recaptcha-container') {
+export const PHONE_AUTH_RECAPTCHA_CONTAINER_ID = 'phone-auth-recaptcha-container';
+
+export function useRecaptcha(containerId: string = PHONE_AUTH_RECAPTCHA_CONTAINER_ID) {
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
-  // 초기화 함수
   const initializeRecaptcha = useCallback(() => {
     const auth = getAuth(firebaseApp);
     auth.languageCode = 'ko';
@@ -26,7 +27,7 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
     if (!window.recaptchaVerifier) {
       try {
         const verifier = new RecaptchaVerifier(auth, containerId, {
-          size: 'invisible', // 또는 'normal'
+          size: 'invisible',
           callback: (_response: string) => {},
           'expired-callback': () => {
             console.warn('reCAPTCHA expired. Resetting...');
@@ -44,7 +45,6 @@ export function useRecaptcha(containerId: string = 'recaptcha-container') {
     }
   }, [containerId]);
 
-  // 초기화 & 언마운트 시 정리
   useEffect(() => {
     initializeRecaptcha();
 

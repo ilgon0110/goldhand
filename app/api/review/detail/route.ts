@@ -2,6 +2,7 @@ import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, Timesta
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import type { ICommentData, IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -69,11 +70,17 @@ export async function GET(request: NextRequest) {
       ...doc.data(),
     })) as ICommentData[];
 
+    // phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).
+    const authResult = await checkAdminAuth();
+    const isAdmin = authResult.ok && authResult.isAdmin;
+
     const responseData: IResponseBody = {
       response: 'ok',
       message: 'ok',
       data: {
         ...data,
+        phoneNumber: isAdmin ? data.phoneNumber : null,
+        phoneHash: null,
         comments,
       },
     };

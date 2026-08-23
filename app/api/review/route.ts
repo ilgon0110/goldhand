@@ -3,9 +3,22 @@ import { collection, documentId, getDocs, getFirestore, query, where } from 'fir
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import { getPinnedFirstListClient } from '@/src/shared/lib/pin/getPinnedFirstList';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
+
+// phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).
+function maskGuestFields<T extends { phoneNumber: string | null; phoneHash: string | null }>(
+  item: T,
+  isAdmin: boolean,
+): T {
+  return {
+    ...item,
+    phoneNumber: isAdmin ? item.phoneNumber : null,
+    phoneHash: null,
+  };
+}
 
 interface IResponseBody {
   response: 'ng' | 'ok';
@@ -46,6 +59,9 @@ export async function GET(request: NextRequest) {
   const PAGE_SIZE = 10;
 
   try {
+    const authResult = await checkAdminAuth();
+    const isAdmin = authResult.ok && authResult.isAdmin;
+
     const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListClient<IReviewDetailData>(
       'reviews',
       converter,
@@ -60,7 +76,7 @@ export async function GET(request: NextRequest) {
     );
 
     const reviewData = combined.map(item => ({
-      ...item,
+      ...maskGuestFields(item, isAdmin),
       isAuthorAdmin: item.userId != null && adminUserIds.has(item.userId),
     }));
 

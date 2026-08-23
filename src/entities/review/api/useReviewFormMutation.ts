@@ -9,8 +9,8 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
+import { useGetUserData } from '@/src/entities/user';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
-import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
@@ -31,6 +31,7 @@ interface IReviewFormMutationProps {
   htmlString: string;
   docId: string;
   images: { key: string; url: string }[] | null;
+  phoneIdToken?: string;
 }
 
 function stripDataUriSrcs(html: string): string {
@@ -46,7 +47,7 @@ export const useReviewFormMutation = (
 ) => {
   const [reviewFormEditor, setReviewFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
-  const { data: userData } = useAuth();
+  const { data: userData } = useGetUserData();
   const router = useRouter();
 
   const queryClient = useQueryClient();
@@ -78,8 +79,8 @@ export const useReviewFormMutation = (
 
   const isSubmitting = isUploading || isPending;
 
-  const onSubmit = async (values: z.infer<typeof reviewFormSchema>) => {
-    if (!reviewFormEditor || userData == null || userData.userData == null) return;
+  const onSubmit = async (values: z.infer<typeof reviewFormSchema>, phoneIdToken?: string | null) => {
+    if (!reviewFormEditor) return;
 
     let htmlString = '';
     reviewFormEditor.read(() => {
@@ -87,6 +88,8 @@ export const useReviewFormMutation = (
     });
 
     const docId = dId || uuidv4();
+    const guestPhoneIdToken = values.isGuestPost ? phoneIdToken || undefined : undefined;
+    const userId = userData.userData?.userId ?? null;
 
     if (!images || images.length === 0) {
       mutate({
@@ -96,12 +99,13 @@ export const useReviewFormMutation = (
         htmlString,
         docId,
         images: null,
+        phoneIdToken: guestPhoneIdToken,
       });
       return;
     }
 
     const cleanedHtmlString = stripDataUriSrcs(htmlString);
-    uploadImages(userData.userData.userId, docId, images, uploadedImages => {
+    uploadImages(userId, docId, images, uploadedImages => {
       mutate({
         title: values.title,
         name: values.name,
@@ -109,6 +113,7 @@ export const useReviewFormMutation = (
         htmlString: cleanedHtmlString,
         docId,
         images: uploadedImages,
+        phoneIdToken: guestPhoneIdToken,
       });
     });
   };

@@ -1,15 +1,34 @@
-import { screen, waitFor } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { RecaptchaVerifier } from 'firebase/auth';
+import { signInWithPhoneNumber } from 'firebase/auth';
+import { http, HttpResponse } from 'msw';
+import { Suspense, useEffect } from 'react';
 
 import { ReviewFormPage } from '@/app/review/form/ui/ReviewFormPage';
-import type { TAliasAny } from '@/src/shared/types';
+import { server } from '@/src/__mock__/node';
+import { mockUserData } from '@/src/__mock__/user';
+import { userKeys } from '@/src/shared/config/queryKeys';
+import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
+
+const mockNonUserData: IUserResponseData = {
+  response: 'ok',
+  message: '성공',
+  accessToken: null,
+  userData: null,
+  isLinked: false,
+};
 
 // useRouter 모킹
 const pushMock = vi.fn();
+const replaceMock = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: pushMock,
+    replace: replaceMock,
+    refresh: vi.fn(),
   }),
   usePathname: () => '/review/form',
   useSearchParams: () => new URLSearchParams('mode=create'),
@@ -17,13 +36,73 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/src/widgets/editor/ui/Editor', () => {
   return {
-    Editor: () => <div>Editor Mock Component</div>,
+    Editor: ({ onEditorChange }: { onEditorChange: (editor: TAliasAny) => void }) => {
+      useEffect(() => {
+        onEditorChange({ read: (cb: () => void) => cb() });
+      }, [onEditorChange]);
+      return <div>Editor Mock Component</div>;
+    },
   };
 });
+
+vi.mock('@lexical/html', () => ({
+  $generateHtmlFromNodes: () => '<p>mock html</p>',
+}));
 
 vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
   useMediaQuery: () => true, // 항상 데스크탑 뷰포트로 간주
 }));
+
+vi.mock('firebase/auth', async () => {
+  const actual = await vi.importActual<TAliasAny>('firebase/auth');
+
+  return {
+    getAuth: vi.fn(() => ({ languageCode: null })),
+    RecaptchaVerifier: vi.fn(() => ({
+      render: vi.fn(() => Promise.resolve(1)),
+      clear: vi.fn(),
+    })) as unknown as typeof RecaptchaVerifier,
+    signInWithPhoneNumber: vi.fn(() =>
+      Promise.resolve({
+        confirm: vi.fn(() =>
+          Promise.resolve({
+            user: { getIdToken: () => Promise.resolve('mock-phone-id-token') },
+          } as TAliasAny),
+        ),
+      }),
+    ),
+    PhoneAuthProvider: actual.PhoneAuthProvider,
+  };
+});
+
+vi.mock('@/src/shared/config/firebase', () => ({
+  firebaseApp: {
+    auth: vi.fn(),
+  },
+}));
+
+vi.mock('@/src/shared/ui/checkbox', async () => {
+  return {
+    Checkbox: ({
+      checked,
+      defaultChecked,
+      onCheckedChange,
+      ...props
+    }: {
+      checked?: boolean;
+      defaultChecked?: boolean;
+      onCheckedChange?: (checked: boolean) => void;
+      [key: string]: TAliasAny;
+    }) => (
+      <input
+        type="checkbox"
+        {...(checked !== undefined ? { checked } : { defaultChecked })}
+        onChange={e => onCheckedChange?.(e.target.checked)}
+        {...props}
+      />
+    ),
+  };
+});
 
 beforeAll(() => {
   function createMockPointerEvent(type: string, props: PointerEventInit = {}): PointerEvent {
@@ -43,23 +122,40 @@ beforeAll(() => {
   });
 });
 
-describe('ReviewFormPage 컴포넌트 테스트', async () => {
-  it('이름 validation 테스트. 2글자 이상 20글자 이하 string만 가능하다.', async () => {
-    renderWithQueryClient(<ReviewFormPage />);
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
+function renderReviewForm(userData: IUserResponseData) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient.setQueryData(userKeys.all, userData);
+
+  return renderWithQueryClient(
+    <Suspense fallback={null}>
+      <ReviewFormPage />
+    </Suspense>,
+    { queryClient },
+  );
+}
+
+async function selectFranchisee() {
+  const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
+  await userEvent.click(franchiseeTrigger);
+  const optionToSelect = await waitFor(() => screen.findByText(/전체/, { selector: 'span' }));
+  await userEvent.click(optionToSelect);
+}
+
+describe('ReviewFormPage 컴포넌트 테스트', () => {
+  it('[회원] 이름 validation 테스트. 2글자 이상 20글자 이하 string만 가능하다.', async () => {
+    renderReviewForm(mockUserData as IUserResponseData);
 
     // title은 제대로 입력
-    await userEvent.type(screen.getByLabelText(/제목/), 'This is a valid title');
+    await userEvent.type(await screen.findByLabelText(/제목/), 'This is a valid title');
 
-    // 대리점 선택
-    const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
-    await userEvent.click(franchiseeTrigger);
-    const optionToSelect = await waitFor(() => screen.findByText(/전체/, { selector: 'span' }));
-    await userEvent.click(optionToSelect);
+    await selectFranchisee();
 
     // 이름에 1글자만 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/이름/), 'A');
-    await userEvent.click(screen.getByRole('button', { name: '후기 남기기' }));
-
     expect(screen.getByRole('button', { name: '후기 남기기' })).toBeDisabled();
 
     // 이름에 20글자 이상 입력했을 때 제출 버튼 비활성화 확인
@@ -68,28 +164,21 @@ describe('ReviewFormPage 컴포넌트 테스트', async () => {
 
     // 제대로 입력했을 때 제출 버튼 활성화 확인
     const nameInput = screen.getByLabelText(/이름/);
-    // Clear the input first
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'Valid Name');
     expect(screen.getByRole('button', { name: '후기 남기기' })).toBeEnabled();
   });
 
-  it('title validation 테스트. 2자 이상 100자 이하로 입력해주세요.', async () => {
-    renderWithQueryClient(<ReviewFormPage />);
+  it('[회원] title validation 테스트. 2자 이상 100자 이하로 입력해주세요.', async () => {
+    renderReviewForm(mockUserData as IUserResponseData);
 
     // 이름은 제대로 입력
-    await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');
+    await userEvent.type(await screen.findByLabelText(/이름/), 'Valid Name');
 
-    // 대리점 선택
-    const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
-    await userEvent.click(franchiseeTrigger);
-    const optionToSelect = await waitFor(() => screen.findByText(/전체/, { selector: 'span' }));
-    await userEvent.click(optionToSelect);
+    await selectFranchisee();
 
     // 제목에 1글자만 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/제목/), 'A');
-    await userEvent.click(screen.getByRole('button', { name: '후기 남기기' }));
-
     expect(screen.getByRole('button', { name: '후기 남기기' })).toBeDisabled();
 
     // 제목에 100글자 이상 입력했을 때 제출 버튼 비활성화 확인
@@ -101,9 +190,92 @@ describe('ReviewFormPage 컴포넌트 테스트', async () => {
 
     // 제대로 입력했을 때 제출 버튼 활성화 확인
     const titleInput = screen.getByLabelText(/제목/);
-    // Clear the input first
     await userEvent.clear(titleInput);
     await userEvent.type(titleInput, 'This is a valid title');
     expect(screen.getByRole('button', { name: '후기 남기기' })).toBeEnabled();
+  });
+
+  it('[회원] 휴대폰번호/인증코드/개인정보 동의 입력창이 보이지 않는다.', async () => {
+    renderReviewForm(mockUserData as IUserResponseData);
+
+    await screen.findByLabelText(/이름/);
+    expect(screen.queryByLabelText(/휴대폰번호/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/개인정보 수집 및 이용에 동의합니다/)).not.toBeInTheDocument();
+  });
+
+  it('[비회원] 휴대폰번호/인증코드/개인정보 동의 입력창이 보인다.', async () => {
+    renderReviewForm(mockNonUserData);
+
+    expect(await screen.findByLabelText(/휴대폰번호/)).toBeInTheDocument();
+    expect(screen.getByText(/개인정보 수집 및 이용에 동의합니다/)).toBeInTheDocument();
+    expect(screen.getByText(/동일한 대리점에는 24시간 내 1회만 후기를 작성할 수 있습니다\./)).toBeInTheDocument();
+  });
+
+  it('[비회원] SMS 인증을 완료하지 않으면 필수값을 모두 입력해도 제출 버튼이 비활성화된다.', async () => {
+    renderReviewForm(mockNonUserData);
+
+    await userEvent.type(await screen.findByLabelText(/이름/), '홍길동');
+    await userEvent.type(screen.getByLabelText(/제목/), '후기 제목입니다.');
+    await selectFranchisee();
+    await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
+    await userEvent.click(screen.getByRole('checkbox'));
+
+    expect(screen.getByRole('button', { name: '후기 남기기' })).toBeDisabled();
+  });
+
+  it('[비회원] SMS 인증 완료 후 제출 시 phoneIdToken이 포함된 페이로드로 API가 호출된다', async () => {
+    const handler = vi.fn(async () => HttpResponse.json({ response: 'ok', message: '성공', docId: 'newDocId' }));
+    server.use(http.post('/api/review/create', handler));
+
+    renderReviewForm(mockNonUserData);
+
+    await userEvent.type(await screen.findByLabelText(/이름/), '홍길동');
+    await userEvent.type(screen.getByLabelText(/제목/), '후기 제목입니다.');
+    await selectFranchisee();
+    await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
+    await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+
+    expect(signInWithPhoneNumber).toHaveBeenCalled();
+
+    const authCodeInput = await screen.findByLabelText(/인증코드/);
+    await userEvent.type(authCodeInput, '123456');
+    await userEvent.click(screen.getByRole('button', { name: '인증하기' }));
+
+    await screen.findByText('인증완료');
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    const submitButton = screen.getByRole('button', { name: '후기 남기기' });
+    await waitFor(() => expect(submitButton).toBeEnabled(), { timeout: 3000 });
+    fireEvent.submit(submitButton.closest('form')!);
+
+    await waitFor(async () => {
+      expect(handler).toHaveBeenCalled();
+      const req = handler.mock.calls as unknown as { request: Request }[][];
+      const body = await req[0][0].request.json();
+      expect(body.phoneIdToken).toBe('mock-phone-id-token');
+    });
+  });
+
+  it('[회원] 제출 시 phoneIdToken 없이 API가 호출된다', async () => {
+    const handler = vi.fn(async () => HttpResponse.json({ response: 'ok', message: '성공', docId: 'newDocId' }));
+    server.use(http.post('/api/review/create', handler));
+
+    renderReviewForm(mockUserData as IUserResponseData);
+
+    await userEvent.type(await screen.findByLabelText(/이름/), 'Valid Name');
+    await userEvent.type(screen.getByLabelText(/제목/), 'This is a valid title');
+    await selectFranchisee();
+
+    const submitButton = screen.getByRole('button', { name: '후기 남기기' });
+    await waitFor(() => expect(submitButton).toBeEnabled());
+    fireEvent.submit(submitButton.closest('form')!);
+
+    await waitFor(async () => {
+      expect(handler).toHaveBeenCalled();
+      const req = handler.mock.calls as unknown as { request: Request }[][];
+      const body = await req[0][0].request.json();
+      expect(body.phoneIdToken).toBeUndefined();
+    });
+    expect(signInWithPhoneNumber).not.toHaveBeenCalled();
   });
 });

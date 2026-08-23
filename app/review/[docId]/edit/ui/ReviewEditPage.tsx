@@ -50,7 +50,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
       <SectionTitleHero description="후기를 수정할 수 있습니다." label="고운황금손 후기수정" />
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="space-y-6" onSubmit={form.handleSubmit(values => onSubmit(values))}>
           <FormField
             control={form.control}
             defaultValue={data.data.name}

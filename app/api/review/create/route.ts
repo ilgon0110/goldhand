@@ -1,10 +1,12 @@
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, limit, query, setDoc, where } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
+import { verifyPhoneIdToken } from '@/src/shared/lib/verifyPhoneIdToken';
 import { typedJson } from '@/src/shared/utils';
 
 interface IReviewPost {
@@ -14,6 +16,7 @@ interface IReviewPost {
   htmlString: string;
   docId: string;
   images: { key: string; url: string }[] | null;
+  phoneIdToken?: string;
 }
 
 interface IResponseBody {
@@ -21,6 +24,8 @@ interface IResponseBody {
   message: string;
   docId: string;
 }
+
+const DUPLICATE_SUBMISSION_MESSAGE = '동일한 대리점에는 24시간 내 1회만 후기를 작성할 수 있습니다.';
 
 export async function POST(req: Request) {
   const body = (await req.json()) as IReviewPost;
@@ -36,12 +41,12 @@ export async function POST(req: Request) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
 
-  try {
-    if (!accessToken) {
-      return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
-    }
+  if (!accessToken) {
+    return createGuestReviewPost(body);
+  }
 
-    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
+  try {
+    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
 
     // 탈퇴한 유저인지 확인
     const db = getFirestore(firebaseApp);
@@ -59,9 +64,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (uid) {
-      return createReviewPost(uid, body);
-    }
+    return createReviewPost(uid, body);
   } catch (error) {
     if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
       return typedJson<IResponseBody>({ response: 'ng', message: 'expired', docId: '' }, { status: 401 });
@@ -74,22 +77,20 @@ export async function POST(req: Request) {
 
 const createReviewPost = async (uid: string, body: IReviewPost) => {
   const { title, name, franchisee, htmlString, docId, images } = body;
-
-  // thumbnail 제외한 이미지 src 적용
-  const filteredImages = (images || []).filter(image => image.key !== 'thumbnail');
-  const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, filteredImages);
-  const thumbnailImage = (images || []).find(image => image.key === 'thumbnail');
+  const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImages(htmlString, images);
 
   const app = firebaseApp;
   const db = getFirestore(app);
 
   try {
     await setDoc(doc(db, 'reviews', docId), {
-      thumbnail: thumbnailImage ? thumbnailImage.url : null,
+      thumbnail: thumbnailUrl,
       title,
       name,
       franchisee,
       userId: uid,
+      phoneNumber: null,
+      phoneHash: null,
       htmlString: imageSrcAppliedHtmlString,
       isPinned: false,
       pinnedAt: null,
@@ -107,6 +108,80 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
     return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 작성에 실패했습니다.', docId }, { status: 500 });
   }
 };
+
+const createGuestReviewPost = async (body: IReviewPost) => {
+  const { title, name, franchisee, htmlString, docId, images, phoneIdToken } = body;
+
+  if (!phoneIdToken) {
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '휴대폰 인증이 필요합니다.', docId: '' },
+      { status: 401 },
+    );
+  }
+
+  const verifyResult = await verifyPhoneIdToken(phoneIdToken);
+  if (!verifyResult.ok) {
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '휴대폰 인증에 실패했습니다.', docId: '' },
+      { status: 401 },
+    );
+  }
+
+  const phoneHash = hashPhoneNumber(verifyResult.phoneNumber);
+
+  const app = firebaseApp;
+  const db = getFirestore(app);
+
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const dedupQuery = query(
+    collection(db, 'reviews'),
+    where('phoneHash', '==', phoneHash),
+    where('franchisee', '==', franchisee),
+    where('createdAt', '>=', twentyFourHoursAgo),
+    limit(1),
+  );
+  const dedupSnap = await getDocs(dedupQuery);
+  if (!dedupSnap.empty) {
+    return typedJson<IResponseBody>({ response: 'ng', message: DUPLICATE_SUBMISSION_MESSAGE, docId: '' }, { status: 409 });
+  }
+
+  const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImages(htmlString, images);
+
+  try {
+    await setDoc(doc(db, 'reviews', docId), {
+      thumbnail: thumbnailUrl,
+      title,
+      name,
+      franchisee,
+      userId: null,
+      phoneNumber: verifyResult.phoneNumber,
+      phoneHash,
+      htmlString: imageSrcAppliedHtmlString,
+      isPinned: false,
+      pinnedAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    revalidatePath(`/review`);
+    return typedJson<IResponseBody>(
+      { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.', docId },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error('Error creating guest review post:', error);
+    return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 작성에 실패했습니다.', docId }, { status: 500 });
+  }
+};
+
+function applyReviewImages(htmlString: string, images: { key: string; url: string }[] | null) {
+  // thumbnail 제외한 이미지 src 적용
+  const filteredImages = (images || []).filter(image => image.key !== 'thumbnail');
+  const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, filteredImages);
+  const thumbnailImage = (images || []).find(image => image.key === 'thumbnail');
+
+  return { imageSrcAppliedHtmlString, thumbnailUrl: thumbnailImage ? thumbnailImage.url : null };
+}
 
 function applyFireImageSrc(html: string, fireImage: { key: string; url: string }[]) {
   return html.replace(/<img([^>]*?)id=["']([^"']+)["']([^>]*)>/gi, (match, beforeId, id, afterId) => {

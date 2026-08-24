@@ -78,7 +78,7 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
     isSuccess: authCodeSuccess,
     mutate: authCodeConfirmMutate,
     isPending: isConfirming,
-    getErrorMessage,
+    getError,
     sendSmsConfirmSuccessMessage,
   } = useLinkPhoneToCurrentUser(userData);
 
@@ -87,33 +87,18 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
     if (authCodeSuccess) return; // 이미 인증된 경우 무시
     await authCodeConfirmMutate(form.getValues('authCode'), confirmationResultRef.current);
 
-    const errorMessage = getErrorMessage();
-    if (errorMessage === 'linking-failed') {
-      form.setError('authCode', {
-        type: 'manual',
-        message: '이메일과 전화번호 연동에 실패했습니다. 처음부터 다시 시도해주세요.',
-      });
-    } else if (errorMessage === 'auth/invalid-verification-code') {
-      form.setError('authCode', {
-        type: 'manual',
-        message: '인증코드가 일치하지 않습니다.',
-      });
-    } else if (errorMessage === 'auth/account-exists-with-different-credential') {
-      form.setError('authCode', {
-        type: 'manual',
-        message: '이미 가입된 전화번호입니다.',
-      });
+    const authError = getError();
+    if (authError) {
+      form.setError('authCode', { type: 'manual', message: authError.message });
+
+      if (authError.kind !== 'phone-already-in-use') return;
+
       toastError(
         `이미 가입된 전화번호입니다.\n혹시 ${userData?.provider === 'kakao' ? '네이버' : '카카오'}로 가입하시지 않으셨나요?`,
       );
       setTimeout(() => {
         router.push('/login');
       }, 3000);
-    } else if (errorMessage) {
-      form.setError('authCode', {
-        type: 'manual',
-        message: errorMessage || '알 수 없는 오류가 발생했습니다.',
-      });
     }
   };
 

@@ -1,8 +1,17 @@
 import type { ConfirmationResult } from 'firebase/auth';
-import { getAuth, linkWithCredential, PhoneAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getAuth,
+  linkWithCredential,
+  PhoneAuthProvider,
+  signInWithEmailAndPassword,
+  updatePhoneNumber,
+} from 'firebase/auth';
 import { useRef, useState } from 'react';
 
 import type { IUserDetailData } from '@/src/shared/types';
+
+import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
+import { toPhoneAuthError } from '../lib/toPhoneAuthError';
 
 /**
  * SMS 인증코드를 확인한 뒤, 현재 로그인된(이메일/OAuth) 계정에 전화번호를 연동한다.
@@ -20,7 +29,7 @@ export const useLinkPhoneToCurrentUser = (
   const [isPending, setIsPending] = useState(false);
   const [sendSmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
-  const errorMessageRef = useRef('');
+  const errorRef = useRef<IPhoneAuthError | null>(null);
 
   async function mutate(authCode: string, confirmationResult: ConfirmationResult | null) {
     setIsPending(true);
@@ -50,22 +59,27 @@ export const useLinkPhoneToCurrentUser = (
           }
 
           // 3. 이메일 유저에 전화번호 연결
-          const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
-          if (linkedResult) {
-            setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
-            setIsSuccess(true);
-            errorMessageRef.current = '';
-            options?.onSuccess?.();
+          const hasPhoneProvider = emailUser.user.providerData.some(provider => provider.providerId === 'phone');
+
+          if (hasPhoneProvider) {
+            await updatePhoneNumber(emailUser.user, phoneCredential);
+          } else {
+            await linkWithCredential(emailUser.user, phoneCredential);
           }
-        } catch (error: any) {
+
+          setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
+          setIsSuccess(true);
+          errorRef.current = null;
+          options?.onSuccess?.();
+        } catch (error: unknown) {
           console.error('Error linking phone number:', error);
-          errorMessageRef.current = error.code || 'linking-failed';
+          errorRef.current = toPhoneAuthError(error);
           options?.onError?.(error as Error);
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error confirming SMS code:', error);
-      errorMessageRef.current = error.code || 'unknown-error';
+      errorRef.current = toPhoneAuthError(error);
       options?.onError?.(error as Error);
     } finally {
       setIsPending(false);
@@ -78,6 +92,6 @@ export const useLinkPhoneToCurrentUser = (
     isPending,
     sendSmsConfirmSuccessMessage,
     mutate,
-    getErrorMessage: () => errorMessageRef.current,
+    getError: () => errorRef.current,
   };
 };

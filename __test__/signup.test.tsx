@@ -1,7 +1,12 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { RecaptchaVerifier } from 'firebase/auth';
-import { linkWithCredential, signInWithEmailAndPassword, signInWithPhoneNumber } from 'firebase/auth';
+import {
+  linkWithCredential,
+  signInWithEmailAndPassword,
+  signInWithPhoneNumber,
+  updatePhoneNumber,
+} from 'firebase/auth';
 import { http, HttpResponse } from 'msw';
 import type { Mock } from 'vitest';
 
@@ -10,6 +15,7 @@ import { server } from '@/src/__mock__/node';
 import type { TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
+import { SignupPhonePage } from '@/src/widgets/SignupPhone';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -33,7 +39,9 @@ vi.mock('firebase/auth', async () => {
       clear: vi.fn(),
     })) as unknown as typeof RecaptchaVerifier,
     signInWithPhoneNumber: vi.fn(() => Promise.resolve({})),
-    signInWithEmailAndPassword: vi.fn(() => Promise.resolve({ user: { uid: 'mock-uid', email: 'test@example.com' } })),
+    signInWithEmailAndPassword: vi.fn(() =>
+      Promise.resolve({ user: { uid: 'mock-uid', email: 'test@example.com', providerData: [] } }),
+    ),
     PhoneAuthProvider: {
       ...actual.PhoneAuthProvider,
       credential: vi.fn(() => ({
@@ -43,6 +51,7 @@ vi.mock('firebase/auth', async () => {
       })),
     },
     linkWithCredential: vi.fn(() => Promise.resolve({ user: { uid: 'mock-uid', phoneNumber: '+821012345678' } })),
+    updatePhoneNumber: vi.fn(() => Promise.resolve()),
   };
 });
 
@@ -396,5 +405,56 @@ describe('SignupPage 컴포넌트 테스트', () => {
       expect(handler).toHaveBeenCalled();
       expect(utils.toastError).toHaveBeenCalledWith('회원가입에 실패했습니다.\n회원가입 실패 이유 MSG');
     });
+  });
+});
+
+describe('SignupPhonePage 컴포넌트 테스트', () => {
+  async function renderPhonePage() {
+    const data = await (await fetch('/api/user')).json();
+    renderWithQueryClient(<SignupPhonePage userData={data.userData} />);
+
+    await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+    const authCodeInput = screen.getByLabelText(/인증코드/);
+    await userEvent.type(authCodeInput, '123456');
+
+    return screen.getByRole('button', { name: '인증하기' });
+  }
+
+  it('[기인증 회원] 인증코드는 기존 phone provider를 다시 연결하지 않고 전화번호를 갱신하며 검증한다', async () => {
+    (signInWithEmailAndPassword as Mock).mockResolvedValueOnce({
+      user: { uid: 'mock-uid', providerData: [{ providerId: 'phone' }] },
+    });
+
+    const confirmButton = await renderPhonePage();
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => expect(updatePhoneNumber).toHaveBeenCalled());
+    expect(linkWithCredential).not.toHaveBeenCalled();
+  });
+
+  it('[기인증 회원] 잘못된 인증코드는 Firebase 코드 대신 사용자용 Form 메시지를 표시한다', async () => {
+    (signInWithEmailAndPassword as Mock).mockResolvedValueOnce({
+      user: { uid: 'mock-uid', providerData: [{ providerId: 'phone' }] },
+    });
+    (updatePhoneNumber as Mock).mockRejectedValueOnce({ code: 'auth/invalid-verification-code' });
+
+    const confirmButton = await renderPhonePage();
+    await userEvent.click(confirmButton);
+
+    expect(await screen.findByText('인증코드가 틀렸습니다.')).toBeInTheDocument();
+    expect(screen.queryByText('auth/invalid-verification-code')).not.toBeInTheDocument();
+  });
+
+  it('[기인증 회원] 알 수 없는 Firebase 오류도 내부 코드 대신 일반 Form 메시지를 표시한다', async () => {
+    (signInWithEmailAndPassword as Mock).mockResolvedValueOnce({
+      user: { uid: 'mock-uid', providerData: [{ providerId: 'phone' }] },
+    });
+    (updatePhoneNumber as Mock).mockRejectedValueOnce({ code: 'auth/internal-error' });
+
+    const confirmButton = await renderPhonePage();
+    await userEvent.click(confirmButton);
+
+    expect(await screen.findByText('휴대폰 인증 중 오류가 발생했습니다. 다시 시도해주세요.')).toBeInTheDocument();
+    expect(screen.queryByText('auth/internal-error')).not.toBeInTheDocument();
   });
 });

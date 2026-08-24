@@ -78,15 +78,15 @@ describe('ReviewPage 통합 테스트', () => {
 });
 
 describe('ReviewPageHeader 컴포넌트 테스트', async () => {
-  it('비로그인일때 후기 작성 버튼이 비활성화인지 확인', async () => {
+  it('비로그인(비회원)이어도 후기 작성 버튼이 활성화되어 있는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
     const data = (await response.json()) as IReviewListResponseData;
 
     renderReviewPage(data, mockNonUserData);
 
-    const reviewButton = screen.queryByRole('button', { name: '로그인 후 작성' });
+    const reviewButton = screen.queryByRole('button', { name: '후기 남기기' });
     expect(reviewButton).toBeInTheDocument();
-    expect(reviewButton).toBeDisabled();
+    expect(reviewButton).toBeEnabled();
   });
 
   it('로그인일때 후기 작성 버튼이 활성화 되는지 확인', async () => {

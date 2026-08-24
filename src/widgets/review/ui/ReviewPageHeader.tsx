@@ -18,7 +18,6 @@ import {
 type TReviewPageHeaderProps = {
   franchiseeList: string[];
   handleFranchiseeChange: (value: string) => void;
-  isLogin: boolean;
   totalDataLength: number;
 };
 
@@ -35,7 +34,6 @@ const PenIcon = () => (
 export const ReviewPageHeader = ({
   franchiseeList,
   handleFranchiseeChange,
-  isLogin,
   totalDataLength,
 }: TReviewPageHeaderProps) => {
   const router = useRouter();
@@ -79,18 +77,15 @@ export const ReviewPageHeader = ({
               'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-stone-900 bg-stone-900',
               'px-[18px] py-[9px] text-[13px] tracking-[0.02em] text-stone-100',
               'transition-all duration-200 hover:border-gold hover:bg-gold',
-              !isLogin && 'cursor-not-allowed opacity-30',
             )}
-            disabled={!isLogin}
             onClick={() => {
-              if (!isLogin) return;
               startTransition(() => {
                 router.push('/review/form');
               });
             }}
           >
             <PenIcon />
-            {isLogin ? '후기 남기기' : '로그인 후 작성'}
+            후기 남기기
           </button>
         </div>
       </div>

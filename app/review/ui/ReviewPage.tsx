@@ -3,7 +3,6 @@
 import { useQueryStates } from 'nuqs';
 
 import { ReviewCard, useGetReviewListData } from '@/src/entities/review';
-import { useGetUserData } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
@@ -18,8 +17,6 @@ export const ReviewPage = () => {
   });
 
   const { data } = useGetReviewListData({ page: reviewParam.page, franchisee: reviewParam.franchisee });
-  const { data: userData } = useGetUserData();
-  const isLogin = userData.userData != null;
 
   return (
     <>
@@ -27,7 +24,6 @@ export const ReviewPage = () => {
       <ReviewPageHeader
         franchiseeList={franchiseeList}
         handleFranchiseeChange={value => setReviewParam({ franchisee: value })}
-        isLogin={isLogin}
         totalDataLength={data.totalDataLength}
       />
       {data.reviewData.length > 0 ? (

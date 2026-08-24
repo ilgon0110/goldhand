@@ -13,7 +13,6 @@ import {
   PhoneAuthFields,
   useLinkPhoneToCurrentUser,
   usePhoneAuthCodeSendMutation,
-  useRecaptcha,
 } from '@/src/entities/phoneAuth/client';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -48,8 +47,6 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
   const phoneNumberError = !!form.formState.errors.phoneNumber;
   const authCodeError = !!form.formState.errors.authCode;
 
-  useRecaptcha(PHONE_AUTH_RECAPTCHA_CONTAINER_ID);
-
   useEffect(() => {
     form.trigger();
   }, [form]);
@@ -62,6 +59,7 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
   } = usePhoneAuthCodeSendMutation({
     onSuccess: res => {
       confirmationResultRef.current = res;
+      setIsAuthCodeOpen(true);
     },
     onError: () => {
       form.setError('phoneNumber', {
@@ -73,7 +71,6 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
 
   const handleAuthClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    setIsAuthCodeOpen(true);
     // 인증번호 발송 버튼 클릭 시
     mutate(form.getValues().phoneNumber);
   };

@@ -13,7 +13,6 @@ import {
   PhoneAuthFields,
   useConfirmPhoneAuthCode,
   usePhoneAuthCodeSendMutation,
-  useRecaptcha,
 } from '@/src/entities/phoneAuth/client';
 import { reviewEditFormSchema, useGetReviewDetailData, useReviewFormMutation } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
@@ -75,8 +74,6 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   const phoneNumberError = !!form.formState.errors.phoneNumber;
   const authCodeError = !!form.formState.errors.authCode;
 
-  useRecaptcha(PHONE_AUTH_RECAPTCHA_CONTAINER_ID);
-
   const {
     mutate: sendAuthCode,
     isPending: isSendingSms,
@@ -84,6 +81,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   } = usePhoneAuthCodeSendMutation({
     onSuccess: res => {
       confirmationResultRef.current = res;
+      setIsAuthCodeOpen(true);
     },
     onError: () => {
       form.setError('phoneNumber', {
@@ -95,7 +93,6 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
 
   const handleSendClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setIsAuthCodeOpen(true);
     sendAuthCode(form.getValues('phoneNumber') || '');
   };
 

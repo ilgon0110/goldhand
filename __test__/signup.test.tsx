@@ -106,12 +106,10 @@ beforeEach(() => {
   vi.mocked(signInWithPhoneNumber).mockResolvedValue(confirmationResult);
   vi.mocked(signInWithEmailAndPassword).mockResolvedValue({ user: asUser(firebaseFixtures.emailUser) } as UserCredential);
   vi.mocked(PhoneAuthProvider.credential).mockReturnValue(asPhoneCredential(firebaseFixtures.phoneCredential));
-  window.recaptchaVerifier = asRecaptchaVerifier(firebaseFixtures.recaptchaVerifier);
 });
 
 afterEach(() => {
   vi.clearAllMocks();
-  window.recaptchaVerifier = asRecaptchaVerifier(firebaseFixtures.recaptchaVerifier);
 });
 
 describe('SignupPage 컴포넌트 테스트', () => {
@@ -215,24 +213,41 @@ describe('SignupPage 컴포넌트 테스트', () => {
     expect(screen.getByRole('button', { name: '인증받기' })).toBeEnabled();
   });
 
-  it('[휴대폰인증] 인증번호 전송 버튼 클릭 시 인증코드 입력창 노출', async () => {
+  it('[휴대폰인증] 인증번호 전송 성공 후에만 인증코드 입력창 노출', async () => {
+    let resolveSend!: (value: ConfirmationResult) => void;
+    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(
+      () => new Promise(resolve => (resolveSend = resolve)),
+    );
     const data = await (await fetch('/api/user')).json();
     renderWithQueryClient(<SignupPage userData={data.userData} />);
 
     const sendButton = screen.getByRole('button', { name: '인증받기' });
     await userEvent.click(sendButton);
+
+    expect(screen.queryByLabelText(/인증코드/)).not.toBeInTheDocument();
+
+    await act(async () => {
+      resolveSend(confirmationResult);
+    });
 
     expect(await screen.findByLabelText(/인증코드/)).toBeInTheDocument();
   });
 
-  it('[휴대폰인증] 인증번호 발송 성공 시 버튼 문구가 인증받기->인증번호 발송완료로 변경되는지 확인', async () => {
+  it('[휴대폰인증] 인증번호 발송 성공 시 버튼을 체크 아이콘으로 바꾸고 재발송을 막는다', async () => {
     const data = await (await fetch('/api/user')).json();
     renderWithQueryClient(<SignupPage userData={data.userData} />);
 
     const sendButton = screen.getByRole('button', { name: '인증받기' });
     await userEvent.click(sendButton);
 
-    expect(await screen.findByText('인증번호 발송완료')).toBeInTheDocument();
+    const completedButton = await screen.findByRole('button', { name: '인증번호 발송완료' });
+    expect(completedButton).toBeDisabled();
+    expect(completedButton.querySelector('svg')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '다시 인증하기' })).toBeEnabled();
+    expect(screen.getByLabelText(/인증코드/)).toHaveFocus();
+    expect(screen.queryByText('Required')).not.toBeInTheDocument();
+    await userEvent.click(completedButton);
+    expect(signInWithPhoneNumber).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('인증받기')).not.toBeInTheDocument();
   });
 
@@ -311,7 +326,7 @@ describe('SignupPage 컴포넌트 테스트', () => {
     const authCodeSendButton = screen.getByRole('button', { name: '인증하기' });
     await userEvent.click(authCodeSendButton);
 
-    expect(await screen.findByText('인증완료')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '인증완료' })).toBeDisabled();
     expect(screen.queryByText('인증하기')).not.toBeInTheDocument();
   });
 
@@ -489,6 +504,9 @@ describe('SignupPhonePage 컴포넌트 테스트', () => {
     const confirmButton = await renderPhonePage();
     await userEvent.click(confirmButton);
 
+    expect(
+      await screen.findByText('인증코드가 확인되었습니다. 아래의 인증 완료하기 버튼을 클릭해주세요.'),
+    ).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: '인증 완료하기' })).toBeEnabled();
   });
 

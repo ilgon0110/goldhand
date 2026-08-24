@@ -15,7 +15,6 @@ import {
   PhoneAuthFields,
   useLinkPhoneToCurrentUser,
   usePhoneAuthCodeSendMutation,
-  useRecaptcha,
 } from '@/src/entities/phoneAuth/client';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -45,8 +44,6 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   const authCodeError = !!form.formState.errors.authCode;
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
 
-  useRecaptcha(PHONE_AUTH_RECAPTCHA_CONTAINER_ID);
-
   useEffect(() => {
     form.trigger();
   }, [form]);
@@ -58,6 +55,7 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   } = usePhoneAuthCodeSendMutation({
     onSuccess: res => {
       confirmationResultRef.current = res;
+      setIsAuthCodeOpen(true);
     },
     onError: () => {
       form.setError('phoneNumber', {
@@ -69,7 +67,6 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
 
   const handleAuthClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    setIsAuthCodeOpen(true);
     // 인증번호 발송 버튼 클릭 시
     mutate(form.getValues().phoneNumber);
   };
@@ -145,7 +142,11 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
             isSendingSms={isSendingSms}
             phoneNumberError={phoneNumberError}
             phoneNumberName="phoneNumber"
-            sendSmsConfirmSuccessMessage={sendSmsConfirmSuccessMessage}
+            sendSmsConfirmSuccessMessage={
+              authCodeSuccess
+                ? '인증코드가 확인되었습니다. 아래의 인증 완료하기 버튼을 클릭해주세요.'
+                : sendSmsConfirmSuccessMessage
+            }
             sendSmsSuccessMessage={sendSmsSuccessMessage}
             onConfirmClick={handleAuthConfirmClick}
             onSendClick={handleAuthClick}

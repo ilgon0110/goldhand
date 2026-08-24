@@ -1,5 +1,7 @@
 'use client';
 
+import { Check } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import type { Control, FieldValues, Path } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
@@ -41,6 +43,16 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
   onConfirmClick: handleConfirmClick,
   confirmSuccessLabel = '인증완료',
 }: TPhoneAuthFieldsProps<TFieldValues>) {
+  const authCodeInputRef = useRef<HTMLInputElement | null>(null);
+  const hasSentSms = sendSmsSuccessMessage !== '';
+  const handleRestartClick = () => window.location.reload();
+
+  useEffect(() => {
+    if (hasSentSms && isAuthCodeOpen) {
+      authCodeInputRef.current?.focus();
+    }
+  }, [hasSentSms, isAuthCodeOpen]);
+
   return (
     <>
       <FormField
@@ -59,23 +71,31 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
                   minLength={6}
                   required
                 />
-                <Button
-                  className={cn(
-                    'transition-all duration-300 ease-in-out',
-                    phoneNumberError && 'cursor-not-allowed opacity-20',
-                    sendSmsSuccessMessage && 'bg-green-500',
+                <div className="flex shrink-0 gap-2">
+                  <Button
+                    aria-label={hasSentSms ? '인증번호 발송완료' : undefined}
+                    className={cn(
+                      'transition-all duration-300 ease-in-out',
+                      (phoneNumberError || isSendingSms || hasSentSms) && 'cursor-not-allowed opacity-20',
+                      hasSentSms && 'bg-green-500',
+                    )}
+                    disabled={phoneNumberError || isSendingSms || hasSentSms}
+                    onClick={handleSendClick}
+                  >
+                    {isSendingSms ? (
+                      <LoadingSpinnerIcon />
+                    ) : hasSentSms ? (
+                      <Check aria-hidden="true" />
+                    ) : (
+                      '인증받기'
+                    )}
+                  </Button>
+                  {hasSentSms && (
+                    <Button type="button" variant="outline" onClick={handleRestartClick}>
+                      다시 인증하기
+                    </Button>
                   )}
-                  disabled={phoneNumberError}
-                  onClick={handleSendClick}
-                >
-                  {isSendingSms ? (
-                    <LoadingSpinnerIcon />
-                  ) : sendSmsSuccessMessage != '' ? (
-                    '인증번호 발송완료'
-                  ) : (
-                    '인증받기'
-                  )}
-                </Button>
+                </div>
               </div>
             </FormControl>
             <FormDescription>{sendSmsSuccessMessage}</FormDescription>
@@ -87,7 +107,7 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
         <FormField
           control={control}
           name={authCodeName}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel htmlFor="authCode">인증코드</FormLabel>
               <FormControl>
@@ -98,14 +118,19 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
                     {...field}
                     maxLength={6}
                     minLength={6}
+                    ref={element => {
+                      field.ref(element);
+                      authCodeInputRef.current = element;
+                    }}
                   />
                   <Button
+                    aria-label={authCodeSuccess ? '인증완료' : undefined}
                     className={cn(
                       'transition-all duration-300 ease-in-out',
-                      authCodeError && 'cursor-not-allowed opacity-20',
+                      (authCodeError || isConfirming || authCodeSuccess) && 'cursor-not-allowed opacity-20',
                       sendSmsConfirmSuccessMessage && 'bg-green-500',
                     )}
-                    disabled={authCodeError}
+                    disabled={authCodeError || isConfirming || authCodeSuccess}
                     onClick={handleConfirmClick}
                   >
                     {isConfirming ? <LoadingSpinnerIcon /> : authCodeSuccess ? confirmSuccessLabel : '인증하기'}
@@ -113,7 +138,7 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
                 </div>
               </FormControl>
               <FormDescription>{sendSmsConfirmSuccessMessage}</FormDescription>
-              <FormMessage />
+              {(fieldState.isTouched || Boolean(field.value)) && <FormMessage />}
             </FormItem>
           )}
         />

@@ -1,16 +1,10 @@
 import { act, renderHook } from '@testing-library/react';
-import type {
-  Auth,
-  ConfirmationResult,
-  PhoneAuthCredential,
-  RecaptchaVerifier,
-  User,
-  UserCredential,
-} from 'firebase/auth';
+import type { Auth, ConfirmationResult, PhoneAuthCredential, User, UserCredential } from 'firebase/auth';
 import {
   getAuth,
   linkWithCredential,
   PhoneAuthProvider,
+  RecaptchaVerifier,
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
   updatePhoneNumber,
@@ -82,14 +76,20 @@ vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(),
   linkWithCredential: vi.fn(),
   PhoneAuthProvider: { credential: vi.fn() },
+  RecaptchaVerifier: vi.fn(),
   signInWithEmailAndPassword: vi.fn(),
   signInWithPhoneNumber: vi.fn(),
   updatePhoneNumber: vi.fn(),
 }));
 
+vi.mock('@/src/shared/config/firebase', () => ({
+  firebaseApp: {},
+}));
+
 const originalDefaultPassword = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD;
 
 beforeEach(() => {
+  vi.clearAllMocks();
   process.env.NEXT_PUBLIC_DEFAULT_PASSWORD = 'test-default-password';
   vi.mocked(getAuth).mockReturnValue(toAuth(fixtures.auth));
   vi.mocked(signInWithPhoneNumber).mockResolvedValue(confirmationResult);
@@ -97,7 +97,7 @@ beforeEach(() => {
   vi.mocked(PhoneAuthProvider.credential).mockReturnValue(toPhoneCredential(fixtures.phoneCredential));
   vi.mocked(linkWithCredential).mockResolvedValue(userCredential(toUser(fixtures.userWithoutPhone)));
   vi.mocked(updatePhoneNumber).mockResolvedValue(undefined);
-  window.recaptchaVerifier = toVerifier(fixtures.verifier);
+  vi.mocked(RecaptchaVerifier).mockImplementation(() => toVerifier(fixtures.verifier));
 });
 
 afterAll(() => {
@@ -136,8 +136,35 @@ describe('usePhoneAuthCodeSendMutation', () => {
     expect(result.current.isPending).toBe(false);
   });
 
-  it('reCAPTCHA verifier가 없으면 Firebase를 호출하지 않고 error와 settled callback을 실행', async () => {
-    window.recaptchaVerifier = null;
+  it('SMS 발송 시 reCAPTCHA verifier를 lazy하게 생성한 뒤 Firebase를 호출한다', async () => {
+    const onSuccess = vi.fn();
+    const { result } = renderHook(() => usePhoneAuthCodeSendMutation({ onSuccess }));
+
+    await act(() => result.current.mutate('01012345678'));
+
+    expect(RecaptchaVerifier).toHaveBeenCalledTimes(1);
+    expect(signInWithPhoneNumber).toHaveBeenCalledWith(
+      toAuth(fixtures.auth),
+      '+821012345678',
+      toVerifier(fixtures.verifier),
+    );
+    expect(onSuccess).toHaveBeenCalledWith(confirmationResult);
+  });
+
+  it('hook이 생성한 reCAPTCHA verifier를 unmount 시 정리한다', async () => {
+    const { result, unmount } = renderHook(() => usePhoneAuthCodeSendMutation());
+
+    await act(() => result.current.mutate('01012345678'));
+    unmount();
+
+    expect(fixtures.verifier.clear).toHaveBeenCalledTimes(1);
+  });
+
+  it('reCAPTCHA 생성 자체가 실패하면 Firebase를 호출하지 않고 error와 settled callback을 실행', async () => {
+    const constructError = new Error('reCAPTCHA has already been rendered in this element');
+    vi.mocked(RecaptchaVerifier).mockImplementationOnce(() => {
+      throw constructError;
+    });
     const onError = vi.fn();
     const onSettled = vi.fn();
     const { result } = renderHook(() => usePhoneAuthCodeSendMutation({ onError, onSettled }));
@@ -145,11 +172,8 @@ describe('usePhoneAuthCodeSendMutation', () => {
     await act(() => result.current.mutate('01012345678'));
 
     expect(signInWithPhoneNumber).not.toHaveBeenCalled();
-    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'RecaptchaVerifier is not initialized' }));
-    expect(console.error).toHaveBeenCalledWith(
-      'Error during signInWithPhoneNumber:',
-      expect.objectContaining({ message: 'RecaptchaVerifier is not initialized' }),
-    );
+    expect(onError).toHaveBeenCalledWith(constructError);
+    expect(console.error).toHaveBeenCalledWith('Error during signInWithPhoneNumber:', constructError);
     expect(onSettled).toHaveBeenCalledTimes(1);
     expect(result.current.isPending).toBe(false);
   });

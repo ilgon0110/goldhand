@@ -16,7 +16,6 @@ import {
   PhoneAuthFields,
   useConfirmPhoneAuthCode,
   usePhoneAuthCodeSendMutation,
-  useRecaptcha,
 } from '@/src/entities/phoneAuth/client';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetReviewDetailData } from '@/src/entities/review';
@@ -82,8 +81,6 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const phoneIdTokenRef = useRef<string | null>(null);
 
-  useRecaptcha(PHONE_AUTH_RECAPTCHA_CONTAINER_ID);
-
   const phoneAuthForm = useForm<z.infer<typeof phoneAuthFormSchema>>({
     resolver: zodResolver(phoneAuthFormSchema),
     defaultValues: { phoneNumber: '', authCode: '' },
@@ -99,6 +96,7 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   } = usePhoneAuthCodeSendMutation({
     onSuccess: res => {
       confirmationResultRef.current = res;
+      setIsAuthCodeOpen(true);
     },
     onError: () => {
       phoneAuthForm.setError('phoneNumber', {
@@ -110,7 +108,6 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
 
   const handleSendClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setIsAuthCodeOpen(true);
     sendAuthCode(phoneAuthForm.getValues('phoneNumber') || '');
   };
 

@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     try {
       await updateDoc(reviewDocRef, {
         ...targetData,
-        thumbnail: thumbnailImage ? thumbnailImage.url : null,
+        thumbnail: thumbnailImage ? thumbnailImage.url : targetData.thumbnail,
         title,
         name,
         franchisee,

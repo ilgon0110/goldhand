@@ -1,8 +1,7 @@
-import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
@@ -28,11 +27,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const db = getFirestore(firebaseApp);
-    const userDocRef = doc(db, 'users', userId);
-    const userDocSnap = await getDoc(userDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const userDocRef = db.collection('users').doc(userId);
+    const userDocSnap = await userDocRef.get();
 
-    if (!userDocSnap.exists()) {
+    if (!userDocSnap.exists) {
       return typedJson<IResponseBody>(
         { response: 'ng', message: '사용자 정보가 존재하지 않습니다.' },
         { status: 403 },
@@ -52,12 +51,12 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      await updateDoc(userDocRef, {
+      await userDocRef.update({
         ...userDocSnap.data(),
         name,
         nickname,
         email,
-        updatedAt: serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
       return typedJson<IResponseBody>(
         { response: 'ok', message: '사용자 정보가 업데이트되었습니다.' },

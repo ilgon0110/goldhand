@@ -11,6 +11,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -44,8 +45,8 @@ export async function createComment(
       return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 403 });
     }
 
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const adminDb = getAdminFirestore(firebaseAdminApp);
+    const userDocSnap = await adminDb.collection('users').doc(uid).get();
     if (userDocSnap.data()?.isDeleted) {
       return typedJson<ICommentResponse>(
         { response: 'ng', message: '탈퇴한 유저는 댓글을 작성할 수 없습니다.' },

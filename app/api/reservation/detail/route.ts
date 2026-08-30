@@ -1,11 +1,13 @@
-import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, getFirestore, orderBy, query, Timestamp } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { ICommentData, IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -52,12 +54,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-    const consultDocRef = doc(db, 'consults', docId);
-    const docSnap = await getDoc(consultDocRef);
+    const db = getFirestore(firebaseApp);
+    const adminDb = getAdminFirestore(firebaseAdminApp);
+    const consultDocRef = adminDb.collection('consults').doc(docId);
+    const docSnap = await consultDocRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
@@ -77,9 +79,8 @@ export async function GET(request: NextRequest) {
       try {
         const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
         verifiedUid = decodedToken.uid;
-        const userDocRef = doc(db, 'users', verifiedUid);
-        const userDocSnap = await getDoc(userDocRef);
-        isAdmin = userDocSnap.exists() && userDocSnap.data().grade === 'admin';
+        const userDocSnap = await adminDb.collection('users').doc(verifiedUid).get();
+        isAdmin = userDocSnap.exists && userDocSnap.data()?.grade === 'admin';
       } catch {
         // 토큰 검증 실패 시 isAdmin, verifiedUid 기본값 유지
       }
@@ -145,6 +146,9 @@ export async function GET(request: NextRequest) {
       message: 'ok',
       data: {
         ...data,
+        createdAt: serializeAdminTimestamp(data.createdAt)!,
+        updatedAt: serializeAdminTimestamp(data.updatedAt)!,
+        pinnedAt: serializeAdminTimestamp(data.pinnedAt),
         phoneNumber: canViewPhoneNumber ? data.phoneNumber : '',
         comments,
       },

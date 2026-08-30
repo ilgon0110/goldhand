@@ -1,8 +1,9 @@
-import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
+import type { DocumentReference } from 'firebase-admin/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { applyReviewImageSrcs } from '@/src/shared/lib/applyReviewImageSrcs';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
@@ -41,11 +42,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const db = getFirestore(firebaseApp);
-  const reviewDocRef = doc(db, 'reviews', docId);
-  const docSnap = await getDoc(reviewDocRef);
+  const db = getAdminFirestore(firebaseAdminApp);
+  const reviewDocRef = db.collection('reviews').doc(docId);
+  const docSnap = await reviewDocRef.get();
 
-  if (!docSnap.exists()) {
+  if (!docSnap.exists) {
     return typedJson<IResponseBody>(
       { response: 'ng', message: '해당 docId를 가진 게시글이 존재하지 않습니다.', docId: '' },
       { status: 404 },
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function updateReviewPost(
-  reviewDocRef: ReturnType<typeof doc>,
+  reviewDocRef: DocumentReference,
   body: IReviewRequestBody,
   previousThumbnail: string | null,
 ): Promise<Response> {
@@ -110,7 +111,7 @@ async function updateReviewPost(
   const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImageSrcs(htmlString, images);
 
   try {
-    await updateDoc(reviewDocRef, {
+    await reviewDocRef.update({
       thumbnail: thumbnailUrl ?? previousThumbnail,
       title,
       name,

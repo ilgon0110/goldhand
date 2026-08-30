@@ -1,9 +1,9 @@
-import type { FirestoreDataConverter } from 'firebase/firestore';
-import { where } from 'firebase/firestore';
+import type { WhereFilterOp } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
-import { getPinnedFirstListClient } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -24,20 +24,27 @@ export async function GET(request: NextRequest) {
   const currentUserId = authResult.ok ? authResult.uid : null;
 
   try {
-    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListClient<IReservationDetailData>(
+    const extraWhere: [string, WhereFilterOp, unknown][] = hideSecret === 'true' ? [['secret', '==', false]] : [];
+
+    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListAdmin<IReservationDetailData>(
       'consults',
-      consultConverter,
-      hideSecret === 'true' ? [where('secret', '==', false)] : [],
+      extraWhere,
       page,
       PAGE_SIZE,
     );
 
     const maskSecretFields = (data: IReservationDetailData & { id: string }) => {
       const isOwner = currentUserId !== null && currentUserId === data.userId;
+      const timestamps = {
+        createdAt: serializeAdminTimestamp(data.createdAt)!,
+        updatedAt: serializeAdminTimestamp(data.updatedAt)!,
+        pinnedAt: serializeAdminTimestamp(data.pinnedAt),
+      };
 
       if (data.secret && !isAdmin && !isOwner) {
         return {
           ...data,
+          ...timestamps,
           title: data.title,
           content: '',
           name: '',
@@ -49,7 +56,7 @@ export async function GET(request: NextRequest) {
       }
 
       // 리스트 UI에서는 연락처를 전혀 사용하지 않으므로 권한과 무관하게 항상 마스킹
-      return { ...data, phoneNumber: '' };
+      return { ...data, ...timestamps, phoneNumber: '' };
     };
 
     const consults = [...pinnedItems, ...pageItems].map(maskSecretFields);
@@ -63,15 +70,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-const consultConverter: FirestoreDataConverter<IReservationDetailData> = {
-  toFirestore(data: IReservationDetailData) {
-    return data;
-  },
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options);
-    return {
-      ...data,
-    } as IReservationDetailData;
-  },
-};

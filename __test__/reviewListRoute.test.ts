@@ -3,37 +3,36 @@ import type { NextRequest } from 'next/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GET } from '@/app/api/review/route';
-import type { IReviewDetailData, TAliasAny } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/shared/types';
 
-const { getPinnedFirstListClientMock, checkAdminAuthMock } = vi.hoisted(() => ({
-  getPinnedFirstListClientMock: vi.fn(),
+const { getPinnedFirstListAdminMock, checkAdminAuthMock, usersWhereGetMock } = vi.hoisted(() => ({
+  getPinnedFirstListAdminMock: vi.fn(),
   checkAdminAuthMock: vi.fn(),
+  usersWhereGetMock: vi.fn(() => Promise.resolve({ docs: [] })),
 }));
 
 vi.mock('@/src/shared/lib/pin/getPinnedFirstList', () => ({
-  getPinnedFirstListClient: getPinnedFirstListClientMock,
+  getPinnedFirstListAdmin: getPinnedFirstListAdminMock,
 }));
 
 vi.mock('@/src/shared/lib/checkAdminAuth', () => ({
   checkAdminAuth: checkAdminAuthMock,
 }));
 
-// getAdminUserIdSet가 사용하는 users 컬렉션 조회 - 항상 admin 없음으로 처리
-vi.mock('firebase/firestore', async () => {
-  const actual = await vi.importActual<TAliasAny>('firebase/firestore');
-  return {
-    ...actual,
-    getFirestore: vi.fn(() => ({})),
-    collection: vi.fn(() => ({})),
-    query: vi.fn(),
-    where: vi.fn(),
-    documentId: vi.fn(),
-    getDocs: vi.fn(() => Promise.resolve({ docs: [] })),
-  };
-});
+// getAdminUserIdSet가 실제로 사용하는 Admin SDK 경로 - users 컬렉션 조회를 mock 처리
+vi.mock('firebase-admin/firestore', () => ({
+  FieldPath: { documentId: vi.fn() },
+  getFirestore: vi.fn(() => ({
+    collection: vi.fn(() => ({
+      where: vi.fn(() => ({
+        get: usersWhereGetMock,
+      })),
+    })),
+  })),
+}));
 
-vi.mock('@/src/shared/config/firebase', () => ({
-  firebaseApp: {},
+vi.mock('@/src/shared/config/firebase-admin', () => ({
+  firebaseAdminApp: {},
 }));
 
 const guestReview: IReviewDetailData & { id: string } = {
@@ -63,7 +62,7 @@ describe('GET /api/review - PII 마스킹', () => {
   });
 
   it('일반 사용자(비관리자)에게는 목록의 phoneNumber/phoneHash가 노출되지 않는다', async () => {
-    getPinnedFirstListClientMock.mockResolvedValueOnce({ pinnedItems: [], pageItems: [guestReview], totalDataLength: 1 });
+    getPinnedFirstListAdminMock.mockResolvedValueOnce({ pinnedItems: [], pageItems: [guestReview], totalDataLength: 1 });
     checkAdminAuthMock.mockResolvedValueOnce({ ok: false, reason: 'no_token' });
 
     const response = await GET(makeRequest());
@@ -74,7 +73,7 @@ describe('GET /api/review - PII 마스킹', () => {
   });
 
   it('관리자에게는 목록의 phoneNumber가 노출되지만 phoneHash는 노출되지 않는다', async () => {
-    getPinnedFirstListClientMock.mockResolvedValueOnce({ pinnedItems: [], pageItems: [guestReview], totalDataLength: 1 });
+    getPinnedFirstListAdminMock.mockResolvedValueOnce({ pinnedItems: [], pageItems: [guestReview], totalDataLength: 1 });
     checkAdminAuthMock.mockResolvedValueOnce({ ok: true, uid: 'admin-uid', isAdmin: true });
 
     const response = await GET(makeRequest());

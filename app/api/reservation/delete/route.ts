@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
-import { deleteDoc, doc, getDoc, getFirestore } from 'firebase/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -28,12 +28,11 @@ export async function DELETE(req: NextRequest) {
 
   // Delete logic here...
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-    const consultDocRef = doc(db, 'consults', docId);
-    const docSnap = await getDoc(consultDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const consultDocRef = db.collection('consults').doc(docId);
+    const docSnap = await consultDocRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
@@ -63,7 +62,7 @@ export async function DELETE(req: NextRequest) {
       }
 
       // 비회원이면서 비밀번호가 일치하는 경우만 삭제 가능
-      await deleteDoc(consultDocRef);
+      await consultDocRef.delete();
 
       revalidatePath('/reservation/list');
       return typedJson<IResponseBody>(
@@ -82,7 +81,7 @@ export async function DELETE(req: NextRequest) {
       }
 
       // 회원이면서 userId가 일치하는 경우만 삭제 가능
-      await deleteDoc(consultDocRef);
+      await consultDocRef.delete();
 
       revalidatePath('/reservation/list');
       return typedJson<IResponseBody>(

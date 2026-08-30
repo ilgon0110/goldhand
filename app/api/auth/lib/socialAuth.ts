@@ -2,11 +2,12 @@ import type { UserCredential } from 'firebase/auth';
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 
 export async function trySignIn(email: string, password: string): Promise<UserCredential | null> {
-  const auth = getAuth();
+  const auth = getAuth(firebaseApp);
   try {
     return await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
@@ -22,7 +23,7 @@ export async function trySignIn(email: string, password: string): Promise<UserCr
 }
 
 export async function signUpUser(email: string, password: string): Promise<UserCredential> {
-  const auth = getAuth();
+  const auth = getAuth(firebaseApp);
   return await createUserWithEmailAndPassword(auth, email, password);
 }
 

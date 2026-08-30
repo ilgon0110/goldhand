@@ -1,10 +1,9 @@
 import bcrypt from 'bcryptjs';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
@@ -69,9 +68,8 @@ export async function POST(req: Request) {
     }
 
     // 탈퇴한 유저인지 확인
-    const db = getFirestore(firebaseApp);
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const userDocSnap = await db.collection('users').doc(uid).get();
     const targetUserData = userDocSnap.data();
     if (targetUserData?.isDeleted) {
       return typedJson<IResponseBody>(
@@ -110,12 +108,11 @@ async function createNonMemberPost(body: IReservationCreatePostData) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // firestore에 데이터 저장
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
   const docId = uuidv4();
 
   try {
-    await setDoc(doc(db, 'consults', docId), {
+    await db.collection('consults').doc(docId).set({
       title,
       content,
       location,
@@ -153,12 +150,11 @@ async function createMemberPost(uid: string, body: IReservationCreatePostData) {
   const { title, name, secret, franchisee, phoneNumber, location, content, bornDate } = body;
 
   // firestore에 데이터 저장
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
   const docId = uuidv4();
 
   try {
-    await setDoc(doc(db, 'consults', docId), {
+    await db.collection('consults').doc(docId).set({
       title,
       content,
       location,

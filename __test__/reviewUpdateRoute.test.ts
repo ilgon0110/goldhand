@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { POST } from '@/app/api/review/update/route';
-import type { IReviewDetailData, TAliasAny } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/shared/types';
 
 const { getDocMock, updateDocMock, checkAdminAuthMock } = vi.hoisted(() => ({
   getDocMock: vi.fn(),
@@ -11,19 +11,19 @@ const { getDocMock, updateDocMock, checkAdminAuthMock } = vi.hoisted(() => ({
   checkAdminAuthMock: vi.fn(),
 }));
 
-vi.mock('firebase/firestore', async () => {
-  const actual = await vi.importActual<TAliasAny>('firebase/firestore');
-  return {
-    ...actual,
-    getFirestore: vi.fn(() => ({})),
-    doc: vi.fn(() => ({})),
-    getDoc: getDocMock,
-    updateDoc: updateDocMock,
-  };
-});
+vi.mock('firebase-admin/firestore', () => ({
+  getFirestore: vi.fn(() => ({
+    collection: vi.fn(() => ({
+      doc: vi.fn(() => ({
+        get: getDocMock,
+        update: updateDocMock,
+      })),
+    })),
+  })),
+}));
 
-vi.mock('@/src/shared/config/firebase', () => ({
-  firebaseApp: {},
+vi.mock('@/src/shared/config/firebase-admin', () => ({
+  firebaseAdminApp: {},
 }));
 
 vi.mock('@/src/shared/lib/checkAdminAuth', () => ({
@@ -60,7 +60,7 @@ describe('POST /api/review/update - 썸네일 보존', () => {
   });
 
   it('이미지를 건드리지 않은 수정(images: null)에서는 기존 썸네일을 유지한다', async () => {
-    getDocMock.mockResolvedValueOnce({ exists: () => true, data: () => existingReview });
+    getDocMock.mockResolvedValueOnce({ exists: true, data: () => existingReview });
     checkAdminAuthMock.mockResolvedValueOnce({ ok: true, uid: 'author-uid', isAdmin: false });
 
     await POST(
@@ -74,14 +74,11 @@ describe('POST /api/review/update - 썸네일 보존', () => {
       }),
     );
 
-    expect(updateDocMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ thumbnail: existingReview.thumbnail }),
-    );
+    expect(updateDocMock).toHaveBeenCalledWith(expect.objectContaining({ thumbnail: existingReview.thumbnail }));
   });
 
   it('새 썸네일이 업로드되면 그 값으로 교체한다', async () => {
-    getDocMock.mockResolvedValueOnce({ exists: () => true, data: () => existingReview });
+    getDocMock.mockResolvedValueOnce({ exists: true, data: () => existingReview });
     checkAdminAuthMock.mockResolvedValueOnce({ ok: true, uid: 'author-uid', isAdmin: false });
 
     await POST(
@@ -96,7 +93,6 @@ describe('POST /api/review/update - 썸네일 보존', () => {
     );
 
     expect(updateDocMock).toHaveBeenCalledWith(
-      expect.anything(),
       expect.objectContaining({ thumbnail: 'https://firebasestorage.googleapis.com/new-thumb.webp' }),
     );
   });

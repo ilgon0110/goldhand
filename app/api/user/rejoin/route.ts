@@ -1,10 +1,9 @@
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc, getFirestore, Timestamp, updateDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore, Timestamp } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -34,10 +33,10 @@ export async function GET() {
     const adminApp = getAdminAuth(firebaseAdminApp);
     const { uid } = await adminApp.verifyIdToken(accessToken.value);
 
-    const db = getFirestore(firebaseApp);
-    const snap = await getDoc(doc(db, 'users', uid));
+    const db = getAdminFirestore(firebaseAdminApp);
+    const snap = await db.collection('users').doc(uid).get();
 
-    if (!snap.exists() || !snap.data().isDeleted) {
+    if (!snap.exists || !snap.data()!.isDeleted) {
       return typedJson<IResponseGetBody>(
         { response: 'ng', message: '탈퇴 유저 정보를 찾을 수 없습니다.', userData: null },
         { status: 404 },
@@ -45,7 +44,17 @@ export async function GET() {
     }
 
     return typedJson<IResponseGetBody>(
-      { response: 'ok', message: '탈퇴 유저 정보 확인', userData: { ...snap.data(), userId: uid } as IUserDetailData },
+      {
+        response: 'ok',
+        message: '탈퇴 유저 정보 확인',
+        userData: {
+          ...snap.data(),
+          userId: uid,
+          createdAt: serializeAdminTimestamp(snap.data()?.createdAt)!,
+          updatedAt: serializeAdminTimestamp(snap.data()?.updatedAt)!,
+          deletedAt: serializeAdminTimestamp(snap.data()?.deletedAt),
+        } as IUserDetailData,
+      },
       { status: 200 },
     );
   } catch {
@@ -57,11 +66,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const app = firebaseApp;
-  const auth = getAuth();
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
 
-  auth.languageCode = 'ko';
   const { userId } = await req.json();
 
   if (!userId) {
@@ -75,12 +81,12 @@ export async function POST(req: Request) {
   }
 
   // 탈퇴한 유저정보 확인
-  const userDocRef = doc(db, 'users', userId);
-  const docSnap = await getDoc(userDocRef);
+  const userDocRef = db.collection('users').doc(userId);
+  const docSnap = await userDocRef.get();
   const targetUserData = docSnap.data() as IUserDetailData | undefined;
   if (targetUserData?.isDeleted && targetUserData.userId === userId) {
     try {
-      await updateDoc(userDocRef, {
+      await userDocRef.update({
         ...targetUserData,
         isDeleted: false,
         updatedAt: Timestamp.now(),

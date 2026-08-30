@@ -1,10 +1,11 @@
-import type { FirestoreDataConverter } from 'firebase/firestore';
-import { collection, documentId, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import type { WhereFilterOp } from 'firebase-admin/firestore';
+import { FieldPath, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
-import { getPinnedFirstListClient } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -34,14 +35,14 @@ async function getAdminUserIdSet(userIds: string[]): Promise<Set<string>> {
     return new Set();
   }
 
-  const db = getFirestore(firebaseApp);
-  const usersRef = collection(db, 'users');
+  const db = getAdminFirestore(firebaseAdminApp);
+  const usersRef = db.collection('users');
   const CHUNK_SIZE = 30;
   const adminUserIds = new Set<string>();
 
   for (let i = 0; i < uniqueUserIds.length; i += CHUNK_SIZE) {
     const chunk = uniqueUserIds.slice(i, i + CHUNK_SIZE);
-    const snap = await getDocs(query(usersRef, where(documentId(), 'in', chunk)));
+    const snap = await usersRef.where(FieldPath.documentId(), 'in', chunk).get();
     snap.docs.forEach(doc => {
       if (doc.data().grade === 'admin') {
         adminUserIds.add(doc.id);
@@ -62,10 +63,12 @@ export async function GET(request: NextRequest) {
     const authResult = await checkAdminAuth();
     const isAdmin = authResult.ok && authResult.isAdmin;
 
-    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListClient<IReviewDetailData>(
+    const extraWhere: [string, WhereFilterOp, unknown][] =
+      franchisee !== '전체' ? [['franchisee', '==', franchisee]] : [];
+
+    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListAdmin<IReviewDetailData>(
       'reviews',
-      converter,
-      franchisee !== '전체' ? [where('franchisee', '==', franchisee)] : [],
+      extraWhere,
       page,
       PAGE_SIZE,
     );
@@ -77,6 +80,9 @@ export async function GET(request: NextRequest) {
 
     const reviewData = combined.map(item => ({
       ...maskGuestFields(item, isAdmin),
+      createdAt: serializeAdminTimestamp(item.createdAt)!,
+      updatedAt: serializeAdminTimestamp(item.updatedAt)!,
+      pinnedAt: serializeAdminTimestamp(item.pinnedAt),
       isAuthorAdmin: item.userId != null && adminUserIds.has(item.userId),
     }));
 
@@ -89,15 +95,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-const converter: FirestoreDataConverter<IReviewDetailData> = {
-  toFirestore(data: IReviewDetailData) {
-    return data;
-  },
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options);
-    return {
-      ...data,
-    } as IReviewDetailData;
-  },
-};

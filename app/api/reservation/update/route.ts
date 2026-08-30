@@ -1,8 +1,8 @@
-import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -50,12 +50,11 @@ export async function POST(req: NextRequest) {
 
   // Update logic here...
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-    const consultDocRef = doc(db, 'consults', docId);
-    const docSnap = await getDoc(consultDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const consultDocRef = db.collection('consults').doc(docId);
+    const docSnap = await consultDocRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      await updateDoc(consultDocRef, {
+      await consultDocRef.update({
         title,
         content,
         location,
@@ -90,7 +89,7 @@ export async function POST(req: NextRequest) {
         name,
         phoneNumber,
         password: verifyResult.newHashedPassword,
-        updatedAt: serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       revalidatePath(`/reservation/list/${docId}`);
@@ -110,7 +109,7 @@ export async function POST(req: NextRequest) {
       }
 
       // 회원이면서 userId가 일치하는 경우만 수정 가능
-      await updateDoc(consultDocRef, {
+      await consultDocRef.update({
         title,
         content,
         location,
@@ -120,7 +119,7 @@ export async function POST(req: NextRequest) {
         name,
         phoneNumber,
         password: null,
-        updatedAt: serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       revalidatePath(`/reservation/list/${docId}`);

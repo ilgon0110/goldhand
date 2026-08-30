@@ -1,8 +1,9 @@
-import { deleteDoc, doc, getDoc, getFirestore } from 'firebase/firestore';
+import type { DocumentReference } from 'firebase-admin/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { verifyPhoneIdToken } from '@/src/shared/lib/verifyPhoneIdToken';
@@ -28,11 +29,11 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const db = getFirestore(firebaseApp);
-    const reviewDocRef = doc(db, 'reviews', docId);
-    const docSnap = await getDoc(reviewDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const reviewDocRef = db.collection('reviews').doc(docId);
+    const docSnap = await reviewDocRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       return typedJson<IResponseBody>(
         { response: 'ng', message: '해당 docId를 가진 게시글이 존재하지 않습니다.' },
         { status: 404 },
@@ -82,8 +83,8 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-async function deleteReviewDoc(reviewDocRef: ReturnType<typeof doc>): Promise<Response> {
-  await deleteDoc(reviewDocRef);
+async function deleteReviewDoc(reviewDocRef: DocumentReference): Promise<Response> {
+  await reviewDocRef.delete();
   revalidatePath('/review');
   return typedJson<IResponseBody>({ response: 'ok', message: '후기가 정상적으로 삭제되었습니다.' }, { status: 200 });
 }

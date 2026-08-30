@@ -328,4 +328,18 @@ describe('useLinkPhoneToCurrentUser', () => {
     expect(onSettled).toHaveBeenCalledTimes(1);
     expect(result.current.isPending).toBe(false);
   });
+
+  it('reset 호출 시 성공 상태, 안내 메시지, 오류를 모두 초기화', async () => {
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData()));
+
+    await act(() => result.current.mutate('123456', confirmationResult));
+    expect(result.current.isSuccess).toBe(true);
+    expect(result.current.sendSmsConfirmSuccessMessage).toBe('인증코드가 확인되었습니다.');
+
+    act(() => result.current.reset());
+
+    expect(result.current.isSuccess).toBe(false);
+    expect(result.current.sendSmsConfirmSuccessMessage).toBe('');
+    expect(result.current.getError()).toBeNull();
+  });
 });

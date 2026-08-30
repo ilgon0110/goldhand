@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { RecaptchaVerifier } from 'firebase/auth';
 import { signInWithPhoneNumber } from 'firebase/auth';
@@ -142,11 +142,14 @@ describe('ReviewEditPage 컴포넌트 테스트', () => {
     expect(screen.queryByLabelText(/휴대폰번호/)).not.toBeInTheDocument();
   });
 
-  it('[비회원 글] 휴대폰 인증 필드가 보이고, 인증 전에는 제출 버튼이 비활성화된다', async () => {
+  it('[비회원 글] 본인 인증을 Step 1로 표시하고 인증 전에는 수정 폼을 숨긴다', async () => {
     renderReviewEdit(null, mockNonUserData);
 
     expect(await screen.findByLabelText(/휴대폰번호/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '후기 수정하기' })).toBeDisabled();
+    expect(screen.getByRole('list', { name: '후기 수정 단계' })).toBeInTheDocument();
+    expect(screen.getByText('본인 인증').closest('li')).toHaveAttribute('aria-current', 'step');
+    expect(screen.queryByLabelText(/제목/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '후기 수정하기' })).not.toBeInTheDocument();
   });
 
   it('[관리자가 비회원 글 수정] 휴대폰 인증 필드가 보이지 않는다', async () => {
@@ -163,9 +166,36 @@ describe('ReviewEditPage 컴포넌트 테스트', () => {
     expect(screen.queryByLabelText(/휴대폰번호/)).not.toBeInTheDocument();
   });
 
+  it('[비회원 글] 인증한 번호가 작성 번호와 다르면 일반 오류를 표시하고 Step 1에 머문다', async () => {
+    server.use(
+      http.post('/api/review/verify-owner', () =>
+        HttpResponse.json(
+          { response: 'ng', message: '본인 확인에 실패했습니다. 입력 정보를 확인해주세요.' },
+          { status: 403 },
+        ),
+      ),
+    );
+
+    renderReviewEdit(null, mockNonUserData);
+
+    await userEvent.type(await screen.findByLabelText(/휴대폰번호/), '01087654321');
+    await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+    await userEvent.type(await screen.findByLabelText(/인증코드/), '123456');
+    await userEvent.click(screen.getByRole('button', { name: '인증하기' }));
+
+    expect(await screen.findByText('본인 확인에 실패했습니다. 입력 정보를 확인해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('본인 인증').closest('li')).toHaveAttribute('aria-current', 'step');
+    expect(screen.queryByLabelText(/제목/)).not.toBeInTheDocument();
+  });
+
   it('[비회원 글] SMS 인증 완료 후 제출하면 phoneIdToken이 포함된 페이로드로 API가 호출된다', async () => {
     const handler = vi.fn(async () => HttpResponse.json({ response: 'ok', message: '성공', docId }));
-    server.use(http.post('/api/review/update', handler));
+    server.use(
+      http.post('/api/review/verify-owner', () =>
+        HttpResponse.json({ response: 'ok', message: '본인 확인이 완료되었습니다.' }),
+      ),
+      http.post('/api/review/update', handler),
+    );
 
     renderReviewEdit(null, mockNonUserData);
 
@@ -176,7 +206,11 @@ describe('ReviewEditPage 컴포넌트 테스트', () => {
     const authCodeInput = await screen.findByLabelText(/인증코드/);
     await userEvent.type(authCodeInput, '123456');
     await userEvent.click(screen.getByRole('button', { name: '인증하기' }));
-    await screen.findByText('인증완료');
+    await screen.findByDisplayValue('기존 제목');
+    const stepper = screen.getByRole('list', { name: '후기 수정 단계' });
+    expect(within(stepper).getByText('후기 수정').closest('li')).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByText(/010-\*{4}-5678/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '다시 인증' })).toBeInTheDocument();
 
     const submitButton = screen.getByRole('button', { name: '후기 수정하기' });
     await waitFor(() => expect(submitButton).toBeEnabled(), { timeout: 3000 });

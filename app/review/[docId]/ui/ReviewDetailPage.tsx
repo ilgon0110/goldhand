@@ -2,7 +2,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { ConfirmationResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -14,8 +13,7 @@ import { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
 import {
   PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
   PhoneAuthFields,
-  useConfirmPhoneAuthCode,
-  usePhoneAuthCodeSendMutation,
+  usePhoneAuthVerifyFlow,
 } from '@/src/entities/phoneAuth/client';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetReviewDetailData } from '@/src/entities/review';
@@ -77,8 +75,6 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   const [reviewUpdateAlertDialogOpen, setReviewUpdateAlertDialogOpen] = useState(false);
   const [reviewDeleteAlertDialogOpen, setReviewDeleteAlertDialogOpen] = useState(false);
   const [isDeletePhoneAuthDialogOpen, setIsDeletePhoneAuthDialogOpen] = useState(false);
-  const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
-  const confirmationResultRef = useRef<ConfirmationResult | null>(null);
   const phoneIdTokenRef = useRef<string | null>(null);
 
   const phoneAuthForm = useForm<z.infer<typeof phoneAuthFormSchema>>({
@@ -86,62 +82,18 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
     defaultValues: { phoneNumber: '', authCode: '' },
     mode: 'onChange',
   });
-  const phoneNumberError = !!phoneAuthForm.formState.errors.phoneNumber;
-  const authCodeError = !!phoneAuthForm.formState.errors.authCode;
 
-  const {
-    mutate: sendAuthCode,
-    isPending: isSendingSms,
-    sendSmsSuccessMessage,
-  } = usePhoneAuthCodeSendMutation({
-    onSuccess: res => {
-      confirmationResultRef.current = res;
-      setIsAuthCodeOpen(true);
+  const phoneAuth = usePhoneAuthVerifyFlow(
+    phoneAuthForm,
+    { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
+    {
+      onConfirmed: async result => {
+        phoneIdTokenRef.current = await result.user.getIdToken();
+        setIsDeletePhoneAuthDialogOpen(false);
+        setReviewDeleteAlertDialogOpen(true);
+      },
     },
-    onError: () => {
-      phoneAuthForm.setError('phoneNumber', {
-        type: 'manual',
-        message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
-      });
-    },
-  });
-
-  const handleSendClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    sendAuthCode(phoneAuthForm.getValues('phoneNumber') || '');
-  };
-
-  const {
-    isSuccess: authCodeSuccess,
-    mutate: confirmAuthCode,
-    isPending: isConfirming,
-    getErrorMessage,
-  } = useConfirmPhoneAuthCode({
-    onSuccess: async result => {
-      phoneIdTokenRef.current = await result.user.getIdToken();
-      setIsDeletePhoneAuthDialogOpen(false);
-      setReviewDeleteAlertDialogOpen(true);
-    },
-  });
-
-  const handleConfirmClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    if (authCodeSuccess) return;
-    await confirmAuthCode(phoneAuthForm.getValues('authCode') || '', confirmationResultRef.current);
-
-    const errorMessage = getErrorMessage();
-    if (errorMessage === 'auth/invalid-verification-code') {
-      phoneAuthForm.setError('authCode', {
-        type: 'manual',
-        message: '인증코드가 일치하지 않습니다.',
-      });
-    } else if (errorMessage) {
-      phoneAuthForm.setError('authCode', {
-        type: 'manual',
-        message: '알 수 없는 오류가 발생했습니다.',
-      });
-    }
-  };
+  );
 
   const { mutate: deleteReview, isPending: isReviewDeleteSubmitting } = useReviewDeleteMutation({
     onSuccess: () => {
@@ -189,7 +141,13 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
 
   return (
     <>
-      <button aria-hidden="true" className="hidden" id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID} tabIndex={-1} />
+      <button
+        aria-hidden="true"
+        className="hidden"
+        id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID}
+        key={phoneAuth.recaptchaKey}
+        tabIndex={-1}
+      />
       <div className="relative flex flex-col gap-2">
         <h3 className="text-xl font-bold md:text-3xl">{data.data.title}</h3>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -320,19 +278,10 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
           <Form {...phoneAuthForm}>
             <form className="space-y-6">
               <PhoneAuthFields
-                authCodeError={authCodeError}
                 authCodeName="authCode"
-                authCodeSuccess={authCodeSuccess}
                 control={phoneAuthForm.control}
-                isAuthCodeOpen={isAuthCodeOpen}
-                isConfirming={isConfirming}
-                isSendingSms={isSendingSms}
-                phoneNumberError={phoneNumberError}
+                phoneAuth={phoneAuth}
                 phoneNumberName="phoneNumber"
-                sendSmsConfirmSuccessMessage={authCodeSuccess ? '인증코드가 확인되었습니다.' : ''}
-                sendSmsSuccessMessage={sendSmsSuccessMessage}
-                onConfirmClick={handleConfirmClick}
-                onSendClick={handleSendClick}
               />
             </form>
           </Form>

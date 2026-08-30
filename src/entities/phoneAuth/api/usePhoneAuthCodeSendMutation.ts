@@ -32,6 +32,7 @@ export const usePhoneAuthCodeSendMutation = (options?: {
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [sendSmsSuccessMessage, setSendSmsSuccessMessage] = useState('');
+  const [recaptchaKey, setRecaptchaKey] = useState(0);
 
   useEffect(() => {
     return () => {
@@ -68,11 +69,16 @@ export const usePhoneAuthCodeSendMutation = (options?: {
     recaptchaVerifierRef.current?.clear();
     recaptchaVerifierRef.current = null;
     setSendSmsSuccessMessage('');
+    // RecaptchaVerifier.clear()는 위젯 내용만 지울 뿐, 같은 컨테이너 엘리먼트에 다시
+    // 렌더링하면 "reCAPTCHA has already been rendered in this element" 에러가 난다.
+    // recaptchaKey를 컨테이너의 React key로 사용해 엘리먼트 자체를 새로 마운트시킨다.
+    setRecaptchaKey(key => key + 1);
   }
 
   return {
     isPending,
     sendSmsSuccessMessage,
+    recaptchaKey,
     mutate,
     reset,
   };

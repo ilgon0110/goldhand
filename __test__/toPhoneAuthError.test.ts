@@ -39,4 +39,11 @@ describe('toPhoneAuthError', () => {
     });
     expect(result.message).not.toContain(code);
   });
+
+  it('에러 객체 대신 raw 코드 문자열도 동일하게 매핑 (useConfirmPhoneAuthCode 등 문자열 기반 호출)', () => {
+    expect(toPhoneAuthError('auth/invalid-verification-code')).toEqual({
+      kind: 'invalid-code',
+      message: '인증코드가 틀렸습니다.',
+    });
+  });
 });

@@ -3,6 +3,7 @@
 import { Check } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import type { Control, FieldValues, Path } from 'react-hook-form';
+import { useFormState } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/src/shared/ui/button';
@@ -10,23 +11,15 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 
+import type { TPhoneAuthFlow } from '../model/usePhoneAuthFlowCore';
+
 type TPhoneAuthFieldsProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>;
   phoneNumberName: Path<TFieldValues>;
   authCodeName: Path<TFieldValues>;
-  isAuthCodeOpen: boolean;
-  phoneNumberError: boolean;
-  authCodeError: boolean;
-  isSendingSms: boolean;
-  sendSmsSuccessMessage: string;
+  phoneAuth: TPhoneAuthFlow;
   sendDisabled?: boolean;
-  onSendClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isConfirming: boolean;
-  authCodeSuccess: boolean;
-  sendSmsConfirmSuccessMessage: string;
-  onConfirmClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   confirmSuccessLabel?: React.ReactNode;
-  onRestartClick?: () => void;
   restartLabel?: React.ReactNode;
 };
 
@@ -34,24 +27,28 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
   control,
   phoneNumberName,
   authCodeName,
-  isAuthCodeOpen,
-  phoneNumberError,
-  authCodeError,
-  isSendingSms,
-  sendSmsSuccessMessage,
+  phoneAuth,
   sendDisabled = false,
-  onSendClick: handleSendClick,
-  isConfirming,
-  authCodeSuccess,
-  sendSmsConfirmSuccessMessage,
-  onConfirmClick: handleConfirmClick,
   confirmSuccessLabel = '인증완료',
-  onRestartClick,
   restartLabel = '다시 인증하기',
 }: TPhoneAuthFieldsProps<TFieldValues>) {
   const authCodeInputRef = useRef<HTMLInputElement | null>(null);
+  const { errors } = useFormState({ control, name: [phoneNumberName, authCodeName] });
+  const phoneNumberError = !!errors[phoneNumberName];
+  const authCodeError = !!errors[authCodeName];
+
+  const {
+    isAuthCodeOpen,
+    isSendingSms,
+    sendSmsSuccessMessage,
+    isConfirming,
+    authCodeSuccess,
+    sendSmsConfirmSuccessMessage,
+    onSendClick: handleSendClick,
+    onConfirmClick: handleConfirmClick,
+    onRestartClick: handleRestartClick,
+  } = phoneAuth;
   const hasSentSms = sendSmsSuccessMessage !== '';
-  const handleRestartClick = () => (onRestartClick ? onRestartClick() : window.location.reload());
 
   useEffect(() => {
     if (hasSentSms && isAuthCodeOpen) {
@@ -70,6 +67,7 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
             <FormControl>
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                 <Input
+                  disabled={hasSentSms}
                   id="phoneNumber"
                   placeholder="휴대폰번호를 입력해주세요. (예:01012345678)"
                   {...field}
@@ -93,7 +91,7 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
                     {isSendingSms ? <LoadingSpinnerIcon /> : hasSentSms ? <Check aria-hidden="true" /> : '인증받기'}
                   </Button>
                   {hasSentSms && (
-                    <Button type="button" variant="outline" onClick={handleRestartClick}>
+                    <Button disabled={isConfirming} type="button" variant="outline" onClick={handleRestartClick}>
                       {restartLabel}
                     </Button>
                   )}

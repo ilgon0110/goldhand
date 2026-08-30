@@ -87,11 +87,18 @@ export const useLinkPhoneToCurrentUser = (
     }
   }
 
+  function reset() {
+    setIsSuccess(false);
+    setSmsConfirmSuccessMessage('');
+    errorRef.current = null;
+  }
+
   return {
     isSuccess,
     isPending,
     sendSmsConfirmSuccessMessage,
     mutate,
+    reset,
     getError: () => errorRef.current,
   };
 };

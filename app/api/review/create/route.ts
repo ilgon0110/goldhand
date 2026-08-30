@@ -1,9 +1,8 @@
-import { collection, doc, getDoc, getDocs, getFirestore, limit, query, setDoc, where } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { applyReviewImageSrcs } from '@/src/shared/lib/applyReviewImageSrcs';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
@@ -50,9 +49,8 @@ export async function POST(req: Request) {
     const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
 
     // 탈퇴한 유저인지 확인
-    const db = getFirestore(firebaseApp);
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const userDocSnap = await db.collection('users').doc(uid).get();
     const targetUserData = userDocSnap.data();
     if (targetUserData?.isDeleted) {
       return typedJson<IResponseBody>(
@@ -80,11 +78,10 @@ const createReviewPost = async (uid: string, body: IReviewPost) => {
   const { title, name, franchisee, htmlString, docId, images } = body;
   const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImageSrcs(htmlString, images);
 
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
 
   try {
-    await setDoc(doc(db, 'reviews', docId), {
+    await db.collection('reviews').doc(docId).set({
       thumbnail: thumbnailUrl,
       title,
       name,
@@ -130,26 +127,27 @@ const createGuestReviewPost = async (body: IReviewPost) => {
 
   const phoneHash = hashPhoneNumber(verifyResult.phoneNumber);
 
-  const app = firebaseApp;
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
 
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const dedupQuery = query(
-    collection(db, 'reviews'),
-    where('phoneHash', '==', phoneHash),
-    where('franchisee', '==', franchisee),
-    where('createdAt', '>=', twentyFourHoursAgo),
-    limit(1),
-  );
-  const dedupSnap = await getDocs(dedupQuery);
+  const dedupSnap = await db
+    .collection('reviews')
+    .where('phoneHash', '==', phoneHash)
+    .where('franchisee', '==', franchisee)
+    .where('createdAt', '>=', twentyFourHoursAgo)
+    .limit(1)
+    .get();
   if (!dedupSnap.empty) {
-    return typedJson<IResponseBody>({ response: 'ng', message: DUPLICATE_SUBMISSION_MESSAGE, docId: '' }, { status: 409 });
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: DUPLICATE_SUBMISSION_MESSAGE, docId: '' },
+      { status: 409 },
+    );
   }
 
   const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImageSrcs(htmlString, images);
 
   try {
-    await setDoc(doc(db, 'reviews', docId), {
+    await db.collection('reviews').doc(docId).set({
       thumbnail: thumbnailUrl,
       title,
       name,
@@ -174,4 +172,3 @@ const createGuestReviewPost = async (body: IReviewPost) => {
     return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 작성에 실패했습니다.', docId }, { status: 500 });
   }
 };
-

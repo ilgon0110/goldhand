@@ -13,6 +13,10 @@ export interface IPhoneAuthError {
 }
 
 function getErrorCode(error: unknown): string | null {
+  if (typeof error === 'string') {
+    return error || null;
+  }
+
   if (error != null && typeof error === 'object' && 'code' in error && typeof error.code === 'string') {
     return error.code;
   }
@@ -20,6 +24,11 @@ function getErrorCode(error: unknown): string | null {
   return null;
 }
 
+/**
+ * Firebase 에러 객체({ code })와 raw Firebase 에러 코드 문자열(예: useConfirmPhoneAuthCode가
+ * 반환하는 값) 양쪽 모두를 사용자용 에러로 변환한다. 계정 연동(link) 흐름과 재인증(verify)
+ * 흐름이 같은 코드 체계를 공유하므로 하나의 매핑으로 통합했다.
+ */
 export function toPhoneAuthError(error: unknown): IPhoneAuthError {
   switch (getErrorCode(error)) {
     case 'auth/invalid-verification-code':

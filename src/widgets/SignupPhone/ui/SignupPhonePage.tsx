@@ -1,10 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { ConfirmationResult } from 'firebase/auth';
 import { Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
@@ -13,8 +12,7 @@ import { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
 import {
   PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
   PhoneAuthFields,
-  useLinkPhoneToCurrentUser,
-  usePhoneAuthCodeSendMutation,
+  usePhoneAuthLinkFlow,
 } from '@/src/entities/phoneAuth/client';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
@@ -31,7 +29,6 @@ interface ISignupPhonePageProps {
 
 export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   const router = useRouter();
-  const [isAuthCodeOpen, setIsAuthCodeOpen] = useState(false);
   const form = useForm<z.infer<typeof phoneAuthFormSchema>>({
     resolver: zodResolver(phoneAuthFormSchema),
     defaultValues: {
@@ -40,64 +37,27 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
     mode: 'onChange',
   });
   const formValidation = form.formState.isValid;
-  const phoneNumberError = !!form.formState.errors.phoneNumber;
-  const authCodeError = !!form.formState.errors.authCode;
-  const confirmationResultRef = useRef<ConfirmationResult | null>(null);
 
   useEffect(() => {
     form.trigger();
   }, [form]);
 
-  const {
-    mutate,
-    isPending: isSendingSms,
-    sendSmsSuccessMessage,
-  } = usePhoneAuthCodeSendMutation({
-    onSuccess: res => {
-      confirmationResultRef.current = res;
-      setIsAuthCodeOpen(true);
+  const phoneAuth = usePhoneAuthLinkFlow(
+    form,
+    { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
+    userData,
+    {
+      confirmedMessage: '인증코드가 확인되었습니다. 아래의 인증 완료하기 버튼을 클릭해주세요.',
+      onPhoneAlreadyInUse: () => {
+        toastError(
+          `이미 가입된 전화번호입니다.\n혹시 ${userData?.provider === 'kakao' ? '네이버' : '카카오'}로 가입하시지 않으셨나요?`,
+        );
+        setTimeout(() => {
+          router.push('/login');
+        }, 3000);
+      },
     },
-    onError: () => {
-      form.setError('phoneNumber', {
-        type: 'manual',
-        message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
-      });
-    },
-  });
-
-  const handleAuthClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault();
-    // 인증번호 발송 버튼 클릭 시
-    mutate(form.getValues().phoneNumber);
-  };
-
-  const {
-    isSuccess: authCodeSuccess,
-    mutate: authCodeConfirmMutate,
-    isPending: isConfirming,
-    getError,
-    sendSmsConfirmSuccessMessage,
-  } = useLinkPhoneToCurrentUser(userData);
-
-  const handleAuthConfirmClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault(); // 항상 최상단에서 방지
-    if (authCodeSuccess) return; // 이미 인증된 경우 무시
-    await authCodeConfirmMutate(form.getValues('authCode'), confirmationResultRef.current);
-
-    const authError = getError();
-    if (authError) {
-      form.setError('authCode', { type: 'manual', message: authError.message });
-
-      if (authError.kind !== 'phone-already-in-use') return;
-
-      toastError(
-        `이미 가입된 전화번호입니다.\n혹시 ${userData?.provider === 'kakao' ? '네이버' : '카카오'}로 가입하시지 않으셨나요?`,
-      );
-      setTimeout(() => {
-        router.push('/login');
-      }, 3000);
-    }
-  };
+  );
 
   const { mutate: signup, isPending: isSubmitting } = useSignupPhoneMutation(form.getValues(), {
     onSuccess: data => {
@@ -120,7 +80,7 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
 
   const onSubmit = async (_values: z.infer<typeof phoneAuthFormSchema>) => {
     if (!formValidation) return;
-    if (!authCodeSuccess) return;
+    if (!phoneAuth.authCodeSuccess) return;
 
     signup();
   };
@@ -128,35 +88,28 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   return (
     <>
       <SectionTitleHero description="고운황금손 핸드폰인증을 진행합니다." label="고운황금손 핸드폰인증" />
-      <button aria-hidden="true" className="hidden" id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID} tabIndex={-1} />
+      <button
+        aria-hidden="true"
+        className="hidden"
+        id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID}
+        key={phoneAuth.recaptchaKey}
+        tabIndex={-1}
+      />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <PhoneAuthFields
-            authCodeError={authCodeError}
             authCodeName="authCode"
-            authCodeSuccess={authCodeSuccess}
             confirmSuccessLabel={<Check />}
             control={form.control}
-            isAuthCodeOpen={isAuthCodeOpen}
-            isConfirming={isConfirming}
-            isSendingSms={isSendingSms}
-            phoneNumberError={phoneNumberError}
+            phoneAuth={phoneAuth}
             phoneNumberName="phoneNumber"
-            sendSmsConfirmSuccessMessage={
-              authCodeSuccess
-                ? '인증코드가 확인되었습니다. 아래의 인증 완료하기 버튼을 클릭해주세요.'
-                : sendSmsConfirmSuccessMessage
-            }
-            sendSmsSuccessMessage={sendSmsSuccessMessage}
-            onConfirmClick={handleAuthConfirmClick}
-            onSendClick={handleAuthClick}
           />
           <Button
             className={cn(
               'transition-all duration-300 ease-in-out',
               formValidation ? '' : 'cursor-not-allowed opacity-20',
             )}
-            disabled={!formValidation || !authCodeSuccess}
+            disabled={!formValidation || !phoneAuth.authCodeSuccess}
             type="submit"
           >
             {isSubmitting ? <LoadingSpinnerIcon /> : '인증 완료하기'}

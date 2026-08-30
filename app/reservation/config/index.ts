@@ -5,7 +5,7 @@ interface IOrderCard {
 
 export const orderCardList: IOrderCard[] = [
   {
-    title: '예약 상담(전화 or 카카오톡)',
+    title: '예약 상담',
     content: '08:00 이후 산모님이 편하신 시간대에 언제든지 상담 가능합니다.',
   },
   {

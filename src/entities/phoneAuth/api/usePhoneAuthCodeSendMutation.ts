@@ -64,9 +64,16 @@ export const usePhoneAuthCodeSendMutation = (options?: {
     }
   }
 
+  function reset() {
+    recaptchaVerifierRef.current?.clear();
+    recaptchaVerifierRef.current = null;
+    setSendSmsSuccessMessage('');
+  }
+
   return {
     isPending,
     sendSmsSuccessMessage,
     mutate,
+    reset,
   };
 };

@@ -38,10 +38,16 @@ export const useConfirmPhoneAuthCode = (options?: {
     }
   }
 
+  function reset() {
+    setIsSuccess(false);
+    errorMessageRef.current = '';
+  }
+
   return {
     isSuccess,
     isPending,
     mutate,
+    reset,
     getErrorMessage: () => errorMessageRef.current,
   };
 };

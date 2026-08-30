@@ -1,17 +1,22 @@
+/* eslint-disable react/jsx-handler-names */
 import { QueryClient } from '@tanstack/react-query';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { RecaptchaVerifier } from 'firebase/auth';
 import { signInWithPhoneNumber } from 'firebase/auth';
 import { http, HttpResponse } from 'msw';
 import { Suspense, useEffect } from 'react';
 
+import { GuestConfirmationStep } from '@/app/review/form/ui/_GuestConfirmationStep';
+import { GuestReviewFormStep } from '@/app/review/form/ui/_GuestReviewFormStep';
+import { MemberReviewForm } from '@/app/review/form/ui/_MemberReviewForm';
 import { ReviewFormPage } from '@/app/review/form/ui/ReviewFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { userKeys } from '@/src/shared/config/queryKeys';
 import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
+import { ImagesContext, useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
@@ -138,12 +143,97 @@ function renderReviewForm(userData: IUserResponseData) {
   );
 }
 
+function renderMemberReviewForm() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient.setQueryData(userKeys.all, mockUserData);
+
+  return renderWithQueryClient(<MemberReviewForm />, { queryClient });
+}
+
+const GuestImagesHarness = ({ onRestartVerification }: { onRestartVerification: () => void }) => {
+  const { images, setImages } = useImagesContext();
+
+  useEffect(() => {
+    setImages([{ key: 'draft-image', file: new File(['image'], 'draft.png', { type: 'image/png' }) }]);
+  }, [setImages]);
+
+  return (
+    <>
+      <output aria-label="첨부 이미지 수">{images?.length ?? 0}</output>
+      <GuestReviewFormStep
+        verification={{ phoneNumber: '01012345678', phoneIdToken: 'verified-token' }}
+        onRestartVerification={onRestartVerification}
+      />
+    </>
+  );
+};
+
 async function selectFranchisee() {
   const franchiseeTrigger = screen.getByTestId('franchisee-select-trigger');
   await userEvent.click(franchiseeTrigger);
   const optionToSelect = await waitFor(() => screen.findByText(/전체/, { selector: 'span' }));
   await userEvent.click(optionToSelect);
 }
+
+async function completeGuestVerification(phoneNumber = '01012345678') {
+  await userEvent.type(await screen.findByLabelText(/휴대폰번호/), phoneNumber);
+  fireEvent.click(screen.getByRole('checkbox'));
+  await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+  await userEvent.type(await screen.findByLabelText(/인증코드/), '123456');
+  await userEvent.click(screen.getByRole('button', { name: '인증하기' }));
+  await screen.findByRole('heading', { name: '후기 작성' });
+}
+
+describe('GuestConfirmationStep 컴포넌트 테스트', () => {
+  it('인증 성공 시 휴대폰번호와 ID 토큰만 전달한다.', async () => {
+    const onConfirmed = vi.fn();
+    render(<GuestConfirmationStep onConfirmed={onConfirmed} />);
+
+    await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
+    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+    await userEvent.type(await screen.findByLabelText(/인증코드/), '123456');
+    await userEvent.click(screen.getByRole('button', { name: '인증하기' }));
+
+    await waitFor(() =>
+      expect(onConfirmed).toHaveBeenCalledWith({
+        phoneNumber: '01012345678',
+        phoneIdToken: 'mock-phone-id-token',
+      }),
+    );
+  });
+});
+
+describe('MemberReviewForm 컴포넌트 테스트', () => {
+  it('휴대폰 인증 없이 회원 후기 작성 필드만 렌더링한다.', async () => {
+    renderMemberReviewForm();
+
+    expect(await screen.findByLabelText(/이름/)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/휴대폰번호/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/개인정보 수집 및 이용에 동의합니다/)).not.toBeInTheDocument();
+  });
+});
+
+describe('GuestReviewFormStep 컴포넌트 테스트', () => {
+  it('다른 번호로 인증할 때 첨부 이미지를 비우고 인증 단계 전환을 요청한다.', async () => {
+    const onRestartVerification = vi.fn();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, mockNonUserData);
+
+    renderWithQueryClient(
+      <ImagesContext>
+        <GuestImagesHarness onRestartVerification={onRestartVerification} />
+      </ImagesContext>,
+      { queryClient },
+    );
+
+    await waitFor(() => expect(screen.getByLabelText('첨부 이미지 수')).toHaveTextContent('1'));
+    await userEvent.click(screen.getByRole('button', { name: '다른 번호로 인증' }));
+
+    expect(screen.getByLabelText('첨부 이미지 수')).toHaveTextContent('0');
+    expect(onRestartVerification).toHaveBeenCalledOnce();
+  });
+});
 
 describe('ReviewFormPage 컴포넌트 테스트', () => {
   it('[회원] 이름 validation 테스트. 2글자 이상 20글자 이하 string만 가능하다.', async () => {
@@ -209,18 +299,29 @@ describe('ReviewFormPage 컴포넌트 테스트', () => {
     expect(await screen.findByLabelText(/휴대폰번호/)).toBeInTheDocument();
     expect(screen.getByText(/개인정보 수집 및 이용에 동의합니다/)).toBeInTheDocument();
     expect(screen.getByText(/동일한 대리점에는 24시간 내 1회만 후기를 작성할 수 있습니다\./)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '휴대폰 본인 인증' })).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: '후기 작성 단계' })).toBeInTheDocument();
+    expect(screen.getByText('본인 인증').closest('li')).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByText('본인 인증').closest('li')).not.toHaveClass('flex-1');
+    expect(screen.getByText('본인 인증').previousElementSibling).toHaveTextContent('1');
+    expect(
+      screen.getByRole('checkbox').compareDocumentPosition(screen.getByLabelText(/휴대폰번호/)) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(screen.queryByLabelText(/이름/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/제목/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '후기 남기기' })).not.toBeInTheDocument();
   });
 
-  it('[비회원] SMS 인증을 완료하지 않으면 필수값을 모두 입력해도 제출 버튼이 비활성화된다.', async () => {
+  it('[비회원] 개인정보 동의 후에만 인증번호를 요청할 수 있다.', async () => {
     renderReviewForm(mockNonUserData);
 
-    await userEvent.type(await screen.findByLabelText(/이름/), '홍길동');
-    await userEvent.type(screen.getByLabelText(/제목/), '후기 제목입니다.');
-    await selectFranchisee();
-    await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.type(await screen.findByLabelText(/휴대폰번호/), '01012345678');
+    const sendButton = screen.getByRole('button', { name: '인증받기' });
+    expect(sendButton).toBeDisabled();
 
-    expect(screen.getByRole('button', { name: '후기 남기기' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('checkbox'));
+    await waitFor(() => expect(sendButton).toBeEnabled());
   });
 
   it('[비회원] SMS 인증 완료 후 제출 시 phoneIdToken이 포함된 페이로드로 API가 호출된다', async () => {
@@ -228,21 +329,17 @@ describe('ReviewFormPage 컴포넌트 테스트', () => {
     server.use(http.post('/api/review/create', handler));
 
     renderReviewForm(mockNonUserData);
-
-    await userEvent.type(await screen.findByLabelText(/이름/), '홍길동');
-    await userEvent.type(screen.getByLabelText(/제목/), '후기 제목입니다.');
-    await selectFranchisee();
-    await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
-    await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+    await completeGuestVerification();
 
     expect(signInWithPhoneNumber).toHaveBeenCalled();
-
-    const authCodeInput = await screen.findByLabelText(/인증코드/);
-    await userEvent.type(authCodeInput, '123456');
-    await userEvent.click(screen.getByRole('button', { name: '인증하기' }));
-
-    await screen.findByText('인증완료');
-    fireEvent.click(screen.getByRole('checkbox'));
+    const completedMarker = screen.getByLabelText('본인 인증 완료');
+    expect(completedMarker).toHaveClass('bg-green-600', 'text-white');
+    expect(completedMarker).not.toHaveTextContent('1');
+    expect(completedMarker.querySelector('svg')).toBeInTheDocument();
+    expect(screen.getByText(/010-\*{4}-5678/)).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText(/이름/), '홍길동');
+    await userEvent.type(screen.getByLabelText(/제목/), '후기 제목입니다.');
+    await selectFranchisee();
 
     const submitButton = screen.getByRole('button', { name: '후기 남기기' });
     await waitFor(() => expect(submitButton).toBeEnabled(), { timeout: 3000 });
@@ -254,6 +351,21 @@ describe('ReviewFormPage 컴포넌트 테스트', () => {
       const body = await req[0][0].request.json();
       expect(body.phoneIdToken).toBe('mock-phone-id-token');
     });
+  });
+
+  it('[비회원] 다른 번호로 인증하면 작성 상태를 폐기하고 인증부터 다시 시작한다.', async () => {
+    renderReviewForm(mockNonUserData);
+    await completeGuestVerification();
+    await userEvent.type(screen.getByLabelText(/이름/), '폐기할 이름');
+    await userEvent.type(screen.getByLabelText(/제목/), '폐기할 제목');
+
+    await userEvent.click(screen.getByRole('button', { name: '다른 번호로 인증' }));
+    expect(await screen.findByRole('heading', { name: '휴대폰 본인 인증' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/휴대폰번호/)).toHaveValue('');
+
+    await completeGuestVerification('01087654321');
+    expect(screen.getByLabelText(/이름/)).toHaveValue('');
+    expect(screen.getByLabelText(/제목/)).toHaveValue('');
   });
 
   it('[회원] 제출 시 phoneIdToken 없이 API가 호출된다', async () => {

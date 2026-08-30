@@ -19,12 +19,15 @@ type TPhoneAuthFieldsProps<TFieldValues extends FieldValues> = {
   authCodeError: boolean;
   isSendingSms: boolean;
   sendSmsSuccessMessage: string;
+  sendDisabled?: boolean;
   onSendClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   isConfirming: boolean;
   authCodeSuccess: boolean;
   sendSmsConfirmSuccessMessage: string;
   onConfirmClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   confirmSuccessLabel?: React.ReactNode;
+  onRestartClick?: () => void;
+  restartLabel?: React.ReactNode;
 };
 
 export function PhoneAuthFields<TFieldValues extends FieldValues>({
@@ -36,16 +39,19 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
   authCodeError,
   isSendingSms,
   sendSmsSuccessMessage,
+  sendDisabled = false,
   onSendClick: handleSendClick,
   isConfirming,
   authCodeSuccess,
   sendSmsConfirmSuccessMessage,
   onConfirmClick: handleConfirmClick,
   confirmSuccessLabel = '인증완료',
+  onRestartClick,
+  restartLabel = '다시 인증하기',
 }: TPhoneAuthFieldsProps<TFieldValues>) {
   const authCodeInputRef = useRef<HTMLInputElement | null>(null);
   const hasSentSms = sendSmsSuccessMessage !== '';
-  const handleRestartClick = () => window.location.reload();
+  const handleRestartClick = () => (onRestartClick ? onRestartClick() : window.location.reload());
 
   useEffect(() => {
     if (hasSentSms && isAuthCodeOpen) {
@@ -62,7 +68,7 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
           <FormItem>
             <FormLabel htmlFor="phoneNumber">휴대폰번호</FormLabel>
             <FormControl>
-              <div className="flex flex-row gap-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                 <Input
                   id="phoneNumber"
                   placeholder="휴대폰번호를 입력해주세요. (예:01012345678)"
@@ -71,28 +77,24 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
                   minLength={6}
                   required
                 />
-                <div className="flex shrink-0 gap-2">
+                <div className="flex shrink-0 gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
                   <Button
                     aria-label={hasSentSms ? '인증번호 발송완료' : undefined}
                     className={cn(
                       'transition-all duration-300 ease-in-out',
-                      (phoneNumberError || isSendingSms || hasSentSms) && 'cursor-not-allowed opacity-20',
+                      (phoneNumberError || sendDisabled || isSendingSms || hasSentSms) &&
+                        'cursor-not-allowed opacity-20',
                       hasSentSms && 'bg-green-500',
                     )}
-                    disabled={phoneNumberError || isSendingSms || hasSentSms}
+                    disabled={phoneNumberError || sendDisabled || isSendingSms || hasSentSms}
+                    type="button"
                     onClick={handleSendClick}
                   >
-                    {isSendingSms ? (
-                      <LoadingSpinnerIcon />
-                    ) : hasSentSms ? (
-                      <Check aria-hidden="true" />
-                    ) : (
-                      '인증받기'
-                    )}
+                    {isSendingSms ? <LoadingSpinnerIcon /> : hasSentSms ? <Check aria-hidden="true" /> : '인증받기'}
                   </Button>
                   {hasSentSms && (
                     <Button type="button" variant="outline" onClick={handleRestartClick}>
-                      다시 인증하기
+                      {restartLabel}
                     </Button>
                   )}
                 </div>
@@ -111,7 +113,7 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
             <FormItem>
               <FormLabel htmlFor="authCode">인증코드</FormLabel>
               <FormControl>
-                <div className="flex flex-row gap-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                   <Input
                     id="authCode"
                     placeholder="수신받은 인증코드를 입력해주세요."
@@ -129,8 +131,10 @@ export function PhoneAuthFields<TFieldValues extends FieldValues>({
                       'transition-all duration-300 ease-in-out',
                       (authCodeError || isConfirming || authCodeSuccess) && 'cursor-not-allowed opacity-20',
                       sendSmsConfirmSuccessMessage && 'bg-green-500',
+                      'sm:shrink-0',
                     )}
                     disabled={authCodeError || isConfirming || authCodeSuccess}
+                    type="button"
                     onClick={handleConfirmClick}
                   >
                     {isConfirming ? <LoadingSpinnerIcon /> : authCodeSuccess ? confirmSuccessLabel : '인증하기'}

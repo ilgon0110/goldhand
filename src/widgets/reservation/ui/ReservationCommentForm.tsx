@@ -6,6 +6,7 @@ import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { useCommentCreateMutation, useComments } from '@/src/entities/comment';
+import { useGetUserData } from '@/src/entities/user';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
@@ -20,6 +21,8 @@ type TReservationCommentFormProps = {
 
 export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) => {
   useComments({ docId, collectionName: 'consults' });
+  const { data: userData } = useGetUserData();
+  const isLoggedIn = userData.userData != null;
 
   const form = useForm<z.infer<typeof consultCommentSchema>>({
     resolver: zodResolver(consultCommentSchema),
@@ -65,11 +68,14 @@ export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) 
         />
         <div className="flex w-full justify-end">
           <Button
-            className={cn('transition-all duration-300', formValidation ? '' : 'opacity-20 hover:cursor-not-allowed')}
-            disabled={!formValidation}
+            className={cn(
+              'transition-all duration-300',
+              formValidation && isLoggedIn ? '' : 'opacity-20 hover:cursor-not-allowed',
+            )}
+            disabled={!formValidation || !isLoggedIn}
             type="submit"
           >
-            {isCommentSubmitting ? <LoadingSpinnerIcon /> : '댓글달기'}
+            {isCommentSubmitting ? <LoadingSpinnerIcon /> : isLoggedIn ? '댓글달기' : '로그인 후 이용해주세요'}
           </Button>
         </div>
       </form>

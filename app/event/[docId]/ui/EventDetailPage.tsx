@@ -160,11 +160,20 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
           />
           <div className="flex w-full justify-end">
             <Button
-              className={cn('transition-all duration-300', formValidation ? '' : 'opacity-20 hover:cursor-not-allowed')}
-              disabled={!formValidation}
+              className={cn(
+                'transition-all duration-300',
+                formValidation && userData.userData != null ? '' : 'opacity-20 hover:cursor-not-allowed',
+              )}
+              disabled={!formValidation || userData.userData == null}
               type="submit"
             >
-              {isCommentSubmitting ? <LoadingSpinnerIcon /> : '댓글달기'}
+              {isCommentSubmitting ? (
+                <LoadingSpinnerIcon />
+              ) : userData.userData == null ? (
+                '로그인 후 이용해주세요'
+              ) : (
+                '댓글달기'
+              )}
             </Button>
           </div>
         </form>

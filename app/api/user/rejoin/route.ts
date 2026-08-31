@@ -65,19 +65,21 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST() {
   const db = getAdminFirestore(firebaseAdminApp);
 
-  const { userId } = await req.json();
+  // 클라이언트가 보낸 userId를 신뢰하지 않고, accessToken을 검증해 얻은 uid로만 본인 재가입을 허용한다.
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken');
+  if (!accessToken?.value) {
+    return typedJson<IResponsePostBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
+  }
 
-  if (!userId) {
-    return typedJson<IResponsePostBody>(
-      {
-        response: 'ng',
-        message: '유저 ID가 제공되지 않았습니다.',
-      },
-      { status: 400 },
-    );
+  let userId: string;
+  try {
+    userId = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+  } catch {
+    return typedJson<IResponsePostBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
   }
 
   // 탈퇴한 유저정보 확인

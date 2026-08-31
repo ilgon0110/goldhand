@@ -56,7 +56,8 @@ export async function GET(request: NextRequest) {
       }
 
       // 리스트 UI에서는 연락처를 전혀 사용하지 않으므로 권한과 무관하게 항상 마스킹
-      return { ...data, ...timestamps, phoneNumber: '' };
+      // bcrypt 해시(password)도 목록 응답에 노출할 이유가 없으므로 항상 제거한다.
+      return { ...data, ...timestamps, phoneNumber: '', password: null };
     };
 
     const consults = [...pinnedItems, ...pageItems].map(maskSecretFields);

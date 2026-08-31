@@ -1,12 +1,12 @@
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 
 interface IMyPageUpdatePost {
-  userId: string;
   name: string;
   nickname: string;
   phoneNumber: string;
@@ -20,10 +20,19 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IMyPageUpdatePost;
-  const { userId, name, nickname, email } = body;
+  const { name, nickname, email } = body;
 
-  if (!userId) {
-    return typedJson<IResponseBody>({ response: 'ng', message: 'userId is required' }, { status: 400 });
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken');
+  if (!accessToken?.value) {
+    return typedJson<IResponseBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
+  }
+
+  let userId: string;
+  try {
+    userId = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+  } catch {
+    return typedJson<IResponseBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
   }
 
   try {

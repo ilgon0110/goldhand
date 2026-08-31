@@ -1,5 +1,7 @@
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
@@ -9,7 +11,6 @@ import { typedJson } from '@/src/shared/utils';
 
 export interface IConsultPost {
   docId: string;
-  userId?: string;
   title: string;
   password?: string;
   oldPassword?: string;
@@ -32,7 +33,6 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as IConsultPost;
   const {
     docId,
-    userId,
     title,
     name,
     password,
@@ -103,12 +103,25 @@ export async function POST(req: NextRequest) {
     }
     // 회원인 경우
     else {
-      // 회원일 땐 userId로 비교
-      if (targetData.userId !== userId) {
-        return typedJson<IResponseBody>({ response: 'ng', message: '게시글 수정 권한이 없습니다.' }, { status: 401 });
+      // 회원일 땐 클라이언트가 보낸 값이 아니라, accessToken을 검증해 얻은 uid와 비교한다.
+      const cookieStore = await cookies();
+      const accessToken = cookieStore.get('accessToken');
+      if (!accessToken?.value) {
+        return typedJson<IResponseBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
       }
 
-      // 회원이면서 userId가 일치하는 경우만 수정 가능
+      let verifiedUid: string;
+      try {
+        verifiedUid = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+      } catch {
+        return typedJson<IResponseBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
+      }
+
+      if (targetData.userId !== verifiedUid) {
+        return typedJson<IResponseBody>({ response: 'ng', message: '게시글 수정 권한이 없습니다.' }, { status: 403 });
+      }
+
+      // 회원이면서 인증된 본인인 경우만 수정 가능
       await consultDocRef.update({
         title,
         content,

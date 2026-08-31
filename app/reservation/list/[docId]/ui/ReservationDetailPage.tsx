@@ -80,7 +80,9 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
           });
           return;
         }
-        // 삭제하기 버튼 클릭 시
+        // 삭제하기 버튼 클릭 시 - 비밀번호 모달을 먼저 닫아야 한다.
+        // 두 Dialog가 동시에 열려있으면 오버레이가 겹치면서 삭제 확인 모달이 간헐적으로 렌더링되지 않는다.
+        setDialogOpen(false);
         setAlertDialogOpen(true);
       } else {
         toastError(passwordResponseData.message);

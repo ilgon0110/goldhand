@@ -68,7 +68,6 @@ export const useReservationEditForm = ({
         secret: values.secret || false,
         docId,
         recaptchaToken,
-        userId: userData.userData?.userId,
       },
       {
         onSuccess: () => {

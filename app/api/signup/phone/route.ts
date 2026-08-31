@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { isOwnedPhoneNumber } from '@/src/shared/lib/verifyPhoneNumberOwnership';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -55,6 +56,16 @@ export async function POST(req: Request) {
   }
 
   const { phoneNumber } = await req.json();
+
+  if (phoneNumber) {
+    const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
+    if (!isOwnedPhoneNumber(phoneNumber, userRecord.phoneNumber)) {
+      return typedJson<IResponsePostBody>(
+        { response: 'ng', message: 'SMS 인증이 완료된 휴대폰번호와 일치하지 않습니다.' },
+        { status: 403 },
+      );
+    }
+  }
 
   // signup 시에는 uid가 반드시 존재해야 하므로, 여기서 uid를 확인하는 것은 의미가 없다.
   try {

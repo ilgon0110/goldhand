@@ -150,6 +150,8 @@ export async function GET(request: NextRequest) {
         updatedAt: serializeAdminTimestamp(data.updatedAt)!,
         pinnedAt: serializeAdminTimestamp(data.pinnedAt),
         phoneNumber: canViewPhoneNumber ? data.phoneNumber : '',
+        // bcrypt 해시는 비밀번호 검증 서버 로직에서만 쓰며 클라이언트로 절대 내보내지 않는다.
+        password: null,
         comments,
       },
     };

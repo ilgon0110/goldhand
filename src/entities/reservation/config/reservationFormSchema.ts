@@ -25,3 +25,19 @@ export const reservationFormSchema = z.discriminatedUnion('isGuestPost', [
     password: z.string().min(4, { message: '4자 이상 입력해주세요.' }),
   }),
 ]);
+
+// 수정 폼 전용: 비회원은 기존 비밀번호를 재검증한 뒤 새 비밀번호로 교체한다.
+export const reservationEditFormSchema = z.discriminatedUnion('isGuestPost', [
+  z.object({
+    ...commonFields,
+    isGuestPost: z.literal(false), // 회원이 작성한 글 → 토큰 인증, password 없음
+    password: z.undefined(),
+    oldPassword: z.undefined(),
+  }),
+  z.object({
+    ...commonFields,
+    isGuestPost: z.literal(true), // 비회원이 작성한 글 → 기존 비밀번호 검증 후 새 비밀번호로 교체
+    oldPassword: z.string().min(4, { message: '기존 비밀번호를 입력해주세요.' }),
+    password: z.string().min(4, { message: '4자 이상 입력해주세요.' }),
+  }),
+]);

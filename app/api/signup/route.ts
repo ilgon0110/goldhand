@@ -1,10 +1,9 @@
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { isOwnedPhoneNumber } from '@/src/shared/lib/verifyPhoneNumberOwnership';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -16,9 +15,7 @@ interface IResponsePostBody {
 export async function GET() {}
 
 export async function POST(req: Request) {
-  const app = firebaseApp;
-  const auth = getAuth();
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
 
@@ -35,8 +32,6 @@ export async function POST(req: Request) {
   const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
   const uid = decodedToken.uid;
 
-  auth.languageCode = 'ko';
-
   if (!uid)
     return typedJson<IResponsePostBody>(
       {
@@ -47,8 +42,8 @@ export async function POST(req: Request) {
     );
 
   // 탈퇴한 유저인지 확인
-  const userDocRef = doc(db, 'users', uid);
-  const docSnap = await getDoc(userDocRef);
+  const userDocRef = db.collection('users').doc(uid);
+  const docSnap = await userDocRef.get();
   const targetUserData = docSnap.data() as IUserDetailData | undefined;
   if (targetUserData?.isDeleted) {
     return typedJson<IResponsePostBody>(
@@ -62,9 +57,19 @@ export async function POST(req: Request) {
 
   const { name, nickname, phoneNumber, email } = await req.json();
 
+  if (phoneNumber) {
+    const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
+    if (!isOwnedPhoneNumber(phoneNumber, userRecord.phoneNumber)) {
+      return typedJson<IResponsePostBody>(
+        { response: 'ng', message: 'SMS 인증이 완료된 휴대폰번호와 일치하지 않습니다.' },
+        { status: 403 },
+      );
+    }
+  }
+
   // signup 시에는 uid가 반드시 존재해야 하므로, 여기서 uid를 확인하는 것은 의미가 없다.
   try {
-    await updateDoc(userDocRef, {
+    await userDocRef.update({
       name: name || targetUserData?.name || '',
       nickname: nickname || targetUserData?.nickname || '',
       phoneNumber: phoneNumber || targetUserData?.phoneNumber || '',

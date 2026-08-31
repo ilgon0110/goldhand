@@ -1,17 +1,19 @@
-import bcrypt from 'bcryptjs';
-import { doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IConsultPost {
   docId: string;
-  userId?: string;
   title: string;
   password?: string;
+  oldPassword?: string;
   franchisee: string;
   content: string;
   location: string;
@@ -29,19 +31,30 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IConsultPost;
-  const { docId, userId, title, name, password, secret, franchisee, phoneNumber, location, content, bornDate } = body;
+  const {
+    docId,
+    title,
+    name,
+    password,
+    oldPassword,
+    secret,
+    franchisee,
+    phoneNumber,
+    location,
+    content,
+    bornDate,
+  } = body;
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
   }
 
   // Update logic here...
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-    const consultDocRef = doc(db, 'consults', docId);
-    const docSnap = await getDoc(consultDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const consultDocRef = db.collection('consults').doc(docId);
+    const docSnap = await consultDocRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
@@ -54,12 +67,19 @@ export async function POST(req: NextRequest) {
 
     // 비회원인 경우
     if (targetData.userId === null) {
-      if (password === undefined) {
+      if (password === undefined || oldPassword === undefined) {
         return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호를 입력해주세요.' }, { status: 401 });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await updateDoc(consultDocRef, {
+      const verifyResult = await verifyAndRotateGuestPassword(oldPassword, password, targetData.password);
+      if (!verifyResult.ok) {
+        return typedJson<IResponseBody>(
+          { response: 'ng', message: '기존 비밀번호가 일치하지 않습니다.' },
+          { status: 401 },
+        );
+      }
+
+      await consultDocRef.update({
         title,
         content,
         location,
@@ -68,8 +88,8 @@ export async function POST(req: NextRequest) {
         bornDate: bornDate === undefined ? null : bornDate,
         name,
         phoneNumber,
-        password: hashedPassword,
-        updatedAt: serverTimestamp(),
+        password: verifyResult.newHashedPassword,
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       revalidatePath(`/reservation/list/${docId}`);
@@ -83,13 +103,26 @@ export async function POST(req: NextRequest) {
     }
     // 회원인 경우
     else {
-      // 회원일 땐 userId로 비교
-      if (targetData.userId !== userId) {
-        return typedJson<IResponseBody>({ response: 'ng', message: '게시글 수정 권한이 없습니다.' }, { status: 401 });
+      // 회원일 땐 클라이언트가 보낸 값이 아니라, accessToken을 검증해 얻은 uid와 비교한다.
+      const cookieStore = await cookies();
+      const accessToken = cookieStore.get('accessToken');
+      if (!accessToken?.value) {
+        return typedJson<IResponseBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
       }
 
-      // 회원이면서 userId가 일치하는 경우만 수정 가능
-      await updateDoc(consultDocRef, {
+      let verifiedUid: string;
+      try {
+        verifiedUid = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+      } catch {
+        return typedJson<IResponseBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
+      }
+
+      if (targetData.userId !== verifiedUid) {
+        return typedJson<IResponseBody>({ response: 'ng', message: '게시글 수정 권한이 없습니다.' }, { status: 403 });
+      }
+
+      // 회원이면서 인증된 본인인 경우만 수정 가능
+      await consultDocRef.update({
         title,
         content,
         location,
@@ -99,7 +132,7 @@ export async function POST(req: NextRequest) {
         name,
         phoneNumber,
         password: null,
-        updatedAt: serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       revalidatePath(`/reservation/list/${docId}`);

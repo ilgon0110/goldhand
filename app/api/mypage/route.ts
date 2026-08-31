@@ -1,20 +1,11 @@
-import {
-  collection,
-  collectionGroup,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-  orderBy,
-  query,
-  where,
-} from 'firebase/firestore';
+import { collectionGroup, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { ICommentData, IMyPageData, IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -76,8 +67,8 @@ export async function GET() {
     const adminDB = getAdminFirestore(firebaseAdminApp);
 
     // 사용자 데이터 가져오기 (응답에 포함하기 위해 별도로 조회)
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const userDocRef = adminDB.collection('users').doc(uid);
+    const userDocSnap = await userDocRef.get();
 
     const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);
 
@@ -94,14 +85,8 @@ export async function GET() {
       managersData = managersSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        createdAt: {
-          seconds: doc.data().createdAt._seconds,
-          nanoseconds: doc.data().createdAt._nanoseconds,
-        },
-        updatedAt: {
-          seconds: doc.data().updatedAt._seconds,
-          nanoseconds: doc.data().updatedAt._nanoseconds,
-        },
+        createdAt: serializeAdminTimestamp(doc.data().createdAt)!,
+        updatedAt: serializeAdminTimestamp(doc.data().updatedAt)!,
       })) as IMyPageData['applies'];
     }
 
@@ -114,30 +99,36 @@ export async function GET() {
     const appliesData = appliesSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-      createdAt: {
-        seconds: doc.data().createdAt._seconds,
-        nanoseconds: doc.data().createdAt._nanoseconds,
-      },
-      updatedAt: {
-        seconds: doc.data().updatedAt._seconds,
-        nanoseconds: doc.data().updatedAt._nanoseconds,
-      },
+      createdAt: serializeAdminTimestamp(doc.data().createdAt)!,
+      updatedAt: serializeAdminTimestamp(doc.data().updatedAt)!,
     })) as IMyPageData['applies'];
 
     // 예약상담 데이터 가져오기
-    const consultsQuery = query(collection(db, 'consults'), orderBy('createdAt', 'desc'), where('userId', '==', uid));
-    const consultsSnapshot = await getDocs(consultsQuery);
+    const consultsSnapshot = await adminDB
+      .collection('consults')
+      .where('userId', '==', uid)
+      .orderBy('createdAt', 'desc')
+      .get();
     const consultsData = consultsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
+      createdAt: serializeAdminTimestamp(doc.data().createdAt)!,
+      updatedAt: serializeAdminTimestamp(doc.data().updatedAt)!,
+      pinnedAt: serializeAdminTimestamp(doc.data().pinnedAt),
     })) as IMyPageData['consults'];
 
     // 이용후기 데이터 가져오기
-    const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), where('userId', '==', uid));
-    const reviewsSnapshot = await getDocs(reviewsQuery);
+    const reviewsSnapshot = await adminDB
+      .collection('reviews')
+      .where('userId', '==', uid)
+      .orderBy('createdAt', 'desc')
+      .get();
     const reviewsData = reviewsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
+      createdAt: serializeAdminTimestamp(doc.data().createdAt)!,
+      updatedAt: serializeAdminTimestamp(doc.data().updatedAt)!,
+      pinnedAt: serializeAdminTimestamp(doc.data().pinnedAt),
     })) as IMyPageData['reviews'];
 
     // 댓글 데이터 가져오기
@@ -154,7 +145,13 @@ export async function GET() {
       message: '마이페이지 데이터 조회 성공',
       data: {
         isLinked,
-        userData: { ...userDocSnap.data(), userId: uid } as IUserDetailData,
+        userData: {
+          ...userDocSnap.data(),
+          userId: uid,
+          createdAt: serializeAdminTimestamp(userDocSnap.data()?.createdAt)!,
+          updatedAt: serializeAdminTimestamp(userDocSnap.data()?.updatedAt)!,
+          deletedAt: serializeAdminTimestamp(userDocSnap.data()?.deletedAt),
+        } as IUserDetailData,
         managersData,
         applies: appliesData,
         consults: consultsData,

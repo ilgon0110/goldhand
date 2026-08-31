@@ -51,5 +51,6 @@ rule.mjs
 # docs
 /docs
 비즈톡*
+firestore.rules
 
 .vscode

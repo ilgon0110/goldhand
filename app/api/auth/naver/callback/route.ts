@@ -1,8 +1,9 @@
-import { doc, getFirestore, setDoc, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { NextResponse } from 'next/server';
 
 import { apiUrl } from '@/src/shared/config';
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
@@ -15,7 +16,7 @@ const ACCESS_TOKEN_OPTIONS = {
 };
 
 async function saveUserProfile(uid: string, email: string) {
-  const db = getFirestore(firebaseApp);
+  const db = getAdminFirestore(firebaseAdminApp);
   const defaultUserData: IUserDetailData = {
     email,
     provider: 'naver',
@@ -40,7 +41,7 @@ async function saveUserProfile(uid: string, email: string) {
     },
   };
 
-  await setDoc(doc(db, 'users', uid), defaultUserData);
+  await db.collection('users').doc(uid).set(defaultUserData);
 }
 
 export async function GET(request: Request) {
@@ -119,7 +120,8 @@ export async function GET(request: Request) {
     const res = NextResponse.redirect(new URL('/?naver_success=true', origin));
     res.cookies.set('accessToken', newAccessToken, ACCESS_TOKEN_OPTIONS);
     return res;
-  } catch {
+  } catch (error) {
+    console.error('Error during Naver OAuth callback:', error);
     return NextResponse.redirect(new URL('/login?naver_error=auth_failed', origin));
   }
 }

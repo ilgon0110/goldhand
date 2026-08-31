@@ -1,11 +1,25 @@
-import type { FirestoreDataConverter } from 'firebase/firestore';
-import { collection, documentId, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import type { WhereFilterOp } from 'firebase-admin/firestore';
+import { FieldPath, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
-import { getPinnedFirstListClient } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
+
+// phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).
+function maskGuestFields<T extends { phoneNumber: string | null; phoneHash: string | null }>(
+  item: T,
+  isAdmin: boolean,
+): T {
+  return {
+    ...item,
+    phoneNumber: isAdmin ? item.phoneNumber : null,
+    phoneHash: null,
+  };
+}
 
 interface IResponseBody {
   response: 'ng' | 'ok';
@@ -21,14 +35,14 @@ async function getAdminUserIdSet(userIds: string[]): Promise<Set<string>> {
     return new Set();
   }
 
-  const db = getFirestore(firebaseApp);
-  const usersRef = collection(db, 'users');
+  const db = getAdminFirestore(firebaseAdminApp);
+  const usersRef = db.collection('users');
   const CHUNK_SIZE = 30;
   const adminUserIds = new Set<string>();
 
   for (let i = 0; i < uniqueUserIds.length; i += CHUNK_SIZE) {
     const chunk = uniqueUserIds.slice(i, i + CHUNK_SIZE);
-    const snap = await getDocs(query(usersRef, where(documentId(), 'in', chunk)));
+    const snap = await usersRef.where(FieldPath.documentId(), 'in', chunk).get();
     snap.docs.forEach(doc => {
       if (doc.data().grade === 'admin') {
         adminUserIds.add(doc.id);
@@ -46,10 +60,15 @@ export async function GET(request: NextRequest) {
   const PAGE_SIZE = 10;
 
   try {
-    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListClient<IReviewDetailData>(
+    const authResult = await checkAdminAuth();
+    const isAdmin = authResult.ok && authResult.isAdmin;
+
+    const extraWhere: [string, WhereFilterOp, unknown][] =
+      franchisee !== '전체' ? [['franchisee', '==', franchisee]] : [];
+
+    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListAdmin<IReviewDetailData>(
       'reviews',
-      converter,
-      franchisee !== '전체' ? [where('franchisee', '==', franchisee)] : [],
+      extraWhere,
       page,
       PAGE_SIZE,
     );
@@ -60,7 +79,10 @@ export async function GET(request: NextRequest) {
     );
 
     const reviewData = combined.map(item => ({
-      ...item,
+      ...maskGuestFields(item, isAdmin),
+      createdAt: serializeAdminTimestamp(item.createdAt)!,
+      updatedAt: serializeAdminTimestamp(item.updatedAt)!,
+      pinnedAt: serializeAdminTimestamp(item.pinnedAt),
       isAuthorAdmin: item.userId != null && adminUserIds.has(item.userId),
     }));
 
@@ -73,15 +95,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-const converter: FirestoreDataConverter<IReviewDetailData> = {
-  toFirestore(data: IReviewDetailData) {
-    return data;
-  },
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options);
-    return {
-      ...data,
-    } as IReviewDetailData;
-  },
-};

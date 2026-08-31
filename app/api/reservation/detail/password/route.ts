@@ -1,9 +1,11 @@
 import bcrypt from 'bcryptjs';
-import { doc, getDoc, getFirestore, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import jwt from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -52,12 +54,11 @@ export async function POST(request: NextRequest) {
     );
   }
   try {
-    const app = firebaseApp;
-    const db = getFirestore(app);
-    const consultDocRef = doc(db, 'consults', docId);
-    const docSnap = await getDoc(consultDocRef);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const consultDocRef = db.collection('consults').doc(docId);
+    const docSnap = await consultDocRef.get();
 
-    if (!docSnap.exists()) {
+    if (!docSnap.exists) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
@@ -119,7 +120,12 @@ export async function POST(request: NextRequest) {
       {
         response: 'ok',
         message: 'ok',
-        data: { ...data },
+        data: {
+          ...data,
+          createdAt: serializeAdminTimestamp(data.createdAt)!,
+          updatedAt: serializeAdminTimestamp(data.updatedAt)!,
+          pinnedAt: serializeAdminTimestamp(data.pinnedAt),
+        },
         reservationToken: jwtToken,
       },
       { status: 200 },

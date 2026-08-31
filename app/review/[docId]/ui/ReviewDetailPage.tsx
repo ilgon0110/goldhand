@@ -1,19 +1,27 @@
+/* eslint-disable react/jsx-handler-names */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { Comment, useComments } from '@/src/entities/comment';
+import { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
+import {
+  PHONE_AUTH_RECAPTCHA_CONTAINER_ID,
+  PhoneAuthFields,
+  usePhoneAuthVerifyFlow,
+} from '@/src/entities/phoneAuth/client';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetReviewDetailData } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
 import { Label } from '@/src/shared/ui/label';
@@ -34,6 +42,14 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   const { data } = useGetReviewDetailData(docId);
   const { data: userData } = useGetUserData();
   const { data: viewCountData } = useGetViewCountData(docId);
+  const router = useRouter();
+
+  const isGuestPost = data.data.userId == null;
+  const isOwner = data.data.userId ? data.data.userId === userData.userData?.userId : true;
+  const isAdmin = userData.userData?.grade === 'admin';
+  const canManage = isOwner || isAdmin;
+  const requiresPhoneAuth = isGuestPost && !isAdmin;
+
   const form = useForm<z.infer<typeof reviewCommentSchema>>({
     resolver: zodResolver(reviewCommentSchema),
     defaultValues: {
@@ -41,7 +57,6 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
     },
     mode: 'onChange',
   });
-  const router = useRouter();
   const { comments, loading: isCommentSubmitting } = useComments({
     docId,
     collectionName: 'reviews',
@@ -59,6 +74,26 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
 
   const [reviewUpdateAlertDialogOpen, setReviewUpdateAlertDialogOpen] = useState(false);
   const [reviewDeleteAlertDialogOpen, setReviewDeleteAlertDialogOpen] = useState(false);
+  const [isDeletePhoneAuthDialogOpen, setIsDeletePhoneAuthDialogOpen] = useState(false);
+  const phoneIdTokenRef = useRef<string | null>(null);
+
+  const phoneAuthForm = useForm<z.infer<typeof phoneAuthFormSchema>>({
+    resolver: zodResolver(phoneAuthFormSchema),
+    defaultValues: { phoneNumber: '', authCode: '' },
+    mode: 'onChange',
+  });
+
+  const phoneAuth = usePhoneAuthVerifyFlow(
+    phoneAuthForm,
+    { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
+    {
+      onConfirmed: async result => {
+        phoneIdTokenRef.current = await result.user.getIdToken();
+        setIsDeletePhoneAuthDialogOpen(false);
+        setReviewDeleteAlertDialogOpen(true);
+      },
+    },
+  );
 
   const { mutate: deleteReview, isPending: isReviewDeleteSubmitting } = useReviewDeleteMutation({
     onSuccess: () => {
@@ -75,8 +110,6 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   });
 
   const formValidation = form.formState.isValid;
-  const isOwner = data.data.userId === userData.userData?.userId;
-  const isAdmin = userData.userData?.grade === 'admin';
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('review');
 
   const onCommentSubmit = async (values: z.infer<typeof reviewCommentSchema>) => {
@@ -90,8 +123,17 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
     }
   };
 
+  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (requiresPhoneAuth) {
+      setIsDeletePhoneAuthDialogOpen(true);
+    } else {
+      setReviewDeleteAlertDialogOpen(true);
+    }
+  };
+
   const onHandleReviewDeleteActionClick = () => {
-    deleteReview({ docId, userId: data.data.userId });
+    deleteReview({ docId, phoneIdToken: phoneIdTokenRef.current ?? undefined });
   };
 
   // Firebase Analytics 이벤트 로깅
@@ -99,13 +141,25 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
 
   return (
     <>
+      <button
+        aria-hidden="true"
+        className="hidden"
+        id={PHONE_AUTH_RECAPTCHA_CONTAINER_ID}
+        key={phoneAuth.recaptchaKey}
+        tabIndex={-1}
+      />
       <div className="relative flex flex-col gap-2">
         <h3 className="text-xl font-bold md:text-3xl">{data.data.title}</h3>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="space-x-2">
+          <div className="flex flex-wrap items-center gap-x-2">
             <span className="text-slate-500">{data.data.franchisee}</span>
             <span>{data.data.name}</span>
             <span>{formatDateToYMD(data.data.createdAt)}</span>
+            {isAdmin && data.data.phoneNumber && (
+              <span className="whitespace-nowrap text-slate-500">
+                <span className="font-bold">연락처:</span> {data.data.phoneNumber}
+              </span>
+            )}
           </div>
           <div className="flex flex-row items-center gap-2 text-slate-500 sm:ml-auto">
             <ViewIcon />
@@ -127,7 +181,7 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         isPinned={data.data.isPinned}
         onToggle={() => togglePin({ docId, isPinned: !data.data.isPinned })}
       />
-      {isOwner && (
+      {canManage && (
         <div className="flex w-full justify-end space-x-4">
           <Button
             className="border border-primary bg-transparent text-primary transition-all duration-300 hover:bg-primary hover:text-white"
@@ -138,13 +192,7 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
           >
             수정하기
           </Button>
-          <Button
-            variant="destructive"
-            onClick={e => {
-              e.stopPropagation();
-              setReviewDeleteAlertDialogOpen(true);
-            }}
-          >
+          <Button variant="destructive" onClick={handleDeleteClick}>
             삭제하기
           </Button>
         </div>
@@ -219,6 +267,27 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         open={reviewUpdateAlertDialogOpen}
         title={'게시글 수정'}
       />
+
+      {/* 비회원 삭제 - 휴대폰 재인증 모달 */}
+      <Dialog open={isDeletePhoneAuthDialogOpen} onOpenChange={setIsDeletePhoneAuthDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] sm:px-8">
+          <DialogTitle>본인 확인을 위해 휴대폰 인증을 진행해주세요.</DialogTitle>
+          <DialogHeader>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <Form {...phoneAuthForm}>
+            <form className="space-y-6">
+              <PhoneAuthFields
+                authCodeName="authCode"
+                control={phoneAuthForm.control}
+                phoneAuth={phoneAuth}
+                phoneNumberName="phoneNumber"
+              />
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       {/* 삭제 확인 알림 */}
       <MyAlertDialog
         description={'삭제된 게시글은 복구할 수 없습니다.'}

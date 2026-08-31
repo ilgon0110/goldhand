@@ -1,11 +1,9 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { NOTI_LIMIT } from '@/src/shared/config';
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { INotificationDetailData, INotificationResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -71,14 +69,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const db = getFirestore(firebaseApp);
     const adminDB = getAdminFirestore(firebaseAdminApp);
 
     // 사용자 데이터 가져오기
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const userDocRef = adminDB.collection('users').doc(uid);
+    const userDocSnap = await userDocRef.get();
 
-    if (!userDocSnap.exists()) {
+    if (!userDocSnap.exists) {
       return typedJson<INotificationResponseData>({
         response: 'ng',
         message: '사용자 데이터가 존재하지 않습니다.',

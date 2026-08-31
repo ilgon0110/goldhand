@@ -1,11 +1,9 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -20,7 +18,7 @@ interface IEventRequestBody {
 }
 
 interface IResponseBody {
-  response: 'ok' | 'ng';
+  response: 'ng' | 'ok';
   message: string;
   docId: string;
 }
@@ -75,9 +73,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 탈퇴한 유저인지 확인
-    const db = getFirestore(firebaseApp);
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const userDocSnap = await adminDB.collection('users').doc(uid).get();
     const targetUserData = userDocSnap.data();
     if (targetUserData?.isDeleted) {
       return typedJson<IResponseBody>(

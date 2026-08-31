@@ -16,11 +16,12 @@ export function useReviewImageUpload() {
   });
 
   const uploadImages = async (
-    userId: string,
+    userId: string | null,
     docId: string,
     images: IImagesContextFile[],
     onAllComplete: (uploadedImages: { key: string; url: string }[]) => void,
   ) => {
+    const storageOwnerId = userId ?? 'guest';
     const total = images.length + 1; // +1 for thumbnail
     completionRef.current = { count: 0, images: [] };
     setIsUploading(true);
@@ -41,8 +42,8 @@ export function useReviewImageUpload() {
     const thumbnail = await generateThumbnail(images[0].file);
     uploadSingleImage({
       file: thumbnail,
-      storagePath: `reviews/${userId}/${docId}/thumbnail`,
-      metadata: { contentType: thumbnail.type, customMetadata: { userId } },
+      storagePath: `reviews/${storageOwnerId}/${docId}/thumbnail`,
+      metadata: { contentType: thumbnail.type, customMetadata: { userId: storageOwnerId } },
       onProgress: progress => setImageProgress({ key: 'thumbnail', progress }),
       onComplete: url => handleUploadComplete('thumbnail', url),
       onError: error => {
@@ -69,8 +70,11 @@ export function useReviewImageUpload() {
 
       uploadSingleImage({
         file: uploadFile,
-        storagePath: `reviews/${userId}/${docId}/${fileName}`,
-        metadata: { contentType: (uploadFile as File).type || image.file.type, customMetadata: { userId } },
+        storagePath: `reviews/${storageOwnerId}/${docId}/${fileName}`,
+        metadata: {
+          contentType: (uploadFile as File).type || image.file.type,
+          customMetadata: { userId: storageOwnerId },
+        },
         onProgress: progress => setImageProgress({ key: image.key, progress }),
         onComplete: url => handleUploadComplete(image.key, url),
         onError: error => {

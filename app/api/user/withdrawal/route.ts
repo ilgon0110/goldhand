@@ -1,9 +1,7 @@
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc, getFirestore, Timestamp, updateDoc } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore, Timestamp } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -16,9 +14,7 @@ interface IResponsePostBody {
 export async function GET() {}
 
 export async function POST(req: Request) {
-  const app = firebaseApp;
-  const auth = getAuth();
-  const db = getFirestore(app);
+  const db = getAdminFirestore(firebaseAdminApp);
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken');
 
@@ -35,8 +31,6 @@ export async function POST(req: Request) {
   const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
   const uid = decodedToken.uid;
 
-  auth.languageCode = 'ko';
-
   if (!uid)
     return typedJson<IResponsePostBody>(
       {
@@ -47,12 +41,12 @@ export async function POST(req: Request) {
     );
 
   // withdrawal 시에는 uid가 반드시 존재해야 하므로, 여기서 uid를 확인하는 것은 의미가 없다.
-  const userDocRef = doc(db, 'users', uid);
-  const docSnap = await getDoc(userDocRef);
+  const userDocRef = db.collection('users').doc(uid);
+  const docSnap = await userDocRef.get();
   const targetUserData = docSnap.data() as IUserDetailData | undefined;
 
   try {
-    await updateDoc(userDocRef, {
+    await userDocRef.update({
       ...targetUserData,
       isDeleted: true,
       deletedAt: Timestamp.now(),

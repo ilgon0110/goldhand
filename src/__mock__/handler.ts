@@ -99,6 +99,8 @@ export const handlers = [
       title: '',
       updatedAt: Timestamp.now(),
       userId: null,
+      phoneNumber: null,
+      phoneHash: null,
       comments: [] as ICommentData[],
     };
 

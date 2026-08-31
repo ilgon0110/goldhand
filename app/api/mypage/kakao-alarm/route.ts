@@ -1,7 +1,7 @@
-import { doc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
 import type { IKakaoAlarmSettings } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -54,12 +54,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const db = getFirestore(firebaseApp);
-    const userDocRef = doc(db, 'users', uid);
+    const db = getAdminFirestore(firebaseAdminApp);
+    const userDocRef = db.collection('users').doc(uid);
 
-    await updateDoc(userDocRef, {
+    await userDocRef.update({
       [`kakaoAlarmSettings.${key}`]: value,
-      updatedAt: serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return typedJson<IResponseBody>({ response: 'ok', message: '알림 설정이 저장되었습니다.' }, { status: 200 });

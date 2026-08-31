@@ -3,48 +3,39 @@ import type { NextRequest } from 'next/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { POST } from '@/app/api/review/update/route';
-import type { IReviewDetailData, TAliasAny } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/shared/types';
 
-const { getDocMock, updateDocMock, verifyIdTokenMock } = vi.hoisted(() => ({
+const { getDocMock, updateDocMock, checkAdminAuthMock } = vi.hoisted(() => ({
   getDocMock: vi.fn(),
   updateDocMock: vi.fn(() => Promise.resolve()),
-  verifyIdTokenMock: vi.fn(),
+  checkAdminAuthMock: vi.fn(),
 }));
 
-vi.mock('firebase/firestore', async () => {
-  const actual = await vi.importActual<TAliasAny>('firebase/firestore');
-  return {
-    ...actual,
-    getFirestore: vi.fn(() => ({})),
-    doc: vi.fn(() => ({})),
-    getDoc: getDocMock,
-    updateDoc: updateDocMock,
-  };
-});
-
-vi.mock('firebase-admin/auth', () => ({
-  getAuth: () => ({ verifyIdToken: verifyIdTokenMock }),
-}));
-
-vi.mock('@/src/shared/config/firebase', () => ({
-  firebaseApp: {},
+vi.mock('firebase-admin/firestore', () => ({
+  getFirestore: vi.fn(() => ({
+    collection: vi.fn(() => ({
+      doc: vi.fn(() => ({
+        get: getDocMock,
+        update: updateDocMock,
+      })),
+    })),
+  })),
 }));
 
 vi.mock('@/src/shared/config/firebase-admin', () => ({
   firebaseAdminApp: {},
 }));
 
+vi.mock('@/src/shared/lib/checkAdminAuth', () => ({
+  checkAdminAuth: checkAdminAuthMock,
+}));
+
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));
 
-const cookieGetMock = vi.fn();
-vi.mock('next/headers', () => ({
-  cookies: () => ({ get: cookieGetMock }),
-}));
-
 const existingReview: IReviewDetailData = {
-  thumbnail: 'https://firebasestorage.googleapis.com/existing-thumbnail.png',
+  thumbnail: 'https://firebasestorage.googleapis.com/old-thumb.webp',
   htmlString: '<p>기존 내용</p>',
   createdAt: Timestamp.now(),
   franchisee: '전체',
@@ -53,11 +44,13 @@ const existingReview: IReviewDetailData = {
   name: '홍길동',
   title: '기존 제목',
   updatedAt: Timestamp.now(),
-  userId: 'member-uid',
+  userId: 'author-uid',
+  phoneNumber: null,
+  phoneHash: null,
   comments: null,
 };
 
-function makeRequest(body: Record<string, unknown>): NextRequest {
+function makeRequest(body: unknown): NextRequest {
   return { json: () => Promise.resolve(body) } as unknown as NextRequest;
 }
 
@@ -66,54 +59,41 @@ describe('POST /api/review/update - 썸네일 보존', () => {
     vi.clearAllMocks();
   });
 
-  it('새 이미지 없이 수정하면 기존 썸네일이 null로 초기화되지 않고 유지된다', async () => {
-    getDocMock.mockResolvedValueOnce({ exists: () => true, data: () => existingReview });
-    cookieGetMock.mockReturnValue({ value: 'valid-token' });
-    verifyIdTokenMock.mockResolvedValueOnce({ uid: 'member-uid' });
-    // 탈퇴 여부 확인을 위한 users 문서 조회
-    getDocMock.mockResolvedValueOnce({ exists: () => true, data: () => ({ isDeleted: false }) });
+  it('이미지를 건드리지 않은 수정(images: null)에서는 기존 썸네일을 유지한다', async () => {
+    getDocMock.mockResolvedValueOnce({ exists: true, data: () => existingReview });
+    checkAdminAuthMock.mockResolvedValueOnce({ ok: true, uid: 'author-uid', isAdmin: false });
 
-    const request = makeRequest({
-      docId: 'doc-1',
-      title: '수정된 제목',
-      name: '홍길동',
-      franchisee: '전체',
-      htmlString: '<p>수정된 내용</p>',
-      images: null,
-    });
-
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(body.response).toBe('ok');
-    expect(updateDocMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ thumbnail: existingReview.thumbnail }),
+    await POST(
+      makeRequest({
+        docId: 'doc-1',
+        title: '수정된 제목',
+        name: existingReview.name,
+        franchisee: existingReview.franchisee,
+        htmlString: '<p>수정된 내용</p>',
+        images: null,
+      }),
     );
+
+    expect(updateDocMock).toHaveBeenCalledWith(expect.objectContaining({ thumbnail: existingReview.thumbnail }));
   });
 
-  it('새 썸네일 이미지가 있으면 새 URL로 교체된다', async () => {
-    getDocMock.mockResolvedValueOnce({ exists: () => true, data: () => existingReview });
-    cookieGetMock.mockReturnValue({ value: 'valid-token' });
-    verifyIdTokenMock.mockResolvedValueOnce({ uid: 'member-uid' });
-    getDocMock.mockResolvedValueOnce({ exists: () => true, data: () => ({ isDeleted: false }) });
+  it('새 썸네일이 업로드되면 그 값으로 교체한다', async () => {
+    getDocMock.mockResolvedValueOnce({ exists: true, data: () => existingReview });
+    checkAdminAuthMock.mockResolvedValueOnce({ ok: true, uid: 'author-uid', isAdmin: false });
 
-    const request = makeRequest({
-      docId: 'doc-1',
-      title: '수정된 제목',
-      name: '홍길동',
-      franchisee: '전체',
-      htmlString: '<p>수정된 내용</p>',
-      images: [{ key: 'thumbnail', url: 'https://firebasestorage.googleapis.com/new-thumbnail.png' }],
-    });
+    await POST(
+      makeRequest({
+        docId: 'doc-1',
+        title: existingReview.title,
+        name: existingReview.name,
+        franchisee: existingReview.franchisee,
+        htmlString: '<p>수정된 내용</p>',
+        images: [{ key: 'thumbnail', url: 'https://firebasestorage.googleapis.com/new-thumb.webp' }],
+      }),
+    );
 
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(body.response).toBe('ok');
     expect(updateDocMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ thumbnail: 'https://firebasestorage.googleapis.com/new-thumbnail.png' }),
+      expect.objectContaining({ thumbnail: 'https://firebasestorage.googleapis.com/new-thumb.webp' }),
     );
   });
 });

@@ -41,8 +41,8 @@ export const ReservationEditPage = ({ docId }: { docId: string }) => {
       toastSuccess('상담 수정이 완료되었습니다.');
       router.replace(`/reservation/list/${docId}`);
     },
-    onError: () => {
-      toastError(`상담 수정에 실패했습니다.`);
+    onError: error => {
+      toastError(error.message || '상담 수정에 실패했습니다.');
     },
   });
   const formValidation = form.formState.isValid;
@@ -104,14 +104,33 @@ export const ReservationEditPage = ({ docId }: { docId: string }) => {
             <FormField
               control={form.control}
               defaultValue={undefined}
+              name="oldPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    기존 비밀번호 <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="작성 시 등록한 비밀번호를 입력해주세요." type="password" {...field} />
+                  </FormControl>
+                  <FormDescription>본인 확인을 위해 기존 비밀번호를 입력해주세요.</FormDescription>
+                  <FormMessage>{form.formState.errors.oldPassword?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+          )}
+          {isGuestPost && (
+            <FormField
+              control={form.control}
+              defaultValue={undefined}
               name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    비밀번호 <span className="text-red-500">*</span>
+                    새 비밀번호 <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="게시글 수정, 삭제를 위한 비밀번호를 입력해주세요." {...field} />
+                    <Input placeholder="게시글 수정, 삭제를 위한 새 비밀번호를 입력해주세요." type="password" {...field} />
                   </FormControl>
                   <FormDescription>비회원으로 예약하실 경우에만 사용됩니다.</FormDescription>
                   <FormMessage>{form.formState.errors.password?.message}</FormMessage>

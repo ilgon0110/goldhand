@@ -1,10 +1,23 @@
 import type { ConfirmationResult } from 'firebase/auth';
-import { getAuth, linkWithCredential, PhoneAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getAuth,
+  linkWithCredential,
+  PhoneAuthProvider,
+  signInWithEmailAndPassword,
+  updatePhoneNumber,
+} from 'firebase/auth';
 import { useRef, useState } from 'react';
 
 import type { IUserDetailData } from '@/src/shared/types';
 
-export const usePhoneAuthCodeConfirmMutation = (
+import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
+import { toPhoneAuthError } from '../lib/toPhoneAuthError';
+
+/**
+ * SMS 인증코드를 확인한 뒤, 현재 로그인된(이메일/OAuth) 계정에 전화번호를 연동한다.
+ * SignUp 전용 - 로그인 세션이 없는 비회원 흐름에서는 사용하지 않는다.
+ */
+export const useLinkPhoneToCurrentUser = (
   userData: IUserDetailData | null,
   options?: {
     onSuccess?: () => void;
@@ -16,13 +29,14 @@ export const usePhoneAuthCodeConfirmMutation = (
   const [isPending, setIsPending] = useState(false);
   const [sendSmsConfirmSuccessMessage, setSmsConfirmSuccessMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
-  const errorMessageRef = useRef('');
+  const errorRef = useRef<IPhoneAuthError | null>(null);
 
   async function mutate(authCode: string, confirmationResult: ConfirmationResult | null) {
     setIsPending(true);
 
     if (!confirmationResult) {
       console.error('No confirmation result found.');
+      setIsPending(false);
       return;
     }
 
@@ -30,59 +44,53 @@ export const usePhoneAuthCodeConfirmMutation = (
       if (userData?.userId) {
         // 인증코드 확인 후, 전화번호를 현재 로그인된 계정에 연동
         try {
-          // ✅ 1. 이메일 유저 로그인
+          // 1. 이메일 유저 로그인
           const emailUser = await signInWithEmailAndPassword(
             auth,
             userData?.email || '',
             process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!,
           );
 
-          // ✅ 2. 전화번호 Credential 생성
+          // 2. 전화번호 Credential 생성
           const phoneCredential = PhoneAuthProvider.credential(confirmationResult.verificationId, authCode);
 
           if (!emailUser) {
             throw new Error('이메일 유저 인증 정보가 없습니다. 다시 시도해주세요.');
           }
 
-          // ✅ 3. 이메일 유저에 전화번호 연결
-          const linkedResult = await linkWithCredential(emailUser.user, phoneCredential);
-          if (linkedResult) {
-            setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
-            setIsSuccess(true);
-            errorMessageRef.current = '';
-            options?.onSuccess?.();
+          // 3. 이메일 유저에 전화번호 연결
+          const hasPhoneProvider = emailUser.user.providerData.some(provider => provider.providerId === 'phone');
+
+          if (hasPhoneProvider) {
+            await updatePhoneNumber(emailUser.user, phoneCredential);
+          } else {
+            await linkWithCredential(emailUser.user, phoneCredential);
           }
-        } catch (error: any) {
+
+          setSmsConfirmSuccessMessage('인증코드가 확인되었습니다.');
+          setIsSuccess(true);
+          errorRef.current = null;
+          options?.onSuccess?.();
+        } catch (error: unknown) {
           console.error('Error linking phone number:', error);
-          errorMessageRef.current = error.code || 'linking-failed';
+          errorRef.current = toPhoneAuthError(error);
           options?.onError?.(error as Error);
-          //   form.setError('authCode', {
-          //     type: 'manual',
-          //     message: '이메일과 전화번호 연동에 실패했습니다. 처음부터 다시 시도해주세요.',
-          //   });
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error confirming SMS code:', error);
-      errorMessageRef.current = error.code || 'unknown-error';
+      errorRef.current = toPhoneAuthError(error);
       options?.onError?.(error as Error);
-      // if (error.code === 'auth/invalid-verification-code') {
-      //   setErrorMessage('auth/invalid-verification-code');
-      // } else if(error.code === 'auth/account-exists-with-different-credential') {
-
-      // }
-      // else {
-      //   setErrorMessage(error.code || 'unknown-error');
-      //   options?.onError?.(error as Error);
-      //   // form.setError('authCode', {
-      //   //   type: 'manual',
-      //   //   message: '알 수 없는 오류가 발생했습니다.',
-      //   // });
-      // }
     } finally {
       setIsPending(false);
       options?.onSettled?.();
     }
+  }
+
+  function reset() {
+    setIsSuccess(false);
+    setSmsConfirmSuccessMessage('');
+    errorRef.current = null;
   }
 
   return {
@@ -90,6 +98,7 @@ export const usePhoneAuthCodeConfirmMutation = (
     isPending,
     sendSmsConfirmSuccessMessage,
     mutate,
-    getErrorMessage: () => errorMessageRef.current,
+    reset,
+    getError: () => errorRef.current,
   };
 };

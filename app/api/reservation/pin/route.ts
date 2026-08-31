@@ -1,8 +1,8 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
+import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
-import { togglePinClient } from '@/src/shared/lib/pin/toggleIsPinned';
+import { togglePinAdmin } from '@/src/shared/lib/pin/toggleIsPinned';
 import { typedJson } from '@/src/shared/utils';
 
 interface IPinRequestBody {
@@ -36,14 +36,14 @@ export async function POST(req: Request) {
     return typedJson<IResponseBody>({ response: 'ng', message: '관리자 권한이 없습니다.' }, { status: 403 });
   }
 
-  const db = getFirestore(firebaseApp);
-  const docSnap = await getDoc(doc(db, 'consults', docId));
-  if (!docSnap.exists()) {
+  const db = getAdminFirestore(firebaseAdminApp);
+  const docSnap = await db.collection('consults').doc(docId).get();
+  if (!docSnap.exists) {
     return typedJson<IResponseBody>({ response: 'ng', message: '해당 docId를 가진 게시글이 존재하지 않습니다.' }, { status: 404 });
   }
 
   try {
-    await togglePinClient('consults', docId, isPinned);
+    await togglePinAdmin('consults', docId, isPinned);
     return typedJson<IResponseBody>(
       { response: 'ok', message: isPinned ? '게시글을 고정했습니다.' : '게시글 고정을 해제했습니다.' },
       { status: 200 },

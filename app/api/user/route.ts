@@ -1,8 +1,7 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -50,14 +49,13 @@ export async function GET() {
         { status: 200 },
       );
     }
-    const app = firebaseApp;
-    const db = getFirestore(app);
+    const db = getAdminFirestore(firebaseAdminApp);
 
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const userDocRef = db.collection('users').doc(uid);
+    const userDocSnap = await userDocRef.get();
 
     // userData의 isDeleted가 true인 경우, 삭제된 유저로 간주하고 처리
-    if (userDocSnap.exists() && userDocSnap.data().isDeleted) {
+    if (userDocSnap.exists && userDocSnap.data()!.isDeleted) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
@@ -70,7 +68,7 @@ export async function GET() {
       );
     }
 
-    if (userDocSnap.exists()) {
+    if (userDocSnap.exists) {
       const userData = userDocSnap.data() as IUserDetailData;
       const userRecord = await adminApp.getUser(uid);
       const providerIds = userRecord.providerData.map(provider => provider.providerId);

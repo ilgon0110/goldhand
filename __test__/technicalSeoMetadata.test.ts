@@ -13,6 +13,7 @@ import { metadata as reservationFormMetadata } from '@/app/reservation/form/layo
 import { metadata as reservationListMetadata } from '@/app/reservation/list/layout';
 import { metadata as reviewEditMetadata } from '@/app/review/[docId]/edit/layout';
 import { metadata as reviewFormMetadata } from '@/app/review/form/layout';
+import robots from '@/app/robots';
 import sitemap from '@/app/sitemap';
 import { noIndexMetadata } from '@/src/shared/seo/noIndexMetadata';
 import { metadata as signupMetadata } from '@/app/signup/layout';
@@ -74,5 +75,16 @@ describe('technical SEO metadata policy', () => {
 
     expect(urls.some(url => /\/(login|signup|mypage)(\/|$)/.test(url))).toBe(false);
     expect(urls.some(url => /\/(apply|form|edit|list)(\/|$)/.test(url))).toBe(false);
+  });
+
+  it('allows public crawling without conflicting public-path disallows', () => {
+    const result = robots();
+
+    expect(result.sitemap).toBe('https://nicegoldhand.com/sitemap.xml');
+    expect(result.rules).toEqual({
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/api/'],
+    });
   });
 });

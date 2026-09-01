@@ -55,7 +55,6 @@ describe('Event Component', () => {
 
     renderEventPage(eventListData);
 
-    expect(screen.getByText(/고운황금손 이벤트/)).toBeInTheDocument();
     for (const event of eventListData.eventData) {
       expect(await screen.findAllByText(event.title)).toBeTruthy();
       expect(await screen.findByTestId(event.id)).toBeInTheDocument();

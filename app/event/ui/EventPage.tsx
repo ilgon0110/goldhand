@@ -7,7 +7,6 @@ import { useGetUserData } from '@/src/entities/user';
 import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
-import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { EventCard, EventPageHeader } from '@/src/widgets/event';
 
 export const EventPage = () => {
@@ -21,7 +20,6 @@ export const EventPage = () => {
 
   return (
     <>
-      <SectionTitleHero label="고운황금손 이벤트" />
       <EventPageHeader isAdmin={userResponse.userData?.grade === 'admin'} totalDataLength={data.totalDataLength} />
       {data.eventData.length > 0 ? (
         <section className="mt-2">

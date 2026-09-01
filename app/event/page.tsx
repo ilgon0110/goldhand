@@ -5,6 +5,7 @@ import { getEventListData } from '@/src/entities/event';
 import { getUserData } from '@/src/shared/api/getUserData';
 import { eventKeys, userKeys } from '@/src/shared/config/queryKeys';
 import { loadEventParams } from '@/src/shared/lib/nuqs/searchParams';
+import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 import { EventPage } from './ui/EventPage';
 
@@ -25,8 +26,11 @@ export default async function Page({ searchParams }: TPageProps) {
   ]);
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <EventPage />
-    </HydrationBoundary>
+    <>
+      <SectionTitleHero label="고운황금손 이벤트" />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <EventPage />
+      </HydrationBoundary>
+    </>
   );
 }

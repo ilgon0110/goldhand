@@ -1,18 +1,16 @@
-import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 
 import { cn } from '@/lib/utils';
 import { FaqSection, FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
-
-const ReviewCarousel = dynamic(
-  () => import('@/src/feature/home/reviewCarousel/ui/ReviewCarousel').then(m => m.ReviewCarousel),
-  { ssr: false, loading: () => <div className="h-48 w-full animate-pulse rounded-md bg-gray-200" /> },
-);
+import { ReviewCarousel } from '@/src/feature/home/reviewCarousel/ui/ReviewCarousel';
 
 export default function Home() {
   return (
     <>
-      <EventModal />
+      <Suspense fallback={null}>
+        <EventModal />
+      </Suspense>
       <section>
         <ImageSlideList />
       </section>

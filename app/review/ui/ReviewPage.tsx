@@ -7,7 +7,6 @@ import { franchiseeList } from '@/src/shared/config';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
-import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { ReviewPageHeader } from '@/src/widgets/review';
 
 export const ReviewPage = () => {
@@ -20,7 +19,6 @@ export const ReviewPage = () => {
 
   return (
     <>
-      <SectionTitleHero description="고운황금손 산모님들의 소중한 후기를 확인해보세요" label="이용 후기" />
       <ReviewPageHeader
         franchiseeList={franchiseeList}
         handleFranchiseeChange={value => setReviewParam({ franchisee: value })}

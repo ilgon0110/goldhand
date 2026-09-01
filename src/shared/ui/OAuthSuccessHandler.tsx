@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 
 import { safeLocalStorage } from '@/src/shared/storage';
+import { notifyLocationChange } from '@/src/shared/lib/locationChange';
 import { toastSuccess } from '@/src/shared/utils';
 
 export function OAuthSuccessHandler() {
@@ -15,6 +16,7 @@ export function OAuthSuccessHandler() {
     toastSuccess('로그인에 성공했습니다!');
     safeLocalStorage.set('last-login-tooltip', kakaoSuccess ? 'kakao' : 'naver');
     window.history.replaceState(null, '', '/');
+    notifyLocationChange();
   }, []);
 
   return null;

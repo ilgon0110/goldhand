@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { OAuthSuccessHandler } from '@/src/shared/ui/OAuthSuccessHandler';
+import { localBusinessJsonLd } from '@/src/shared/seo/localBusinessJsonLd';
 import { Footer } from '@/src/widgets/footer/ui/footer';
 import { Header } from '@/src/widgets/header';
 
@@ -62,38 +63,6 @@ export const metadata: Metadata = {
       'naver-site-verification': '0c571a1af17055e0ff6ba71e658f7fe8672ddb22',
     },
   },
-};
-
-const localBusinessJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  name: '고운황금손',
-  description: '보건복지부 인증 수원 산후도우미 전문기업. 광교·용인·수원 정부바우처 산모신생아 돌봄 서비스.',
-  url: 'https://nicegoldhand.com',
-  telephone: '010-4437-0431',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '경기 수원시 팔달구 인계로124번길 19 9층 903호',
-    addressLocality: '수원시',
-    addressRegion: '경기도',
-    addressCountry: 'KR',
-  },
-  areaServed: ['수원시', '용인시', '광교'],
-  serviceType: '산후도우미',
-  image: 'https://nicegoldhand.com/logo_green.png',
-  sameAs: [
-    'https://youtube.com/channel/UCQPWd5YKHGfxXAB8i35piEg',
-    'https://blog.naver.com/goldhandkorea',
-    'https://www.instagram.com/goldhandkorea/',
-  ],
-  review: [
-    {
-      '@type': 'Review',
-      author: { '@type': 'Person', name: '산모 고객' },
-      reviewBody:
-        '고운황금손 업체 화성에서 유명한데 수원에도 열었다는 소식 듣고 이용했습니다. 초산이라 솔직히 걱정이 많았는데, 기대이상으로 너무 잘이용했네요 ㅠㅠ 아기 진심을 다해서 사랑으로 대해주시는 관리사님 보내주서서 정말 감사했습니다!!',
-    },
-  ],
 };
 
 export default async function Layout({

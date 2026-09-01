@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import { metadata as eventEditMetadata } from '@/app/event/[docId]/edit/layout';
@@ -15,6 +18,7 @@ import { metadata as reviewEditMetadata } from '@/app/review/[docId]/edit/layout
 import { metadata as reviewFormMetadata } from '@/app/review/form/layout';
 import robots from '@/app/robots';
 import sitemap from '@/app/sitemap';
+import { localBusinessJsonLd } from '@/src/shared/seo/localBusinessJsonLd';
 import { noIndexMetadata } from '@/src/shared/seo/noIndexMetadata';
 import { metadata as signupMetadata } from '@/app/signup/layout';
 
@@ -33,6 +37,24 @@ const expectedPublicUrls = [
 ];
 
 describe('technical SEO metadata policy', () => {
+  it('publishes verifiable LocalBusiness data without self-serving ratings', () => {
+    expect(localBusinessJsonLd).toMatchObject({
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: '고운황금손',
+      url: 'https://nicegoldhand.com',
+      address: { addressCountry: 'KR' },
+    });
+    expect(localBusinessJsonLd).not.toHaveProperty('review');
+    expect(localBusinessJsonLd).not.toHaveProperty('aggregateRating');
+  });
+
+  it('does not publish a FAQ JSON-LD payload that differs from visible UI', () => {
+    const homeSource = readFileSync(resolve(process.cwd(), 'app/page.tsx'), 'utf8');
+
+    expect(homeSource).not.toContain("'@type': 'FAQPage'");
+  });
+
   it('marks private routes noindex/nofollow and clears inherited canonical', () => {
     expect(noIndexMetadata).toMatchObject({
       alternates: { canonical: null },

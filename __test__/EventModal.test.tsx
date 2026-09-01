@@ -1,4 +1,5 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import type { ComponentType } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const storage = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn() }));
@@ -11,20 +12,20 @@ vi.mock('@/src/shared/ui/AnimateModal', () => ({
 
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
 
+const EventModalWithLocation = EventModal as ComponentType<{ locationKey: string }>;
+
 describe('EventModal', () => {
-  it('reevaluates the dismissal window when route search parameters change', async () => {
+  it('reevaluates the dismissal window when its server-derived location key changes', async () => {
     storage.get.mockReturnValue(new Date(Date.now() + 60_000).toISOString());
 
-    render(<EventModal />);
+    const { rerender } = render(<EventModalWithLocation locationKey="" />);
 
     await waitFor(() => {
       expect(screen.getByTestId('event-modal')).toHaveAttribute('data-open', 'false');
     });
 
     storage.get.mockReturnValue(null);
-    act(() => {
-      window.history.pushState(null, '', '/?source=header');
-    });
+    rerender(<EventModalWithLocation locationKey="source=header" />);
 
     await waitFor(() => {
       expect(screen.getByTestId('event-modal')).toHaveAttribute('data-open', 'true');

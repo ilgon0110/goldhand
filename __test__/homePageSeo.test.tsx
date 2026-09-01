@@ -13,19 +13,22 @@ vi.mock('@/src/feature/home/reviewCarousel/ui/ReviewCarousel', () => ({
   ReviewCarousel: () => <div>REVIEW_CAROUSEL_SENTINEL</div>,
 }));
 vi.mock('@/src/widgets/event/ui/EventModal', () => ({
-  EventModal: () => {
-    throw new Promise(() => undefined);
-  },
+  EventModal: ({ locationKey }: { locationKey?: string }) => <div data-location-key={locationKey} />,
 }));
 
 import Home from '@/app/page';
 
 describe('home page SEO rendering boundary', () => {
-  it('keeps the server-rendered home content available while the event modal suspends', () => {
-    const html = renderToStaticMarkup(<Home />);
+  it('passes a stable server-derived search key to the event modal', async () => {
+    const HomeWithSearchParams = Home as unknown as (props: {
+      searchParams: Promise<Record<string, string>>;
+    }) => Promise<React.ReactElement>;
+    const element = await HomeWithSearchParams({ searchParams: Promise.resolve({ source: 'header' }) });
+    const html = renderToStaticMarkup(element);
 
     expect(html).toContain('HOME_TITLE_SENTINEL');
     expect(html).toContain('FAQ_SENTINEL');
     expect(html).toContain('REVIEW_CAROUSEL_SENTINEL');
+    expect(html).toContain('data-location-key="source=header"');
   });
 });

@@ -8,7 +8,7 @@ export const SponsorList = () => {
   return (
     <div className="mt-12">
       <FadeInWhenVisible>
-        <SectionTitleHero description="고운황금손 협력사를 소개합니다." label="고운황금손 협력사" />
+        <SectionTitleHero description="고운황금손 협력사를 소개합니다." label="고운황금손 협력사" level="h2" />
         <div className={cn('mt-4 grid grid-cols-2 gap-x-4 gap-y-6', 'md:grid-cols-5', 'xl:grid-cols-5')}>
           <div className="relative h-12">
             <Image alt="" fill sizes="150" src="/sponsor_1.png" style={{ objectFit: 'contain' }} />

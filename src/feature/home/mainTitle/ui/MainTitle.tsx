@@ -17,7 +17,7 @@ export function MainTitle() {
     >
       <FadeInWhenVisible>
         <div className="space-y-4">
-          <p className={cn('font-bold', 'text-2xl', 'md:text-4xl')}>산모·신생아 전문 케어 서비스, 고운황금손입니다.</p>
+          <h1 className={cn('font-bold', 'text-2xl', 'md:text-4xl')}>산모·신생아 전문 케어 서비스, 고운황금손입니다.</h1>
           <div className={cn('text-slate-500', 'text-sm', 'md:text-xl')}>
             <p>전문 교육을 이수한 산후도우미가 집으로 직접 찾아갑니다.</p>
             <p>식사 준비, 아기 돌봄까지 책임지고 돕습니다.</p>

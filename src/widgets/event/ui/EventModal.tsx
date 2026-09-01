@@ -7,8 +7,37 @@ import { safeLocalStorage } from '@/src/shared/storage';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import { Button } from '@/src/shared/ui/button';
 
+const locationKey = () => `${window.location.pathname}${window.location.search}`;
+
 export const EventModal = () => {
+  const [currentLocation, setCurrentLocation] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const updateLocation = () => setCurrentLocation(locationKey());
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+    const notifyLocationChange = () => window.dispatchEvent(new Event('goldhand:locationchange'));
+
+    window.history.pushState = (...args) => {
+      originalPushState.apply(window.history, args);
+      notifyLocationChange();
+    };
+    window.history.replaceState = (...args) => {
+      originalReplaceState.apply(window.history, args);
+      notifyLocationChange();
+    };
+    window.addEventListener('goldhand:locationchange', updateLocation);
+    window.addEventListener('popstate', updateLocation);
+    updateLocation();
+
+    return () => {
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+      window.removeEventListener('goldhand:locationchange', updateLocation);
+      window.removeEventListener('popstate', updateLocation);
+    };
+  }, []);
 
   useEffect(() => {
     const hideUntilTime = safeLocalStorage.get('hideUntilTime');
@@ -17,7 +46,7 @@ export const EventModal = () => {
     } else {
       setIsOpen(true);
     }
-  }, []);
+  }, [currentLocation]);
 
   const handleClose = () => {
     setIsOpen(false);

@@ -20,6 +20,7 @@ const noIndexRoutes = [
   '/login',
   '/signup',
   '/mypage',
+  '/manager',
   '/manager/apply',
   '/reservation/apply',
   '/review/form',

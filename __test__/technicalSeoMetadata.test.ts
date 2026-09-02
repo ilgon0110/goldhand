@@ -85,6 +85,12 @@ describe('technical SEO metadata policy', () => {
     expect(metadata.robots).toMatchObject({ index: false, follow: false });
   });
 
+  it('marks the manager landing page as noindex', async () => {
+    const managerPageModule = (await import('@/app/manager/page')) as { metadata?: unknown };
+
+    expect(managerPageModule.metadata).toEqual(noIndexMetadata);
+  });
+
   it('publishes only the approved static public canonical URLs', () => {
     const entries = sitemap();
 

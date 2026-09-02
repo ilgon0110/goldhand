@@ -290,6 +290,53 @@ describe('ReservationForm Component', () => {
     });
   });
 
+  it('[회원] 휴대폰번호 입력란은 계정에 등록된 번호로 고정되고 직접 수정할 수 없다', async () => {
+    server.use(http.get('/api/user', async () => HttpResponse.json(mockUserData)));
+    const userData = await (await fetch('/api/user')).json();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
+
+    const phoneInput = await screen.findByLabelText(/휴대폰번호/);
+
+    expect(phoneInput).toHaveValue('01012345678');
+    expect(phoneInput).toHaveAttribute('readonly');
+
+    await userEvent.type(phoneInput, '99999999999');
+    expect(phoneInput).toHaveValue('01012345678');
+  });
+
+  it('[회원] 계정에 등록된 번호가 없으면 휴대폰번호 입력란이 비어있고 제출 버튼이 계속 비활성화된다', async () => {
+    const mockUserDataWithoutPhone = {
+      ...mockUserData,
+      userData: { ...mockUserData.userData!, phoneNumber: '' },
+    };
+    server.use(http.get('/api/user', async () => HttpResponse.json(mockUserDataWithoutPhone)));
+    const userData = await (await fetch('/api/user')).json();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(userKeys.all, userData);
+    renderWithQueryClient(
+      <Suspense fallback={null}>
+        <ReservationFormPage />
+      </Suspense>,
+      { queryClient },
+    );
+
+    const phoneInput = await screen.findByLabelText(/휴대폰번호/);
+
+    expect(phoneInput).toHaveValue('');
+    expect(phoneInput).toHaveAttribute('readonly');
+    expect(screen.getByText(/계정에 등록된 연락처가 없어/)).toBeInTheDocument();
+
+    const submitButton = screen.getByRole('button', { name: '상담 신청하기' });
+    expect(submitButton).toBeDisabled();
+  });
+
   it('제출 버튼을 눌렀을 때, 제출 도중 user session이 만료된 경우 해당 에러 메세지가 보이고 /login으로 이동하는지 확인', async () => {
     const userData = await (await fetch('/api/user')).json();
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });

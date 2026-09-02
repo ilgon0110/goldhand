@@ -8,7 +8,7 @@ import { useGetReservationListData } from '@/src/entities/reservation';
 import { reservationParams } from '@/src/shared/lib/nuqs/searchParams';
 import type { IReservationDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
-import { formatDateToYMD } from '@/src/shared/utils';
+import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 
 interface IConsultData extends IReservationDetailData {
   id: string;
@@ -123,6 +123,7 @@ export const ReservationListPage = () => {
               docId={item.id}
               isPinned={item.isPinned}
               isSecret={item.secret}
+              isUpdated={isTimestampUpdated(item.createdAt, item.updatedAt)}
               key={item.id}
               spot={item.franchisee}
               title={item.title}

@@ -98,7 +98,12 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
           <div className="space-x-2">
             <span className="text-slate-500">{`순번 : ${data.data.rowNumber}`}</span>
             <span>{data.data.name}</span>
-            <span>{formatDateToYMD(data.data.createdAt)}</span>
+            <span>
+              <span className="font-bold">작성일:</span> {formatDateToYMD(data.data.createdAt)}
+            </span>
+            <span>
+              <span className="font-bold">수정일:</span> {formatDateToYMD(data.data.updatedAt)}
+            </span>
           </div>
           <div className="flex flex-row items-center gap-2 text-slate-500 sm:ml-auto">
             <ViewIcon />

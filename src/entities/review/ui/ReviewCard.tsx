@@ -11,7 +11,7 @@ import type { IReviewDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { Skeleton } from '@/src/shared/ui/skeleton';
-import { formatDateToYMD } from '@/src/shared/utils';
+import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
 import { generateReviewDescription } from '../lib/util';
@@ -31,6 +31,7 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
 
   const description = generateReviewDescription(review.htmlString);
   const formattedDate = formatDateToYMD(review.createdAt);
+  const isUpdated = isTimestampUpdated(review.createdAt, review.updatedAt);
 
   useEffect(() => {
     setIsMounted(true);
@@ -144,6 +145,7 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
           )}
         >
           {formattedDate}
+          {isUpdated && <span> (수정됨)</span>}
         </p>
 
         {/* 미리보기 + 모바일 날짜 행 */}
@@ -153,6 +155,7 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
           </p>
           <p className="shrink-0 whitespace-nowrap font-serif text-[11px] tracking-[0.04em] text-stone-400 md:hidden">
             {formattedDate}
+            {isUpdated && <span> (수정됨)</span>}
           </p>
         </div>
       </div>

@@ -13,16 +13,10 @@ vi.mock('@/src/app/providers/theme-provider', () => ({
 }));
 vi.mock('@/src/widgets/header', () => ({ Header: () => <header>HEADER_SENTINEL</header> }));
 vi.mock('@/src/widgets/footer/ui/footer', () => ({ Footer: () => <footer>FOOTER_SENTINEL</footer> }));
-vi.mock('@/src/shared/ui/OAuthSuccessHandler', () => ({
-  OAuthSuccessHandler: () => {
-    throw new Promise(() => undefined);
-  },
-}));
-
 import RootLayout from '@/app/layout';
 
 describe('root layout SEO rendering boundary', () => {
-  it('keeps public chrome and page content outside the OAuth suspense boundary', async () => {
+  it('server-renders public chrome and page content', async () => {
     const element = await RootLayout({ children: <h1>PAGE_SENTINEL</h1> });
     const html = renderToStaticMarkup(element);
 

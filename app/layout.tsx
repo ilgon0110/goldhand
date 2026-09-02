@@ -4,12 +4,10 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
-import { OAuthSuccessHandler } from '@/src/shared/ui/OAuthSuccessHandler';
 import { localBusinessJsonLd } from '@/src/shared/seo/localBusinessJsonLd';
 import { Footer } from '@/src/widgets/footer/ui/footer';
 import { Header } from '@/src/widgets/header';
@@ -77,9 +75,6 @@ export default async function Layout({
         <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
           <NuqsAdapter>
             <QueryProvider>
-              <Suspense fallback={null}>
-                <OAuthSuccessHandler />
-              </Suspense>
               <Header />
               <main>{children}</main>
             </QueryProvider>

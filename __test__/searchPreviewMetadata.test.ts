@@ -12,7 +12,6 @@ vi.mock('@/src/app/providers/query-provider', () => ({
 vi.mock('@/src/app/providers/theme-provider', () => ({
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
-vi.mock('@/src/shared/ui/OAuthSuccessHandler', () => ({ OAuthSuccessHandler: () => null }));
 vi.mock('@/src/widgets/footer/ui/footer', () => ({ Footer: () => null }));
 vi.mock('@/src/widgets/header', () => ({ Header: () => null }));
 

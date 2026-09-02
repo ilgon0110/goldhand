@@ -1,3 +1,14 @@
+/**
+ * 프로덕션 빌드 결과의 기술 SEO 설정이 실제 HTTP 응답에 올바르게 포함되는지 검증합니다.
+ *
+ * 실행 전 `yarn build`로 `.next` 프로덕션 빌드를 생성한 뒤 `yarn verify:seo`를 실행하세요.
+ * 이 스크립트는 standalone Next.js 서버를 3100 포트에서 임시로 시작하여 다음 항목을 확인합니다.
+ * - 공개 페이지: HTTP 200, 서버 렌더링된 main/h1, canonical, index 허용
+ * - 비공개·작업 페이지: robots noindex
+ * - robots.txt와 sitemap.xml: 허용/차단 정책 및 공개 URL 목록
+ *
+ * 검증 성공 여부와 관계없이 실행이 끝나면 임시 서버 프로세스를 종료합니다.
+ */
 import { spawn } from 'node:child_process';
 import process from 'node:process';
 
@@ -27,9 +38,9 @@ const noIndexRoutes = [
   '/event/form',
 ];
 
-const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '-p', String(port)], {
+const server = spawn(process.execPath, ['.next/standalone/server.js'], {
   stdio: ['ignore', 'pipe', 'pipe'],
-  env: process.env,
+  env: { ...process.env, HOSTNAME: '127.0.0.1', PORT: String(port) },
 });
 
 let startupError;

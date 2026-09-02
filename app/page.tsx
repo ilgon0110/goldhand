@@ -1,34 +1,14 @@
-import type { SearchParams } from 'nuqs/server';
-
 import { cn } from '@/lib/utils';
+import { OAuthSuccessHandler } from '@/src/feature/auth';
 import { FaqSection, FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
-import { EventModal } from '@/src/widgets/event/ui/EventModal';
 import { ReviewCarousel } from '@/src/feature/home/reviewCarousel/ui/ReviewCarousel';
+import { EventModal } from '@/src/widgets/event/ui/EventModal';
 
-type THomeProps = {
-  searchParams: Promise<SearchParams>;
-};
-
-const toSearchKey = (searchParams: SearchParams) => {
-  const params = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(searchParams).sort(([first], [second]) => first.localeCompare(second))) {
-    if (Array.isArray(value)) {
-      for (const item of value) params.append(key, item);
-    } else if (value != null) {
-      params.set(key, value);
-    }
-  }
-
-  return params.toString();
-};
-
-export default async function Home({ searchParams }: THomeProps) {
-  const locationKey = toSearchKey(await searchParams);
-
+export default function Home() {
   return (
     <>
-      <EventModal locationKey={locationKey} />
+      <OAuthSuccessHandler />
+      <EventModal />
       <section>
         <ImageSlideList />
       </section>

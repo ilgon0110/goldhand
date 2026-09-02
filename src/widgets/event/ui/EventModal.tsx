@@ -4,29 +4,11 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import { safeLocalStorage } from '@/src/shared/storage';
-import { locationChangeEvent } from '@/src/shared/lib/locationChange';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import { Button } from '@/src/shared/ui/button';
 
-type TEventModalProps = {
-  locationKey: string;
-};
-
-export const EventModal = ({ locationKey }: TEventModalProps) => {
-  const [navigationVersion, setNavigationVersion] = useState(0);
+export const EventModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const refreshDismissalState = () => setNavigationVersion(value => value + 1);
-
-    window.addEventListener(locationChangeEvent, refreshDismissalState);
-    window.addEventListener('popstate', refreshDismissalState);
-
-    return () => {
-      window.removeEventListener(locationChangeEvent, refreshDismissalState);
-      window.removeEventListener('popstate', refreshDismissalState);
-    };
-  }, []);
 
   useEffect(() => {
     const hideUntilTime = safeLocalStorage.get('hideUntilTime');
@@ -35,7 +17,7 @@ export const EventModal = ({ locationKey }: TEventModalProps) => {
     } else {
       setIsOpen(true);
     }
-  }, [locationKey, navigationVersion]);
+  }, []);
 
   const handleClose = () => {
     setIsOpen(false);

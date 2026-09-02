@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('@/src/feature/auth', () => ({
+  OAuthSuccessHandler: () => <div>OAUTH_SUCCESS_HANDLER_SENTINEL</div>,
+}));
 vi.mock('@/src/feature/home', () => ({
   FaqSection: () => <div>FAQ_SENTINEL</div>,
   FranchiseeSheetList: () => <div>FRANCHISEE_SENTINEL</div>,
@@ -13,22 +16,19 @@ vi.mock('@/src/feature/home/reviewCarousel/ui/ReviewCarousel', () => ({
   ReviewCarousel: () => <div>REVIEW_CAROUSEL_SENTINEL</div>,
 }));
 vi.mock('@/src/widgets/event/ui/EventModal', () => ({
-  EventModal: ({ locationKey }: { locationKey?: string }) => <div data-location-key={locationKey} />,
+  EventModal: () => <div>EVENT_MODAL_SENTINEL</div>,
 }));
 
 import Home from '@/app/page';
 
 describe('home page SEO rendering boundary', () => {
-  it('passes a stable server-derived search key to the event modal', async () => {
-    const HomeWithSearchParams = Home as unknown as (props: {
-      searchParams: Promise<Record<string, string>>;
-    }) => Promise<React.ReactElement>;
-    const element = await HomeWithSearchParams({ searchParams: Promise.resolve({ source: 'header' }) });
-    const html = renderToStaticMarkup(element);
+  it('server-renders the home content without depending on search parameters', () => {
+    const html = renderToStaticMarkup(<Home />);
 
     expect(html).toContain('HOME_TITLE_SENTINEL');
     expect(html).toContain('FAQ_SENTINEL');
     expect(html).toContain('REVIEW_CAROUSEL_SENTINEL');
-    expect(html).toContain('data-location-key="source=header"');
+    expect(html).toContain('OAUTH_SUCCESS_HANDLER_SENTINEL');
+    expect(html).toContain('EVENT_MODAL_SENTINEL');
   });
 });

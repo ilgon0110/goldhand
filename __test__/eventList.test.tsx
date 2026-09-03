@@ -32,7 +32,6 @@ vi.mock('nuqs', async () => {
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
   message: '성공',
-  accessToken: null,
   userData: null,
   isLinked: false,
 };

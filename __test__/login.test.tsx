@@ -58,20 +58,22 @@ describe('Login Component', () => {
     expect(screen.getByText('네이버로 로그인하기')).toBeInTheDocument();
   });
 
-  it('[카카오] 카카오 로그인 버튼이 렌더링되고 활성화 상태이다', async () => {
+  it('[카카오] 로그인 버튼은 서버의 OAuth 시작 엔드포인트로 이동한다', async () => {
     renderWithQueryClient(<LoginPage />);
 
     const kakaoButton = screen.getByRole('button', { name: /카카오로 로그인하기/ });
-    expect(kakaoButton).toBeEnabled();
+    await userEvent.click(kakaoButton);
+
+    expect(pushMock).toHaveBeenCalledWith('/api/auth/kakao/start');
   });
 
-  it('[네이버] 로그인 버튼을 클릭하면 네이버 로그인 페이지로 이동한다', async () => {
+  it('[네이버] 로그인 버튼은 서버의 OAuth 시작 엔드포인트로 이동한다', async () => {
     renderWithQueryClient(<LoginPage />);
 
     const naverButton = screen.getByRole('button', { name: /네이버로 로그인하기/ });
     await userEvent.click(naverButton);
 
-    expect(pushMock).toHaveBeenCalledWith(expect.stringContaining(`https://nid.naver.com/oauth2.0/authorize`));
+    expect(pushMock).toHaveBeenCalledWith('/api/auth/naver/start');
   });
 
   it('[카카오] 로그인 실패 시 에러 메시지가 표시된다', async () => {

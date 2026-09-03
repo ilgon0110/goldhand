@@ -11,7 +11,6 @@ describe('useGetUserData', () => {
     const response: IUserResponseData = {
       response: 'ok',
       message: '사용자 정보 조회 성공',
-      accessToken: null,
       userData: null,
       isLinked: false,
     };

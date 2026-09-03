@@ -65,9 +65,7 @@ const LoginPage = () => {
           disabled={!!loadingText}
           handleClick={() => {
             setLoadingText('로그인 중...');
-            router.push(
-              `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL}&response_type=code`,
-            );
+            router.push('/api/auth/kakao/start');
           }}
           iconSrc="/icon/kakaotalk.png"
           provider="kakao"
@@ -78,9 +76,7 @@ const LoginPage = () => {
           disabled={!!loadingText}
           handleClick={() => {
             setLoadingText('로그인 중...');
-            router.push(
-              `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_CALLBACK_URL}&state=${process.env.NEXT_PUBLIC_STATE_STRING}`,
-            );
+            router.push('/api/auth/naver/start');
           }}
           iconSrc="/icon/naver.png"
           provider="naver"

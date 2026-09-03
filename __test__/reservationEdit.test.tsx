@@ -15,7 +15,6 @@ import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
   message: '성공',
-  accessToken: null,
   userData: null,
   isLinked: false,
 };

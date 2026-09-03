@@ -6,7 +6,7 @@ vi.mock('@/src/entities/review', () => ({
   getReviewListData: vi.fn(async () => ({ message: '성공', response: 'ok', reviewData: [], totalDataLength: 0 })),
 }));
 vi.mock('@/src/shared/api/getUserData', () => ({
-  getUserData: vi.fn(async () => ({ accessToken: null, isLinked: false, message: '성공', response: 'ng', userData: null })),
+  getUserData: vi.fn(async () => ({ isLinked: false, message: '성공', response: 'ng', userData: null })),
 }));
 vi.mock('@/src/shared/lib/nuqs/searchParams', () => ({
   loadReviewParams: vi.fn(async () => ({ franchisee: '전체', page: 1 })),

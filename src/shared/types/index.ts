@@ -128,7 +128,6 @@ export interface IUserDetailData {
 export interface IUserResponseData {
   response: 'ng' | 'ok';
   message: string;
-  accessToken: string | null;
   userData: IUserDetailData | null;
   isLinked: boolean;
 }

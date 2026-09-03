@@ -47,7 +47,7 @@ export const ReviewCarousel = () => {
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
       <FadeInWhenVisible>
         <div className="mb-12 flex flex-col items-center justify-center gap-6 whitespace-pre-wrap">
-          <SectionTitleHero description="고운황금손 이용후기를 소개합니다." label="고운황금손 이용후기" />
+          <SectionTitleHero description="고운황금손 이용후기를 소개합니다." label="고운황금손 이용후기" level="h2" />
         </div>
       </FadeInWhenVisible>
 

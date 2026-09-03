@@ -17,7 +17,6 @@ import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
   message: '성공',
-  accessToken: null,
   userData: null,
   isLinked: false,
 };
@@ -156,7 +155,6 @@ describe('ReviewEditPage 컴포넌트 테스트', () => {
     const adminUserData: IUserResponseData = {
       response: 'ok',
       message: '성공',
-      accessToken: 'token',
       isLinked: false,
       userData: { ...mockUserData.userData!, userId: 'admin-uid', grade: 'admin' },
     };

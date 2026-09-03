@@ -97,6 +97,9 @@ export const ReservationDetailContent = ({
             <span className="whitespace-nowrap">
               <span className="font-bold">작성일:</span> {formatDateToYMD(reservationDetailData.createdAt)}
             </span>
+            <span className="whitespace-nowrap">
+              <span className="font-bold">수정일:</span> {formatDateToYMD(reservationDetailData.updatedAt)}
+            </span>
           </div>
           <div className="flex flex-row items-center gap-1 text-slate-500 sm:ml-auto">
             <ViewIcon />

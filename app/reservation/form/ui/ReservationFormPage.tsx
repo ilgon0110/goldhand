@@ -33,6 +33,9 @@ export const ReservationFormPage = () => {
   });
   const formValidation = form.formState.isValid;
 
+  const isMember = userData.userData != null;
+  const hasAccountPhone = !!userData.userData?.phoneNumber;
+
   useEffect(() => {
     form.trigger();
   }, [form]);
@@ -70,15 +73,20 @@ export const ReservationFormPage = () => {
                 </FormLabel>
                 <FormControl>
                   <Input
+                    className={cn(isMember && 'cursor-not-allowed bg-stone-100 text-stone-500')}
                     placeholder="휴대폰번호를 입력해주세요. (예: 01012345678)"
                     {...field}
                     maxLength={12}
                     minLength={6}
+                    readOnly={isMember}
                   />
                 </FormControl>
                 <FormDescription>
-                  본인이 연락받으실 번호를 입력해주세요. 상담 답변 등록 안내를 위해 이용되며, 타인의 번호를 입력하여 발생하는 문제에 대한
-                  책임은 입력자에게 있습니다.
+                  {isMember
+                    ? hasAccountPhone
+                      ? '회원님 계정에 등록된 번호로 상담 답변 알림톡이 발송됩니다. 번호를 변경하려면 마이페이지 > 전화번호 인증에서 수정해주세요.'
+                      : '계정에 등록된 연락처가 없어 상담 신청을 진행할 수 없습니다. 마이페이지 > 전화번호 인증을 먼저 완료해주세요.'
+                    : '본인이 연락받으실 번호를 입력해주세요. 상담 답변 등록 안내를 위해 이용되며, 타인의 번호를 입력하여 발생하는 문제에 대한 책임은 입력자에게 있습니다.'}
                 </FormDescription>
                 <FormMessage />
               </FormItem>

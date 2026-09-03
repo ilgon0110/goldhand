@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { safeLocalStorage } from '@/src/shared/storage';
@@ -9,8 +8,6 @@ import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import { Button } from '@/src/shared/ui/button';
 
 export const EventModal = () => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -20,7 +17,7 @@ export const EventModal = () => {
     } else {
       setIsOpen(true);
     }
-  }, [pathname, searchParams]);
+  }, []);
 
   const handleClose = () => {
     setIsOpen(false);

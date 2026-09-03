@@ -9,9 +9,15 @@ import { typedJson } from '@/src/shared/utils';
 interface IResponseBody {
   response: 'ng' | 'ok';
   message: string;
-  accessToken: string | null;
   userData: IUserDetailData | null;
   isLinked: boolean;
+}
+
+function userJson(body: IResponseBody, status: number) {
+  return typedJson<IResponseBody>(body, {
+    status,
+    headers: { 'Cache-Control': 'private, no-store' },
+  });
 }
 
 export async function GET() {
@@ -21,15 +27,14 @@ export async function GET() {
   const adminApp = getAdminAuth(firebaseAdminApp);
 
   if (accessToken == null || accessToken.value === '') {
-    return typedJson<IResponseBody>(
+    return userJson(
       {
         response: 'ng',
         message: '로그인 토큰이 존재하지 않습니다.',
-        accessToken: null,
         userData: null,
         isLinked: false,
       },
-      { status: 200 },
+      200,
     );
   }
 
@@ -38,15 +43,14 @@ export async function GET() {
     const uid = decodedToken.uid;
 
     if (uid === undefined) {
-      return typedJson<IResponseBody>(
+      return userJson(
         {
           response: 'ng',
           message: '사용자 식별 아이디가 존재하지 않습니다.',
-          accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        200,
       );
     }
     const db = getAdminFirestore(firebaseAdminApp);
@@ -56,15 +60,14 @@ export async function GET() {
 
     // userData의 isDeleted가 true인 경우, 삭제된 유저로 간주하고 처리
     if (userDocSnap.exists && userDocSnap.data()!.isDeleted) {
-      return typedJson<IResponseBody>(
+      return userJson(
         {
           response: 'ng',
           message: '해당 uid를 가진 유저는 현재 탈퇴한 상태입니다.',
-          accessToken: accessToken.value,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        200,
       );
     }
 
@@ -75,27 +78,25 @@ export async function GET() {
       const hasEmail = providerIds.includes('password');
       const hasPhone = providerIds.includes('phone');
 
-      return typedJson<IResponseBody>(
+      return userJson(
         {
           response: 'ok',
           message: '로그인 정보 확인',
-          accessToken: accessToken.value,
           userData: { ...userData, userId: uid },
           isLinked: hasEmail && hasPhone,
         },
-        { status: 200 },
+        200,
       );
     }
 
-    return typedJson<IResponseBody>(
+    return userJson(
       {
         response: 'ng',
         message: '해당 uid를 가진 유저가 존재하지 않습니다.',
-        accessToken: accessToken.value,
         userData: null,
         isLinked: false,
       },
-      { status: 200 },
+      200,
     );
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -106,54 +107,50 @@ export async function GET() {
         : 'unknown_error';
 
     if (errorCode === 'auth/invalid-id-token') {
-      return typedJson<IResponseBody>(
+      return userJson(
         {
           response: 'ng',
           message: errorCode,
-          accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        200,
       );
     }
 
     if (errorCode === 'auth/id-token-expired') {
-      return typedJson<IResponseBody>(
+      return userJson(
         {
           response: 'ng',
           message: errorCode,
-          accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        200,
       );
     }
 
     // db에서 유저정보를 삭제한 경우
     if (errorCode === 'auth/user-not-found') {
-      return typedJson<IResponseBody>(
+      return userJson(
         {
           response: 'ng',
           message: errorCode,
-          accessToken: null,
           userData: null,
           isLinked: false,
         },
-        { status: 200 },
+        200,
       );
     }
 
-    return typedJson<IResponseBody>(
+    return userJson(
       {
         response: 'ng',
         message: errorCode,
-        accessToken: null,
         userData: null,
         isLinked: false,
       },
-      { status: 500 },
+      500,
     );
   }
 }

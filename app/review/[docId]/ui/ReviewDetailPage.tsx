@@ -154,7 +154,12 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
           <div className="flex flex-wrap items-center gap-x-2">
             <span className="text-slate-500">{data.data.franchisee}</span>
             <span>{data.data.name}</span>
-            <span>{formatDateToYMD(data.data.createdAt)}</span>
+            <span>
+              <span className="font-bold">작성일:</span> {formatDateToYMD(data.data.createdAt)}
+            </span>
+            <span>
+              <span className="font-bold">수정일:</span> {formatDateToYMD(data.data.updatedAt)}
+            </span>
             {isAdmin && data.data.phoneNumber && (
               <span className="whitespace-nowrap text-slate-500">
                 <span className="font-bold">연락처:</span> {data.data.phoneNumber}

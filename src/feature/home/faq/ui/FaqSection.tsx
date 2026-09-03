@@ -32,7 +32,7 @@ const FAQ_ITEMS = [
 export function FaqSection() {
   return (
     <section className={cn('mx-auto')}>
-      <SectionTitleHero label="자주 묻는 질문" />
+      <SectionTitleHero label="자주 묻는 질문" level="h2" />
       <Accordion className="mx-auto max-w-lg" collapsible type="single">
         {FAQ_ITEMS.map(({ id, question, answer }) => (
           <AccordionItem key={id} value={id}>

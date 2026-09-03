@@ -21,7 +21,6 @@ import { ImagesContext, useImagesContext } from '@/src/widgets/editor/context/Im
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
   message: '성공',
-  accessToken: null,
   userData: null,
   isLinked: false,
 };

@@ -13,11 +13,7 @@ export default function ReservationApplyPage() {
           'md:text-lg',
         )}
       >
-        <span>
-          <span className="font-bold">회원</span>으로 예약상담 신청 시 카카오톡을 통해{' '}
-          <span className="font-bold">답변 등록 알림</span>을 보내드려요.
-        </span>
-        <span>또한 고운황금손 이용 시 이용후기 남기기 등 다양한 서비스를 이용하실 수 있어요.</span>
+        <span>회원으로 고운황금손 이용 시 이용후기 남기기 등 다양한 서비스를 이용하실 수 있어요.</span>
         <span>물론 비회원으로도 문의하실 수 있습니다.</span>
       </p>
       <div className="mx-auto mt-6 flex w-full flex-col items-center justify-center space-y-6 px-4 md:px-[10vw]">

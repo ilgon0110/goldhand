@@ -42,6 +42,7 @@ type TReservationCardProps = {
   title: string;
   author: string;
   createdAt: string;
+  isUpdated: boolean;
   spot: string;
   isSecret: boolean;
   content: string;
@@ -54,6 +55,7 @@ export const ReservationCard = ({
   title,
   author,
   createdAt,
+  isUpdated,
   spot,
   isSecret,
   content,
@@ -205,6 +207,7 @@ export const ReservationCard = ({
               {/* 날짜 (데스크탑 전용) */}
               <p className="hidden self-start whitespace-nowrap font-serif text-[12.5px] tracking-[0.04em] text-stone-400 md:block">
                 {createdAt}
+                {isUpdated && <span> (수정됨)</span>}
               </p>
 
               {/* 미리보기 + 날짜(모바일) */}
@@ -219,6 +222,7 @@ export const ReservationCard = ({
                 </p>
                 <p className="shrink-0 whitespace-nowrap font-serif text-[11px] tracking-[0.04em] text-stone-400 md:hidden">
                   {createdAt}
+                  {isUpdated && <span> (수정됨)</span>}
                 </p>
               </div>
             </div>

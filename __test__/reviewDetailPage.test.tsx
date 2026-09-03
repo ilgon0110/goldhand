@@ -93,7 +93,6 @@ const mockViewCountData: IViewCountResponseData = {
 const mockNonUserData: IUserResponseData = {
   response: 'ok',
   message: '성공',
-  accessToken: null,
   userData: null,
   isLinked: false,
 };
@@ -259,7 +258,6 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
     const adminUserData: IUserResponseData = {
       response: 'ok',
       message: '성공',
-      accessToken: 'token',
       isLinked: false,
       userData: {
         userId: 'admin-uid',

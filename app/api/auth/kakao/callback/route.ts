@@ -7,12 +7,14 @@ import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody, IUserDetailData } from '@/src/shared/types';
 
+import { expireOAuthStateCookie, validateOAuthState } from '../../lib/oauthState';
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
 
 const ACCESS_TOKEN_OPTIONS = {
   httpOnly: true,
   maxAge: 60 * 60 * 24 * 7,
   sameSite: 'strict' as const,
+  secure: process.env.NODE_ENV === 'production',
 };
 
 async function saveUserProfile(uid: string, email: string) {
@@ -46,14 +48,21 @@ async function saveUserProfile(uid: string, email: string) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
   const error = searchParams.get('error');
   const errorDescription = searchParams.get('error_description');
 
   const origin = apiUrl;
+  const redirect = (path: string) =>
+    expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'kakao');
+
+  if (!validateOAuthState('kakao', state)) {
+    return redirect('/login?kakao_error=invalid_state');
+  }
 
   if (error || !code) {
     const msg = encodeURIComponent(errorDescription ?? error ?? 'unknown');
-    return NextResponse.redirect(new URL(`/login?kakao_error=${msg}`, origin));
+    return redirect(`/login?kakao_error=${msg}`);
   }
 
   const tokenRes = await fetch('https://kauth.kakao.com/oauth/token', {
@@ -70,7 +79,7 @@ export async function GET(request: Request) {
   });
 
   if (!tokenRes.ok) {
-    return NextResponse.redirect(new URL('/login?kakao_error=token_exchange_failed', origin));
+    return redirect('/login?kakao_error=token_exchange_failed');
   }
 
   const tokenData: IKakaoTokenResponseBody = await tokenRes.json();
@@ -84,14 +93,14 @@ export async function GET(request: Request) {
   });
 
   if (!userInfoRes.ok) {
-    return NextResponse.redirect(new URL('/login?kakao_error=user_info_failed', origin));
+    return redirect('/login?kakao_error=user_info_failed');
   }
 
   const userInfo: IKakaoUserInfoResponseBody = await userInfoRes.json();
   const email = userInfo.kakao_account.email;
 
   if (!email) {
-    return NextResponse.redirect(new URL('/login?kakao_error=no_email', origin));
+    return redirect('/login?kakao_error=no_email');
   }
 
   try {
@@ -102,17 +111,17 @@ export async function GET(request: Request) {
       const deletedStatus = await checkUserDeletedStatus(user.user.uid);
 
       if (deletedStatus === 'deleted_rejoin') {
-        const res = NextResponse.redirect(new URL('/login?rejoin=true', origin));
+        const res = redirect('/login?rejoin=true');
         res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
         return res;
       }
 
       if (deletedStatus === 'deleted') {
-        return NextResponse.redirect(new URL('/login?kakao_error=account_deleted', origin));
+        return redirect('/login?kakao_error=account_deleted');
       }
 
       revalidatePath('/', 'layout');
-      const res = NextResponse.redirect(new URL('/?kakao_success=true', origin));
+      const res = redirect('/?kakao_success=true');
       res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
       return res;
     }
@@ -122,11 +131,11 @@ export async function GET(request: Request) {
     const newAccessToken = await newUser.user.getIdToken();
 
     revalidatePath('/', 'layout');
-    const res = NextResponse.redirect(new URL('/?kakao_success=true', origin));
+    const res = redirect('/?kakao_success=true');
     res.cookies.set('accessToken', newAccessToken, ACCESS_TOKEN_OPTIONS);
     return res;
   } catch (error) {
     console.error('Error during Kakao OAuth callback:', error);
-    return NextResponse.redirect(new URL('/login?kakao_error=auth_failed', origin));
+    return redirect('/login?kakao_error=auth_failed');
   }
 }

@@ -6,6 +6,7 @@ import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { IUserDetailData } from '@/src/shared/types';
 
+import { expireOAuthStateCookie, validateOAuthState } from '../../lib/oauthState';
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
 
 const ACCESS_TOKEN_OPTIONS = {
@@ -52,10 +53,16 @@ export async function GET(request: Request) {
   const errorDescription = searchParams.get('error_description');
 
   const origin = apiUrl;
+  const redirect = (path: string) =>
+    expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'naver');
 
-  if (error || !code || state !== process.env.NEXT_PUBLIC_STATE_STRING) {
+  if (!validateOAuthState('naver', state)) {
+    return redirect('/login?naver_error=invalid_state');
+  }
+
+  if (error || !code) {
     const msg = encodeURIComponent(errorDescription ?? error ?? 'unknown');
-    return NextResponse.redirect(new URL(`/login?naver_error=${msg}`, origin));
+    return redirect(`/login?naver_error=${msg}`);
   }
 
   const tokenRes = await fetch(
@@ -64,7 +71,7 @@ export async function GET(request: Request) {
   );
 
   if (!tokenRes.ok) {
-    return NextResponse.redirect(new URL('/login?naver_error=token_exchange_failed', origin));
+    return redirect('/login?naver_error=token_exchange_failed');
   }
 
   const tokenData = await tokenRes.json();
@@ -72,7 +79,7 @@ export async function GET(request: Request) {
 
   if (!naverAccessToken) {
     const msg = encodeURIComponent(tokenData.error_description ?? 'token_failed');
-    return NextResponse.redirect(new URL(`/login?naver_error=${msg}`, origin));
+    return redirect(`/login?naver_error=${msg}`);
   }
 
   const userInfoRes = await fetch('https://openapi.naver.com/v1/nid/me', {
@@ -81,14 +88,14 @@ export async function GET(request: Request) {
   });
 
   if (!userInfoRes.ok) {
-    return NextResponse.redirect(new URL('/login?naver_error=user_info_failed', origin));
+    return redirect('/login?naver_error=user_info_failed');
   }
 
   const userInfo = await userInfoRes.json();
   const email: string | undefined = userInfo.response?.email;
 
   if (!email || userInfo.message !== 'success') {
-    return NextResponse.redirect(new URL('/login?naver_error=no_email', origin));
+    return redirect('/login?naver_error=no_email');
   }
 
   try {
@@ -99,16 +106,16 @@ export async function GET(request: Request) {
       const deletedStatus = await checkUserDeletedStatus(user.user.uid);
 
       if (deletedStatus === 'deleted_rejoin') {
-        const res = NextResponse.redirect(new URL('/login?rejoin=true', origin));
+        const res = redirect('/login?rejoin=true');
         res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
         return res;
       }
 
       if (deletedStatus === 'deleted') {
-        return NextResponse.redirect(new URL('/login?naver_error=account_deleted', origin));
+        return redirect('/login?naver_error=account_deleted');
       }
 
-      const res = NextResponse.redirect(new URL('/?naver_success=true', origin));
+      const res = redirect('/?naver_success=true');
       res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
       return res;
     }
@@ -117,11 +124,11 @@ export async function GET(request: Request) {
     await saveUserProfile(newUser.user.uid, email);
     const newAccessToken = await newUser.user.getIdToken();
 
-    const res = NextResponse.redirect(new URL('/?naver_success=true', origin));
+    const res = redirect('/?naver_success=true');
     res.cookies.set('accessToken', newAccessToken, ACCESS_TOKEN_OPTIONS);
     return res;
   } catch (error) {
     console.error('Error during Naver OAuth callback:', error);
-    return NextResponse.redirect(new URL('/login?naver_error=auth_failed', origin));
+    return redirect('/login?naver_error=auth_failed');
   }
 }

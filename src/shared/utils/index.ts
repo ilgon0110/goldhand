@@ -35,6 +35,14 @@ export function formatDateToYMD(timestamp: Pick<Timestamp, 'nanoseconds' | 'seco
   return `${year}-${month}-${day}`;
 }
 
+export function isTimestampUpdated(
+  createdAt: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null | undefined,
+  updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null | undefined,
+): boolean {
+  if (createdAt == null || updatedAt == null) return false;
+  return createdAt.seconds !== updatedAt.seconds || createdAt.nanoseconds !== updatedAt.nanoseconds;
+}
+
 export function formatDateToHMS(timestamp: { seconds: number; nanoseconds: number }): string {
   const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
   const hours = `${date.getHours()}`.padStart(2, '0');

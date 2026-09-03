@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     }
 
     if (uid) {
-      return createMemberPost(uid, body);
+      return createMemberPost(uid, body, targetUserData?.phoneNumber ?? '');
     }
   } catch (error: any) {
     if (error.code === 'auth/id-token-expired') {
@@ -146,8 +146,19 @@ async function createNonMemberPost(body: IReservationCreatePostData) {
 }
 
 // 회원일 경우
-async function createMemberPost(uid: string, body: IReservationCreatePostData) {
-  const { title, name, secret, franchisee, phoneNumber, location, content, bornDate } = body;
+async function createMemberPost(uid: string, body: IReservationCreatePostData, accountPhoneNumber: string) {
+  const { title, name, secret, franchisee, location, content, bornDate } = body;
+
+  // 알림톡은 계정에 등록된 번호로 발송되므로, 상담글도 폼 입력값이 아닌 계정 번호를 진실 공급원으로 사용한다.
+  if (!accountPhoneNumber) {
+    return typedJson<IResponseBody>(
+      {
+        response: 'ng',
+        message: '계정에 등록된 연락처가 없습니다. 마이페이지에서 전화번호 인증 후 다시 시도해주세요.',
+      },
+      { status: 400 },
+    );
+  }
 
   // firestore에 데이터 저장
   const db = getAdminFirestore(firebaseAdminApp);
@@ -161,7 +172,7 @@ async function createMemberPost(uid: string, body: IReservationCreatePostData) {
       secret,
       bornDate: bornDate === undefined ? null : bornDate,
       name,
-      phoneNumber,
+      phoneNumber: accountPhoneNumber,
       franchisee,
       password: null,
       userId: uid,

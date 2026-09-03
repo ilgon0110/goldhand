@@ -11,7 +11,7 @@ import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { IEventDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { Skeleton } from '@/src/shared/ui/skeleton';
-import { formatDateToYMD } from '@/src/shared/utils';
+import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
 const STATUS_CHIP: Record<IEventDetailData['status'], { label: string; cls: string; dot?: boolean }> = {
@@ -39,6 +39,7 @@ export const EventCard = ({ event }: TEventCardProps) => {
   const chip = STATUS_CHIP[event.status];
   const description = generateReviewDescription(event.htmlString);
   const formattedDate = formatDateToYMD(event.createdAt);
+  const isUpdated = isTimestampUpdated(event.createdAt, event.updatedAt);
   const isEnded = event.status === 'ENDED';
 
   const gridClass = cn(
@@ -157,6 +158,7 @@ export const EventCard = ({ event }: TEventCardProps) => {
         )}
       >
         {formattedDate}
+        {isUpdated && <span> (수정됨)</span>}
       </p>
 
       {/* 미리보기 + 모바일 날짜 */}
@@ -171,6 +173,7 @@ export const EventCard = ({ event }: TEventCardProps) => {
         </p>
         <p className="shrink-0 whitespace-nowrap font-serif text-[11px] tracking-[0.04em] text-stone-400 md:hidden">
           {formattedDate}
+          {isUpdated && <span> (수정됨)</span>}
         </p>
       </div>
     </div>

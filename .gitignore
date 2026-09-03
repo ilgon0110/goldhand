@@ -50,6 +50,7 @@ rule.mjs
 
 # docs
 /docs
+/.worktrees
 비즈톡*
 firestore.rules
 

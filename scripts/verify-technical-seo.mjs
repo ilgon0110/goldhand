@@ -116,6 +116,20 @@ const hasRobotsNoIndex = html =>
 const hasCanonical = (html, canonical) =>
   hasTag(html, 'link', tag => hasAttribute(tag, 'rel', 'canonical') && hasAttribute(tag, 'href', canonical));
 
+const readJsonLdEntities = html =>
+  Array.from(html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi), match =>
+    JSON.parse(match[1]),
+  );
+
+const hasBrandedWebsiteEntity = html =>
+  readJsonLdEntities(html).some(
+    entity =>
+      entity['@type'] === 'WebSite' &&
+      entity.name === '고운황금손' &&
+      entity.url === 'https://nicegoldhand.com/' &&
+      entity.publisher?.['@id'] === 'https://nicegoldhand.com/#organization',
+  );
+
 const waitForExit = () =>
   new Promise(resolve => {
     if (serverExit) {
@@ -148,6 +162,7 @@ try {
     if (hasRobotsNoIndex(html)) throw new Error(`${path}: unexpected noindex`);
     const canonical = path === '/' ? 'https://nicegoldhand.com' : `https://nicegoldhand.com${path}`;
     if (!hasCanonical(html, canonical)) throw new Error(`${path}: canonical mismatch`);
+    if (path === '/' && !hasBrandedWebsiteEntity(html)) throw new Error('/: branded WebSite structured data missing');
   }
 
   for (const path of noIndexRoutes) {

@@ -1,6 +1,7 @@
 export const localBusinessJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
+  '@id': 'https://nicegoldhand.com/#organization',
   name: '고운황금손',
   description: '보건복지부 인증 수원 산후도우미 전문기업. 광교·용인·수원 정부바우처 산모신생아 돌봄 서비스.',
   url: 'https://nicegoldhand.com',

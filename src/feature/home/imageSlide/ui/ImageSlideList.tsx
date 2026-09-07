@@ -38,7 +38,7 @@ export function ImageSlideList() {
             <Image
               alt="광교 용인 산후도우미 고운황금손 서비스"
               fill
-              loading="lazy"
+              loading="eager"
               placeholder="blur"
               sizes="100vw"
               src={imageSlideTwo}

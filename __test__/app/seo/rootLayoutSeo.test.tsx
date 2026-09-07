@@ -24,4 +24,29 @@ describe('root layout SEO rendering boundary', () => {
     expect(html).toContain('PAGE_SENTINEL');
     expect(html).toContain('FOOTER_SENTINEL');
   });
+
+  it('server-renders a branded WebSite entity linked to the business', async () => {
+    const element = await RootLayout({ children: <h1>PAGE_SENTINEL</h1> });
+    const html = renderToStaticMarkup(element);
+    const jsonLdEntities = Array.from(html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g), match =>
+      JSON.parse(match[1]),
+    );
+
+    expect(jsonLdEntities).toContainEqual(
+      expect.objectContaining({
+        '@type': 'WebSite',
+        '@id': 'https://nicegoldhand.com/#website',
+        name: '고운황금손',
+        alternateName: ['고운황금손 산후도우미', 'nicegoldhand.com'],
+        url: 'https://nicegoldhand.com/',
+        publisher: { '@id': 'https://nicegoldhand.com/#organization' },
+      }),
+    );
+    expect(jsonLdEntities).toContainEqual(
+      expect.objectContaining({
+        '@type': 'LocalBusiness',
+        '@id': 'https://nicegoldhand.com/#organization',
+      }),
+    );
+  });
 });

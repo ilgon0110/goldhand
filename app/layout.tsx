@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { localBusinessJsonLd } from '@/src/shared/seo/localBusinessJsonLd';
+import { websiteJsonLd } from '@/src/shared/seo/websiteJsonLd';
 import { Footer } from '@/src/widgets/footer/ui/footer';
 import { Header } from '@/src/widgets/header';
 
@@ -24,6 +25,7 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nicegoldhand.com'),
+  applicationName: '고운황금손',
   title: {
     default: '수원 산후도우미 고운황금손 | 광교·용인 산모신생아 케어',
     template: '%s | 고운황금손',
@@ -71,6 +73,7 @@ export default async function Layout({
   return (
     <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
       <body className="relative">
+        <script dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} type="application/ld+json" />
         <script dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} type="application/ld+json" />
         <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
           <NuqsAdapter>

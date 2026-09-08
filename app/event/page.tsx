@@ -27,7 +27,7 @@ export default async function Page({ searchParams }: TPageProps) {
 
   return (
     <>
-      <SectionTitleHero label="고운황금손 이벤트" />
+      <SectionTitleHero label="고운황금손 소식" />
       <HydrationBoundary state={dehydrate(queryClient)}>
         <EventPage />
       </HydrationBoundary>

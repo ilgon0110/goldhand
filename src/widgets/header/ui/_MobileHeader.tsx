@@ -232,7 +232,7 @@ export const MobileHeader = ({
                   href={URLS.EVENT}
                   onClick={handleChangeMobileMenuOpen}
                 >
-                  이벤트
+                  소식
                   <ChevronRight className="h-4 w-4 text-stone-300" />
                 </Link>
               </nav>

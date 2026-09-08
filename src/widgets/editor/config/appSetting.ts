@@ -6,8 +6,6 @@
  *
  */
 
-const hostName = 'goldhand.vercel.app';
-
 export const DEFAULT_SETTINGS = {
   disableBeforeInput: false,
   emptyEditor: false,

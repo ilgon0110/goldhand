@@ -28,7 +28,7 @@ export const EventPage = () => {
           ))}
         </section>
       ) : (
-        <EmptyState className="mt-4" description="등록된 이벤트가 없습니다." title="새로운 이벤트를 등록해보세요" />
+        <EmptyState className="mt-4" description="등록된 소식이 없습니다." title="새로운 소식을 등록해보세요" />
       )}
       <section className="mt-6">
         <CustomPagination

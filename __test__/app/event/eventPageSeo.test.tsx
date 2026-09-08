@@ -21,6 +21,6 @@ describe('event page SEO rendering', () => {
     const html = renderToStaticMarkup(<QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>);
 
     expect(html).toContain('<h1');
-    expect(html).toContain('고운황금손 이벤트');
+    expect(html).toContain('고운황금손 소식');
   });
 });

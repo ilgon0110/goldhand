@@ -126,7 +126,7 @@ export const WebHeader = ({
           <NavigationMenuItem>
             <NavigationMenuLink asChild className="w-full text-sm leading-6 text-gray-900">
               <Link href={URLS.EVENT}>
-                <UlButton enText="Event" text="이벤트" />
+                <UlButton enText="News" text="소식" />
               </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>

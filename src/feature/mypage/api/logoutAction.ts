@@ -18,8 +18,8 @@ export async function logoutAction(): Promise<ILogoutResponse> {
       expires: new Date(0),
     };
 
-    // session이 실제 인증 판단 기준이지만, accessToken 발급도 아직 병행 중이라(Phase 6 전) 둘 다 지운다.
     cookies().set('session', '', expiredCookieOptions);
+    // accessToken은 더 이상 발급하지 않지만, 이전에 발급받아 브라우저에 남아있는 사용자를 위해 계속 지워준다.
     cookies().set('accessToken', '', expiredCookieOptions);
 
     return { response: 'ok', message: '로그아웃이 성공하였습니다.' };

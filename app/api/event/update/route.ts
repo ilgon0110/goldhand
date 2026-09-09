@@ -1,10 +1,10 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   }
 
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
   const adminDB = getAdminFirestore(firebaseAdminApp);
   const eventDocRef = adminDB.collection('events').doc(docId);
@@ -60,11 +60,11 @@ export async function POST(req: NextRequest) {
 
   // 글 작성자 uid 확인
   try {
-    if (!accessToken) {
+    if (session == null) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
     }
 
-    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken?.value);
+    const { uid } = await verifySessionCookie(session.value);
     if (uid !== targetData.userId) {
       return typedJson<IResponseBody>(
         { response: 'ng', message: '이벤트 수정 권한이 없습니다.', docId: '' },
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
       return typedJson<IResponseBody>({ response: 'ng', message: 'expired', docId }, { status: 401 });
     }
 

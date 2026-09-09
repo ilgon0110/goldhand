@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const session = cookieStore.get('session');
 
   try {
-    if (userId == null || session === undefined) {
+    if (userId == null || session == null) {
       return createNonMemberPost(body);
     }
 

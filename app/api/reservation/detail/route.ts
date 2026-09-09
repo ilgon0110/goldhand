@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     let isAdmin = false;
     let verifiedUid: string | null = null;
 
-    if (session?.value) {
+    if (session != null && session.value !== '') {
       try {
         const decodedToken = await verifySessionCookie(session.value);
         verifiedUid = decodedToken.uid;

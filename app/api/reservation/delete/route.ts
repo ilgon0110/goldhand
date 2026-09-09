@@ -79,7 +79,7 @@ export async function DELETE(req: NextRequest) {
       // 회원일 땐 클라이언트가 보낸 값이 아니라, session 쿠키를 검증해 얻은 uid와 비교한다.
       const cookieStore = await cookies();
       const session = cookieStore.get('session');
-      if (!session?.value) {
+      if (session == null || session.value === '') {
         return typedJson<IResponseBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
       }
 

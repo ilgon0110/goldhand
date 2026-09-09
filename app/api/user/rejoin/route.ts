@@ -1,9 +1,9 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore, Timestamp } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
+import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -20,9 +20,9 @@ interface IResponsePostBody {
 
 export async function GET() {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
-  if (accessToken == null || accessToken.value == null || accessToken.value === '') {
+  if (session == null || session.value === '') {
     return typedJson<IResponseGetBody>(
       { response: 'ng', message: '로그인 토큰이 존재하지 않습니다.', userData: null },
       { status: 401 },
@@ -30,8 +30,7 @@ export async function GET() {
   }
 
   try {
-    const adminApp = getAdminAuth(firebaseAdminApp);
-    const { uid } = await adminApp.verifyIdToken(accessToken.value);
+    const { uid } = await verifySessionCookie(session.value);
 
     const db = getAdminFirestore(firebaseAdminApp);
     const snap = await db.collection('users').doc(uid).get();
@@ -68,16 +67,16 @@ export async function GET() {
 export async function POST() {
   const db = getAdminFirestore(firebaseAdminApp);
 
-  // 클라이언트가 보낸 userId를 신뢰하지 않고, accessToken을 검증해 얻은 uid로만 본인 재가입을 허용한다.
+  // 클라이언트가 보낸 userId를 신뢰하지 않고, session 쿠키를 검증해 얻은 uid로만 본인 재가입을 허용한다.
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
-  if (!accessToken?.value) {
+  const session = cookieStore.get('session');
+  if (session == null || session.value === '') {
     return typedJson<IResponsePostBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
   }
 
   let userId: string;
   try {
-    userId = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+    userId = (await verifySessionCookie(session.value)).uid;
   } catch {
     return typedJson<IResponsePostBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
   }

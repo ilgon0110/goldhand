@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     return typedJson<IResponseBody>({ response: 'ng', message, docId: '' }, { status: 401 });
   }
 
-  // 비회원(accessToken 없음) - 회원 글은 접근 불가
+  // 비회원(session 없음) - 회원 글은 접근 불가
   if (targetData.userId !== null) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
   }

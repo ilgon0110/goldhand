@@ -9,9 +9,9 @@ import { apiUrl } from '../config';
 export async function authFetcher<T>(path: string, options: RequestInit = {}): Promise<T> {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
-  const accessToken = cookiesObj['accessToken'];
+  const session = cookiesObj['session'];
 
-  if (accessToken == null || accessToken.trim() === '') {
+  if (session == null || session.trim() === '') {
     throw new Error('인증 토큰이 없습니다. 로그인 후 이용해주세요.');
   }
 
@@ -20,7 +20,7 @@ export async function authFetcher<T>(path: string, options: RequestInit = {}): P
     method: options.method || 'GET',
     headers: {
       ...options.headers,
-      Cookie: `accessToken=${accessToken}`,
+      Cookie: `session=${session}`,
       'Content-Type': 'application/json',
     },
     body: options.body,

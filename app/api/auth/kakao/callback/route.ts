@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { createSessionCookie } from '@/src/shared/lib/sessionCookie';
 import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody, IUserDetailData } from '@/src/shared/types';
 
 import { expireOAuthStateCookie, validateOAuthState } from '../../lib/oauthState';
@@ -13,6 +14,16 @@ import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialA
 const ACCESS_TOKEN_OPTIONS = {
   httpOnly: true,
   maxAge: 60 * 60 * 24 * 7,
+  sameSite: 'strict' as const,
+  secure: process.env.NODE_ENV === 'production',
+};
+
+// Phase 1: session 쿠키를 accessToken과 나란히 발급만 하는 단계. 아직 어디서도 읽지 않는다.
+const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+
+const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
   sameSite: 'strict' as const,
   secure: process.env.NODE_ENV === 'production',
 };
@@ -108,11 +119,13 @@ export async function GET(request: Request) {
 
     if (user) {
       const accessToken = await user.user.getIdToken();
+      const sessionCookie = await createSessionCookie(accessToken, SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
       const deletedStatus = await checkUserDeletedStatus(user.user.uid);
 
       if (deletedStatus === 'deleted_rejoin') {
         const res = redirect('/login?rejoin=true');
         res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
+        res.cookies.set('session', sessionCookie, SESSION_COOKIE_OPTIONS);
         return res;
       }
 
@@ -123,16 +136,19 @@ export async function GET(request: Request) {
       revalidatePath('/', 'layout');
       const res = redirect('/?kakao_success=true');
       res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
+      res.cookies.set('session', sessionCookie, SESSION_COOKIE_OPTIONS);
       return res;
     }
 
     const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
     await saveUserProfile(newUser.user.uid, email);
     const newAccessToken = await newUser.user.getIdToken();
+    const newSessionCookie = await createSessionCookie(newAccessToken, SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
 
     revalidatePath('/', 'layout');
     const res = redirect('/?kakao_success=true');
     res.cookies.set('accessToken', newAccessToken, ACCESS_TOKEN_OPTIONS);
+    res.cookies.set('session', newSessionCookie, SESSION_COOKIE_OPTIONS);
     return res;
   } catch (error) {
     console.error('Error during Kakao OAuth callback:', error);

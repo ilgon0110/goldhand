@@ -1,10 +1,10 @@
 'use server';
 
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
 import type { IUserDetailData } from '@/src/shared/types';
 
 type TAdminAuthResult =
@@ -13,18 +13,18 @@ type TAdminAuthResult =
 
 export async function checkAdminAuth(): Promise<TAdminAuthResult> {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
-  if (accessToken == null || accessToken.value.trim() === '') {
+  if (session == null || session.value.trim() === '') {
     return { ok: false, reason: 'no_token' };
   }
 
   let uid: string;
   try {
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    const decodedToken = await verifySessionCookie(session.value);
     uid = decodedToken.uid;
   } catch (error) {
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
       return { ok: false, reason: 'expired' };
     }
     return { ok: false, reason: 'invalid' };

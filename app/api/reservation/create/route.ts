@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IReservationCreatePostData {
@@ -54,14 +54,14 @@ export async function POST(req: Request) {
 
   // 회원인지 비회원인지 확인
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
   try {
-    if (userId == null || accessToken === undefined) {
+    if (userId == null || session === undefined) {
       return createNonMemberPost(body);
     }
 
-    const { uid } = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    const { uid } = await verifySessionCookie(session.value);
 
     if (uid !== userId) {
       return typedJson<IResponseBody>({ response: 'ng', message: '유효하지 않은 사용자입니다.' }, { status: 403 });
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       return createMemberPost(uid, body, targetUserData?.phoneNumber ?? '');
     }
   } catch (error: any) {
-    if (error.code === 'auth/id-token-expired') {
+    if (error.code === 'auth/session-cookie-expired') {
       return typedJson<IResponseBody>({ response: 'ng', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
 

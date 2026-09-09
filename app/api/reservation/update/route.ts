@@ -1,10 +1,10 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
 import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -103,16 +103,16 @@ export async function POST(req: NextRequest) {
     }
     // 회원인 경우
     else {
-      // 회원일 땐 클라이언트가 보낸 값이 아니라, accessToken을 검증해 얻은 uid와 비교한다.
+      // 회원일 땐 클라이언트가 보낸 값이 아니라, session 쿠키를 검증해 얻은 uid와 비교한다.
       const cookieStore = await cookies();
-      const accessToken = cookieStore.get('accessToken');
-      if (!accessToken?.value) {
+      const session = cookieStore.get('session');
+      if (!session?.value) {
         return typedJson<IResponseBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
       }
 
       let verifiedUid: string;
       try {
-        verifiedUid = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+        verifiedUid = (await verifySessionCookie(session.value)).uid;
       } catch {
         return typedJson<IResponseBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
       }

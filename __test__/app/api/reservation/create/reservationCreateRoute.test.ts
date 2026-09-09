@@ -10,14 +10,12 @@ const { consultSet, usersGet } = vi.hoisted(() => ({
 
 vi.mock('next/headers', () => ({
   cookies: vi.fn().mockResolvedValue({
-    get: vi.fn().mockReturnValue({ value: 'valid-access-token' }),
+    get: vi.fn().mockReturnValue({ value: 'valid-session-cookie' }),
   }),
 }));
 
-vi.mock('firebase-admin/auth', () => ({
-  getAuth: vi.fn(() => ({
-    verifyIdToken: vi.fn().mockResolvedValue({ uid: 'member-uid' }),
-  })),
+vi.mock('@/src/shared/lib/sessionCookie', () => ({
+  verifySessionCookie: vi.fn().mockResolvedValue({ uid: 'member-uid' }),
 }));
 
 vi.mock('firebase-admin/firestore', () => ({

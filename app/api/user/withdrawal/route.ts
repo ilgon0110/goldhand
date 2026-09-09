@@ -2,7 +2,7 @@ import { getFirestore as getAdminFirestore, Timestamp } from 'firebase-admin/fir
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 

@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { createSessionCookie } from '@/src/shared/lib/sessionCookie';
+import { createSessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 
 import { expireOAuthStateCookie, validateOAuthState } from '../../lib/oauthState';
@@ -56,8 +56,7 @@ export async function GET(request: Request) {
   const errorDescription = searchParams.get('error_description');
 
   const origin = apiUrl;
-  const redirect = (path: string) =>
-    expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'naver');
+  const redirect = (path: string) => expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'naver');
 
   if (!validateOAuthState('naver', state)) {
     return redirect('/login?naver_error=invalid_state');

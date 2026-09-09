@@ -115,4 +115,62 @@ describe('middleware', () => {
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe('http://localhost:3000/reservation/form');
   });
+
+  it('세션이 없으면 /mypage에서 로그인으로 리다이렉트한다', async () => {
+    cookieGet.mockReturnValue(undefined);
+
+    const response = await middleware(makeRequest('/mypage'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/login');
+  });
+
+  it('세션이 없으면 /mypage/edit에서도 로그인으로 리다이렉트한다', async () => {
+    cookieGet.mockReturnValue(undefined);
+
+    const response = await middleware(makeRequest('/mypage/edit'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/login');
+  });
+
+  it('세션이 있으면 /mypage를 통과시킨다 (admin 등급을 요구하지 않는다)', async () => {
+    cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
+    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
+
+    const response = await middleware(makeRequest('/mypage'));
+
+    expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('세션이 없으면 /manager/[docId](관리자 상세)에서 로그인으로 리다이렉트한다', async () => {
+    cookieGet.mockReturnValue(undefined);
+
+    const response = await middleware(makeRequest('/manager/some-application-id'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/login');
+  });
+
+  it('세션이 있어도 admin이 아니면 /manager/[docId]에서 로그인으로 리다이렉트한다', async () => {
+    cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
+    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
+
+    const response = await middleware(makeRequest('/manager/some-application-id'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/login');
+  });
+
+  it.each(['/manager', '/manager/about', '/manager/apply', '/manager/work'])(
+    '%s는 공개 페이지라 세션이 없어도 통과시킨다',
+    async pathname => {
+      cookieGet.mockReturnValue(undefined);
+
+      const response = await middleware(makeRequest(pathname));
+
+      expect(getUserData).not.toHaveBeenCalled();
+      expect(response.headers.get('location')).toBeNull();
+    },
+  );
 });

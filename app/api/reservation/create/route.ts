@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IReservationCreatePostData {
@@ -112,22 +112,25 @@ async function createNonMemberPost(body: IReservationCreatePostData) {
   const docId = uuidv4();
 
   try {
-    await db.collection('consults').doc(docId).set({
-      title,
-      content,
-      location,
-      secret,
-      bornDate: bornDate === undefined ? null : bornDate,
-      name,
-      phoneNumber,
-      franchisee,
-      password: hashedPassword,
-      userId: null,
-      isPinned: false,
-      pinnedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    await db
+      .collection('consults')
+      .doc(docId)
+      .set({
+        title,
+        content,
+        location,
+        secret,
+        bornDate: bornDate === undefined ? null : bornDate,
+        name,
+        phoneNumber,
+        franchisee,
+        password: hashedPassword,
+        userId: null,
+        isPinned: false,
+        pinnedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
     return typedJson<IResponseBody>(
       {
         response: 'ok',
@@ -165,22 +168,25 @@ async function createMemberPost(uid: string, body: IReservationCreatePostData, a
   const docId = uuidv4();
 
   try {
-    await db.collection('consults').doc(docId).set({
-      title,
-      content,
-      location,
-      secret,
-      bornDate: bornDate === undefined ? null : bornDate,
-      name,
-      phoneNumber: accountPhoneNumber,
-      franchisee,
-      password: null,
-      userId: uid,
-      isPinned: false,
-      pinnedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    await db
+      .collection('consults')
+      .doc(docId)
+      .set({
+        title,
+        content,
+        location,
+        secret,
+        bornDate: bornDate === undefined ? null : bornDate,
+        name,
+        phoneNumber: accountPhoneNumber,
+        franchisee,
+        password: null,
+        userId: uid,
+        isPinned: false,
+        pinnedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
     return typedJson<IResponseBody>(
       {
         response: 'ok',

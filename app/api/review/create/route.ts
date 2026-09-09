@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 import { createGuestReview } from './guestCreate';

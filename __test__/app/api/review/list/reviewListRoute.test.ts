@@ -15,7 +15,7 @@ vi.mock('@/src/shared/lib/pin/getPinnedFirstList', () => ({
   getPinnedFirstListAdmin: getPinnedFirstListAdminMock,
 }));
 
-vi.mock('@/src/shared/lib/checkAdminAuth', () => ({
+vi.mock('@/src/shared/lib/server/checkAdminAuth', () => ({
   checkAdminAuth: checkAdminAuthMock,
 }));
 

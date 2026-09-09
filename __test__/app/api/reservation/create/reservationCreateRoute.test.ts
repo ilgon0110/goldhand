@@ -14,7 +14,7 @@ vi.mock('next/headers', () => ({
   }),
 }));
 
-vi.mock('@/src/shared/lib/sessionCookie', () => ({
+vi.mock('@/src/shared/lib/server/sessionCookie', () => ({
   verifySessionCookie: vi.fn().mockResolvedValue({ uid: 'member-uid' }),
 }));
 

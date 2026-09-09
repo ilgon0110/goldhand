@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { TChannel } from '@/src/shared/hooks/useAlarm';
 import { addClient, getClient, listClients, removeClient, setClientUserId } from '@/src/shared/lib/alarm';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { type INotificationDetailData, type IUserDetailData, NotificationType } from '@/src/shared/types';
 
 export const runtime = 'nodejs';

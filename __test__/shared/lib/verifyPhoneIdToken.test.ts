@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { verifyPhoneIdToken } from '@/src/shared/lib/verifyPhoneIdToken';
+import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 
 const verifyIdTokenMock = vi.fn();
 

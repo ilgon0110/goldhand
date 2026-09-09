@@ -1,7 +1,7 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 interface IEventPost {

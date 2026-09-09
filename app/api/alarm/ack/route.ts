@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { ackNotification } from '@/src/shared/lib/alarm';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 
 export const runtime = 'nodejs';

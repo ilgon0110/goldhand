@@ -1,10 +1,9 @@
-'use server';
-
+// 라우트 핸들러에서만 호출되므로 Server Action(external 호출 가능 엔드포인트)으로 만들 필요가 없다.
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 
 type TAdminAuthResult =

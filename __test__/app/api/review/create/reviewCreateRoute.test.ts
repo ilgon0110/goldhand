@@ -16,7 +16,7 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));
 
-vi.mock('@/src/shared/lib/sessionCookie', () => ({
+vi.mock('@/src/shared/lib/server/sessionCookie', () => ({
   verifySessionCookie,
 }));
 
@@ -55,7 +55,7 @@ vi.mock('firebase/firestore', () => ({
 vi.mock('@/src/shared/config/firebase', () => ({ firebaseApp: {} }));
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
 
-vi.mock('@/src/shared/lib/verifyPhoneIdToken', () => ({
+vi.mock('@/src/shared/lib/server/verifyPhoneIdToken', () => ({
   verifyPhoneIdToken: vi.fn().mockResolvedValue({ ok: true, phoneNumber: '01012345678' }),
 }));
 

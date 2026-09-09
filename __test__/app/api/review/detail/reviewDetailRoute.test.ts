@@ -30,7 +30,7 @@ vi.mock('@/src/shared/config/firebase-admin', () => ({
   firebaseAdminApp: {},
 }));
 
-vi.mock('@/src/shared/lib/checkAdminAuth', () => ({
+vi.mock('@/src/shared/lib/server/checkAdminAuth', () => ({
   checkAdminAuth: checkAdminAuthMock,
 }));
 

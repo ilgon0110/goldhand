@@ -2,7 +2,7 @@ import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/fi
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import type { IKakaoAlarmSettings } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 

@@ -1,10 +1,9 @@
-'use server';
-
+// 라우트 핸들러에서만 호출되므로 Server Action(external 호출 가능 엔드포인트)으로 만들 필요가 없다.
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -54,18 +53,14 @@ export async function createComment(
       );
     }
 
-    await adminDb
-      .collection(firestoreCollection)
-      .doc(docId)
-      .collection('comments')
-      .add({
-        comment,
-        userId: uid,
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-        docId,
-        docType,
-      });
+    await adminDb.collection(firestoreCollection).doc(docId).collection('comments').add({
+      comment,
+      userId: uid,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      docId,
+      docType,
+    });
 
     return typedJson<ICommentResponse>({ response: 'ok', message: '댓글이 생성되었습니다.' }, { status: 200 });
   } catch (error) {

@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -31,19 +31,8 @@ interface IResponseBody {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as IConsultPost;
-  const {
-    docId,
-    title,
-    name,
-    password,
-    oldPassword,
-    secret,
-    franchisee,
-    phoneNumber,
-    location,
-    content,
-    bornDate,
-  } = body;
+  const { docId, title, name, password, oldPassword, secret, franchisee, phoneNumber, location, content, bornDate } =
+    body;
   if (!docId) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
   }

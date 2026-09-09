@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 interface IMyPageUpdatePost {
@@ -42,10 +42,7 @@ export async function POST(req: NextRequest) {
     const userDocSnap = await userDocRef.get();
 
     if (!userDocSnap.exists) {
-      return typedJson<IResponseBody>(
-        { response: 'ng', message: '사용자 정보가 존재하지 않습니다.' },
-        { status: 403 },
-      );
+      return typedJson<IResponseBody>({ response: 'ng', message: '사용자 정보가 존재하지 않습니다.' }, { status: 403 });
     }
 
     const userRecord = await getAdminAuth(firebaseAdminApp).getUser(userId);

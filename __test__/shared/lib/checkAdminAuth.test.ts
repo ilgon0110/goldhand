@@ -10,7 +10,7 @@ const FIXED_NOW = new Date('2026-01-01T00:00:00Z');
 vi.mock('next/headers', () => ({
   cookies: vi.fn(async () => ({ get: cookieGet })),
 }));
-vi.mock('@/src/shared/lib/sessionCookie', () => ({
+vi.mock('@/src/shared/lib/server/sessionCookie', () => ({
   verifySessionCookie,
 }));
 vi.mock('firebase-admin/firestore', () => ({
@@ -22,7 +22,7 @@ vi.mock('firebase-admin/firestore', () => ({
 }));
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
 
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 
 describe('checkAdminAuth', () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import { togglePinAdmin } from '@/src/shared/lib/pin/toggleIsPinned';
 import { typedJson } from '@/src/shared/utils';
 
@@ -39,7 +39,10 @@ export async function POST(req: Request) {
   const adminDB = getAdminFirestore(firebaseAdminApp);
   const docSnap = await adminDB.collection('events').doc(docId).get();
   if (!docSnap.exists) {
-    return typedJson<IResponseBody>({ response: 'ng', message: '해당 docId를 가진 게시글이 존재하지 않습니다.' }, { status: 404 });
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '해당 docId를 가진 게시글이 존재하지 않습니다.' },
+      { status: 404 },
+    );
   }
 
   try {
@@ -50,6 +53,9 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error('Error toggling event pin:', error);
-    return typedJson<IResponseBody>({ response: 'ng', message: '고정 처리 중 오류가 발생하였습니다.' }, { status: 500 });
+    return typedJson<IResponseBody>(
+      { response: 'ng', message: '고정 처리 중 오류가 발생하였습니다.' },
+      { status: 500 },
+    );
   }
 }

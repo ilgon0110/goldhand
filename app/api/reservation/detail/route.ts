@@ -7,7 +7,7 @@ import type { NextRequest } from 'next/server';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
-import { verifySessionCookie } from '@/src/shared/lib/sessionCookie';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { ICommentData, IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
 
-  const authResult = await checkAdminAuth();
+  const authResult = await checkAdminAuth(true);
   if (!authResult.ok) {
     if (authResult.reason === 'no_token') {
       return typedJson<IManagerApplyListData>(

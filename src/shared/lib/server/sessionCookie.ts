@@ -10,6 +10,9 @@ export async function createSessionCookie(idToken: string, expiresInMs: number):
   return getAdminAuth(firebaseAdminApp).createSessionCookie(idToken, { expiresIn: expiresInMs });
 }
 
-export async function verifySessionCookie(sessionCookieValue: string): Promise<DecodedIdToken> {
-  return getAdminAuth(firebaseAdminApp).verifySessionCookie(sessionCookieValue, true);
+export async function verifySessionCookie(
+  sessionCookieValue: string,
+  checkRevoked = false,
+): Promise<DecodedIdToken> {
+  return getAdminAuth(firebaseAdminApp).verifySessionCookie(sessionCookieValue, checkRevoked);
 }

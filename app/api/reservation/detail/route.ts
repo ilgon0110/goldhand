@@ -81,6 +81,9 @@ export async function GET(request: NextRequest) {
         verifiedUid = decodedToken.uid;
         const userDocSnap = await adminDb.collection('users').doc(verifiedUid).get();
         isAdmin = userDocSnap.exists && userDocSnap.data()?.grade === 'admin';
+        if (isAdmin) {
+          await verifySessionCookie(session.value, true);
+        }
       } catch {
         // 토큰 검증 실패 시 isAdmin, verifiedUid 기본값 유지
       }

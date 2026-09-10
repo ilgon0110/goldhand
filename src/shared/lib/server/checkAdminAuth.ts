@@ -10,7 +10,7 @@ type TAdminAuthResult =
   | { ok: false; reason: 'deleted_rejoin' | 'deleted' | 'expired' | 'invalid' | 'no_token' | 'not_found' }
   | { ok: true; uid: string; isAdmin: boolean };
 
-export async function checkAdminAuth(): Promise<TAdminAuthResult> {
+export async function checkAdminAuth(requireAdmin = false): Promise<TAdminAuthResult> {
   const cookieStore = await cookies();
   const session = cookieStore.get('session');
 
@@ -20,7 +20,7 @@ export async function checkAdminAuth(): Promise<TAdminAuthResult> {
 
   let uid: string;
   try {
-    const decodedToken = await verifySessionCookie(session.value);
+    const decodedToken = await verifySessionCookie(session.value, requireAdmin);
     uid = decodedToken.uid;
   } catch (error) {
     if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
@@ -45,5 +45,21 @@ export async function checkAdminAuth(): Promise<TAdminAuthResult> {
     return { ok: false, reason: 'deleted' };
   }
 
-  return { ok: true, uid, isAdmin: userData.grade === 'admin' };
+  const isAdmin = userData.grade === 'admin';
+
+  // 일반 사용자 요청에는 Firebase Auth 백엔드 조회 비용을 부과하지 않는다. 다만 이 결과로
+  // 관리자 권한을 부여할 때는 폐기·비활성화 상태까지 확인한다. 관리자 전용 API는 위의 최초
+  // 검증에서 이미 확인했으므로 중복 호출하지 않는다.
+  if (isAdmin && !requireAdmin) {
+    try {
+      await verifySessionCookie(session.value, true);
+    } catch (error) {
+      if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
+        return { ok: false, reason: 'expired' };
+      }
+      return { ok: false, reason: 'invalid' };
+    }
+  }
+
+  return { ok: true, uid, isAdmin };
 }

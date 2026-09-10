@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const authResult = await checkAdminAuth();
+  const authResult = await checkAdminAuth(true);
   if (!authResult.ok) {
     if (authResult.reason === 'no_token') {
       return typedJson<IResponseBody>(

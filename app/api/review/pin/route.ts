@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     return typedJson<IResponseBody>({ response: 'ng', message: 'docId is required' }, { status: 400 });
   }
 
-  const authResult = await checkAdminAuth();
+  const authResult = await checkAdminAuth(true);
   if (!authResult.ok) {
     return typedJson<IResponseBody>({ response: 'ng', message: '로그인 정보가 존재하지 않습니다.' }, { status: 401 });
   }

@@ -103,11 +103,37 @@ describe('checkAdminAuth', () => {
     const result = await checkAdminAuth();
 
     expect(result).toEqual({ ok: true, uid: 'user-uid', isAdmin: true });
+    expect(verifySessionCookie).toHaveBeenNthCalledWith(1, 'secret-session-cookie', false);
+    expect(verifySessionCookie).toHaveBeenNthCalledWith(2, 'secret-session-cookie', true);
   });
 
   it('grade가 admin이 아니면 isAdmin:false로 검증에 성공한다', async () => {
     const result = await checkAdminAuth();
 
     expect(result).toEqual({ ok: true, uid: 'user-uid', isAdmin: false });
+    expect(verifySessionCookie).toHaveBeenCalledOnce();
+    expect(verifySessionCookie).toHaveBeenCalledWith('secret-session-cookie', false);
+  });
+
+  it('관리자 전용 요청은 최초 검증부터 폐기 상태를 확인한다', async () => {
+    userDocumentGet.mockResolvedValue({ exists: true, data: () => ({ grade: 'admin', isDeleted: false }) });
+
+    const result = await checkAdminAuth(true);
+
+    expect(result).toEqual({ ok: true, uid: 'user-uid', isAdmin: true });
+    expect(verifySessionCookie).toHaveBeenCalledOnce();
+    expect(verifySessionCookie).toHaveBeenCalledWith('secret-session-cookie', true);
+  });
+
+  it.each([
+    ['폐기된 관리자 세션', 'auth/session-cookie-revoked'],
+    ['비활성 관리자', 'auth/user-disabled'],
+  ])('%s에는 관리자 권한을 부여하지 않는다', async (_description, code) => {
+    userDocumentGet.mockResolvedValue({ exists: true, data: () => ({ grade: 'admin', isDeleted: false }) });
+    verifySessionCookie.mockResolvedValueOnce({ uid: 'user-uid' }).mockRejectedValueOnce({ code });
+
+    const result = await checkAdminAuth();
+
+    expect(result).toEqual({ ok: false, reason: 'invalid' });
   });
 });

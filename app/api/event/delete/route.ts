@@ -34,7 +34,7 @@ export async function DELETE(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { uid } = await verifySessionCookie(session.value);
+    const { uid } = await verifySessionCookie(session.value, true);
 
     const adminDB = getAdminFirestore(firebaseAdminApp);
     const eventDocRef = adminDB.collection('events').doc(docId);

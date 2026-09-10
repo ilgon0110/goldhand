@@ -17,10 +17,17 @@ describe('verifySessionCookie', () => {
     vi.clearAllMocks();
   });
 
-  it('세션 쿠키 검증 시 폐기 및 사용자 비활성화 상태를 확인한다', async () => {
+  it('일반 세션 쿠키는 추가 폐기 검사 없이 검증한다', async () => {
     verifySessionCookieMock.mockResolvedValueOnce({ uid: 'user-uid' });
 
     await expect(verifySessionCookie('session-cookie')).resolves.toEqual({ uid: 'user-uid' });
+    expect(verifySessionCookieMock).toHaveBeenCalledWith('session-cookie', false);
+  });
+
+  it('관리자 세션 쿠키는 폐기 및 사용자 비활성화 상태를 확인한다', async () => {
+    verifySessionCookieMock.mockResolvedValueOnce({ uid: 'admin-uid' });
+
+    await expect(verifySessionCookie('session-cookie', true)).resolves.toEqual({ uid: 'admin-uid' });
     expect(verifySessionCookieMock).toHaveBeenCalledWith('session-cookie', true);
   });
 
@@ -31,6 +38,6 @@ describe('verifySessionCookie', () => {
     const firebaseError = { code };
     verifySessionCookieMock.mockRejectedValueOnce(firebaseError);
 
-    await expect(verifySessionCookie('invalid-session-cookie')).rejects.toBe(firebaseError);
+    await expect(verifySessionCookie('invalid-session-cookie', true)).rejects.toBe(firebaseError);
   });
 });

@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId: '' }, { status: 401 });
     }
 
-    const { uid } = await verifySessionCookie(session.value);
+    const { uid } = await verifySessionCookie(session.value, true);
     if (uid !== targetData.userId) {
       return typedJson<IResponseBody>(
         { response: 'ng', message: '이벤트 수정 권한이 없습니다.', docId: '' },

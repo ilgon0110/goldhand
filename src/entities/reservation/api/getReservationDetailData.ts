@@ -9,13 +9,13 @@ import type { IReservationResponseData } from '@/src/shared/types';
 export const getReservationDetailData = async ({ docId }: { docId: string }): Promise<IReservationResponseData> => {
   const rawCookie = headers().get('cookie') || '';
   const cookiesObj = parse(rawCookie);
-  const accessToken = cookiesObj['accessToken'];
+  const session = cookiesObj['session'];
   const reservationToken = cookiesObj['reservationToken'];
   const res = await fetch(`${apiUrl}/api/reservation/detail?docId=${docId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Cookie: `accessToken=${accessToken}; reservationToken=${reservationToken}`,
+      Cookie: `session=${session}; reservationToken=${reservationToken}`,
     },
     credentials: 'include',
     cache: 'no-store',

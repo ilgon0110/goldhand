@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 interface IMyPageUpdatePost {
@@ -23,14 +24,14 @@ export async function POST(req: NextRequest) {
   const { name, nickname, email } = body;
 
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
-  if (!accessToken?.value) {
+  const session = cookieStore.get('session');
+  if (session == null || session.value === '') {
     return typedJson<IResponseBody>({ response: 'ng', message: '로그인이 필요합니다.' }, { status: 401 });
   }
 
   let userId: string;
   try {
-    userId = (await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value)).uid;
+    userId = (await verifySessionCookie(session.value)).uid;
   } catch {
     return typedJson<IResponseBody>({ response: 'ng', message: '인증에 실패했습니다.' }, { status: 401 });
   }
@@ -41,10 +42,7 @@ export async function POST(req: NextRequest) {
     const userDocSnap = await userDocRef.get();
 
     if (!userDocSnap.exists) {
-      return typedJson<IResponseBody>(
-        { response: 'ng', message: '사용자 정보가 존재하지 않습니다.' },
-        { status: 403 },
-      );
+      return typedJson<IResponseBody>({ response: 'ng', message: '사용자 정보가 존재하지 않습니다.' }, { status: 403 });
     }
 
     const userRecord = await getAdminAuth(firebaseAdminApp).getUser(userId);

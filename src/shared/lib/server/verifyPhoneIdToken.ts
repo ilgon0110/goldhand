@@ -1,5 +1,4 @@
-'use server';
-
+// 라우트 핸들러에서만 호출되므로 Server Action(external 호출 가능 엔드포인트)으로 만들 필요가 없다.
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';

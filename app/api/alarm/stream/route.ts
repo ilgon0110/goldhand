@@ -1,4 +1,3 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
@@ -7,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { TChannel } from '@/src/shared/hooks/useAlarm';
 import { addClient, getClient, listClients, removeClient, setClientUserId } from '@/src/shared/lib/alarm';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { type INotificationDetailData, type IUserDetailData, NotificationType } from '@/src/shared/types';
 
 export const runtime = 'nodejs';
@@ -19,11 +19,10 @@ function makeEvent(eventId: string, event: string, data: INotificationDetailData
 
 async function getUserId(): Promise<string> {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken');
-  const adminApp = getAdminAuth(firebaseAdminApp);
+  const session = cookieStore.get('session');
 
-  if (accessToken == null) return '';
-  const decodedToken = await adminApp.verifyIdToken(accessToken.value);
+  if (session == null) return '';
+  const decodedToken = await verifySessionCookie(session.value);
   const uid = decodedToken.uid;
 
   const adminDB = getAdminFirestore(firebaseAdminApp);

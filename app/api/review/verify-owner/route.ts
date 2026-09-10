@@ -2,7 +2,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
-import { verifyPhoneIdToken } from '@/src/shared/lib/verifyPhoneIdToken';
+import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 type TVerifyOwnerRequest = {

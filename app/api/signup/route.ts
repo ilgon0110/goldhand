@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { isOwnedPhoneNumber } from '@/src/shared/lib/verifyPhoneNumberOwnership';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -17,9 +18,9 @@ export async function GET() {}
 export async function POST(req: Request) {
   const db = getAdminFirestore(firebaseAdminApp);
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
-  if (accessToken?.value === undefined) {
+  if (session == null || session.value === '') {
     return typedJson<IResponsePostBody>(
       {
         response: 'ng',
@@ -29,10 +30,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
-  const uid = decodedToken.uid;
-
-  if (!uid)
+  let uid: string;
+  try {
+    uid = (await verifySessionCookie(session.value)).uid;
+  } catch {
     return typedJson<IResponsePostBody>(
       {
         response: 'ng',
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
       },
       { status: 401 },
     );
+  }
 
   // 탈퇴한 유저인지 확인
   const userDocRef = db.collection('users').doc(uid);

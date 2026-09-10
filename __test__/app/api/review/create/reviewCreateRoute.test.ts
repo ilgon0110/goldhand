@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { adminSet, webSetDoc, cookieGet, verifyIdToken, userGet } = vi.hoisted(() => ({
+const { adminSet, webSetDoc, cookieGet, verifySessionCookie, userGet } = vi.hoisted(() => ({
   adminSet: vi.fn(),
   webSetDoc: vi.fn(),
   cookieGet: vi.fn(),
-  verifyIdToken: vi.fn(),
+  verifySessionCookie: vi.fn(),
   userGet: vi.fn(),
 }));
 
@@ -16,8 +16,8 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));
 
-vi.mock('firebase-admin/auth', () => ({
-  getAuth: vi.fn(() => ({ verifyIdToken })),
+vi.mock('@/src/shared/lib/server/sessionCookie', () => ({
+  verifySessionCookie,
 }));
 
 vi.mock('firebase-admin/firestore', () => ({
@@ -55,7 +55,7 @@ vi.mock('firebase/firestore', () => ({
 vi.mock('@/src/shared/config/firebase', () => ({ firebaseApp: {} }));
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
 
-vi.mock('@/src/shared/lib/verifyPhoneIdToken', () => ({
+vi.mock('@/src/shared/lib/server/verifyPhoneIdToken', () => ({
   verifyPhoneIdToken: vi.fn().mockResolvedValue({ ok: true, phoneNumber: '01012345678' }),
 }));
 
@@ -74,7 +74,7 @@ describe('POST /api/review/create', () => {
     adminSet.mockReset().mockResolvedValue(undefined);
     webSetDoc.mockReset().mockRejectedValue(new Error('permission-denied'));
     cookieGet.mockReset().mockReturnValue(undefined);
-    verifyIdToken.mockReset().mockResolvedValue({ uid: 'member-uid' });
+    verifySessionCookie.mockReset().mockResolvedValue({ uid: 'member-uid' });
     userGet.mockReset().mockResolvedValue({ data: () => ({ isDeleted: false, phoneNumber: '01099998888' }) });
   });
 
@@ -127,6 +127,31 @@ describe('POST /api/review/create', () => {
         phoneNumber: '01099998888',
       }),
     );
+  });
+
+  it('세션 쿠키가 있어도 검증에 실패하면(만료 등) 게스트 경로로 폴백해서 저장한다', async () => {
+    cookieGet.mockReturnValue({ value: 'expired-session-cookie' });
+    verifySessionCookie.mockRejectedValue({ code: 'auth/session-cookie-expired' });
+
+    const request = new Request('http://localhost/api/review/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: '제목',
+        name: '작성자',
+        franchisee: '수원점',
+        htmlString: '<p>후기</p>',
+        docId: 'fallback-review-id',
+        images: null,
+        phoneIdToken: 'verified-token',
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.response).toBe('ok');
+    expect(adminSet).toHaveBeenCalledWith(expect.objectContaining({ userId: null }));
   });
 
   it.each(['', null])('회원의 phoneNumber가 %j여도 빈 문자열로 저장하고 후기 작성을 허용한다', async phoneNumber => {

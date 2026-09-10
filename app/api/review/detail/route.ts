@@ -3,7 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import type { ICommentData, IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';

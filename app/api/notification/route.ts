@@ -1,10 +1,10 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { NOTI_LIMIT } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { INotificationDetailData, INotificationResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -13,9 +13,9 @@ const defaultData: INotificationDetailData[] = [];
 export async function GET(request: NextRequest) {
   // 현재 로그인된 유저의 uid를 가져온다.
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
-  if (!accessToken) {
+  if (session == null) {
     return typedJson<INotificationResponseData>(
       {
         response: 'ng',
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 
   let uid;
   try {
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    const decodedToken = await verifySessionCookie(session.value);
     uid = decodedToken.uid;
 
     if (uid === undefined) {
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error verifying token:', error);
-    if (error != null && typeof error == 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+    if (error != null && typeof error == 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
       return typedJson<INotificationResponseData>(
         {
           response: 'ng',

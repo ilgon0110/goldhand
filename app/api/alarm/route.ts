@@ -1,6 +1,8 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
+import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { INotificationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -13,18 +15,29 @@ interface IResponsePostBody {
 
 export async function POST(req: Request) {
   const adminDB = getAdminFirestore(firebaseAdminApp);
-  const { userId, notificationId, markAsRead } = await req.json();
-  if (userId == null) {
+
+  // 요청 본문의 userId를 신뢰하지 않고, session 쿠키를 검증해 얻은 uid만 사용한다
+  // (그렇지 않으면 누구나 임의 userId로 남의 알림을 읽음 처리할 수 있다).
+  const cookieStore = await cookies();
+  const session = cookieStore.get('session');
+  if (session == null || session.value === '') {
     return typedJson<IResponsePostBody>(
-      {
-        response: 'ng',
-        message: '필수 파라미터가 제공되지 않았습니다.',
-        type: '',
-        docId: '',
-      },
-      { status: 400 },
+      { response: 'ng', message: '로그인이 필요합니다.', type: '', docId: '' },
+      { status: 401 },
     );
   }
+
+  let userId: string;
+  try {
+    userId = (await verifySessionCookie(session.value)).uid;
+  } catch {
+    return typedJson<IResponsePostBody>(
+      { response: 'ng', message: '인증에 실패했습니다.', type: '', docId: '' },
+      { status: 401 },
+    );
+  }
+
+  const { notificationId, markAsRead } = await req.json();
 
   if (markAsRead) {
     // 모든 알림 읽음처리
@@ -85,9 +98,16 @@ export async function POST(req: Request) {
     );
   }
 
+  const notificationData = notificationDocSnap.data() as INotificationDetailData;
+  if (notificationData.userId !== userId) {
+    return typedJson<IResponsePostBody>(
+      { response: 'ng', message: '해당 알림에 접근할 권한이 없습니다.', type: '', docId: '' },
+      { status: 403 },
+    );
+  }
+
   // 알림 읽음처리
   try {
-    const notificationData = notificationDocSnap.data() as INotificationDetailData;
     await notificationDocRef.update({
       ...notificationData,
       isRead: true,

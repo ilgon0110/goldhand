@@ -1,23 +1,22 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { ackNotification } from '@/src/shared/lib/alarm';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken');
-  if (!accessToken) return new Response('unauthorized', { status: 401 });
+  const session = cookieStore.get('session');
+  if (session == null) return new Response('unauthorized', { status: 401 });
 
-  const adminApp = getAdminAuth(firebaseAdminApp);
   let decoded: any;
   try {
-    decoded = await adminApp.verifyIdToken(accessToken.value);
+    decoded = await verifySessionCookie(session.value);
   } catch (err) {
     return new Response('unauthorized', { status: 401 });
   }

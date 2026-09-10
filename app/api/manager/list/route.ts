@@ -2,7 +2,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import type { IApplyDetailData, IManagerApplyListData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const page = searchParams.get('page') == null ? 1 : parseInt(searchParams.get('page')!, 10);
 
-  const authResult = await checkAdminAuth();
+  const authResult = await checkAdminAuth(true);
   if (!authResult.ok) {
     if (authResult.reason === 'no_token') {
       return typedJson<IManagerApplyListData>(

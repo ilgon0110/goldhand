@@ -1,10 +1,9 @@
-'use server';
-
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
+// 라우트 핸들러에서만 호출되므로 Server Action(external 호출 가능 엔드포인트)으로 만들 필요가 없다.
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -14,21 +13,21 @@ interface ICommentResponse {
 }
 
 /**
- * 댓글 작성/수정/삭제는 요청 본문의 userId를 신뢰하지 않고 accessToken을 검증해 얻은 uid만
+ * 댓글 작성/수정/삭제는 요청 본문의 userId를 신뢰하지 않고 session 쿠키를 검증해 얻은 uid만
  * 사용한다 (댓글의 userId는 누구나 읽을 수 있는 공개 데이터라 그대로 신뢰하면 사칭이 가능하다).
  */
 async function verifyCommentAuthor(): Promise<Response | { uid: string }> {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
-  if (!accessToken) {
+  const session = cookieStore.get('session');
+  if (session == null) {
     return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 401 });
   }
 
   try {
-    const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+    const decodedToken = await verifySessionCookie(session.value);
     return { uid: decodedToken.uid };
   } catch (error) {
-    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/id-token-expired') {
+    if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
       return typedJson<ICommentResponse>({ response: 'ng', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
     return typedJson<ICommentResponse>({ response: 'ng', message: '로그인 후 사용해주세요.' }, { status: 401 });
@@ -54,18 +53,14 @@ export async function createComment(
       );
     }
 
-    await adminDb
-      .collection(firestoreCollection)
-      .doc(docId)
-      .collection('comments')
-      .add({
-        comment,
-        userId: uid,
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-        docId,
-        docType,
-      });
+    await adminDb.collection(firestoreCollection).doc(docId).collection('comments').add({
+      comment,
+      userId: uid,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      docId,
+      docType,
+    });
 
     return typedJson<ICommentResponse>({ response: 'ok', message: '댓글이 생성되었습니다.' }, { status: 200 });
   } catch (error) {

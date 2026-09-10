@@ -4,9 +4,9 @@ import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/checkAdminAuth';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
-import { verifyPhoneIdToken } from '@/src/shared/lib/verifyPhoneIdToken';
+import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -55,7 +55,7 @@ export async function DELETE(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message }, { status: 401 });
     }
 
-    // 비회원(accessToken 없음) - 회원 글은 접근 불가
+    // 비회원(session 없음) - 회원 글은 접근 불가
     if (targetData.userId !== null) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
     }

@@ -4,14 +4,17 @@ import { NextResponse } from 'next/server';
 
 import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { createSessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 
 import { expireOAuthStateCookie, validateOAuthState } from '../../lib/oauthState';
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
 
-const ACCESS_TOKEN_OPTIONS = {
+const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+
+const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
-  maxAge: 60 * 60 * 24 * 7,
+  maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
   sameSite: 'strict' as const,
   secure: process.env.NODE_ENV === 'production',
 };
@@ -53,8 +56,7 @@ export async function GET(request: Request) {
   const errorDescription = searchParams.get('error_description');
 
   const origin = apiUrl;
-  const redirect = (path: string) =>
-    expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'naver');
+  const redirect = (path: string) => expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'naver');
 
   if (!validateOAuthState('naver', state)) {
     return redirect('/login?naver_error=invalid_state');
@@ -102,12 +104,13 @@ export async function GET(request: Request) {
     const user = await trySignIn(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
 
     if (user) {
-      const accessToken = await user.user.getIdToken();
+      const idToken = await user.user.getIdToken();
+      const sessionCookie = await createSessionCookie(idToken, SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
       const deletedStatus = await checkUserDeletedStatus(user.user.uid);
 
       if (deletedStatus === 'deleted_rejoin') {
         const res = redirect('/login?rejoin=true');
-        res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
+        res.cookies.set('session', sessionCookie, SESSION_COOKIE_OPTIONS);
         return res;
       }
 
@@ -116,16 +119,17 @@ export async function GET(request: Request) {
       }
 
       const res = redirect('/?naver_success=true');
-      res.cookies.set('accessToken', accessToken, ACCESS_TOKEN_OPTIONS);
+      res.cookies.set('session', sessionCookie, SESSION_COOKIE_OPTIONS);
       return res;
     }
 
     const newUser = await signUpUser(email, process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!);
     await saveUserProfile(newUser.user.uid, email);
-    const newAccessToken = await newUser.user.getIdToken();
+    const newIdToken = await newUser.user.getIdToken();
+    const newSessionCookie = await createSessionCookie(newIdToken, SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
 
     const res = redirect('/?naver_success=true');
-    res.cookies.set('accessToken', newAccessToken, ACCESS_TOKEN_OPTIONS);
+    res.cookies.set('session', newSessionCookie, SESSION_COOKIE_OPTIONS);
     return res;
   } catch (error) {
     console.error('Error during Naver OAuth callback:', error);

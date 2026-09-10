@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 import { createGuestReview } from './guestCreate';
@@ -18,7 +19,18 @@ export async function POST(req: Request) {
   }
 
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
-  return accessToken ? createUserReview(body, accessToken.value) : createGuestReview(body);
+  if (session == null) {
+    return createGuestReview(body);
+  }
+
+  try {
+    const { uid } = await verifySessionCookie(session.value);
+    return createUserReview(body, uid);
+  } catch (error) {
+    // 세션 쿠키가 있어도 검증에 실패하면(만료 등) /api/user와 동일한 기준으로 게스트로 취급한다.
+    console.error('Error verifying session cookie, falling back to guest review:', error);
+    return createGuestReview(body);
+  }
 }

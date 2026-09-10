@@ -1,8 +1,8 @@
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore, Timestamp } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -16,9 +16,9 @@ export async function GET() {}
 export async function POST(req: Request) {
   const db = getAdminFirestore(firebaseAdminApp);
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
 
-  if (accessToken?.value === undefined) {
+  if (session == null || session.value === '') {
     return typedJson<IResponsePostBody>(
       {
         response: 'ng',
@@ -28,10 +28,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
-  const uid = decodedToken.uid;
-
-  if (!uid)
+  let uid: string;
+  try {
+    uid = (await verifySessionCookie(session.value)).uid;
+  } catch {
     return typedJson<IResponsePostBody>(
       {
         response: 'ng',
@@ -39,6 +39,7 @@ export async function POST(req: Request) {
       },
       { status: 401 },
     );
+  }
 
   // withdrawal 시에는 uid가 반드시 존재해야 하므로, 여기서 uid를 확인하는 것은 의미가 없다.
   const userDocRef = db.collection('users').doc(uid);

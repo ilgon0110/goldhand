@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -23,10 +24,10 @@ function userJson(body: IResponseBody, status: number) {
 export async function GET() {
   // 현재 로그인된 유저의 uid를 가져온다.
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
   const adminApp = getAdminAuth(firebaseAdminApp);
 
-  if (accessToken == null || accessToken.value === '') {
+  if (session == null || session.value === '') {
     return userJson(
       {
         response: 'ng',
@@ -38,21 +39,29 @@ export async function GET() {
     );
   }
 
-  try {
-    const decodedToken = await adminApp.verifyIdToken(accessToken.value);
-    const uid = decodedToken.uid;
+  let uid: string;
 
-    if (uid === undefined) {
-      return userJson(
-        {
-          response: 'ng',
-          message: '사용자 식별 아이디가 존재하지 않습니다.',
-          userData: null,
-          isLinked: false,
-        },
-        200,
-      );
-    }
+  try {
+    uid = (await verifySessionCookie(session.value)).uid;
+  } catch (error) {
+    // verifySessionCookie는 세션의 유효성만 검증한다. auth/id-token-expired, auth/argument-error,
+    // auth/session-cookie-revoked 등 실패 사유가 무엇이든 "지금 이 세션으로는 인증할 수 없다"는
+    // 의미는 동일하므로, 알려진 코드를 화이트리스트로 나열하지 않고 검증 실패 자체를 곧바로
+    // 비로그인 상태로 처리한다. 진짜 서버 장애(500)는 이 단계가 아니라 검증 이후 DB 조회
+    // 단계(아래 catch)에서만 판단한다.
+    console.error('Error verifying session cookie:', error);
+    return userJson(
+      {
+        response: 'ng',
+        message: '세션이 유효하지 않습니다.',
+        userData: null,
+        isLinked: false,
+      },
+      200,
+    );
+  }
+
+  try {
     const db = getAdminFirestore(firebaseAdminApp);
 
     const userDocRef = db.collection('users').doc(uid);
@@ -106,31 +115,8 @@ export async function GET() {
         ? error.code
         : 'unknown_error';
 
-    if (errorCode === 'auth/invalid-id-token') {
-      return userJson(
-        {
-          response: 'ng',
-          message: errorCode,
-          userData: null,
-          isLinked: false,
-        },
-        200,
-      );
-    }
-
-    if (errorCode === 'auth/id-token-expired') {
-      return userJson(
-        {
-          response: 'ng',
-          message: errorCode,
-          userData: null,
-          isLinked: false,
-        },
-        200,
-      );
-    }
-
-    // db에서 유저정보를 삭제한 경우
+    // 세션은 유효했지만 Firebase Auth에서 유저 레코드가 이미 삭제된 경우(데이터 정합성 문제)로,
+    // 서버 장애가 아니다.
     if (errorCode === 'auth/user-not-found') {
       return userJson(
         {

@@ -1,5 +1,4 @@
 import { collection, getDocs, getFirestore, orderBy, query, Timestamp } from 'firebase/firestore';
-import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -8,6 +7,7 @@ import type { NextRequest } from 'next/server';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
+import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { ICommentData, IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const docId = searchParams.get('docId');
   const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const session = cookieStore.get('session');
   const reservationToken = cookieStore.get('reservationToken');
 
   if (!docId) {
@@ -75,12 +75,15 @@ export async function GET(request: NextRequest) {
     let isAdmin = false;
     let verifiedUid: string | null = null;
 
-    if (accessToken?.value) {
+    if (session != null && session.value !== '') {
       try {
-        const decodedToken = await getAdminAuth(firebaseAdminApp).verifyIdToken(accessToken.value);
+        const decodedToken = await verifySessionCookie(session.value);
         verifiedUid = decodedToken.uid;
         const userDocSnap = await adminDb.collection('users').doc(verifiedUid).get();
         isAdmin = userDocSnap.exists && userDocSnap.data()?.grade === 'admin';
+        if (isAdmin) {
+          await verifySessionCookie(session.value, true);
+        }
       } catch {
         // 토큰 검증 실패 시 isAdmin, verifiedUid 기본값 유지
       }

@@ -11,5 +11,5 @@ export async function createSessionCookie(idToken: string, expiresInMs: number):
 }
 
 export async function verifySessionCookie(sessionCookieValue: string): Promise<DecodedIdToken> {
-  return getAdminAuth(firebaseAdminApp).verifySessionCookie(sessionCookieValue);
+  return getAdminAuth(firebaseAdminApp).verifySessionCookie(sessionCookieValue, true);
 }

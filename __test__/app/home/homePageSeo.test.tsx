@@ -1,6 +1,10 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('@/src/entities/review', () => ({
+  getReviewListData: vi.fn(async () => ({ message: '성공', reviewData: [], response: 'ok', totalDataLength: 0 })),
+}));
 vi.mock('@/src/feature/auth', () => ({
   OAuthSuccessHandler: () => <div>OAUTH_SUCCESS_HANDLER_SENTINEL</div>,
 }));
@@ -22,8 +26,11 @@ vi.mock('@/src/widgets/event/ui/EventModal', () => ({
 import Home from '@/app/page';
 
 describe('home page SEO rendering boundary', () => {
-  it('server-renders the home content without depending on search parameters', () => {
-    const html = renderToStaticMarkup(<Home />);
+  it('server-renders the home content without depending on search parameters', async () => {
+    const element = await Home();
+    const html = renderToStaticMarkup(
+      <QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>,
+    );
 
     expect(html).toContain('HOME_TITLE_SENTINEL');
     expect(html).toContain('FAQ_SENTINEL');

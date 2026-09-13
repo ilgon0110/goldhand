@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
@@ -10,7 +10,6 @@ import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { IReviewDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { Skeleton } from '@/src/shared/ui/skeleton';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
@@ -23,7 +22,6 @@ type TReviewCardProps = {
 export const ReviewCard = ({ review }: TReviewCardProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [isMounted, setIsMounted] = useState(false);
 
   const { data: authData } = useAuth();
   const isAdmin = authData?.userData?.grade === 'admin';
@@ -33,34 +31,11 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
   const formattedDate = formatDateToYMD(review.createdAt);
   const isUpdated = isTimestampUpdated(review.createdAt, review.updatedAt);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const gridClass = cn(
     'grid w-full items-baseline border-b border-stone-200',
     'grid-cols-[44px_1fr] gap-x-3 gap-y-1 px-1 py-3.5',
     'md:grid-cols-[56px_1fr_auto] md:gap-x-4',
   );
-
-  if (!isMounted) {
-    return (
-      <div className={gridClass}>
-        {/* 썸네일 */}
-        <Skeleton className={cn('row-span-2 aspect-square w-11 self-center', 'md:w-14')} />
-        {/* 제목 행 */}
-        <div className="flex min-w-0 items-center gap-x-2">
-          <Skeleton className="h-[15px] w-2/3" />
-          <Skeleton className="h-4 w-12 shrink-0 rounded-full" />
-          <Skeleton className="h-4 w-10 shrink-0 rounded-full" />
-        </div>
-        {/* 날짜 — 데스크탑 3열 */}
-        <Skeleton className="hidden h-[12px] w-20 self-start md:block" />
-        {/* 미리보기 행 */}
-        <Skeleton className="h-[13px] w-full" />
-      </div>
-    );
-  }
 
   return (
     <>

@@ -1,3 +1,5 @@
+'use client';
+
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
@@ -11,20 +13,14 @@ interface IResponsePostBody {
 export const useReviewDetailCommentMutation = (
   docId: string,
   options?: UseMutationOptions<IResponsePostBody, Error, string>,
-) => {
-  return useMutation({
-    mutationFn: async (comment: string) => {
-      const response = await authFetcher<IResponsePostBody>('/api/review/detail/comment', {
+) =>
+  useMutation({
+    mutationFn: (comment: string) =>
+      authFetcher<IResponsePostBody>('/api/review/detail/comment', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ docId, comment }),
         cache: 'no-store',
-      });
-
-      return response;
-    },
+      }),
     ...options,
   });
-};

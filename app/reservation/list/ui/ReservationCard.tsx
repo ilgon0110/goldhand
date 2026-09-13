@@ -26,6 +26,7 @@ import { Dialog, DialogContent, DialogHeader } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
+import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { toastError } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
@@ -122,31 +123,43 @@ export const ReservationCard = ({
       return;
     }
     // 비밀번호 검증 후 상세 페이지로 이동
+    setIsPasswordDialogOpen(false);
+    setIsSubmitting(true);
+
     try {
-      setIsSubmitting(true);
       const passwordResponseData = await passwordPostAction(docId, values.password);
 
       if (passwordResponseData.response === 'ok') {
-        // 조회수 기록
-        const viewRes = await sendViewLog(docId);
-        if (!viewRes) {
-          console.error('Failed to send view log');
-        }
+        // 조회수 기록이 페이지 이동을 지연시키지 않도록 백그라운드에서 처리한다.
+        void sendViewLog(docId)
+          .then(viewRes => {
+            if (!viewRes) {
+              console.error('Failed to send view log');
+            }
+          })
+          .catch(error => {
+            console.error('Failed to send view log:', error);
+          });
 
         router.push(`/reservation/list/${docId}`);
       } else {
+        form.reset();
+        setIsSubmitting(false);
+        setIsPasswordDialogOpen(true);
         toastError(passwordResponseData.message);
       }
     } catch (error) {
       console.error('Error during form submission:', error);
-      toastError('비밀번호 검증 중 서버 오류가 발생하였습니다.');
-    } finally {
+      form.reset();
       setIsSubmitting(false);
+      setIsPasswordDialogOpen(true);
+      toastError('비밀번호 검증 중 서버 오류가 발생하였습니다.');
     }
   };
 
   return (
     <>
+      {isSubmitting ? <LoadingSpinnerOverlay text="비밀번호 확인 중..." /> : null}
       <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
         <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
           <li className="list-none">

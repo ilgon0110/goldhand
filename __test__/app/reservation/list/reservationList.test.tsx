@@ -16,7 +16,7 @@ import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
 vi.mock('@/src/shared/utils/verifyViewId', () => ({
-  sendViewLog: vi.fn(),
+  sendViewLog: vi.fn().mockResolvedValue({ response: 'ok', message: '조회수가 기록되었습니다.' }),
 }));
 
 vi.mock('@/src/shared/utils', async () => {
@@ -115,12 +115,45 @@ describe('ReservationList Component', () => {
     const passwordInput = screen.getByTestId('password-input') as HTMLInputElement;
     const submitButton = screen.getByRole('button', { name: '확인' });
 
-    await userEvent.type(passwordInput, 'aaaa');
+    await userEvent.type(passwordInput, '1234');
     await userEvent.click(submitButton);
 
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith(`/reservation/list/${docId}`);
     });
+  });
+
+  it('[비밀글] 비밀번호 제출 직후 모달을 닫고 검증이 끝날 때까지 로딩 화면을 표시한다', async () => {
+    let resolvePasswordRequest!: () => void;
+    const passwordRequestGate = new Promise<void>(resolve => {
+      resolvePasswordRequest = resolve;
+    });
+
+    server.use(
+      http.post(`${apiUrl}/api/reservation/detail/password`, async () => {
+        await passwordRequestGate;
+        return HttpResponse.json({ response: 'ok', message: '비밀번호가 일치합니다.' });
+      }),
+    );
+
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
+    renderList(data);
+
+    const docId = '890bdef9-2720-4924-b630-2c8f3803e4d5';
+    await userEvent.click(screen.getByTestId(docId));
+    await userEvent.type(screen.getByTestId('password-input'), '1234');
+    await userEvent.click(screen.getByRole('button', { name: '확인' }));
+
+    expect(screen.queryByText('비밀번호를 입력하세요.')).not.toBeInTheDocument();
+    expect(await screen.findByRole('status')).toHaveTextContent('비밀번호 확인 중...');
+    expect(pushMock).not.toHaveBeenCalled();
+
+    resolvePasswordRequest();
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith(`/reservation/list/${docId}`);
+    });
+    expect(screen.getByRole('status')).toHaveTextContent('비밀번호 확인 중...');
   });
 
   it('[비밀글] 비밀번호 확인 모달에서 올바른 비밀번호 입력 시 조회수 증가 로직이 실행되는지 확인', async () => {
@@ -136,8 +169,8 @@ describe('ReservationList Component', () => {
     const passwordInput = screen.getByTestId('password-input') as HTMLInputElement;
     const submitButton = screen.getByRole('button', { name: '확인' });
 
-    await userEvent.type(passwordInput, 'aaaa');
-    expect(passwordInput.value).toBe('aaaa');
+    await userEvent.type(passwordInput, '1234');
+    expect(passwordInput.value).toBe('1234');
     await userEvent.click(submitButton);
     expect(sendViewLog).toHaveBeenCalledWith(docId);
   });
@@ -157,9 +190,35 @@ describe('ReservationList Component', () => {
     await userEvent.click(screen.getByTestId(docId));
 
     const passwordInput = screen.getByTestId('password-input') as HTMLInputElement;
-    await userEvent.type(passwordInput, 'aaab');
+    await userEvent.type(passwordInput, '4321');
     await userEvent.click(screen.getByRole('button', { name: '확인' }));
-    expect(utils.toastError).toHaveBeenCalledWith('비밀번호가 틀립니다.');
+
+    await waitFor(() => {
+      expect(utils.toastError).toHaveBeenCalledWith('비밀번호가 틀립니다.');
+    });
+    expect(screen.getByText('비밀번호를 입력하세요.')).toBeInTheDocument();
+    expect(screen.getByTestId('password-input')).toHaveValue('');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('[비밀글] 비밀번호 검증 요청 실패 시 입력값을 초기화하고 모달을 다시 연다', async () => {
+    server.use(http.post(`${apiUrl}/api/reservation/detail/password`, () => HttpResponse.error()));
+
+    const response = await fetch('/api/reservation');
+    const data = (await response.json()) as IReservationResponseData;
+    renderList(data);
+
+    const docId = '890bdef9-2720-4924-b630-2c8f3803e4d5';
+    await userEvent.click(screen.getByTestId(docId));
+    await userEvent.type(screen.getByTestId('password-input'), '1234');
+    await userEvent.click(screen.getByRole('button', { name: '확인' }));
+
+    await waitFor(() => {
+      expect(utils.toastError).toHaveBeenCalledWith('비밀번호 검증 중 서버 오류가 발생하였습니다.');
+    });
+    expect(screen.getByText('비밀번호를 입력하세요.')).toBeInTheDocument();
+    expect(screen.getByTestId('password-input')).toHaveValue('');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('[비밀글] 비밀번호 확인 모달에서 올바르지 않은 비밀번호 입력 시 조회수 증가 로직이 실행되지 않는지 확인', async () => {
@@ -177,7 +236,7 @@ describe('ReservationList Component', () => {
     await userEvent.click(screen.getByTestId(docId));
 
     const passwordInput = screen.getByTestId('password-input') as HTMLInputElement;
-    await userEvent.type(passwordInput, 'aaab');
+    await userEvent.type(passwordInput, '4321');
     await userEvent.click(screen.getByRole('button', { name: '확인' }));
     expect(sendViewLog).not.toHaveBeenCalledWith(docId);
   });

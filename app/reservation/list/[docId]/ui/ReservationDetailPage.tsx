@@ -38,6 +38,7 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
   const [updateButtonName, setUpdateButtonName] = useState<'DELETE' | 'EDIT'>('EDIT');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
+  const [isEditNavigating, setIsEditNavigating] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const handleChangeUpdateButtonName = (name: 'DELETE' | 'EDIT') => {
@@ -68,18 +69,39 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
   const onPasswordSubmit = async (values: z.infer<typeof detailPasswordFormSchema>) => {
     const { password } = values;
 
-    try {
-      setIsPasswordSubmitting(true);
-      const passwordResponseData = await passwordPostAction(docId, password);
+    if (updateButtonName === 'EDIT') {
+      setDialogOpen(false);
+      setIsEditNavigating(true);
 
-      if (passwordResponseData.response === 'ok') {
-        // 수정하기 버튼 클릭 시
-        if (updateButtonName === 'EDIT') {
+      try {
+        const passwordResponseData = await passwordPostAction(docId, password);
+
+        if (passwordResponseData.response === 'ok') {
           startTransition(() => {
             router.push(`/reservation/edit?docId=${docId}`);
           });
           return;
         }
+
+        passwordForm.reset();
+        setIsEditNavigating(false);
+        setDialogOpen(true);
+        toastError(passwordResponseData.message);
+      } catch (error) {
+        console.error('Error during form submission:', error);
+        passwordForm.reset();
+        setIsEditNavigating(false);
+        setDialogOpen(true);
+        toastError('비밀번호 검증 중 서버 오류가 발생하였습니다.');
+      }
+      return;
+    }
+
+    try {
+      setIsPasswordSubmitting(true);
+      const passwordResponseData = await passwordPostAction(docId, password);
+
+      if (passwordResponseData.response === 'ok') {
         // 삭제하기 버튼 클릭 시 - 비밀번호 모달을 먼저 닫아야 한다.
         // 두 Dialog가 동시에 열려있으면 오버레이가 겹치면서 삭제 확인 모달이 간헐적으로 렌더링되지 않는다.
         setDialogOpen(false);
@@ -119,7 +141,7 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
 
   return (
     <>
-      {isPending && <LoadingSpinnerOverlay text="수정 페이지 이동 중... " />}
+      {isEditNavigating || isPending ? <LoadingSpinnerOverlay text="수정 페이지 이동 중..." /> : null}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         {/* 예약 내용 */}
         <ReservationDetailContent

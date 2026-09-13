@@ -37,7 +37,7 @@ export function ReviewCommentSection({ comments, docId, form, handleSubmit, isLo
           <div className="flex w-full justify-end">
             <Button
               className={cn('transition-all duration-300', isValid ? '' : 'opacity-20 hover:cursor-not-allowed')}
-              disabled={!isValid || !isLoggedIn}
+              disabled={!isValid || isLoading || !isLoggedIn}
               type="submit"
             >
               {isLoading ? <LoadingSpinnerIcon /> : isLoggedIn ? '댓글달기' : '로그인 후 댓글 작성'}

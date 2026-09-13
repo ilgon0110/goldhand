@@ -16,8 +16,8 @@ export function useReviewComment(docId: string) {
     defaultValues: { comment: '' },
     mode: 'onChange',
   });
-  const { comments } = useComments({ docId, collectionName: 'reviews' });
-  const { mutate: submitComment, isPending } = useReviewDetailCommentMutation(docId, {
+  const { comments, loading: isLoading } = useComments({ docId, collectionName: 'reviews' });
+  const { mutate: submitComment } = useReviewDetailCommentMutation(docId, {
     onSuccess: () => {
       toastSuccess('댓글이 작성되었습니다.');
       form.reset();
@@ -27,7 +27,7 @@ export function useReviewComment(docId: string) {
 
   const handleSubmit = (values: z.infer<typeof reviewCommentSchema>) => submitComment(values.comment);
 
-  return { comments, form, handleSubmit, isPending };
+  return { comments, form, handleSubmit, isLoading };
 }
 
 export type TReviewCommentController = ReturnType<typeof useReviewComment>;

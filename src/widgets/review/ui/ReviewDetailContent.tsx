@@ -1,14 +1,14 @@
+import type { ReactNode } from 'react';
+
 import { PinToggleButton } from '@/src/entities/pin';
 import type { IReviewDetailData, IViewCountData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
 import { formatDateToYMD } from '@/src/shared/utils';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
-
-const handleEditorChange = () => {};
 
 type TReviewDetailContentProps = {
   canManage: boolean;
+  children: ReactNode;
   data: IReviewDetailData;
   isAdmin: boolean;
   isPinToggling: boolean;
@@ -20,6 +20,7 @@ type TReviewDetailContentProps = {
 
 export function ReviewDetailContent({
   canManage,
+  children,
   data,
   isAdmin,
   isPinToggling,
@@ -54,7 +55,7 @@ export function ReviewDetailContent({
       <div className="relative w-full">
         <div className="mb-4 flex flex-col gap-1">
           <span className="text-xl font-bold">후기</span>
-          <Editor editable={false} htmlString={data.htmlString} onEditorChange={handleEditorChange} />
+          {children}
         </div>
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />

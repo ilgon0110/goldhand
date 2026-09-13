@@ -11,9 +11,11 @@ import {
 } from '@/src/feature/review-detail';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
+import { Editor } from '@/src/widgets/editor/ui/Editor';
 import { ReviewCommentSection, ReviewDetailContent } from '@/src/widgets/review';
 
 type TReviewDetailPageProps = { docId: string };
+const handleEditorChange = () => {};
 
 export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   const { data } = useGetReviewDetailData(docId);
@@ -48,7 +50,9 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         onDelete={deleteFlow.handleOpen}
         onEdit={actions.handleEdit}
         onTogglePin={actions.handleTogglePin}
-      />
+      >
+        <Editor editable={false} htmlString={data.data.htmlString} onEditorChange={handleEditorChange} />
+      </ReviewDetailContent>
       <ReviewCommentSection docId={docId} userId={userId} {...comment} />
       <MyAlertDialog
         description="게시글 수정 화면으로 이동하시겠습니까?"

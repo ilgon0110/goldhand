@@ -16,6 +16,7 @@ import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
 const refreshMock = vi.fn();
+const useCommentsMock = vi.hoisted(() => vi.fn(() => ({ comments: [], loading: false })));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: pushMock,
@@ -26,7 +27,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/src/entities/comment', () => ({
   Comment: () => <div>Comment Mock Component</div>,
-  useComments: () => ({ comments: [], loading: false }),
+  useComments: useCommentsMock,
 }));
 
 vi.mock('@/src/widgets/editor/ui/Editor', () => ({
@@ -82,6 +83,7 @@ beforeAll(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
+  useCommentsMock.mockReturnValue({ comments: [], loading: false });
 });
 
 const mockViewCountData: IViewCountResponseData = {
@@ -117,6 +119,18 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
     await renderReviewDetail(reviewData, userData);
 
     expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  it('댓글 구독 로딩 중에는 spinner를 표시하되 유효한 댓글 제출은 기존처럼 허용한다.', async () => {
+    useCommentsMock.mockReturnValue({ comments: [], loading: true });
+    const userData = await (await fetch('/api/user')).json();
+    const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
+    await renderReviewDetail(reviewData, userData);
+
+    await userEvent.type(screen.getByLabelText('댓글 남기기'), '댓글');
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Loading...' })).toBeEnabled();
   });
 
   it('수정하기 버튼을 눌렀을 때 확인 모달이 뜨고, 확인을 누르면 수정 페이지로 이동한다.', async () => {

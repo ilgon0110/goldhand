@@ -14,7 +14,7 @@ type TReviewCommentSectionProps = TReviewCommentController & {
   userId?: string;
 };
 
-export function ReviewCommentSection({ comments, docId, form, handleSubmit, isPending, userId }: TReviewCommentSectionProps) {
+export function ReviewCommentSection({ comments, docId, form, handleSubmit, isLoading, userId }: TReviewCommentSectionProps) {
   const isValid = form.formState.isValid;
   const isLoggedIn = userId != null;
 
@@ -37,10 +37,10 @@ export function ReviewCommentSection({ comments, docId, form, handleSubmit, isPe
           <div className="flex w-full justify-end">
             <Button
               className={cn('transition-all duration-300', isValid ? '' : 'opacity-20 hover:cursor-not-allowed')}
-              disabled={!isValid || isPending || !isLoggedIn}
+              disabled={!isValid || !isLoggedIn}
               type="submit"
             >
-              {isPending ? <LoadingSpinnerIcon /> : isLoggedIn ? '댓글달기' : '로그인 후 댓글 작성'}
+              {isLoading ? <LoadingSpinnerIcon /> : isLoggedIn ? '댓글달기' : '로그인 후 댓글 작성'}
             </Button>
           </div>
         </form>

@@ -12,12 +12,12 @@ import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
+import { DeleteConfirmContent } from '@/src/shared/ui/DeleteConfirmContent';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import {
   detailPasswordFormSchema,
@@ -30,15 +30,19 @@ type TReservationDetailPageProps = {
   docId: string;
 };
 
+type TReservationDialogState =
+  | { open: boolean; password: string; step: 'delete-confirm' }
+  | { open: boolean; step: 'password' };
+
 export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) => {
   const { data } = useGetReservationDetailData(docId);
   const { data: userData } = useGetUserData();
   const { data: viewCountData } = useGetViewCountData(docId);
   const router = useRouter();
   const [updateButtonName, setUpdateButtonName] = useState<'DELETE' | 'EDIT'>('EDIT');
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
+  const [dialogState, setDialogState] = useState<TReservationDialogState>({ open: false, step: 'password' });
   const [isEditNavigating, setIsEditNavigating] = useState(false);
+  const [isDeleteNavigating, setIsDeleteNavigating] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const handleChangeUpdateButtonName = (name: 'DELETE' | 'EDIT') => {
@@ -46,15 +50,14 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
   };
 
   const handleChangeDialogOpen = (open: boolean) => {
-    setDialogOpen(open);
+    setDialogState({ open, step: 'password' });
     if (!open) {
       setUpdateButtonName('EDIT');
-      setAlertDialogOpen(false);
     }
   };
 
   const handleChangeAlertDialogOpen = (open: boolean) => {
-    setAlertDialogOpen(open);
+    setDialogState({ open, password: '', step: 'delete-confirm' });
   };
 
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
@@ -70,7 +73,7 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
     const { password } = values;
 
     if (updateButtonName === 'EDIT') {
-      setDialogOpen(false);
+      setDialogState({ open: false, step: 'password' });
       setIsEditNavigating(true);
 
       try {
@@ -85,13 +88,13 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
 
         passwordForm.reset();
         setIsEditNavigating(false);
-        setDialogOpen(true);
+        setDialogState({ open: true, step: 'password' });
         toastError(passwordResponseData.message);
       } catch (error) {
         console.error('Error during form submission:', error);
         passwordForm.reset();
         setIsEditNavigating(false);
-        setDialogOpen(true);
+        setDialogState({ open: true, step: 'password' });
         toastError('비밀번호 검증 중 서버 오류가 발생하였습니다.');
       }
       return;
@@ -102,16 +105,14 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
       const passwordResponseData = await passwordPostAction(docId, password);
 
       if (passwordResponseData.response === 'ok') {
-        // 삭제하기 버튼 클릭 시 - 비밀번호 모달을 먼저 닫아야 한다.
-        // 두 Dialog가 동시에 열려있으면 오버레이가 겹치면서 삭제 확인 모달이 간헐적으로 렌더링되지 않는다.
-        setDialogOpen(false);
-        setAlertDialogOpen(true);
+        setDialogState({ open: true, password, step: 'delete-confirm' });
       } else {
         toastError(passwordResponseData.message);
         passwordForm.reset();
       }
     } catch (error) {
       console.error('Error during form submission:', error);
+      passwordForm.reset();
       toastError('비밀번호 검증 중 서버 오류가 발생하였습니다.');
     } finally {
       setIsPasswordSubmitting(false);
@@ -120,6 +121,7 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
 
   const { mutate, isPending: isDeleteSubmitting } = useDeletePostMutation({
     onSuccess: () => {
+      setIsDeleteNavigating(true);
       toastSuccess('게시글이 삭제되었습니다.');
       router.push('/reservation/list');
       router.refresh();
@@ -127,10 +129,26 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
     onError: error => {
       toastError(error.message);
     },
-    onSettled: () => {
-      setAlertDialogOpen(false);
-    },
   });
+  const isDeletePending = isDeleteSubmitting || isDeleteNavigating;
+
+  const closeDialog = () => {
+    if (isPasswordSubmitting || isDeletePending) return;
+
+    passwordForm.reset();
+    setUpdateButtonName('EDIT');
+    setDialogState(current => ({ ...current, open: false }));
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) closeDialog();
+  };
+
+  const handleDeleteConfirm = () => {
+    if (dialogState.step !== 'delete-confirm') return;
+
+    mutate({ docId, userId: data.data.userId, password: dialogState.password });
+  };
 
   // Firebase Analytics 이벤트 로깅
   useScreenView(`reservation_detail_${docId}`, 'ReservationDetailPage', { doc_id: docId });
@@ -142,7 +160,7 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
   return (
     <>
       {isEditNavigating || isPending ? <LoadingSpinnerOverlay text="수정 페이지 이동 중..." /> : null}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogState.open} onOpenChange={handleDialogOpenChange}>
         {/* 예약 내용 */}
         <ReservationDetailContent
           docId={docId}
@@ -161,46 +179,56 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
         {/* 댓글들 */}
         <ReservationCommentList docId={docId} userId={userData.userData?.userId} />
 
-        {/* 비밀번호 입력 모달 */}
-        <DialogContent className="sm:max-w-[425px] sm:px-8">
-          <DialogTitle>비밀번호를 입력하세요.</DialogTitle>
-          <DialogHeader>
-            <DialogDescription></DialogDescription>
-          </DialogHeader>
-          <Form {...passwordForm}>
-            <form className="space-y-6" onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
-              <FormField
-                control={passwordForm.control}
-                defaultValue=""
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel></FormLabel>
-                    <FormControl>
-                      <Input placeholder="" type="password" {...field} />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">{isPasswordSubmitting ? <LoadingSpinnerIcon /> : '확인'}</Button>
-            </form>
-          </Form>
+        {/* 비밀번호 인증과 삭제 확인은 같은 Dialog 안에서 단계만 전환한다. */}
+        <DialogContent
+          className="sm:max-w-[425px] sm:px-8"
+          closeDisabled={isPasswordSubmitting || isDeletePending}
+          onEscapeKeyDown={event => {
+            if (isPasswordSubmitting || isDeletePending) event.preventDefault();
+          }}
+          onPointerDownOutside={event => {
+            if (isPasswordSubmitting || isDeletePending) event.preventDefault();
+          }}
+        >
+          {dialogState.step === 'delete-confirm' ? (
+            <DeleteConfirmContent
+              description="삭제된 게시글은 복구할 수 없습니다."
+              isPending={isDeletePending}
+              title="게시글을 삭제하시겠습니까?"
+              onCancel={closeDialog}
+              onConfirm={handleDeleteConfirm}
+            />
+          ) : (
+            <>
+              <DialogTitle>비밀번호를 입력하세요.</DialogTitle>
+              <DialogHeader>
+                <DialogDescription></DialogDescription>
+              </DialogHeader>
+              <Form {...passwordForm}>
+                <form className="space-y-6" onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
+                  <FormField
+                    control={passwordForm.control}
+                    defaultValue=""
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel></FormLabel>
+                        <FormControl>
+                          <Input placeholder="" type="password" {...field} />
+                        </FormControl>
+                        <FormDescription></FormDescription>
+                      </FormItem>
+                    )}
+                  />
+                  <Button disabled={isPasswordSubmitting} type="submit">
+                    {isPasswordSubmitting ? <LoadingSpinnerIcon /> : '확인'}
+                  </Button>
+                </form>
+              </Form>
+            </>
+          )}
         </DialogContent>
       </Dialog>
-
-      {/* 삭제 확인 알림 */}
-      <MyAlertDialog
-        description="삭제된 게시글은 복구할 수 없습니다."
-        handleDeletePostClick={() =>
-          mutate({ docId, userId: data.data.userId, password: passwordForm.getValues('password') })
-        }
-        isPending={isDeleteSubmitting}
-        okButtonText="삭제하기"
-        opOpenChange={open => setAlertDialogOpen(open)}
-        open={alertDialogOpen}
-        title="게시글을 삭제하시겠습니까?"
-      />
     </>
   );
 };

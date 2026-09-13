@@ -21,6 +21,7 @@ import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
+import { DeleteConfirmContent } from '@/src/shared/ui/DeleteConfirmContent';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
@@ -36,6 +37,11 @@ import { reviewCommentSchema } from '../config';
 
 type TReviewDetailPageProps = {
   docId: string;
+};
+
+type TReviewDeleteDialogState = {
+  open: boolean;
+  step: 'delete-confirm' | 'phone-auth';
 };
 
 export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
@@ -73,8 +79,11 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   });
 
   const [reviewUpdateAlertDialogOpen, setReviewUpdateAlertDialogOpen] = useState(false);
-  const [reviewDeleteAlertDialogOpen, setReviewDeleteAlertDialogOpen] = useState(false);
-  const [isDeletePhoneAuthDialogOpen, setIsDeletePhoneAuthDialogOpen] = useState(false);
+  const [deleteDialogState, setDeleteDialogState] = useState<TReviewDeleteDialogState>({
+    open: false,
+    step: 'phone-auth',
+  });
+  const [isDeleteNavigating, setIsDeleteNavigating] = useState(false);
   const phoneIdTokenRef = useRef<string | null>(null);
 
   const phoneAuthForm = useForm<z.infer<typeof phoneAuthFormSchema>>({
@@ -89,14 +98,14 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
     {
       onConfirmed: async result => {
         phoneIdTokenRef.current = await result.user.getIdToken();
-        setIsDeletePhoneAuthDialogOpen(false);
-        setReviewDeleteAlertDialogOpen(true);
+        setDeleteDialogState({ open: true, step: 'delete-confirm' });
       },
     },
   );
 
   const { mutate: deleteReview, isPending: isReviewDeleteSubmitting } = useReviewDeleteMutation({
     onSuccess: () => {
+      setIsDeleteNavigating(true);
       toastSuccess('게시글이 삭제되었습니다.');
       router.replace('/review');
       router.refresh();
@@ -104,10 +113,10 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
     onError: error => {
       toastError('게시글 삭제에 실패하였습니다.\n' + error.message);
     },
-    onSettled: () => {
-      setReviewDeleteAlertDialogOpen(false);
-    },
   });
+  const isPhoneAuthPending = phoneAuth.isSendingSms || phoneAuth.isConfirming;
+  const isDeletePending = isReviewDeleteSubmitting || isDeleteNavigating;
+  const isDeleteDialogPending = isPhoneAuthPending || isDeletePending;
 
   const formValidation = form.formState.isValid;
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('review');
@@ -125,15 +134,23 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
 
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (requiresPhoneAuth) {
-      setIsDeletePhoneAuthDialogOpen(true);
-    } else {
-      setReviewDeleteAlertDialogOpen(true);
-    }
+    setDeleteDialogState({ open: true, step: requiresPhoneAuth ? 'phone-auth' : 'delete-confirm' });
   };
 
   const onHandleReviewDeleteActionClick = () => {
     deleteReview({ docId, phoneIdToken: phoneIdTokenRef.current ?? undefined });
+  };
+
+  const closeDeleteDialog = () => {
+    if (isDeleteDialogPending) return;
+
+    phoneIdTokenRef.current = null;
+    phoneAuth.onRestartClick();
+    setDeleteDialogState(current => ({ ...current, open: false }));
+  };
+
+  const handleDeleteDialogOpenChange = (open: boolean) => {
+    if (!open) closeDeleteDialog();
   };
 
   // Firebase Analytics 이벤트 로깅
@@ -273,36 +290,46 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         title={'게시글 수정'}
       />
 
-      {/* 비회원 삭제 - 휴대폰 재인증 모달 */}
-      <Dialog open={isDeletePhoneAuthDialogOpen} onOpenChange={setIsDeletePhoneAuthDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] sm:px-8">
-          <DialogTitle>본인 확인을 위해 휴대폰 인증을 진행해주세요.</DialogTitle>
-          <DialogHeader>
-            <DialogDescription></DialogDescription>
-          </DialogHeader>
-          <Form {...phoneAuthForm}>
-            <form className="space-y-6">
-              <PhoneAuthFields
-                authCodeName="authCode"
-                control={phoneAuthForm.control}
-                phoneAuth={phoneAuth}
-                phoneNumberName="phoneNumber"
-              />
-            </form>
-          </Form>
+      {/* 비회원 인증과 삭제 확인은 같은 Dialog 안에서 단계만 전환한다. */}
+      <Dialog open={deleteDialogState.open} onOpenChange={handleDeleteDialogOpenChange}>
+        <DialogContent
+          className="sm:max-w-[425px] sm:px-8"
+          closeDisabled={isDeleteDialogPending}
+          onEscapeKeyDown={event => {
+            if (isDeleteDialogPending) event.preventDefault();
+          }}
+          onPointerDownOutside={event => {
+            if (isDeleteDialogPending) event.preventDefault();
+          }}
+        >
+          {deleteDialogState.step === 'phone-auth' ? (
+            <>
+              <DialogTitle>본인 확인을 위해 휴대폰 인증을 진행해주세요.</DialogTitle>
+              <DialogHeader>
+                <DialogDescription></DialogDescription>
+              </DialogHeader>
+              <Form {...phoneAuthForm}>
+                <form className="space-y-6">
+                  <PhoneAuthFields
+                    authCodeName="authCode"
+                    control={phoneAuthForm.control}
+                    phoneAuth={phoneAuth}
+                    phoneNumberName="phoneNumber"
+                  />
+                </form>
+              </Form>
+            </>
+          ) : (
+            <DeleteConfirmContent
+              description="삭제된 게시글은 복구할 수 없습니다."
+              isPending={isDeletePending}
+              title="게시글을 삭제하시겠습니까?"
+              onCancel={closeDeleteDialog}
+              onConfirm={onHandleReviewDeleteActionClick}
+            />
+          )}
         </DialogContent>
       </Dialog>
-
-      {/* 삭제 확인 알림 */}
-      <MyAlertDialog
-        description={'삭제된 게시글은 복구할 수 없습니다.'}
-        handleDeletePostClick={onHandleReviewDeleteActionClick}
-        isPending={isReviewDeleteSubmitting}
-        okButtonText={'삭제하기'}
-        opOpenChange={open => setReviewDeleteAlertDialogOpen(open)}
-        open={reviewDeleteAlertDialogOpen}
-        title={'게시글을 삭제하시겠습니까?'}
-      />
     </>
   );
 };

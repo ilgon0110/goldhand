@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { RecaptchaVerifier } from 'firebase/auth';
 import { signInWithPhoneNumber } from 'firebase/auth';
@@ -16,6 +16,7 @@ import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
 const refreshMock = vi.fn();
+const useCommentsMock = vi.hoisted(() => vi.fn(() => ({ comments: [], loading: false })));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: pushMock,
@@ -26,7 +27,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/src/entities/comment', () => ({
   Comment: () => <div>Comment Mock Component</div>,
-  useComments: () => ({ comments: [], loading: false }),
+  useComments: useCommentsMock,
 }));
 
 vi.mock('@/src/widgets/editor/ui/Editor', () => ({
@@ -82,6 +83,7 @@ beforeAll(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
+  useCommentsMock.mockReturnValue({ comments: [], loading: false });
 });
 
 const mockViewCountData: IViewCountResponseData = {
@@ -119,6 +121,18 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
     expect(screen.getByText('Test Title')).toBeInTheDocument();
   });
 
+  it('댓글 구독 로딩 중에는 spinner를 표시하고 댓글 제출을 비활성화한다.', async () => {
+    useCommentsMock.mockReturnValue({ comments: [], loading: true });
+    const userData = await (await fetch('/api/user')).json();
+    const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
+    await renderReviewDetail(reviewData, userData);
+
+    await userEvent.type(screen.getByLabelText('댓글 남기기'), '댓글');
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Loading...' })).toBeDisabled();
+  });
+
   it('수정하기 버튼을 눌렀을 때 확인 모달이 뜨고, 확인을 누르면 수정 페이지로 이동한다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
@@ -147,14 +161,22 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('[회원 본인] 삭제하기 버튼을 눌렀을 때 인증 없이 바로 삭제 확인 모달이 뜨고, 확인을 누르면 삭제 요청이 보내진다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    const handler = vi.fn(async () => HttpResponse.json({ response: 'ok', message: '삭제 성공' }));
+    let resolveDeleteRequest!: () => void;
+    const deleteRequestGate = new Promise<void>(resolve => {
+      resolveDeleteRequest = resolve;
+    });
+    const handler = vi.fn(async () => {
+      await deleteRequestGate;
+      return HttpResponse.json({ response: 'ok', message: '삭제 성공' });
+    });
     server.use(http.delete('/api/review/delete', handler));
     await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
     expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog');
 
-    await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
+    await userEvent.click(within(dialog).getByRole('button', { name: '삭제하기' }));
 
     await waitFor(async () => {
       expect(handler).toHaveBeenCalled();
@@ -163,7 +185,14 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
       expect(body.docId).toBe('docId');
       expect(body.phoneIdToken).toBeUndefined();
     });
+    expect(within(dialog).getByRole('button', { name: 'Close' })).toBeDisabled();
+    expect(within(dialog).getByRole('button', { name: '취소하기' })).toBeDisabled();
     expect(signInWithPhoneNumber).not.toHaveBeenCalled();
+
+    resolveDeleteRequest();
+    await waitFor(() => {
+      expect(replaceMock).toHaveBeenCalledWith('/review');
+    });
   });
 
   it('게시글 삭제가 성공하면 리뷰 목록 페이지로 이동한다.', async () => {
@@ -198,6 +227,8 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
         '게시글 삭제에 실패하였습니다.\n게시글 정보와 유저 정보가 일치하지 않습니다.',
       );
     });
+    expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '취소하기' })).toBeEnabled();
   });
 
   it('[비회원 글] 비로그인 방문자에게도 수정/삭제 버튼이 보인다.', async () => {
@@ -228,6 +259,7 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
     await renderReviewDetail(guestReviewData, mockNonUserData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
+    const phoneAuthDialog = screen.getByRole('dialog');
 
     await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
     await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
@@ -239,7 +271,8 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
 
     // 인증 성공 시 자동으로 삭제 확인 모달로 전환된다.
     await screen.findByText('게시글을 삭제하시겠습니까?');
-    await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
+    expect(screen.getByRole('dialog')).toBe(phoneAuthDialog);
+    await userEvent.click(within(phoneAuthDialog).getByRole('button', { name: '삭제하기' }));
 
     await waitFor(async () => {
       expect(handler).toHaveBeenCalled();
@@ -247,6 +280,23 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
       const body = await req[0][0].request.json();
       expect(body.phoneIdToken).toBe('mock-phone-id-token');
     });
+  });
+
+  it('[비회원 글] 삭제 Dialog를 닫았다가 다시 열면 휴대폰 인증 상태가 초기화된다.', async () => {
+    const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
+    const guestReviewData: IReviewResponseData = { ...reviewData, data: { ...reviewData.data, userId: null } };
+    await renderReviewDetail(guestReviewData, mockNonUserData);
+
+    await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
+    await userEvent.type(screen.getByLabelText(/휴대폰번호/), '01012345678');
+    await userEvent.click(screen.getByRole('button', { name: '인증받기' }));
+    await screen.findByLabelText(/인증코드/);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
+
+    expect(screen.getByLabelText(/휴대폰번호/)).toHaveValue('');
+    expect(screen.queryByLabelText(/인증코드/)).not.toBeInTheDocument();
   });
 
   it('[관리자] 다른 사람(회원)의 글도 인증 없이 삭제 확인 모달이 바로 뜬다.', async () => {

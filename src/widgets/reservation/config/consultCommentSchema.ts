@@ -9,9 +9,3 @@ export const consultCommentSchema = z.object({
     })
     .max(2000),
 });
-
-export const detailPasswordFormSchema = z.object({
-  password: z.string().min(1, {
-    message: '비밀번호를 입력해주세요.',
-  }),
-});

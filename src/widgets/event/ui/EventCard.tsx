@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
@@ -10,7 +9,6 @@ import { generateReviewDescription } from '@/src/entities/review';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { IEventDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
-import { Skeleton } from '@/src/shared/ui/skeleton';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
@@ -26,11 +24,6 @@ type TEventCardProps = {
 
 export const EventCard = ({ event }: TEventCardProps) => {
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const { data: authData } = useAuth();
   const isAdmin = authData?.userData?.grade === 'admin';
@@ -47,26 +40,6 @@ export const EventCard = ({ event }: TEventCardProps) => {
     'grid-cols-[28px_44px_1fr] gap-x-3 gap-y-1 px-1 py-3.5',
     'md:grid-cols-[36px_56px_1fr_auto] md:gap-x-4',
   );
-
-  if (!isMounted) {
-    return (
-      <div className={gridClass}>
-        {/* 순번 */}
-        <Skeleton className="row-span-2 mx-auto h-[17px] w-5 self-center" />
-        {/* 썸네일 */}
-        <Skeleton className={cn('row-span-2 aspect-square w-11 self-center', 'md:w-14')} />
-        {/* 제목 행 */}
-        <div className="flex min-w-0 items-center gap-x-2">
-          <Skeleton className="h-[15px] w-2/3" />
-          <Skeleton className="h-4 w-10 shrink-0 rounded-full" />
-        </div>
-        {/* 날짜 — 데스크탑 4열 */}
-        <Skeleton className="hidden h-[12px] w-20 self-start md:block" />
-        {/* 미리보기 행 */}
-        <Skeleton className="h-[13px] w-full" />
-      </div>
-    );
-  }
 
   return (
     <div

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
-import { useAlarm } from '@/src/shared/hooks/useAlarm';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { useInfiniteAlarmQuery } from '@/src/shared/hooks/useInfiniteAlarmQuery';
 
@@ -46,7 +45,6 @@ export const Header = () => {
   const { data: userData } = useAuth();
   const userId = userData?.userData?.userId;
   const { data: notificationData, isFetching, hasNextPage, fetchNextPage } = useInfiniteAlarmQuery(userId ?? '');
-  useAlarm(userId ?? '');
 
   const onClickNextNotifications = () => {
     if (hasNextPage && !isFetching) {

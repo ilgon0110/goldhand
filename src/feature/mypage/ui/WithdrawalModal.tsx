@@ -74,8 +74,8 @@ export function WithdrawalModal({ isOpen, setIsOpen }: TWithdrawalModalProps) {
               <MdClose className="absolute right-8 top-4 h-6 w-6 text-gray-500 hover:text-gray-700" />
             </button>
             <div className="space-y-2">
-              {privacyContent[selectSeq].contents.map(item => (
-                <p className={cn('text-slate-700', item.styleClass)} key={item.value}>
+              {privacyContent[selectSeq].contents.map((item, index) => (
+                <p className={cn('text-slate-700', item.styleClass)} key={`${selectSeq}-${index}`}>
                   {item.value}
                 </p>
               ))}

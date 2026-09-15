@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
-import { v4 as uuidv4 } from 'uuid';
 
 import { cn } from '@/lib/utils';
 import { privacyContent, privacyVersionDateList } from '@/src/shared/config/privacy';
@@ -38,8 +37,8 @@ export const PrivacyModal = ({ isOpen, setIsOpen }: TPrivacyModalProps) => {
         <MdClose className="absolute right-8 top-4 h-6 w-6 text-gray-500 hover:text-gray-700" />
       </button>
       <div className="space-y-2">
-        {privacyContent[selectSeq].contents.map(item => (
-          <p className={cn('text-slate-700', item.styleClass)} key={uuidv4()}>
+        {privacyContent[selectSeq].contents.map((item, index) => (
+          <p className={cn('text-slate-700', item.styleClass)} key={`${selectSeq}-${index}`}>
             {item.value}
           </p>
         ))}

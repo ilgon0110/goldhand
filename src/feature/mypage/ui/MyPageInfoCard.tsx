@@ -28,9 +28,7 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
         queryClient.removeQueries({ queryKey: authKeys.all });
         queryClient.removeQueries({ queryKey: userKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
-        setTimeout(() => {
-          router.replace('/');
-        }, 1000);
+        router.replace('/');
       });
     },
     onError: error => {

@@ -5,6 +5,7 @@ import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import {
   ReviewDeleteDialog,
+  ReviewEditDialog,
   useReviewComment,
   useReviewDeleteFlow,
   useReviewDetailActions,
@@ -54,15 +55,23 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         <Editor editable={false} htmlString={data.data.htmlString} onEditorChange={handleEditorChange} />
       </ReviewDetailContent>
       <ReviewCommentSection docId={docId} userId={userId} {...comment} />
-      <MyAlertDialog
-        description="게시글 수정 화면으로 이동하시겠습니까?"
-        handleDeletePostClick={onEditConfirm}
-        isPending={false}
-        okButtonText="수정하기"
-        opOpenChange={onUpdateDialogOpenChange}
-        open={actions.isUpdateDialogOpen}
-        title="게시글 수정"
-      />
+      {data.data.userId == null ? (
+        <ReviewEditDialog
+          handleConfirm={onEditConfirm}
+          handleOpenChange={onUpdateDialogOpenChange}
+          open={actions.isUpdateDialogOpen}
+        />
+      ) : (
+        <MyAlertDialog
+          description="게시글 수정 화면으로 이동하시겠습니까?"
+          handleDeletePostClick={onEditConfirm}
+          isPending={false}
+          okButtonText="수정하기"
+          opOpenChange={onUpdateDialogOpenChange}
+          open={actions.isUpdateDialogOpen}
+          title="게시글 수정"
+        />
+      )}
       <ReviewDeleteDialog {...deleteFlow} />
     </>
   );

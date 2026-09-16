@@ -213,6 +213,7 @@ describe('ReservationDetailPage 비밀번호 및 삭제 UX', () => {
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
     const passwordDialog = screen.getByRole('dialog');
+    expect(passwordDialog).toHaveClass('h-[60dvh]', 'aspect-auto', 'gap-6', 'sm:h-auto');
     await userEvent.type(getPasswordInput(), 'aaaa');
     await userEvent.click(screen.getByRole('button', { name: '확인' }));
 

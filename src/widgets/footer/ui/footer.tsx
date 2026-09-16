@@ -41,7 +41,7 @@ export const Footer = () => {
           <div className="flex flex-col items-center justify-center space-y-4 xl:block">
             <div className="flex flex-row items-center space-x-2">
               <Image alt="고운황금손" height={32} loading="lazy" src="/favicon-96x96.png" width={32} />
-              <span className={`${gowunDodumFont.className} font-bold text-gray-700`}>고운황금손</span>
+              <span className={`${gowunDodumFont.className} font-bold text-gray-700`}>고운황금손 수원·용인점</span>
             </div>
             <div className="space-y-2 text-center xl:text-start">
               <div className="flex flex-row items-center justify-center space-x-2 xl:justify-normal">
@@ -100,7 +100,7 @@ export const Footer = () => {
           </div>
         </div>
         <div className="mt-4 flex w-full flex-row justify-between border-t border-gray-900/10 px-[10vw] pt-3">
-          <p className="text-sm/6 text-gray-600">&copy; 2026 고운황금손, Inc. All rights reserved.</p>
+          <p className="text-sm/6 text-gray-600">&copy; 2026 고운황금손 수원·용인점, Inc. All rights reserved.</p>
         </div>
       </footer>
     </>

@@ -41,9 +41,14 @@ describe('technical SEO metadata policy', () => {
     expect(localBusinessJsonLd).toMatchObject({
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
-      name: '고운황금손',
+      name: '고운황금손 수원·용인점',
       url: 'https://nicegoldhand.com',
       address: { addressCountry: 'KR' },
+      parentOrganization: {
+        '@type': 'Organization',
+        name: '고운황금손 본점',
+        url: 'https://goldbaby.itpage.kr/',
+      },
     });
     expect(localBusinessJsonLd).not.toHaveProperty('review');
     expect(localBusinessJsonLd).not.toHaveProperty('aggregateRating');

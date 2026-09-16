@@ -36,8 +36,8 @@ describe('root layout SEO rendering boundary', () => {
       expect.objectContaining({
         '@type': 'WebSite',
         '@id': 'https://nicegoldhand.com/#website',
-        name: '고운황금손',
-        alternateName: ['고운황금손 산후도우미', 'nicegoldhand.com'],
+        name: '고운황금손 수원·용인점',
+        alternateName: ['고운황금손 수원용인점', '고운황금손 수원·용인 산후도우미', 'nicegoldhand.com'],
         url: 'https://nicegoldhand.com/',
         publisher: { '@id': 'https://nicegoldhand.com/#organization' },
       }),
@@ -46,6 +46,12 @@ describe('root layout SEO rendering boundary', () => {
       expect.objectContaining({
         '@type': 'LocalBusiness',
         '@id': 'https://nicegoldhand.com/#organization',
+        name: '고운황금손 수원·용인점',
+        parentOrganization: {
+          '@type': 'Organization',
+          name: '고운황금손 본점',
+          url: 'https://goldbaby.itpage.kr/',
+        },
       }),
     );
   });

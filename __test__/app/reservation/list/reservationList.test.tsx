@@ -85,6 +85,7 @@ describe('ReservationList Component', () => {
     const target = screen.getByTestId('890bdef9-2720-4924-b630-2c8f3803e4d5');
     await userEvent.click(target);
     expect(screen.getByText('비밀번호를 입력하세요.')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveClass('h-[60dvh]', 'aspect-auto', 'gap-6', 'sm:h-auto');
   });
 
   it('[예약글] 클릭 시 바로 상세페이지로 이동하는지 확인', async () => {

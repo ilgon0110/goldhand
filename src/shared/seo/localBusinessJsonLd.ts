@@ -2,8 +2,8 @@ export const localBusinessJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   '@id': 'https://nicegoldhand.com/#organization',
-  name: '고운황금손',
-  description: '보건복지부 인증 수원 산후도우미 전문기업. 광교·용인·수원 정부바우처 산모신생아 돌봄 서비스.',
+  name: '고운황금손 수원·용인점',
+  description: '보건복지부 인증 광교·용인·수원 전지역 정부바우처 산모신생아 돌봄 서비스 고운황금손.',
   url: 'https://nicegoldhand.com',
   telephone: '010-4437-0431',
   address: {
@@ -16,6 +16,11 @@ export const localBusinessJsonLd = {
   areaServed: ['수원시', '용인시', '광교'],
   serviceType: '산후도우미',
   image: 'https://nicegoldhand.com/logo_green.png',
+  parentOrganization: {
+    '@type': 'Organization',
+    name: '고운황금손 본점',
+    url: 'https://goldbaby.itpage.kr/',
+  },
   sameAs: [
     'https://youtube.com/channel/UCQPWd5YKHGfxXAB8i35piEg',
     'https://blog.naver.com/goldhandkorea',

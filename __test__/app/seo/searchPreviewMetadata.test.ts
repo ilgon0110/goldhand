@@ -29,11 +29,16 @@ import { metadata as voucherMetadata } from '@/app/voucher/layout';
 
 describe('검색 결과 미리보기 메타데이터', () => {
   it('메인 검색 결과에 지역성과 canonical URL을 제공한다', () => {
-    expect(rootMetadata.title).toMatchObject({ template: '%s | 고운황금손' });
-    expect(rootMetadata.applicationName).toBe('고운황금손');
-    expect(rootMetadata.description).toContain('수원');
+    expect(rootMetadata.title).toMatchObject({ template: '%s | 고운황금손 수원·용인점' });
+    expect(rootMetadata.applicationName).toBe('고운황금손 수원·용인점');
+    expect(rootMetadata.description).toBe(
+      '보건복지부 인증 광교·용인·수원 전지역 정부바우처 산모신생아 돌봄 서비스 고운황금손.',
+    );
     expect(rootMetadata.alternates?.canonical).toBe('https://nicegoldhand.com');
-    expect(rootMetadata.openGraph).toMatchObject({ siteName: '고운황금손' });
+    expect(rootMetadata.openGraph).toMatchObject({
+      siteName: '고운황금손 수원·용인점',
+      description: '보건복지부 인증 광교·용인·수원 전지역 정부바우처 산모신생아 돌봄 서비스 고운황금손.',
+    });
   });
 
   const publicLayouts = [

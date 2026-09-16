@@ -240,6 +240,22 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
     expect(screen.getByRole('button', { name: '삭제하기' })).toBeInTheDocument();
   });
 
+  it('[비회원 글] 수정하기를 누르면 수정 아이콘과 전체 너비의 수정/취소 버튼을 표시한다.', async () => {
+    const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
+    const guestReviewData: IReviewResponseData = { ...reviewData, data: { ...reviewData.data, userId: null } };
+    await renderReviewDetail(guestReviewData, mockNonUserData);
+
+    await userEvent.click(screen.getByRole('button', { name: '수정하기' }));
+
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByRole('img', { name: '수정' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: '수정하기' })).toHaveClass('w-full');
+    expect(within(dialog).getByRole('button', { name: '취소하기' })).toHaveClass('w-full');
+
+    await userEvent.click(within(dialog).getByRole('button', { name: '취소하기' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('[비회원 글] 비로그인 방문자가 삭제하기를 누르면 휴대폰 재인증 모달이 먼저 뜬다.', async () => {
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
     const guestReviewData: IReviewResponseData = { ...reviewData, data: { ...reviewData.data, userId: null } };
@@ -247,8 +263,9 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
 
-    expect(screen.getByText('본인 확인을 위해 휴대폰 인증을 진행해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('휴대폰 인증')).toBeInTheDocument();
     expect(screen.queryByText('게시글을 삭제하시겠습니까?')).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveClass('h-[80dvh]');
   });
 
   it('[비회원 글] 휴대폰 재인증에 성공하면 phoneIdToken을 포함해 삭제 요청이 보내진다.', async () => {
@@ -338,6 +355,6 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));
 
     expect(screen.getByText('게시글을 삭제하시겠습니까?')).toBeInTheDocument();
-    expect(screen.queryByText('본인 확인을 위해 휴대폰 인증을 진행해주세요.')).not.toBeInTheDocument();
+    expect(screen.queryByText('휴대폰 인증')).not.toBeInTheDocument();
   });
 });

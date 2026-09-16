@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { PHONE_AUTH_RECAPTCHA_CONTAINER_ID, PhoneAuthFields } from '@/src/entities/phoneAuth/client';
 import { DeleteConfirmContent } from '@/src/shared/ui/DeleteConfirmContent';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
@@ -47,14 +48,14 @@ export function ReviewDeleteDialog({
       />
       <Dialog open={dialogState.open} onOpenChange={handleOpenChange}>
         <DialogContent
-          className="sm:max-w-[425px] sm:px-8"
+          className={cn('sm:max-w-[425px] sm:px-8', dialogState.step === 'phone-auth' && 'h-[80dvh]')}
           closeDisabled={isDialogPending}
           onEscapeKeyDown={handleEscapeKeyDown}
           onPointerDownOutside={handlePointerDownOutside}
         >
           {dialogState.step === 'phone-auth' ? (
             <>
-              <DialogTitle>본인 확인을 위해 휴대폰 인증을 진행해주세요.</DialogTitle>
+              <DialogTitle>휴대폰 인증</DialogTitle>
               <DialogHeader>
                 <DialogDescription />
               </DialogHeader>

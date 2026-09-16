@@ -3,3 +3,4 @@ export { useReviewComment } from './model/useReviewComment';
 export { useReviewDeleteFlow } from './model/useReviewDeleteFlow';
 export { useReviewDetailActions } from './model/useReviewDetailActions';
 export { ReviewDeleteDialog } from './ui/ReviewDeleteDialog';
+export { ReviewEditDialog } from './ui/ReviewEditDialog';

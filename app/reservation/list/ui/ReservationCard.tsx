@@ -2,7 +2,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -22,7 +21,7 @@ import {
   AlertDialogTitle,
 } from '@/src/shared/ui/alert-dialog';
 import { Button } from '@/src/shared/ui/button';
-import { Dialog, DialogContent, DialogHeader } from '@/src/shared/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
@@ -242,10 +241,10 @@ export const ReservationCard = ({
           </li>
 
           {/* 비밀번호 입력 모달 */}
-          <DialogContent className="sm:max-w-[425px] sm:px-8">
-            <DialogTitle>비밀번호를 입력하세요.</DialogTitle>
+          <DialogContent className="gap-6 sm:max-w-[425px] sm:px-8">
             <DialogHeader>
-              <DialogDescription></DialogDescription>
+              <DialogTitle>비밀번호를 입력하세요.</DialogTitle>
+              <DialogDescription className="sr-only">게시글 확인을 위한 비밀번호를 입력하세요.</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form aria-label="비밀번호입력폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -254,12 +253,12 @@ export const ReservationCard = ({
                   defaultValue={''}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel></FormLabel>
+                    <FormItem className="space-y-0">
+                      <FormLabel className="sr-only">비밀번호</FormLabel>
                       <FormControl>
                         <Input data-testid="password-input" placeholder="" type="password" {...field} />
                       </FormControl>
-                      <FormDescription></FormDescription>
+                      <FormDescription className="sr-only">게시글 작성 시 설정한 비밀번호</FormDescription>
                     </FormItem>
                   )}
                 />

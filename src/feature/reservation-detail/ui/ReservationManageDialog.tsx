@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { Button } from '@/src/shared/ui/button';
 import { DeleteConfirmContent } from '@/src/shared/ui/DeleteConfirmContent';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/src/shared/ui/dialog';
@@ -43,7 +44,10 @@ export function ReservationManageDialog({
   return (
     <Dialog open={dialogState.open} onOpenChange={handleDialogOpenChange}>
       <DialogContent
-        className="sm:max-w-[425px] sm:px-8"
+        className={cn(
+          'sm:max-w-[425px] sm:px-8',
+          dialogState.step === 'password' && 'gap-6',
+        )}
         closeDisabled={isDialogPending}
         onEscapeKeyDown={handleEscapeKeyDown}
         onPointerDownOutside={handlePointerDownOutside}
@@ -58,9 +62,9 @@ export function ReservationManageDialog({
           />
         ) : (
           <>
-            <DialogTitle>비밀번호를 입력하세요.</DialogTitle>
             <DialogHeader>
-              <DialogDescription />
+              <DialogTitle>비밀번호를 입력하세요.</DialogTitle>
+              <DialogDescription className="sr-only">게시글 확인을 위한 비밀번호를 입력하세요.</DialogDescription>
             </DialogHeader>
             <Form {...passwordForm}>
               <form className="space-y-6" onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}>
@@ -68,12 +72,12 @@ export function ReservationManageDialog({
                   control={passwordForm.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel />
+                    <FormItem className="space-y-0">
+                      <FormLabel className="sr-only">비밀번호</FormLabel>
                       <FormControl>
                         <Input type="password" {...field} />
                       </FormControl>
-                      <FormDescription />
+                      <FormDescription className="sr-only">게시글 작성 시 설정한 비밀번호</FormDescription>
                     </FormItem>
                   )}
                 />

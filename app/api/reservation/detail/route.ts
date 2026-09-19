@@ -8,11 +8,12 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import type { ICommentData, IReservationDetailData } from '@/src/shared/types';
+import type { ICommentData, IReservationDetailData, TReservationDetailResponseCode } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
   response: 'ng' | 'ok';
+  code: TReservationDetailResponseCode;
   message: string;
   data: IReservationDetailData;
 }
@@ -46,6 +47,7 @@ export async function GET(request: NextRequest) {
     return typedJson<IResponseBody>(
       {
         response: 'ng',
+        code: 'INVALID_REQUEST',
         message: 'docId is required',
         data: defaultData,
       },
@@ -63,6 +65,7 @@ export async function GET(request: NextRequest) {
       return typedJson<IResponseBody>(
         {
           response: 'ng',
+          code: 'NOT_FOUND',
           message: 'no such document',
           data: defaultData,
         },
@@ -107,6 +110,7 @@ export async function GET(request: NextRequest) {
             return typedJson<IResponseBody>(
               {
                 response: 'ng',
+                code: 'NEEDS_PASSWORD',
                 message: '비밀글 인증에 실패하였습니다.',
                 data: defaultData,
               },
@@ -116,10 +120,23 @@ export async function GET(request: NextRequest) {
         }
         // 비밀글&회원
         else {
-          if (verifiedUid == null || verifiedUid !== data.userId) {
+          if (verifiedUid == null) {
             return typedJson<IResponseBody>(
               {
                 response: 'ng',
+                code: 'NEEDS_LOGIN',
+                message: '로그인이 필요한 게시글입니다.',
+                data: defaultData,
+              },
+              { status: 403 },
+            );
+          }
+
+          if (verifiedUid !== data.userId) {
+            return typedJson<IResponseBody>(
+              {
+                response: 'ng',
+                code: 'ACCESS_DENIED',
                 message: '해당 사용자가 작성한 글이 아닙니다.',
                 data: defaultData,
               },
@@ -146,6 +163,7 @@ export async function GET(request: NextRequest) {
     // 비밀번호가 맞거나 비밀글이 아닐 경우
     const responseData: IResponseBody = {
       response: 'ok',
+      code: 'OK',
       message: 'ok',
       data: {
         ...data,
@@ -161,12 +179,16 @@ export async function GET(request: NextRequest) {
     return typedJson<IResponseBody>(responseData, { status: 200 });
   } catch (error) {
     if ((error as { name?: string }).name === 'TokenExpiredError') {
-      return typedJson<IResponseBody>({ response: 'ng', message: 'TOKEN_EXPIRED', data: defaultData }, { status: 401 });
+      return typedJson<IResponseBody>(
+        { response: 'ng', code: 'TOKEN_EXPIRED', message: 'TOKEN_EXPIRED', data: defaultData },
+        { status: 401 },
+      );
     }
     console.error('Error getting document:', error);
     return typedJson<IResponseBody>(
       {
         response: 'ng',
+        code: 'SERVER_ERROR',
         message: 'Error getting document',
         data: defaultData,
       },

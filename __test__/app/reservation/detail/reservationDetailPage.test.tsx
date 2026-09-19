@@ -18,6 +18,10 @@ const refreshMock = vi.fn();
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock, refresh: refreshMock }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+vi.mock('next/headers', () => ({
+  cookies: () => ({ set: vi.fn() }),
 }));
 
 vi.mock('@/src/shared/hooks/useScreenView', () => ({
@@ -41,6 +45,7 @@ vi.mock('@/src/shared/utils', async () => {
 const docId = 'guest-reservation';
 const guestReservationData: IReservationResponseData = {
   response: 'ok',
+  code: 'OK',
   message: '성공',
   data: {
     ...mockReservationListData.consultData![0],
@@ -87,6 +92,40 @@ async function openEditPasswordDialog() {
 }
 
 describe('ReservationDetailPage 비밀번호 및 삭제 UX', () => {
+  it.each([
+    ['NEEDS_PASSWORD', '비밀글입니다.'],
+    ['NEEDS_LOGIN', '로그인이 필요한 게시글입니다.'],
+    ['ACCESS_DENIED', '접근 권한이 없습니다.'],
+  ] as const)('%s 응답에 알맞은 접근 게이트를 표시한다', (code, heading) => {
+    renderDetail({
+      ...guestReservationData,
+      response: 'ng',
+      code,
+      message: '접근 제한',
+    });
+
+    expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
+  });
+
+  it('비밀글 비밀번호 인증 성공 시 상세 데이터를 새로 요청한다', async () => {
+    server.use(
+      http.post(`${apiUrl}/api/reservation/detail/password`, () =>
+        HttpResponse.json({ response: 'ok', message: '비밀번호가 일치합니다.', reservationToken: 'token' }),
+      ),
+    );
+    renderDetail({
+      ...guestReservationData,
+      response: 'ng',
+      code: 'NEEDS_PASSWORD',
+      message: '비밀번호가 필요합니다.',
+    });
+
+    await userEvent.type(screen.getByLabelText('비밀번호'), 'aaaa');
+    await userEvent.click(screen.getByRole('button', { name: '확인' }));
+
+    await waitFor(() => expect(refreshMock).toHaveBeenCalled());
+  });
+
   it('비밀번호 제출 직후 모달을 닫고 검증이 끝날 때까지 전면 로딩을 표시한다', async () => {
     let resolvePasswordRequest!: () => void;
     const passwordRequestGate = new Promise<void>(resolve => {

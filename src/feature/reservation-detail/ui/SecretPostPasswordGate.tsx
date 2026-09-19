@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -24,16 +24,13 @@ import { toastError } from '@/src/shared/utils';
 
 import { detailPasswordFormSchema } from '../config/detailPasswordFormSchema';
 import { useAuthReturnRefresh } from '../model/useAuthReturnRefresh';
-import { SecretPostGateShell } from './SecretPostGateShell';
+import { SecretPostGateShell, SecretPostLoading } from './SecretPostGateShell';
 
 type TSecretPostPasswordGateProps = { docId: string };
-
-const REFRESH_FALLBACK_DELAY_MS = 4000;
 
 export function SecretPostPasswordGate({ docId }: TSecretPostPasswordGateProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isWaitingForRefresh, setIsWaitingForRefresh] = useState(false);
   const isWaitingForAuthReturn = useAuthReturnRefresh();
 
   const passwordForm = useForm<z.infer<typeof detailPasswordFormSchema>>({
@@ -41,19 +38,6 @@ export function SecretPostPasswordGate({ docId }: TSecretPostPasswordGateProps) 
     defaultValues: { password: '' },
     mode: 'onChange',
   });
-
-  // router.refresh() 이후에도 이 게이트가 남아 있으면 제출 버튼이 영구히 잠기므로 복구 장치를 둔다.
-  useEffect(() => {
-    if (!isWaitingForRefresh) return;
-
-    const timeoutId = setTimeout(() => {
-      setIsWaitingForRefresh(false);
-      setIsSubmitting(false);
-      toastError('다시 시도해주세요.');
-    }, REFRESH_FALLBACK_DELAY_MS);
-
-    return () => clearTimeout(timeoutId);
-  }, [isWaitingForRefresh]);
 
   const handleSubmit = async ({ password }: z.infer<typeof detailPasswordFormSchema>) => {
     // React가 disabled를 반영하기 전의 연타로 인한 중복 제출을 막는다.
@@ -63,7 +47,6 @@ export function SecretPostPasswordGate({ docId }: TSecretPostPasswordGateProps) 
     try {
       const response = await passwordPostAction(docId, password);
       if (response.response === 'ok') {
-        setIsWaitingForRefresh(true);
         router.refresh();
         return;
       }
@@ -80,16 +63,7 @@ export function SecretPostPasswordGate({ docId }: TSecretPostPasswordGateProps) 
 
   // 대부분 이 게이트는 비회원 작성 글이고, 실제로 조회하는 건 관리자인 경우가 많다.
   // 비밀번호를 모르는 관리자를 위해 로그인 경로도 함께 제공한다(로그인 시 isAdmin이면 비밀글 체크를 통째로 건너뜀).
-  if (isWaitingForAuthReturn) {
-    return (
-      <SecretPostGateShell className="text-center">
-        <div className="flex flex-col items-center gap-3">
-          <LoadingSpinnerIcon />
-          <p className="text-sm text-gray-500">게시글을 불러오는 중입니다...</p>
-        </div>
-      </SecretPostGateShell>
-    );
-  }
+  if (isWaitingForAuthReturn) return <SecretPostLoading />;
 
   return (
     <SecretPostGateShell>

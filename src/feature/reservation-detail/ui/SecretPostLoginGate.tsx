@@ -3,26 +3,16 @@
 import Link from 'next/link';
 
 import { Button } from '@/src/shared/ui/button';
-import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 
 import { useAuthReturnRefresh } from '../model/useAuthReturnRefresh';
-import { SecretPostGateShell } from './SecretPostGateShell';
+import { SecretPostGateShell, SecretPostLoading } from './SecretPostGateShell';
 
 type TSecretPostLoginGateProps = { docId: string };
 
 export function SecretPostLoginGate({ docId }: TSecretPostLoginGateProps) {
   const isWaitingForRefresh = useAuthReturnRefresh();
 
-  if (isWaitingForRefresh) {
-    return (
-      <SecretPostGateShell className="text-center">
-        <div className="flex flex-col items-center gap-3">
-          <LoadingSpinnerIcon />
-          <p className="text-sm text-gray-500">게시글을 불러오는 중입니다...</p>
-        </div>
-      </SecretPostGateShell>
-    );
-  }
+  if (isWaitingForRefresh) return <SecretPostLoading />;
 
   return (
     <SecretPostGateShell className="text-center">

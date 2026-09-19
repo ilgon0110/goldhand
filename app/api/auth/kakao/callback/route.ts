@@ -8,12 +8,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { createSessionCookie } from '@/src/shared/lib/server';
 import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody, IUserDetailData } from '@/src/shared/types';
 
-import {
-  expireOAuthRedirectCookie,
-  expireOAuthStateCookie,
-  resolveOAuthRedirectDestination,
-  validateOAuthState,
-} from '../../lib/oauthState';
+import { expireOAuthStateCookie, resolveOAuthRedirectDestination, validateOAuthState } from '../../lib/oauthState';
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
 
 const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
@@ -63,12 +58,7 @@ export async function GET(request: Request) {
   const errorDescription = searchParams.get('error_description');
 
   const origin = apiUrl;
-  const redirect = (path: string) => {
-    const res = NextResponse.redirect(new URL(path, origin));
-    expireOAuthStateCookie(res, 'kakao');
-    expireOAuthRedirectCookie(res, 'kakao');
-    return res;
-  };
+  const redirect = (path: string) => expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'kakao');
 
   if (!validateOAuthState('kakao', state)) {
     return redirect('/login?kakao_error=invalid_state');

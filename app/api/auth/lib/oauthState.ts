@@ -51,28 +51,28 @@ export function setOAuthStateCookie(response: NextResponse, provider: TOAuthProv
   return response;
 }
 
+// state 쿠키와 redirect 쿠키를 함께 만료시킨다.
 export function expireOAuthStateCookie(response: NextResponse, provider: TOAuthProvider) {
-  response.cookies.set(getOAuthStateCookieName(provider), '', { ...STATE_COOKIE_OPTIONS, maxAge: 0 });
+  const expired = { ...STATE_COOKIE_OPTIONS, maxAge: 0 };
+  response.cookies.set(getOAuthStateCookieName(provider), '', expired);
+  response.cookies.set(REDIRECT_COOKIE_NAMES[provider], '', expired);
   return response;
 }
 
-export function setOAuthRedirectCookie(response: NextResponse, provider: TOAuthProvider, path: string) {
-  response.cookies.set(REDIRECT_COOKIE_NAMES[provider], path, STATE_COOKIE_OPTIONS);
+// 이전 로그인 시도에서 남은 쿠키가 다른 로그인에 소비되지 않도록, 안전하지 않은 경로면 만료시킨다.
+export function setOAuthRedirectCookie(response: NextResponse, provider: TOAuthProvider, path: string | null) {
+  const safe = isSafeReservationRedirectPath(path);
+  response.cookies.set(
+    REDIRECT_COOKIE_NAMES[provider],
+    safe ? path : '',
+    safe ? STATE_COOKIE_OPTIONS : { ...STATE_COOKIE_OPTIONS, maxAge: 0 },
+  );
   return response;
-}
-
-export function getOAuthRedirectCookie(provider: TOAuthProvider) {
-  return cookies().get(REDIRECT_COOKIE_NAMES[provider])?.value ?? null;
 }
 
 export function resolveOAuthRedirectDestination(provider: TOAuthProvider, fallback: string) {
-  const redirectTo = getOAuthRedirectCookie(provider);
+  const redirectTo = cookies().get(REDIRECT_COOKIE_NAMES[provider])?.value;
   // 클라이언트가 로그인 직후 도착했음을 알 수 있도록 표시해, useEffect 감지 없이
   // 첫 렌더에서 곧바로 로딩 상태를 보여주고 refresh를 걸 수 있게 한다.
   return isSafeReservationRedirectPath(redirectTo) ? `${redirectTo}?authReturn=1` : fallback;
-}
-
-export function expireOAuthRedirectCookie(response: NextResponse, provider: TOAuthProvider) {
-  response.cookies.set(REDIRECT_COOKIE_NAMES[provider], '', { ...STATE_COOKIE_OPTIONS, maxAge: 0 });
-  return response;
 }

@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import { isSafeReservationRedirectPath } from '@/src/shared/lib/isSafeReservationRedirectPath';
 import type { IUserDetailData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
@@ -21,8 +20,8 @@ const LoginPage = () => {
   const naverError = searchParams.get('naver_error');
   const isRejoin = searchParams.get('rejoin') === 'true';
   const redirectTo = searchParams.get('redirect');
-  // 시작 라우트에서도 검증하지만, 읽는 시점에서도 한 번 더 막는다(다층 방어).
-  const safeRedirectTo = isSafeReservationRedirectPath(redirectTo) ? redirectTo : null;
+  // 검증은 start 라우트가 담당한다.
+  const query = redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : '';
 
   const [loadingText, setLoadingText] = useState<string | null>(null);
   const [isRejoinDialogOpen, setIsRejoinDialogOpen] = useState(false);
@@ -69,9 +68,7 @@ const LoginPage = () => {
           disabled={!!loadingText}
           handleClick={() => {
             setLoadingText('로그인 중...');
-            router.push(
-              `/api/auth/kakao/start${safeRedirectTo ? `?redirect=${encodeURIComponent(safeRedirectTo)}` : ''}`,
-            );
+            router.push(`/api/auth/kakao/start${query}`);
           }}
           iconSrc="/icon/kakaotalk.png"
           provider="kakao"
@@ -82,9 +79,7 @@ const LoginPage = () => {
           disabled={!!loadingText}
           handleClick={() => {
             setLoadingText('로그인 중...');
-            router.push(
-              `/api/auth/naver/start${safeRedirectTo ? `?redirect=${encodeURIComponent(safeRedirectTo)}` : ''}`,
-            );
+            router.push(`/api/auth/naver/start${query}`);
           }}
           iconSrc="/icon/naver.png"
           provider="naver"

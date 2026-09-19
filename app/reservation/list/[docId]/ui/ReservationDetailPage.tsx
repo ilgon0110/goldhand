@@ -3,7 +3,13 @@
 import { useGetReservationDetailData } from '@/src/entities/reservation';
 import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
-import { ReservationManageDialog, useReservationDetailActions } from '@/src/feature/reservation-detail';
+import {
+  ReservationManageDialog,
+  SecretPostAccessDenied,
+  SecretPostLoginGate,
+  SecretPostPasswordGate,
+  useReservationDetailActions,
+} from '@/src/feature/reservation-detail';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { ReservationCommentForm, ReservationCommentList, ReservationDetailContent } from '@/src/widgets/reservation';
@@ -25,7 +31,12 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
 
   useScreenView(`reservation_detail_${docId}`, 'ReservationDetailPage', { doc_id: docId });
 
-  if (data.response === 'ng') throw new Error(data.message);
+  if (data.response === 'ng') {
+    if (data.code === 'NEEDS_PASSWORD') return <SecretPostPasswordGate docId={docId} />;
+    if (data.code === 'NEEDS_LOGIN') return <SecretPostLoginGate docId={docId} />;
+    if (data.code === 'ACCESS_DENIED') return <SecretPostAccessDenied />;
+    throw new Error(data.message);
+  }
 
   return (
     <>

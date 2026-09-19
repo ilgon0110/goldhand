@@ -8,7 +8,12 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { createSessionCookie } from '@/src/shared/lib/server';
 import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody, IUserDetailData } from '@/src/shared/types';
 
-import { expireOAuthStateCookie, validateOAuthState } from '../../lib/oauthState';
+import {
+  expireOAuthRedirectCookie,
+  expireOAuthStateCookie,
+  resolveOAuthRedirectDestination,
+  validateOAuthState,
+} from '../../lib/oauthState';
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';
 
 const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
@@ -16,7 +21,9 @@ const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
   maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
-  sameSite: 'strict' as const,
+  // OAuth 리다이렉트로 복귀하는 최상위 GET 네비게이션에도 세션 쿠키가 실려야 해서 strict 대신 lax를 쓴다.
+  // state-changing 요청(POST 등)에는 여전히 실리지 않으므로 CSRF 방어는 유지된다.
+  sameSite: 'lax' as const,
   secure: process.env.NODE_ENV === 'production',
 };
 
@@ -56,7 +63,12 @@ export async function GET(request: Request) {
   const errorDescription = searchParams.get('error_description');
 
   const origin = apiUrl;
-  const redirect = (path: string) => expireOAuthStateCookie(NextResponse.redirect(new URL(path, origin)), 'kakao');
+  const redirect = (path: string) => {
+    const res = NextResponse.redirect(new URL(path, origin));
+    expireOAuthStateCookie(res, 'kakao');
+    expireOAuthRedirectCookie(res, 'kakao');
+    return res;
+  };
 
   if (!validateOAuthState('kakao', state)) {
     return redirect('/login?kakao_error=invalid_state');
@@ -124,7 +136,7 @@ export async function GET(request: Request) {
       }
 
       revalidatePath('/', 'layout');
-      const res = redirect('/?kakao_success=true');
+      const res = redirect(resolveOAuthRedirectDestination('kakao', '/?kakao_success=true'));
       res.cookies.set('session', sessionCookie, SESSION_COOKIE_OPTIONS);
       return res;
     }
@@ -135,7 +147,7 @@ export async function GET(request: Request) {
     const newSessionCookie = await createSessionCookie(newIdToken, SESSION_COOKIE_MAX_AGE_SECONDS * 1000);
 
     revalidatePath('/', 'layout');
-    const res = redirect('/?kakao_success=true');
+    const res = redirect(resolveOAuthRedirectDestination('kakao', '/?kakao_success=true'));
     res.cookies.set('session', newSessionCookie, SESSION_COOKIE_OPTIONS);
     return res;
   } catch (error) {

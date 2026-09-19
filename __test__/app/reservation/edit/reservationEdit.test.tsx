@@ -23,6 +23,7 @@ const docId = 'guest-doc-id';
 
 const mockGuestReservationDetail: IReservationResponseData = {
   response: 'ok',
+  code: 'OK',
   message: '성공',
   data: {
     title: '기존 제목',

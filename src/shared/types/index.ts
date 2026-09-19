@@ -48,8 +48,19 @@ export interface IReservationDetailData {
   comments?: ICommentData[] | null;
 }
 
+export type TReservationDetailResponseCode =
+  | 'ACCESS_DENIED'
+  | 'INVALID_REQUEST'
+  | 'NEEDS_LOGIN'
+  | 'NEEDS_PASSWORD'
+  | 'NOT_FOUND'
+  | 'OK'
+  | 'SERVER_ERROR'
+  | 'TOKEN_EXPIRED';
+
 export interface IReservationResponseData {
-  response: string;
+  response: 'ng' | 'ok';
+  code: TReservationDetailResponseCode;
   message: string;
   data: IReservationDetailData;
 }

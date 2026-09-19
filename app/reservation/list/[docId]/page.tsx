@@ -21,11 +21,11 @@ export default async function Page({ params }: TPageProps) {
     queryFn: () => getReservationDetailData({ docId }),
   });
 
-  if (reservationData.message === 'TOKEN_EXPIRED') {
+  if (reservationData.code === 'TOKEN_EXPIRED') {
     redirect('/reservation/list');
   }
 
-  if (reservationData.message === 'Error getting document') {
+  if (reservationData.code === 'SERVER_ERROR') {
     throw new Error('Error getting document');
   }
 

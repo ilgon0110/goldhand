@@ -1,6 +1,10 @@
+import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const cookieGet = vi.hoisted(() => vi.fn());
+const createSessionCookie = vi.hoisted(() => vi.fn());
+const checkUserDeletedStatus = vi.hoisted(() => vi.fn());
+const trySignIn = vi.hoisted(() => vi.fn());
 
 vi.mock('next/headers', () => ({
   cookies: vi.fn(() => ({ get: cookieGet })),
@@ -10,10 +14,11 @@ vi.mock('firebase/firestore', () => ({ Timestamp: { now: vi.fn() } }));
 vi.mock('firebase-admin/firestore', () => ({ getFirestore: vi.fn() }));
 vi.mock('@/src/shared/config', () => ({ apiUrl: 'https://nicegoldhand.com' }));
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
+vi.mock('@/src/shared/lib/server', () => ({ createSessionCookie }));
 vi.mock('@/app/api/auth/lib/socialAuth', () => ({
-  checkUserDeletedStatus: vi.fn(),
+  checkUserDeletedStatus,
   signUpUser: vi.fn(),
-  trySignIn: vi.fn(),
+  trySignIn,
 }));
 
 import { GET as kakaoCallback } from '@/app/api/auth/kakao/callback/route';
@@ -21,6 +26,12 @@ import { GET as kakaoStart } from '@/app/api/auth/kakao/start/route';
 import { validateOAuthState } from '@/app/api/auth/lib/oauthState';
 import { GET as naverCallback } from '@/app/api/auth/naver/callback/route';
 import { GET as naverStart } from '@/app/api/auth/naver/start/route';
+
+const startRequest = (provider: 'kakao' | 'naver', redirect?: string) => {
+  const url = new URL(`https://nicegoldhand.com/api/auth/${provider}/start`);
+  if (redirect) url.searchParams.set('redirect', redirect);
+  return new NextRequest(url);
+};
 
 const readState = (response: Response, provider: 'kakao' | 'naver') => {
   const cookie = response.headers.get('set-cookie') ?? '';
@@ -39,7 +50,7 @@ describe('OAuth login start', () => {
     ['kakao', kakaoStart, 'https://kauth.kakao.com/oauth/authorize'],
     ['naver', naverStart, 'https://nid.naver.com/oauth2.0/authorize'],
   ] as const)('creates a browser-bound state for %s before redirecting to the provider', (provider, start, origin) => {
-    const response = start();
+    const response = start(startRequest(provider));
     const location = new URL(response.headers.get('location')!);
     const state = readState(response, provider);
 
@@ -52,13 +63,39 @@ describe('OAuth login start', () => {
   });
 
   it('creates a fresh state for every login attempt', () => {
-    expect(readState(kakaoStart(), 'kakao')).not.toBe(readState(kakaoStart(), 'kakao'));
+    expect(readState(kakaoStart(startRequest('kakao')), 'kakao')).not.toBe(
+      readState(kakaoStart(startRequest('kakao')), 'kakao'),
+    );
+  });
+
+  it.each([
+    ['kakao', kakaoStart],
+    ['naver', naverStart],
+  ] as const)('stores an allowlisted redirect in a provider-specific cookie for %s', (provider, start) => {
+    const response = start(startRequest(provider, '/reservation/list/doc-123'));
+    const cookie = response.headers.get('set-cookie') ?? '';
+
+    expect(cookie).toContain(`oauth_redirect_to_${provider}=%2Freservation%2Flist%2Fdoc-123`);
+    expect(cookie).not.toContain(`oauth_redirect_to_${provider === 'kakao' ? 'naver' : 'kakao'}=`);
+  });
+
+  it.each([
+    ['kakao', kakaoStart],
+    ['naver', naverStart],
+  ] as const)('expires a stale redirect cookie when %s receives an unsafe redirect', (provider, start) => {
+    const response = start(startRequest(provider, 'https://evil.example'));
+    const cookie = response.headers.get('set-cookie') ?? '';
+
+    expect(cookie).toMatch(new RegExp(`oauth_redirect_to_${provider}=;.*Max-Age=0`, 'i'));
   });
 });
 
 describe('OAuth callback state validation', () => {
   beforeEach(() => {
     cookieGet.mockReset();
+    createSessionCookie.mockReset();
+    checkUserDeletedStatus.mockReset();
+    trySignIn.mockReset();
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
   });
 
@@ -124,5 +161,46 @@ describe('OAuth callback state validation', () => {
 
     expect(replayResponse.headers.get('location')).toBe('https://nicegoldhand.com/login?naver_error=invalid_state');
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      'kakao',
+      kakaoCallback,
+      { access_token: 'kakao-token' },
+      { kakao_account: { email: 'member@example.com' } },
+    ],
+    [
+      'naver',
+      naverCallback,
+      { access_token: 'naver-token' },
+      { message: 'success', response: { email: 'member@example.com' } },
+    ],
+  ] as const)('forwards and consumes the redirect belonging to a successful %s flow', async (
+    provider,
+    callback,
+    tokenBody,
+    userBody,
+  ) => {
+    cookieGet.mockImplementation((name: string) => {
+      if (name === `oauth_state_${provider}`) return { value: 'matching-state' };
+      if (name === `oauth_redirect_to_${provider}`) return { value: '/reservation/list/doc-123' };
+      return undefined;
+    });
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({ ok: true, json: vi.fn().mockResolvedValue(tokenBody) } as unknown as Response)
+      .mockResolvedValueOnce({ ok: true, json: vi.fn().mockResolvedValue(userBody) } as unknown as Response);
+    trySignIn.mockResolvedValue({ user: { uid: 'member-id', getIdToken: vi.fn().mockResolvedValue('id-token') } });
+    createSessionCookie.mockResolvedValue('session-cookie');
+    checkUserDeletedStatus.mockResolvedValue('active');
+
+    const response = await callback(
+      new Request(`https://nicegoldhand.com/api/auth/${provider}/callback?code=valid-code&state=matching-state`),
+    );
+    const cookie = response.headers.get('set-cookie') ?? '';
+
+    expect(response.headers.get('location')).toBe('https://nicegoldhand.com/reservation/list/doc-123?authReturn=1');
+    expect(cookie).toMatch(new RegExp(`oauth_redirect_to_${provider}=;.*Max-Age=0`, 'i'));
+    expect(cookie).toContain('session=session-cookie');
   });
 });

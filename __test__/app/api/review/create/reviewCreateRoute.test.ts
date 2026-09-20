@@ -63,10 +63,6 @@ vi.mock('@/src/shared/lib/hashPhoneNumber', () => ({
   hashPhoneNumber: vi.fn().mockReturnValue('phone-hash'),
 }));
 
-vi.mock('@/src/shared/lib/applyReviewImageSrcs', () => ({
-  applyReviewImageSrcs: vi.fn().mockReturnValue({ imageSrcAppliedHtmlString: '<p>후기</p>', thumbnailUrl: null }),
-}));
-
 import { POST } from '@/app/api/review/create/route';
 
 describe('POST /api/review/create', () => {

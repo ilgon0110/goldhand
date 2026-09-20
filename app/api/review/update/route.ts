@@ -3,10 +3,10 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
+import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { applyReviewImageSrcs } from '@/src/shared/lib/applyReviewImageSrcs';
-import { checkAdminAuth } from '@/src/shared/lib/server';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -108,15 +108,14 @@ async function updateReviewPost(
   previousThumbnail: string | null,
 ): Promise<Response> {
   const { title, name, franchisee, htmlString, docId, images } = body;
-  const { imageSrcAppliedHtmlString, thumbnailUrl } = applyReviewImageSrcs(htmlString, images);
+  const imageFields = resolvePostImageFields({ htmlString, images, previousThumbnail });
 
   try {
     await reviewDocRef.update({
-      thumbnail: thumbnailUrl ?? previousThumbnail,
+      ...imageFields,
       title,
       name,
       franchisee,
-      htmlString: imageSrcAppliedHtmlString,
       updatedAt: new Date(),
     });
 

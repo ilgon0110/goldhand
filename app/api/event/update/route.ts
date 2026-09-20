@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
+import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import type { IReviewDetailData } from '@/src/shared/types';
@@ -88,14 +89,18 @@ export async function POST(req: NextRequest) {
 
     // Update logic here...
     const { title, name, htmlString, images, status } = body;
-    const imageSrcAppliedHtmlString = applyFireImageSrc(htmlString, images || []);
+    const imageFields = resolvePostImageFields({
+      htmlString,
+      images,
+      previousThumbnail: targetData.thumbnail,
+    });
 
     try {
       await eventDocRef.update({
         ...targetData,
+        ...imageFields,
         title,
         name,
-        htmlString: imageSrcAppliedHtmlString,
         status,
         updatedAt: new Date(),
       });
@@ -120,20 +125,4 @@ export async function POST(req: NextRequest) {
     console.error('Error verifying token:', error);
     return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId }, { status: 401 });
   }
-}
-
-function applyFireImageSrc(html: string, fireImage: { key: string; url: string }[]) {
-  return html.replace(/<img([^>]*?)id=["']([^"']+)["']([^>]*)>/gi, (match, beforeId, id, afterId) => {
-    const image = fireImage.find(img => img.key === id);
-    if (image && image.url) {
-      // src 속성이 이미 있다면 교체
-      if (/src=["'][^"']*["']/.test(match)) {
-        return match.replace(/src=["'][^"']*["']/, `src="${image.url}"`);
-      } else {
-        // src 속성이 없으면 추가
-        return `<img${beforeId} src="${image.url}" id="${id}"${afterId}>`;
-      }
-    }
-    return match; // 매칭 안 되면 원본 유지
-  });
 }

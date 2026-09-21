@@ -67,9 +67,7 @@ export const Footer = () => {
               회사소개
             </Link>
             <p className="mt-2 text-balance text-sm/6 text-gray-600">대표 : 차복규</p>
-            <p className="text-balance text-sm/6 text-gray-600">
-              주소 : 경기도 화성시 향남읍 상신하길로328번길 26(하길리 1467) 505호
-            </p>
+            <p className="text-balance text-sm/6 text-gray-600">주소 : 경기 수원시 팔달구 인계로124번길 19 9층 903호</p>
             <p className="text-balance text-sm/6 text-gray-600">사업자등록번호 : 614-94-02053</p>
           </div>
           <button className="font-semibold text-gray-900" onClick={() => setPrivacyModalOpen(true)}>

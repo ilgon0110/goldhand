@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     const { uid } = await verifySessionCookie(session.value, true);
     if (uid !== targetData.userId) {
       return typedJson<IResponseBody>(
-        { response: 'ng', message: '이벤트 수정 권한이 없습니다.', docId: '' },
+        { response: 'ng', message: '소식 수정 권한이 없습니다.', docId: '' },
         { status: 403 },
       );
     }
@@ -107,13 +107,13 @@ export async function POST(req: NextRequest) {
 
       revalidatePath(`/event/${docId}`);
       return typedJson<IResponseBody>(
-        { response: 'ok', message: '이벤트가 성공적으로 수정되었습니다.', docId },
+        { response: 'ok', message: '소식이 성공적으로 수정되었습니다.', docId },
         { status: 200 },
       );
     } catch (error) {
       console.error('Error updating event post:', error);
       return typedJson<IResponseBody>(
-        { response: 'ng', message: '이벤트 수정에 실패했습니다.', docId },
+        { response: 'ng', message: '소식 수정에 실패했습니다.', docId },
         { status: 500 },
       );
     }

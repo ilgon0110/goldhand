@@ -49,7 +49,7 @@ describe('검색 결과 미리보기 메타데이터', () => {
     ['voucher', '정부바우처 안내', 'https://nicegoldhand.com/voucher', voucherMetadata],
     ['franchisee', '지점 안내', 'https://nicegoldhand.com/franchisee', franchiseeMetadata],
     ['rental', '렌탈 서비스', 'https://nicegoldhand.com/rental', rentalMetadata],
-    ['event', '이벤트', 'https://nicegoldhand.com/event', eventMetadata],
+    ['event', '소식', 'https://nicegoldhand.com/event', eventMetadata],
     ['review', '이용 후기', 'https://nicegoldhand.com/review', reviewMetadata],
     ['reservation', '상담 신청', 'https://nicegoldhand.com/reservation', reservationMetadata],
   ] as const;

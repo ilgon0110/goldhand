@@ -13,7 +13,7 @@ export const eventFormSchema = z.object({
       message: '2자 이상 20자 이하로 입력해주세요.',
     })
     .max(20),
-  status: z.string({ required_error: '이벤트 상태를 선택해주세요.' }),
+  status: z.string({ required_error: '소식 상태를 선택해주세요.' }),
 });
 
 // 회원만 댓글 달 수 있음

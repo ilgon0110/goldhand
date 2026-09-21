@@ -46,7 +46,7 @@ export const EventEditPage = ({ docId }: TEventEditPageProps) => {
   return (
     <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
-      <SectionTitleHero label="고운황금손 이벤트 수정" />
+      <SectionTitleHero label="고운황금손 소식 수정" />
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -89,12 +89,12 @@ export const EventEditPage = ({ docId }: TEventEditPageProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  이벤트 상태 <span className="text-red-500">*</span>
+                  소식 상태 <span className="text-red-500">*</span>
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger aria-label="이벤트 상태" data-testid="event-status-select-trigger">
-                      <SelectValue placeholder="이벤트 상태를 선택해주세요." />
+                    <SelectTrigger aria-label="소식 상태" data-testid="event-status-select-trigger">
+                      <SelectValue placeholder="소식 상태를 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -118,7 +118,7 @@ export const EventEditPage = ({ docId }: TEventEditPageProps) => {
               disabled={!formValidation}
               type="submit"
             >
-              {isSubmitting ? <LoadingSpinnerIcon /> : '이벤트 수정하기'}
+              {isSubmitting ? <LoadingSpinnerIcon /> : '소식 수정하기'}
             </Button>
           </div>
         </form>

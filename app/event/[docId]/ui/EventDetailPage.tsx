@@ -15,12 +15,12 @@ import { useGetViewCountData } from '@/src/entities/viewCount';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
-import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
 import { Label } from '@/src/shared/ui/label';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
+import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
 import { Textarea } from '@/src/shared/ui/textarea';
-import { formatDateToYMD, toastError, toastSuccess } from '@/src/shared/utils';
+import { toastError, toastSuccess } from '@/src/shared/utils';
 import { Editor } from '@/src/widgets/editor/ui/Editor';
 
 import { useEventDeleteMutation } from '../api/useEventDeleteMutation';
@@ -92,36 +92,27 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
 
   return (
     <>
-      <div className="relative flex flex-col gap-2">
-        <h3 className="text-xl font-bold md:text-3xl">{data.data.title}</h3>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="space-x-2">
-            <span className="text-slate-500">{`순번 : ${data.data.rowNumber}`}</span>
-            <span>{data.data.name}</span>
-            <span>
-              <span className="font-bold">작성일:</span> {formatDateToYMD(data.data.createdAt)}
-            </span>
-            <span>
-              <span className="font-bold">수정일:</span> {formatDateToYMD(data.data.updatedAt)}
-            </span>
-          </div>
-          <div className="flex flex-row items-center gap-2 text-slate-500 sm:ml-auto">
-            <ViewIcon />
-            <span>{viewCountData.data?.totalViewCount || 0}회</span>
-          </div>
-        </div>
-      </div>
+      <PostDetailHeader
+        author={data.data.name}
+        badge={`순번 ${data.data.rowNumber}`}
+        createdAt={data.data.createdAt}
+        pin={
+          <PinToggleButton
+            isAdmin={isAdmin}
+            isLoading={isPinToggling}
+            isPinned={data.data.isPinned}
+            onToggle={() => togglePin({ docId, isPinned: !data.data.isPinned })}
+          />
+        }
+        title={data.data.title}
+        updatedAt={data.data.updatedAt}
+        viewCount={viewCountData.data?.totalViewCount || 0}
+      />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">
         <Editor editable={false} htmlString={data.data.htmlString} onEditorChange={() => {}} />
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />
-      <PinToggleButton
-        isAdmin={isAdmin}
-        isLoading={isPinToggling}
-        isPinned={data.data.isPinned}
-        onToggle={() => togglePin({ docId, isPinned: !data.data.isPinned })}
-      />
       {isOwner && (
         <div className="flex w-full justify-end space-x-4">
           <Button

@@ -3,9 +3,8 @@ import { Phone } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
-import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
-
 import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
+import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 
 type TTimestamp = Pick<Timestamp, 'nanoseconds' | 'seconds'>;
 
@@ -110,18 +109,16 @@ export const PostDetailHeader = ({
               {dateText}
             </span>
             {phoneNumber ? (
-              <a
+              <span
                 className={cn(
-                  'col-start-2 row-start-1 row-end-3 inline-flex min-h-11 shrink-0 items-center gap-1.5',
-                  'rounded-full border border-stone-200 px-3.5 text-[12.5px] tabular-nums tracking-[0.01em]',
-                  'text-stone-600 transition-colors hover:border-gold/40 hover:text-goldDeep',
-                  'md:col-start-2 md:row-end-2 md:text-[13px]',
+                  'col-start-2 row-start-1 inline-flex shrink-0 items-center gap-1.5',
+                  'text-sm font-semibold tabular-nums tracking-[-0.01em] text-stone-700',
+                  'md:col-start-2 md:text-[15px]',
                 )}
-                href={`tel:${phoneNumber.replace(/\D/g, '')}`}
               >
-                <Phone aria-hidden className="h-3 w-3" />
+                <Phone aria-hidden className="h-3.5 w-3.5" />
                 {phoneNumber}
-              </a>
+              </span>
             ) : null}
           </div>
         </>

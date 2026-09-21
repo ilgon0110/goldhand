@@ -147,9 +147,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 연락처(phoneNumber)는 작성자 본인 또는 관리자만 조회 가능
-    const isOwner = data.userId != null ? verifiedUid === data.userId : reservationTokenDocId === docId;
-    const canViewPhoneNumber = isAdmin || isOwner;
+    // 비회원 비밀번호 인증은 게시글 접근 권한만 부여한다.
+    // 연락처(phoneNumber)는 신원을 확인할 수 있는 회원 작성자 본인 또는 관리자에게만 반환한다.
+    const isMemberOwner = data.userId != null && verifiedUid === data.userId;
+    const canViewPhoneNumber = isAdmin || isMemberOwner;
 
     const commentsRef = collection(db, 'consults', docId, 'comments');
     const q = query(commentsRef, orderBy('createdAt', 'desc'));

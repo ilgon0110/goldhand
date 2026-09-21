@@ -83,7 +83,7 @@ describe('GET /api/reservation/detail secret-post authorization', () => {
     expect(await response.json()).toMatchObject({ response: 'ng', code: 'NEEDS_PASSWORD' });
   });
 
-  it('returns an anonymous secret post after its password token is verified', async () => {
+  it('returns an anonymous secret post without exposing its phone number after password verification', async () => {
     setConsult(null);
     setCookies({ reservationToken: 'valid-token' });
     verifyReservationToken.mockReturnValue({ docId });
@@ -94,7 +94,7 @@ describe('GET /api/reservation/detail secret-post authorization', () => {
     expect(response.status).toBe(200);
     expect(body).toMatchObject({ response: 'ok', code: 'OK' });
     expect(body.data.password).toBeNull();
-    expect(body.data.phoneNumber).toBe('01012345678');
+    expect(body.data.phoneNumber).toBe('');
   });
 
   it('requires login for a member secret post without a valid session', async () => {
@@ -126,7 +126,11 @@ describe('GET /api/reservation/detail secret-post authorization', () => {
     const response = await GET(request());
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ response: 'ok', code: 'OK' });
+    expect(await response.json()).toMatchObject({
+      response: 'ok',
+      code: 'OK',
+      data: { phoneNumber: '01012345678' },
+    });
   });
 
   it('allows an administrator to read a member secret post', async () => {
@@ -138,7 +142,11 @@ describe('GET /api/reservation/detail secret-post authorization', () => {
     const response = await GET(request());
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ response: 'ok', code: 'OK' });
+    expect(await response.json()).toMatchObject({
+      response: 'ok',
+      code: 'OK',
+      data: { phoneNumber: '01012345678' },
+    });
     expect(verifySessionCookie).toHaveBeenLastCalledWith('admin-session', true);
   });
 });

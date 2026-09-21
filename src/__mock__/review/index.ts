@@ -3,6 +3,7 @@ import type { IReviewListResponseData, IReviewResponseData } from '@/src/shared/
 export const mockReviewData: IReviewListResponseData = {
   response: 'ok',
   message: '리뷰 데이터가 성공적으로 로드되었습니다.',
+  pageableDataLength: 20,
   totalDataLength: 21,
   reviewData: [
     {

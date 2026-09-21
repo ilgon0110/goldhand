@@ -2,7 +2,6 @@
 
 import { useGetReservationDetailData } from '@/src/entities/reservation';
 import { useGetUserData } from '@/src/entities/user';
-import { useGetViewCountData } from '@/src/entities/viewCount';
 import {
   ReservationManageDialog,
   SecretPostAccessDenied,
@@ -19,7 +18,6 @@ type TReservationDetailPageProps = { docId: string };
 export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) => {
   const { data } = useGetReservationDetailData(docId);
   const { data: userData } = useGetUserData();
-  const { data: viewCountData } = useGetViewCountData(docId);
   const isAdmin = userData.userData?.grade === 'admin';
   const isOwner = data.data.userId ? data.data.userId === userData.userData?.userId : true;
   const actions = useReservationDetailActions({
@@ -46,7 +44,6 @@ export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) =>
         isOwner={isOwner}
         isPinToggling={actions.isPinToggling}
         reservationDetailData={data.data}
-        viewCountData={viewCountData.data}
         onDelete={actions.handleDelete}
         onEdit={actions.handleEdit}
         onTogglePin={actions.handleTogglePin}

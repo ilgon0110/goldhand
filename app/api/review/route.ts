@@ -3,9 +3,9 @@ import { FieldPath, getFirestore as getAdminFirestore } from 'firebase-admin/fir
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/server';
 import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -25,6 +25,7 @@ interface IResponseBody {
   response: 'ng' | 'ok';
   message: string;
   reviewData: (IReviewDetailData & { id: string; isAuthorAdmin: boolean })[];
+  pageableDataLength: number;
   totalDataLength: number;
 }
 
@@ -66,12 +67,13 @@ export async function GET(request: NextRequest) {
     const extraWhere: [string, WhereFilterOp, unknown][] =
       franchisee !== '전체' ? [['franchisee', '==', franchisee]] : [];
 
-    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListAdmin<IReviewDetailData>(
-      'reviews',
-      extraWhere,
-      page,
-      PAGE_SIZE,
-    );
+    const { pinnedItems, pageItems, pageableDataLength, totalDataLength } =
+      await getPinnedFirstListAdmin<IReviewDetailData>(
+        'reviews',
+        extraWhere,
+        page,
+        PAGE_SIZE,
+      );
 
     const combined = [...pinnedItems, ...pageItems];
     const adminUserIds = await getAdminUserIdSet(
@@ -86,11 +88,14 @@ export async function GET(request: NextRequest) {
       isAuthorAdmin: item.userId != null && adminUserIds.has(item.userId),
     }));
 
-    return typedJson<IResponseBody>({ response: 'ok', message: 'ok', reviewData, totalDataLength }, { status: 200 });
+    return typedJson<IResponseBody>(
+      { response: 'ok', message: 'ok', reviewData, pageableDataLength, totalDataLength },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Error getting document:', error);
     return typedJson<IResponseBody>(
-      { response: 'ng', message: 'Error getting document', reviewData: [], totalDataLength: 0 },
+      { response: 'ng', message: 'Error getting document', reviewData: [], pageableDataLength: 0, totalDataLength: 0 },
       { status: 500 },
     );
   }

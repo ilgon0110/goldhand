@@ -62,7 +62,12 @@ describe('GET /api/review - PII 마스킹', () => {
   });
 
   it('일반 사용자(비관리자)에게는 목록의 phoneNumber/phoneHash가 노출되지 않는다', async () => {
-    getPinnedFirstListAdminMock.mockResolvedValueOnce({ pinnedItems: [], pageItems: [guestReview], totalDataLength: 1 });
+    getPinnedFirstListAdminMock.mockResolvedValueOnce({
+      pinnedItems: [],
+      pageItems: [guestReview],
+      pageableDataLength: 1,
+      totalDataLength: 1,
+    });
     checkAdminAuthMock.mockResolvedValueOnce({ ok: false, reason: 'no_token' });
 
     const response = await GET(makeRequest());
@@ -73,7 +78,12 @@ describe('GET /api/review - PII 마스킹', () => {
   });
 
   it('관리자에게는 목록의 phoneNumber가 노출되지만 phoneHash는 노출되지 않는다', async () => {
-    getPinnedFirstListAdminMock.mockResolvedValueOnce({ pinnedItems: [], pageItems: [guestReview], totalDataLength: 1 });
+    getPinnedFirstListAdminMock.mockResolvedValueOnce({
+      pinnedItems: [],
+      pageItems: [guestReview],
+      pageableDataLength: 1,
+      totalDataLength: 1,
+    });
     checkAdminAuthMock.mockResolvedValueOnce({ ok: true, uid: 'admin-uid', isAdmin: true });
 
     const response = await GET(makeRequest());
@@ -81,5 +91,21 @@ describe('GET /api/review - PII 마스킹', () => {
 
     expect(body.reviewData[0].phoneNumber).toBe('+821012345678');
     expect(body.reviewData[0].phoneHash).toBeNull();
+  });
+
+  it('고정 후기를 포함한 전체 건수와 페이지 대상 건수를 구분해서 반환한다', async () => {
+    getPinnedFirstListAdminMock.mockResolvedValueOnce({
+      pinnedItems: [{ ...guestReview, id: 'pinned-doc', isPinned: true }],
+      pageItems: [guestReview],
+      pageableDataLength: 2,
+      totalDataLength: 3,
+    });
+    checkAdminAuthMock.mockResolvedValueOnce({ ok: false, reason: 'no_token' });
+
+    const response = await GET(makeRequest());
+    const body = await response.json();
+
+    expect(body.totalDataLength).toBe(3);
+    expect(body.pageableDataLength).toBe(2);
   });
 });

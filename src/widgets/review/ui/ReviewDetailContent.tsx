@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import { PinToggleButton } from '@/src/entities/pin';
 import type { IReviewDetailData, IViewCountData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
-import { ViewIcon } from '@/src/shared/ui/icons/ViewIcon';
-import { formatDateToYMD } from '@/src/shared/utils';
+import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
+import { formatPhoneNumber } from '@/src/shared/utils';
 
 type TReviewDetailContentProps = {
   canManage: boolean;
@@ -31,26 +31,23 @@ export function ReviewDetailContent({
 }: TReviewDetailContentProps) {
   return (
     <>
-      <div className="relative flex flex-col gap-2">
-        <h3 className="text-xl font-bold md:text-3xl">{data.title}</h3>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="flex flex-wrap items-center gap-x-2">
-            <span className="text-slate-500">{data.franchisee}</span>
-            <span>{data.name}</span>
-            <span><span className="font-bold">작성일:</span> {formatDateToYMD(data.createdAt)}</span>
-            <span><span className="font-bold">수정일:</span> {formatDateToYMD(data.updatedAt)}</span>
-            {isAdmin && data.phoneNumber ? (
-              <span className="whitespace-nowrap text-slate-500">
-                <span className="font-bold">연락처:</span> {data.phoneNumber}
-              </span>
-            ) : null}
-          </div>
-          <div className="flex flex-row items-center gap-2 text-slate-500 sm:ml-auto">
-            <ViewIcon />
-            <span>{viewCountData?.totalViewCount || 0}회</span>
-          </div>
-        </div>
-      </div>
+      <PostDetailHeader
+        author={data.name}
+        badge={data.franchisee}
+        createdAt={data.createdAt}
+        phoneNumber={isAdmin && data.phoneNumber ? formatPhoneNumber(data.phoneNumber) : undefined}
+        pin={
+          <PinToggleButton
+            isAdmin={isAdmin}
+            isLoading={isPinToggling}
+            isPinned={data.isPinned}
+            onToggle={handleTogglePin}
+          />
+        }
+        title={data.title}
+        updatedAt={data.updatedAt}
+        viewCount={viewCountData?.totalViewCount || 0}
+      />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">
         <div className="mb-4 flex flex-col gap-1">
@@ -59,12 +56,6 @@ export function ReviewDetailContent({
         </div>
       </div>
       <div className="mb-4 mt-4 h-[1px] w-full bg-slate-300" />
-      <PinToggleButton
-        isAdmin={isAdmin}
-        isLoading={isPinToggling}
-        isPinned={data.isPinned}
-        onToggle={handleTogglePin}
-      />
       {canManage ? (
         <div className="flex w-full justify-end space-x-4">
           <Button

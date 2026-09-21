@@ -7,11 +7,13 @@ interface IConsultData extends IReservationDetailData {
 interface IReservationListPageProps {
   message: string;
   consultData: IConsultData[] | null;
+  pageableDataLength: number;
   totalDataLength: number;
 }
 
 export const mockReservationListData: IReservationListPageProps = {
   message: 'ok',
+  pageableDataLength: 18,
   consultData: [
     {
       id: '890bdef9-2720-4924-b630-2c8f3803e4d5',

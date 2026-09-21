@@ -535,17 +535,17 @@
   }
 
   .icon.vertical-top,
-  i.left-align {
+  i.vertical-top {
     background-image: url(/editorIcon/vertical-top.svg);
   }
 
   .icon.vertical-middle,
-  i.center-align {
+  i.vertical-middle {
     background-image: url(/editorIcon/vertical-middle.svg);
   }
 
   .icon.vertical-bottom,
-  i.right-align {
+  i.vertical-bottom {
     background-image: url(/editorIcon/vertical-bottom.svg);
   }
 

@@ -153,7 +153,9 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     if (typeof document === 'undefined') {
       throw new Error('ImageNode: exportDOM called in non-browser environment');
     }
-    const container = document.createElement('div');
+    // Keep the image wrapper inline so its parent paragraph remains valid HTML.
+    // This preserves paragraph-level alignment when saved HTML is parsed again.
+    const container = document.createElement('span');
     const element = document.createElement('img');
     element.setAttribute('src', this.__src);
     element.setAttribute('alt', this.__altText);

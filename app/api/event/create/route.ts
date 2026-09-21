@@ -90,13 +90,13 @@ const createEventPost = async (uid: string, body: IEventPost, dataSize: number) 
         updatedAt: new Date(),
       });
     return typedJson<IResponseBody>(
-      { response: 'ok', message: '이벤트가 성공적으로 작성되었습니다.', docId },
+      { response: 'ok', message: '소식이 성공적으로 작성되었습니다.', docId },
       { status: 200 },
     );
   } catch (error) {
     console.error('Error creating event post:', error);
     return typedJson<IResponseBody>(
-      { response: 'ng', message: '이벤트 작성 도중 알 수 없는 오류가 발생하였습니다.', docId: '' },
+      { response: 'ng', message: '소식 작성 도중 알 수 없는 오류가 발생하였습니다.', docId: '' },
       { status: 500 },
     );
   }

@@ -30,7 +30,7 @@ export const EventPageHeader = ({ isAdmin, totalDataLength }: TEventPageHeaderPr
 
   return (
     <>
-      {isPending && <LoadingSpinnerOverlay text="이벤트 작성 페이지 이동중.." />}
+      {isPending && <LoadingSpinnerOverlay text="소식 작성 페이지 이동중.." />}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 px-1 py-3.5">
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-[12px] tracking-[0.08em] text-stone-500">
@@ -65,7 +65,7 @@ export const EventPageHeader = ({ isAdmin, totalDataLength }: TEventPageHeaderPr
             }}
           >
             <PlusIcon />
-            이벤트 만들기
+            소식 만들기
           </button>
         )}
       </div>

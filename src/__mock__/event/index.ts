@@ -2,7 +2,7 @@ import type { IEventListResponseData } from '@/src/shared/types';
 
 export const mockEventListData: IEventListResponseData = {
   response: 'ok',
-  message: '이벤트 리스트 조회 성공',
+  message: '소식 리스트 조회 성공',
   eventData: [
     {
       id: 'event1',

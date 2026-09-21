@@ -61,7 +61,7 @@ export async function DELETE(req: NextRequest) {
     return typedJson<IResponseBody>(
       {
         response: 'ok',
-        message: '이벤트가 정상적으로 삭제되었습니다.',
+        message: '소식이 정상적으로 삭제되었습니다.',
       },
       { status: 200 },
     );
@@ -72,7 +72,7 @@ export async function DELETE(req: NextRequest) {
 
     console.error('Error deleting event document:', error);
     return typedJson<IResponseBody>(
-      { response: 'ng', message: '이벤트 삭제 중 서버 오류가 발생하였습니다.' },
+      { response: 'ng', message: '소식 삭제 중 서버 오류가 발생하였습니다.' },
       { status: 500 },
     );
   }

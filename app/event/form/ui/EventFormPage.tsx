@@ -47,9 +47,9 @@ export const EventFormPage = () => {
   return (
     <>
       {isOptimizing && <LoadingSpinnerOverlay text={`이미지 최적화 중...`} />}
-      <SectionTitleHero label="고운황금손 이벤트 만들기" />
+      <SectionTitleHero label="고운황금손 소식 만들기" />
       <Form {...form}>
-        <form aria-label="이벤트폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <form aria-label="소식폼" className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             defaultValue={''}
@@ -90,12 +90,12 @@ export const EventFormPage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  이벤트 상태 <span className="text-red-500">*</span>
+                  소식 상태 <span className="text-red-500">*</span>
                 </FormLabel>
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger aria-label="이벤트 상태" data-testid="event-status-select-trigger">
-                      <SelectValue placeholder="이벤트 상태를 선택해주세요." />
+                    <SelectTrigger aria-label="소식 상태" data-testid="event-status-select-trigger">
+                      <SelectValue placeholder="소식 상태를 선택해주세요." />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -120,7 +120,7 @@ export const EventFormPage = () => {
               disabled={!formValidation || isSubmitting}
               type="submit"
             >
-              {isSubmitting ? <LoadingSpinnerIcon /> : '이벤트 만들기'}
+              {isSubmitting ? <LoadingSpinnerIcon /> : '소식 만들기'}
             </Button>
           </div>
         </form>

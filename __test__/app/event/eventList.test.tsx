@@ -84,7 +84,7 @@ describe('Event Component', () => {
 
     renderEventPage(eventListData, adminData);
 
-    expect(screen.getByText('이벤트 만들기')).toBeInTheDocument();
+    expect(screen.getByText('소식 만들기')).toBeInTheDocument();
   });
 
   it('관리자가 아닐 때 이벤트 생성 버튼이 보이지 않는지 확인', async () => {
@@ -93,7 +93,7 @@ describe('Event Component', () => {
 
     renderEventPage(eventListData, userData);
 
-    expect(screen.queryByText('이벤트 만들기')).not.toBeInTheDocument();
+    expect(screen.queryByText('소식 만들기')).not.toBeInTheDocument();
   });
 
   it('이벤트 상태 필터링 탭이 올바르게 동작하는지 확인', async () => {

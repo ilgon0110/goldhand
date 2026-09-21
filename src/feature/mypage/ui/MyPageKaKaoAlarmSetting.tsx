@@ -135,7 +135,7 @@ export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSetting
             />
             <NotifyRow
               checked={alarms.alarmNews}
-              help="새 소식, 이벤트, 공지사항을 알림으로 알려드려요."
+              help="새 소식, 공지사항을 알림으로 알려드려요."
               id="alarm-news"
               title="고운황금손 소식 받기"
               onCheckedChange={handleToggle('alarmNews')}

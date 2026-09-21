@@ -2,6 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { getEventRowNumberMap } from '@/src/entities/event/api/getEventRowNumbers';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import type { ICommentData, IEventDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
     const data = eventDocSnap.data();
 
     const commentsRef = adminDB.collection('events').doc(docId).collection('comments').orderBy('createdAt', 'desc');
-    const commentSnapshot = await commentsRef.get();
+    const [commentSnapshot, rowNumberMap] = await Promise.all([commentsRef.get(), getEventRowNumberMap()]);
     const comments = commentSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
@@ -72,6 +73,7 @@ export async function GET(request: NextRequest) {
       message: 'ok',
       data: {
         ...data,
+        rowNumber: rowNumberMap.get(docId) ?? 0,
         createdAt: {
           seconds: data?.createdAt._seconds,
           nanoseconds: data?.createdAt._nanoseconds,

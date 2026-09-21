@@ -3,8 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { getReservationDetailData } from '@/src/entities/reservation';
 import { getUserData } from '@/src/shared/api/getUserData';
-import { getViewCountData } from '@/src/shared/api/getViewCountData';
-import { reservationKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
+import { reservationKeys, userKeys } from '@/src/shared/config/queryKeys';
 
 import { ReservationDetailPage } from './ui/ReservationDetailPage';
 
@@ -29,13 +28,7 @@ export default async function Page({ params }: TPageProps) {
     throw new Error('Error getting document');
   }
 
-  await Promise.all([
-    queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData }),
-    queryClient.prefetchQuery({
-      queryKey: viewCountKeys.detail(docId),
-      queryFn: () => getViewCountData({ docId }),
-    }),
-  ]);
+  await queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

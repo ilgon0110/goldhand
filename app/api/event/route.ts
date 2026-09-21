@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       ['status', 'in', status === 'ALL' ? ['ONGOING', 'ENDED', 'UPCOMING'] : [status]],
     ];
 
-    const [{ pinnedItems, pageItems, totalDataLength }, rowNumberMap] = await Promise.all([
+    const [{ pinnedItems, pageItems, pageableDataLength, totalDataLength }, rowNumberMap] = await Promise.all([
       getPinnedFirstListAdmin<IEventDetailData>('events', extraWhere, page, PAGE_SIZE),
       getEventRowNumberMap(),
     ]);
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     const eventsListData: IEventDetailData[] = [...pinnedItems, ...pageItems].map(normalizeTimestamps);
 
     return typedJson<IEventListResponseData>(
-      { response: 'ok', message: 'ok', eventData: eventsListData, totalDataLength },
+      { response: 'ok', message: 'ok', eventData: eventsListData, pageableDataLength, totalDataLength },
       { status: 200 },
     );
   } catch (error) {
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         ? error.code
         : 'unknown_error';
     return typedJson<IEventListResponseData>(
-      { response: 'ng', message: errorCode, eventData: [], totalDataLength: 0 },
+      { response: 'ng', message: errorCode, eventData: [], pageableDataLength: 0, totalDataLength: 0 },
       { status: 500 },
     );
   }

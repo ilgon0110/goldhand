@@ -14,6 +14,7 @@ interface IResponseBody {
 type TListData = {
   message: string;
   consultData: (IReservationDetailData & { id: string })[] | null;
+  pageableDataLength: number;
   totalDataLength: number;
 };
 
@@ -67,6 +68,7 @@ export const useReservationCreateMutation = (
         queryClient.setQueryData<TListData>(queryKey as QueryKey, {
           ...previousData,
           consultData: [tempItem, ...previousData.consultData],
+          pageableDataLength: previousData.pageableDataLength + 1,
           totalDataLength: previousData.totalDataLength + 1,
         });
       }

@@ -1,12 +1,11 @@
 import { PinToggleButton } from '@/src/entities/pin';
-import type { IReservationDetailData, IViewCountData } from '@/src/shared/types';
-import { Button } from '@/src/shared/ui/button';
 import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
+import type { IReservationDetailData } from '@/src/shared/types';
+import { Button } from '@/src/shared/ui/button';
 import { formatPhoneNumber } from '@/src/shared/utils';
 
 type TReservationDetailContentProps = {
   reservationDetailData: IReservationDetailData;
-  viewCountData: IViewCountData | null;
   isOwner: boolean;
   isAdmin: boolean;
   isPinToggling: boolean;
@@ -17,7 +16,6 @@ type TReservationDetailContentProps = {
 
 export const ReservationDetailContent = ({
   reservationDetailData,
-  viewCountData,
   isOwner,
   isAdmin,
   isPinToggling,
@@ -57,7 +55,6 @@ export const ReservationDetailContent = ({
         }
         title={reservationDetailData.title}
         updatedAt={reservationDetailData.updatedAt}
-        viewCount={viewCountData?.totalViewCount ?? 0}
       />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">

@@ -6,6 +6,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 export interface IPinnedFirstResult<T> {
   pinnedItems: (T & { id: string })[];
   pageItems: (T & { id: string })[];
+  pageableDataLength: number;
   totalDataLength: number;
 }
 
@@ -22,15 +23,19 @@ export async function getPinnedFirstListAdmin<T>(
   }
 
   const pinnedQuery = baseCollection.where('isPinned', '==', true).orderBy('pinnedAt', 'desc');
-  const pinnedSnap = await pinnedQuery.get();
-  const pinnedItems = pinnedSnap.docs.map(d => ({ id: d.id, ...d.data() })) as (T & { id: string })[];
-
   const nonPinnedQuery = baseCollection.where('isPinned', '==', false).orderBy('createdAt', 'desc');
-  const totalDataLength = (await nonPinnedQuery.count().get()).data().count;
-
   const startAtIndex = (page - 1) * pageSize;
-  const pageSnap = await nonPinnedQuery.offset(startAtIndex).limit(pageSize).get();
+
+  const [pinnedSnap, nonPinnedCountSnap, pageSnap] = await Promise.all([
+    pinnedQuery.get(),
+    nonPinnedQuery.count().get(),
+    nonPinnedQuery.offset(startAtIndex).limit(pageSize).get(),
+  ]);
+
+  const pinnedItems = pinnedSnap.docs.map(d => ({ id: d.id, ...d.data() })) as (T & { id: string })[];
+  const pageableDataLength = nonPinnedCountSnap.data().count;
+  const totalDataLength = pinnedSnap.size + pageableDataLength;
   const pageItems = pageSnap.docs.map(d => ({ id: d.id, ...d.data() })) as (T & { id: string })[];
 
-  return { pinnedItems, pageItems, totalDataLength };
+  return { pinnedItems, pageItems, pageableDataLength, totalDataLength };
 }

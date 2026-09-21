@@ -10,6 +10,7 @@ import { typedJson } from '@/src/shared/utils';
 interface IResponseBody {
   message: string;
   consultData: IReservationDetailData[];
+  pageableDataLength: number;
   totalDataLength: number;
 }
 
@@ -26,12 +27,8 @@ export async function GET(request: NextRequest) {
   try {
     const extraWhere: [string, WhereFilterOp, unknown][] = hideSecret === 'true' ? [['secret', '==', false]] : [];
 
-    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListAdmin<IReservationDetailData>(
-      'consults',
-      extraWhere,
-      page,
-      PAGE_SIZE,
-    );
+    const { pinnedItems, pageItems, pageableDataLength, totalDataLength } =
+      await getPinnedFirstListAdmin<IReservationDetailData>('consults', extraWhere, page, PAGE_SIZE);
 
     const maskSecretFields = (data: IReservationDetailData & { id: string }) => {
       const isOwner = currentUserId !== null && currentUserId === data.userId;
@@ -62,11 +59,14 @@ export async function GET(request: NextRequest) {
 
     const consults = [...pinnedItems, ...pageItems].map(maskSecretFields);
 
-    return typedJson<IResponseBody>({ message: 'ok', consultData: consults, totalDataLength }, { status: 200 });
-  } catch (error: any) {
+    return typedJson<IResponseBody>(
+      { message: 'ok', consultData: consults, pageableDataLength, totalDataLength },
+      { status: 200 },
+    );
+  } catch (error) {
     console.error('Error getting document:', error);
     return typedJson<IResponseBody>(
-      { message: 'Error getting document', consultData: [], totalDataLength: 0 },
+      { message: 'Error getting document', consultData: [], pageableDataLength: 0, totalDataLength: 0 },
       { status: 500 },
     );
   }

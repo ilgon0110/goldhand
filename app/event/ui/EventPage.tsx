@@ -34,7 +34,7 @@ export const EventPage = () => {
         <CustomPagination
           maxColumnNumber={10}
           targetPage={eventParam.page}
-          totalDataLength={data.totalDataLength}
+          totalDataLength={data.pageableDataLength}
           onChangePage={page => setEventParam({ page })}
         />
       </section>

@@ -53,7 +53,7 @@ export const AlarmMenu = ({
       case NotificationType.CONSULT_COMMENT:
         return { docType: 'reservation/list', label: '상담신청 신규 댓글' };
       case NotificationType.EVENT_COMMENT:
-        return { docType: 'event', label: '이벤트 신규 댓글' };
+        return { docType: 'event', label: '소식 신규 댓글' };
       case NotificationType.NEW_CONNECTION:
         return { docType: 'connection', label: '새로운 알림 연결' };
       case NotificationType.NEW_MANAGER:
@@ -65,7 +65,7 @@ export const AlarmMenu = ({
       case NotificationType.REVIEW_COMMENT:
         return { docType: 'review', label: '리뷰 신규 댓글' };
       case NotificationType.NEW_EVENT:
-        return { docType: 'event', label: '새로운 이벤트 알림' };
+        return { docType: 'event', label: '새로운 소식 알림' };
       default:
         return { docType: 'generic', label: '일반 알림' };
     }

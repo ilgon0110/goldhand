@@ -18,16 +18,18 @@ import {
   IS_APPLE,
   mergeRegister,
 } from '@lexical/utils';
-import type { ElementFormatType, LexicalEditor, NodeKey } from 'lexical';
+import type { ElementFormatType, LexicalEditor, LexicalNode, NodeKey } from 'lexical';
 import {
   $getNodeByKey,
   $getSelection,
   $isElementNode,
+  $isNodeSelection,
   $isRangeSelection,
   $isRootOrShadowRoot,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
+  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   HISTORIC_TAG,
   REDO_COMMAND,
@@ -63,6 +65,22 @@ const LowPriority = 1;
 
 function Divider() {
   return <div className="divider" />;
+}
+
+function $findTopLevelElement(node: LexicalNode) {
+  let topLevelElement =
+    node.getKey() === 'root'
+      ? node
+      : $findMatchingParent(node, element => {
+          const parent = element.getParent();
+          return parent !== null && $isRootOrShadowRoot(parent);
+        });
+
+  if (topLevelElement === null) {
+    topLevelElement = node.getTopLevelElementOrThrow();
+  }
+
+  return topLevelElement;
 }
 
 const rootTypeToRootName = {
@@ -358,6 +376,14 @@ export function ToolbarPlugin({
       updateToolbarState('isUppercase', selection.hasFormat('uppercase'));
       updateToolbarState('isCapitalize', selection.hasFormat('capitalize'));
     }
+    if ($isNodeSelection(selection)) {
+      for (const selectedNode of selection.getNodes()) {
+        const selectedElement = $findTopLevelElement(selectedNode);
+        if ($isElementNode(selectedElement)) {
+          updateToolbarState('elementFormat', selectedElement.getFormatType() || 'left');
+        }
+      }
+    }
   }, [activeEditor, editor, updateToolbarState]);
 
   useEffect(() => {
@@ -592,6 +618,26 @@ export function ToolbarPlugin({
       >
         <i className="format underline" />
       </button>
+      <Divider />
+      {(['left', 'center', 'right'] as const).map(format => {
+        const formatOption = ELEMENT_FORMAT_OPTIONS[format];
+
+        return (
+          <button
+            aria-label={formatOption.name}
+            className={'toolbar-item spaced ' + (toolbarState.elementFormat === format ? 'active' : '')}
+            disabled={!isEditable}
+            key={format}
+            title={formatOption.name}
+            type="button"
+            onClick={() => {
+              activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, format);
+            }}
+          >
+            <i className={`format ${formatOption.icon}`} />
+          </button>
+        );
+      })}
       <Divider />
       <Popover open={imageModalOpen} onOpenChange={onChangeImageModalOpen}>
         <PopoverTrigger asChild>

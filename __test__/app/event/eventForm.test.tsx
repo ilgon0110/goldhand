@@ -50,7 +50,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
     // title은 제대로 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'This is a valid title');
 
-    // 이벤트 상태 선택
+    // 소식 상태 선택
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
     await userEvent.click(eventStatusTrigger);
     const optionToSelect = await waitFor(() => screen.findByText(/진행중/, { selector: 'span' }));
@@ -58,20 +58,20 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
 
     // 이름에 1글자만 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/이름/), 'A');
-    await userEvent.click(screen.getByRole('button', { name: '이벤트 만들기' }));
+    await userEvent.click(screen.getByRole('button', { name: '소식 만들기' }));
 
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
 
     // 이름에 20글자 이상 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/이름/), '123456789012345678901');
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
 
     // 제대로 입력했을 때 제출 버튼 활성화 확인
     const nameInput = screen.getByLabelText(/이름/);
     // Clear the input first
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'Valid Name');
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeEnabled();
   });
 
   it('title validation 테스트. 2자 이상 100자 이하로 입력해주세요.', async () => {
@@ -80,7 +80,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
     // name은 제대로 입력
     await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');
 
-    // 이벤트 상태 선택
+    // 소식 상태 선택
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
     await userEvent.click(eventStatusTrigger);
     const optionToSelect = await waitFor(() => screen.findByText(/진행중/, { selector: 'span' }));
@@ -88,26 +88,26 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
 
     // title에 1글자만 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(screen.getByLabelText(/제목/), 'A');
-    await userEvent.click(screen.getByRole('button', { name: '이벤트 만들기' }));
+    await userEvent.click(screen.getByRole('button', { name: '소식 만들기' }));
 
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
 
     // title에 100글자 이상 입력했을 때 제출 버튼 비활성화 확인
     await userEvent.type(
       screen.getByLabelText(/제목/),
       '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901',
     );
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
 
     // 제대로 입력했을 때 제출 버튼 활성화 확인
     const titleInput = screen.getByLabelText(/제목/);
     // Clear the input first
     await userEvent.clear(titleInput);
     await userEvent.type(titleInput, 'Valid Title');
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeEnabled();
   });
 
-  it('이벤트 상태 Select 테스트. 올바르게 선택되는지 확인합니다.', async () => {
+  it('소식 상태 Select 테스트. 올바르게 선택되는지 확인합니다.', async () => {
     renderWithQueryClient(<EventFormPage />);
 
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
@@ -129,14 +129,14 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
     // 제목 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'Valid Title');
 
-    // 이벤트 상태 선택
+    // 소식 상태 선택
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
     await userEvent.click(eventStatusTrigger);
     const optionToSelect = await waitFor(() => screen.findByText(/진행중/, { selector: 'span' }));
     await userEvent.click(optionToSelect);
 
     // 제출 버튼이 활성화 되었는지 확인
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeEnabled();
   });
 
   it('이름을 잘못 입력했을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
@@ -148,14 +148,14 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
     // 제목 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'Valid Title');
 
-    // 이벤트 상태 선택
+    // 소식 상태 선택
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
     await userEvent.click(eventStatusTrigger);
     const optionToSelect = await waitFor(() => screen.findByText(/진행중/, { selector: 'span' }));
     await userEvent.click(optionToSelect);
 
     // 제출 버튼이 비활성화 되었는지 확인
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
   });
 
   it('제목을 잘못 입력했을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
@@ -167,17 +167,17 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
     // 제목 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'Invalid Title. '.repeat(10)); // 100자 초과
 
-    // 이벤트 상태 선택
+    // 소식 상태 선택
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
     await userEvent.click(eventStatusTrigger);
     const optionToSelect = await waitFor(() => screen.findByText(/진행중/, { selector: 'span' }));
     await userEvent.click(optionToSelect);
 
     // 제출 버튼이 비활성화 되었는지 확인
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
   });
 
-  it('이벤트 상태를 선택하지 않았을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
+  it('소식 상태를 선택하지 않았을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
     renderWithQueryClient(<EventFormPage />);
 
     // 이름 입력
@@ -186,9 +186,9 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
     // 제목 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'Invalid Title. '.repeat(10)); // 100자 초과
 
-    // 이벤트 상태 선택 안함
+    // 소식 상태 선택 안함
 
     // 제출 버튼이 비활성화 되었는지 확인
-    expect(screen.getByRole('button', { name: '이벤트 만들기' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '소식 만들기' })).toBeDisabled();
   });
 });

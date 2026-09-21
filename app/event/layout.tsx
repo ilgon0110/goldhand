@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '이벤트',
-  description: '고운황금손에서 진행중인 이벤트 및 혜택 안내. 수원 광교 용인 산후도우미 서비스.',
+  title: '소식',
+  description: '고운황금손에서 진행중인 소식 및 혜택 안내. 수원 광교 용인 산후도우미 서비스.',
   alternates: { canonical: 'https://nicegoldhand.com/event' },
   openGraph: {
-    title: '이벤트 | 고운황금손',
-    description: '고운황금손에서 진행중인 이벤트 및 혜택 안내. 수원 광교 용인 산후도우미 서비스.',
+    title: '소식 | 고운황금손',
+    description: '고운황금손에서 진행중인 소식 및 공지 안내. 수원 광교 용인 산후도우미 서비스.',
     url: 'https://nicegoldhand.com/event',
   },
 };

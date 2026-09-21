@@ -142,7 +142,7 @@ export const EventCard = ({ event }: TEventCardProps) => {
             isEnded ? 'text-stone-400' : 'text-stone-500',
           )}
         >
-          {description === '' ? '이벤트 내용이 없습니다.' : description}
+          {description === '' ? '소식 내용이 없습니다.' : description}
         </p>
         <p className="shrink-0 whitespace-nowrap font-serif text-[11px] tracking-[0.04em] text-stone-400 md:hidden">
           {formattedDate}

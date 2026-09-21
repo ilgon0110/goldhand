@@ -33,7 +33,7 @@ export const ReviewPage = () => {
         <CustomPagination
           maxColumnNumber={10}
           targetPage={reviewParam.page}
-          totalDataLength={data.totalDataLength}
+          totalDataLength={data.pageableDataLength}
           onChangePage={page => setReviewParam({ page })}
         />
       </section>

@@ -8,8 +8,8 @@ import { ReservationDetailPage } from '@/app/reservation/list/[docId]/ui/Reserva
 import { server } from '@/src/__mock__/node';
 import { mockReservationListData } from '@/src/__mock__/reservation';
 import { apiUrl } from '@/src/shared/config';
-import { reservationKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
-import type { IReservationResponseData, IUserResponseData, IViewCountResponseData } from '@/src/shared/types';
+import { reservationKeys, userKeys } from '@/src/shared/config/queryKeys';
+import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
@@ -59,12 +59,6 @@ const guestUserData: IUserResponseData = {
   userData: null,
   isLinked: false,
 };
-const viewCountData: IViewCountResponseData = {
-  response: 'ok',
-  message: '성공',
-  data: { totalViewCount: 1 },
-};
-
 function renderDetail(
   reservationData: IReservationResponseData = guestReservationData,
   userData: IUserResponseData = guestUserData,
@@ -72,7 +66,6 @@ function renderDetail(
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   queryClient.setQueryData(reservationKeys.detail(docId), reservationData);
   queryClient.setQueryData(userKeys.all, userData);
-  queryClient.setQueryData(viewCountKeys.detail(docId), viewCountData);
 
   return renderWithQueryClient(
     <Suspense fallback={null}>

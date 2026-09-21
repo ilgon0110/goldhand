@@ -6,6 +6,13 @@ set -euo pipefail
 IMAGE="${DOCKERHUB_USERNAME}/goldhand"
 NEW_TAG="${IMAGE_TAG:-latest}"
 
+cleanup_old_images() {
+  echo "▶ Pruning unused Docker images older than 7 days"
+  if ! docker image prune -a -f --filter "until=168h"; then
+    echo "⚠ Failed to prune old Docker images — deploy remains healthy" >&2
+  fi
+}
+
 # ── Docker Hub 로그인 (private repo) ──────────────────────────────
 echo "▶ Logging in to Docker Hub"
 echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
@@ -37,6 +44,7 @@ NEW_CONTAINER_ID=$(docker compose ps -q nextjs 2>/dev/null || echo "")
 for i in $(seq 1 24); do
   HEALTH=$(docker inspect --format='{{.State.Health.Status}}' "${NEW_CONTAINER_ID}" 2>/dev/null || echo "unknown")
   if [ "${HEALTH}" = "healthy" ]; then
+    cleanup_old_images
     echo "✓ Healthy — deploy complete (tag: ${NEW_TAG})"
     exit 0
   fi
@@ -47,6 +55,7 @@ done
 # ── Loop 종료 후 최종 확인 ────────────────────────────────────────────
 HEALTH=$(docker inspect --format='{{.State.Health.Status}}' "${NEW_CONTAINER_ID}" 2>/dev/null || echo "unknown")
 if [ "${HEALTH}" = "healthy" ]; then
+  cleanup_old_images
   echo "✓ Healthy — deploy complete (tag: ${NEW_TAG})"
   exit 0
 fi

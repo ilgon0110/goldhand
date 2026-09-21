@@ -88,6 +88,7 @@ export interface IReviewListResponseData {
   response: 'ng' | 'ok';
   message: string;
   reviewData: (IReviewDetailData & { id: string; isAuthorAdmin: boolean })[] | [];
+  pageableDataLength: number;
   totalDataLength: number;
 }
 
@@ -286,6 +287,7 @@ export interface IEventListResponseData {
   response: 'ng' | 'ok';
   message: string;
   eventData: IEventDetailData[] | [];
+  pageableDataLength: number;
   totalDataLength: number;
 }
 

@@ -77,6 +77,19 @@ describe('ReviewPage 통합 테스트', () => {
 });
 
 describe('ReviewPageHeader 컴포넌트 테스트', async () => {
+  it('고정 후기를 포함한 전체 후기 건수를 표시한다', async () => {
+    const response = await fetch('/api/review?page=1&franchisee=전체');
+    const data = (await response.json()) as IReviewListResponseData;
+
+    renderReviewPage({ ...data, pageableDataLength: 2, totalDataLength: 3 });
+
+    expect(
+      screen.getByText(
+        (_content, element) => element?.tagName === 'P' && element.textContent?.replace(/\s/g, '') === '총3건',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('비로그인(비회원)이어도 후기 작성 버튼이 활성화되어 있는지 확인', async () => {
     const response = await fetch('/api/review?page=1&franchisee=전체');
     const data = (await response.json()) as IReviewListResponseData;

@@ -1,6 +1,7 @@
 import type { WhereFilterOp } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { getEventRowNumberMap } from '@/src/entities/event/api/getEventRowNumbers';
 import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
 import type { IEventDetailData, IEventListResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -16,35 +17,45 @@ export async function GET(request: NextRequest) {
       ['status', 'in', status === 'ALL' ? ['ONGOING', 'ENDED', 'UPCOMING'] : [status]],
     ];
 
-    const { pinnedItems, pageItems, totalDataLength } = await getPinnedFirstListAdmin<IEventDetailData>(
-      'events',
-      extraWhere,
-      page,
-      PAGE_SIZE,
-    );
+    const [{ pinnedItems, pageItems, pageableDataLength, totalDataLength }, rowNumberMap] = await Promise.all([
+      getPinnedFirstListAdmin<IEventDetailData>('events', extraWhere, page, PAGE_SIZE),
+      getEventRowNumberMap(),
+    ]);
 
-    const normalizeTimestamps = (item: any): IEventDetailData => ({
-      ...item,
-      createdAt: {
-        seconds: item.createdAt._seconds ?? item.createdAt.seconds,
-        nanoseconds: item.createdAt._nanoseconds ?? item.createdAt.nanoseconds,
-      },
-      updatedAt: {
-        seconds: item.updatedAt._seconds ?? item.updatedAt.seconds,
-        nanoseconds: item.updatedAt._nanoseconds ?? item.updatedAt.nanoseconds,
-      },
-      pinnedAt: item.pinnedAt
-        ? {
-            seconds: item.pinnedAt._seconds ?? item.pinnedAt.seconds,
-            nanoseconds: item.pinnedAt._nanoseconds ?? item.pinnedAt.nanoseconds,
-          }
-        : null,
-    });
+    const normalizeTimestamps = (item: IEventDetailData): IEventDetailData => {
+      type TAdminTimestamp = IEventDetailData['createdAt'] & {
+        _nanoseconds?: number;
+        _seconds?: number;
+      };
+
+      const createdAt = item.createdAt as TAdminTimestamp;
+      const updatedAt = item.updatedAt as TAdminTimestamp;
+      const pinnedAt = item.pinnedAt as TAdminTimestamp | null;
+
+      return {
+        ...item,
+        rowNumber: rowNumberMap.get(item.id) ?? 0,
+        createdAt: {
+          seconds: createdAt._seconds ?? createdAt.seconds,
+          nanoseconds: createdAt._nanoseconds ?? createdAt.nanoseconds,
+        },
+        updatedAt: {
+          seconds: updatedAt._seconds ?? updatedAt.seconds,
+          nanoseconds: updatedAt._nanoseconds ?? updatedAt.nanoseconds,
+        },
+        pinnedAt: pinnedAt
+          ? {
+              seconds: pinnedAt._seconds ?? pinnedAt.seconds,
+              nanoseconds: pinnedAt._nanoseconds ?? pinnedAt.nanoseconds,
+            }
+          : null,
+      };
+    };
 
     const eventsListData: IEventDetailData[] = [...pinnedItems, ...pageItems].map(normalizeTimestamps);
 
     return typedJson<IEventListResponseData>(
-      { response: 'ok', message: 'ok', eventData: eventsListData, totalDataLength },
+      { response: 'ok', message: 'ok', eventData: eventsListData, pageableDataLength, totalDataLength },
       { status: 200 },
     );
   } catch (error) {
@@ -54,7 +65,7 @@ export async function GET(request: NextRequest) {
         ? error.code
         : 'unknown_error';
     return typedJson<IEventListResponseData>(
-      { response: 'ng', message: errorCode, eventData: [], totalDataLength: 0 },
+      { response: 'ng', message: errorCode, eventData: [], pageableDataLength: 0, totalDataLength: 0 },
       { status: 500 },
     );
   }

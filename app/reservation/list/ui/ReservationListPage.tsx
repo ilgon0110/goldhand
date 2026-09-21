@@ -140,7 +140,7 @@ export const ReservationListPage = () => {
       <CustomPagination
         maxColumnNumber={10}
         targetPage={consultParam.page}
-        totalDataLength={data.totalDataLength}
+        totalDataLength={data.pageableDataLength}
         onChangePage={(page: number) => setConsultParam({ page })}
       />
     </div>

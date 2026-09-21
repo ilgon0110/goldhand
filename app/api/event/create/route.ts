@@ -49,13 +49,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const adminDB = getAdminFirestore(firebaseAdminApp);
-    const dataSize = await adminDB
-      .collection('events')
-      .get()
-      .then(snapshot => snapshot.size);
-
-    return createEventPost(authResult.uid, body, dataSize);
+    return createEventPost(authResult.uid, body);
   } catch (error) {
     console.error('Error creating event:', error);
     return typedJson<IResponseBody>(
@@ -65,7 +59,7 @@ export async function POST(req: Request) {
   }
 }
 
-const createEventPost = async (uid: string, body: IEventPost, dataSize: number) => {
+const createEventPost = async (uid: string, body: IEventPost) => {
   const { title, htmlString, docId, images, name, status } = body;
 
   const imageFields = resolvePostImageFields({ htmlString, images });
@@ -79,7 +73,6 @@ const createEventPost = async (uid: string, body: IEventPost, dataSize: number) 
       .set({
         id: docId,
         ...imageFields,
-        rowNumber: dataSize + 1,
         title,
         name,
         userId: uid,

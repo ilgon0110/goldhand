@@ -50,5 +50,6 @@ export const mockEventListData: IEventListResponseData = {
       comments: null,
     },
   ],
+  pageableDataLength: 2,
   totalDataLength: 3,
 };

@@ -36,7 +36,6 @@ vi.mock('@/src/entities/review', async importOriginal => {
 });
 vi.mock('@/src/feature/auth', () => ({ OAuthSuccessHandler: () => null }));
 vi.mock('@/src/feature/home', () => ({
-  FaqSection: () => null,
   FranchiseeSheetList: () => null,
   ImageSlideList: () => null,
   MainTitle: () => null,

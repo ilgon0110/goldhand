@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
+import { PiArrowRight } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import { generateReviewDescription, generateThumbnailUrl } from '@/src/entities/review';
@@ -9,8 +10,8 @@ import type { CarouselApi } from '@/src/shared/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/shared/ui/carousel';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
-import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
+import { HomeSectionHeading } from '../../ui/HomeSectionHeading';
 import { useReviewCarouselQuery } from '../api/useReviewCarouselQuery';
 import { ReviewSummaryCard } from './_ReviewSummaryCard';
 
@@ -43,11 +44,27 @@ export const ReviewCarousel = () => {
   if (data?.length === 0) return null;
 
   return (
-    <div className="w-full sm:px-20">
+    <div className="w-full">
       {isPending && <LoadingSpinnerOverlay text="해당 후기로 이동중.." />}
       <FadeInWhenVisible>
-        <div className="mb-12 flex flex-col items-center justify-center gap-6 whitespace-pre-wrap">
-          <SectionTitleHero description="고운황금손 이용후기를 소개합니다." label="고운황금손 이용후기" level="h2" />
+        <div className="mb-10">
+          <HomeSectionHeading
+            action={
+              <button
+                className={cn(
+                  'inline-flex w-fit items-center gap-2 text-sm font-semibold text-goldDeep transition-colors duration-200',
+                  'hover:text-[#6B5224]',
+                )}
+                type="button"
+                onClick={() => startTransition(() => router.push('/review'))}
+              >
+                모든 이용후기 보기
+                <PiArrowRight aria-hidden="true" className="h-4 w-4" />
+              </button>
+            }
+            description="고운황금손 이용후기를 소개합니다."
+            title="고운황금손 이용후기"
+          />
         </div>
       </FadeInWhenVisible>
 
@@ -60,11 +77,11 @@ export const ReviewCarousel = () => {
           orientation="horizontal"
           setApi={setApi}
         >
-          <CarouselContent className="gap-6">
+          <CarouselContent className="gap-5">
             {reviewItems.map((item, index) => (
               <CarouselItem
                 aria-current={index === currentIndex ? 'true' : undefined}
-                className={cn('basis-1/1', 'md:basis-1/2', 'xl:basis-1/3')}
+                className={cn('basis-1/1', 'md:basis-[calc(50%-10px)]', 'xl:basis-[calc(33.333%-14px)]')}
                 key={item.id}
               >
                 <ReviewSummaryCard
@@ -78,17 +95,19 @@ export const ReviewCarousel = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className={cn('hidden', 'md:inline-flex')} />
-          <CarouselNext className={cn('hidden', 'md:inline-flex')} />
+          <div className="mt-6 flex justify-end gap-2">
+            <CarouselPrevious className="static h-10 w-10 translate-y-0" />
+            <CarouselNext className="static h-10 w-10 translate-y-0" />
+          </div>
         </Carousel>
       </FadeInWhenVisible>
 
-      {/* 모바일버전, width:768px 미만 — CSS scroll-snap */}
+      {/* 모바일버전, width:768px 미만: CSS scroll-snap */}
       <FadeInWhenVisible delay={0.2}>
-        <div className={cn('-mx-4 md:hidden')}>
+        <div className="md:hidden">
           <div
             aria-label="고운황금손 이용후기 목록"
-            className={cn('no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2')}
+            className={cn('no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2')}
             role="region"
           >
             {/* 모바일: 스크롤 목록은 최대 10개 */}
@@ -105,34 +124,6 @@ export const ReviewCarousel = () => {
               </div>
             ))}
           </div>
-        </div>
-      </FadeInWhenVisible>
-
-      {/* ALL REVIEWS 링크 */}
-      <FadeInWhenVisible delay={0.3}>
-        <div className="mt-7 text-center">
-          <button
-            className={cn(
-              'inline-flex items-center gap-1.5 text-xs tracking-[0.12em] text-stone-500 transition',
-              'hover:text-gold',
-            )}
-            type="button"
-            onClick={() => startTransition(() => router.push('/review'))}
-          >
-            모든 이용후기 보기
-            <svg
-              aria-hidden="true"
-              className="h-3 w-3"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.8}
-              viewBox="0 0 24 24"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
         </div>
       </FadeInWhenVisible>
     </div>

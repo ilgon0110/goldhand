@@ -3,7 +3,7 @@ import type { IconType } from 'react-icons';
 import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/shared/ui/FadeInWhenVisible';
 
-type TPromise = {
+export type TFlowCardItem = {
   icon: IconType;
   tag: string;
   title: string;
@@ -35,7 +35,7 @@ function Connector({ reverse = false }: { reverse?: boolean }) {
   );
 }
 
-function PromiseCard({ icon: Icon, tag, title, desc }: TPromise) {
+function FlowCard({ icon: Icon, tag, title, desc }: TFlowCardItem) {
   return (
     <div className="rounded-xl border border-border bg-background p-5 shadow-[0_12px_32px_-16px_rgba(139,107,48,0.35)]">
       <span className="inline-flex items-center gap-1.5 rounded-md bg-gold/10 px-2 py-0.5 text-xs font-semibold text-goldDeep">
@@ -48,30 +48,24 @@ function PromiseCard({ icon: Icon, tag, title, desc }: TPromise) {
   );
 }
 
-export function PromiseFlow({ promises }: { promises: [TPromise, TPromise, TPromise] }) {
-  const [first, second, third] = promises;
-  const cardWidth = cn('w-full', 'md:w-[78%]');
-
+// 카드를 좌/우로 번갈아 배치하고 곡선 connector로 잇는다. title은 스크린리더용 섹션 제목.
+export function FlowCards({ title, items }: { title: string; items: readonly TFlowCardItem[] }) {
   return (
     <div>
-      <h2 className="sr-only">고운황금손의 약속</h2>
-      <FadeInWhenVisible delay={0.1}>
-        <div className={cardWidth}>
-          <PromiseCard {...first} />
-        </div>
-      </FadeInWhenVisible>
-      <Connector />
-      <FadeInWhenVisible delay={0.25}>
-        <div className={cn(cardWidth, 'md:ml-auto')}>
-          <PromiseCard {...second} />
-        </div>
-      </FadeInWhenVisible>
-      <Connector reverse />
-      <FadeInWhenVisible delay={0.4}>
-        <div className={cardWidth}>
-          <PromiseCard {...third} />
-        </div>
-      </FadeInWhenVisible>
+      <h2 className="sr-only">{title}</h2>
+      {items.map((item, index) => {
+        const isRight = index % 2 === 1;
+        return (
+          <div key={item.title}>
+            {index > 0 && <Connector reverse={!isRight} />}
+            <FadeInWhenVisible delay={0.1 + index * 0.15}>
+              <div className={cn('w-full', 'md:w-[78%]', isRight && 'md:ml-auto')}>
+                <FlowCard {...item} />
+              </div>
+            </FadeInWhenVisible>
+          </div>
+        );
+      })}
     </div>
   );
 }

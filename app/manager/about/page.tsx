@@ -12,8 +12,8 @@ import {
 import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/shared/ui/FadeInWhenVisible';
 
+import { FlowCards } from '../_ui/FlowCards';
 import { policyList, ruleGroups } from './config';
-import { PromiseFlow } from './ui/_PromiseFlow';
 
 // 좌우 여백은 app/manager/layout.tsx에서 한 번만 정의한다. 이 페이지는 별도 가로 padding을 두지 않는다.
 const SECTION = cn('border-t border-border py-20', 'md:py-28');
@@ -80,7 +80,7 @@ const Page = () => {
             </p>
           </div>
         </FadeInWhenVisible>
-        <PromiseFlow promises={[...PROMISES]} />
+        <FlowCards items={PROMISES} title="고운황금손의 약속" />
       </div>
 
       {/* 2. 자격조건: 주제별 3개 그룹 + 교육·보장 안내 */}

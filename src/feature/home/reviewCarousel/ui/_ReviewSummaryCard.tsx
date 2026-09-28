@@ -1,5 +1,6 @@
-import Image from 'next/image';
 import type { Timestamp } from 'firebase/firestore';
+import Image from 'next/image';
+import { PiArrowRight } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
@@ -24,10 +25,10 @@ export const ReviewSummaryCard = ({
 }: TReviewSummaryCardProps) => {
   return (
     <button
-      aria-label={title}
       className={cn(
-        'flex w-full flex-col rounded-lg border border-slate-100 bg-white p-4 text-left shadow',
-        'transition-all hover:border-gold/40 hover:shadow-md',
+        'group flex h-full w-full flex-col rounded-2xl border border-border bg-background p-5 text-left',
+        'transition-colors duration-300 ease-out',
+        'hover:border-gold/50 active:scale-[0.99]',
       )}
       type="button"
       onClick={handleClick}
@@ -36,44 +37,33 @@ export const ReviewSummaryCard = ({
         <div className="shrink-0">
           {thumbnailSrc ? (
             <Image
-                alt={title}
-                className="h-14 w-14 rounded-md object-cover"
-                height={56}
-                loading="lazy"
-                sizes="56px"
-                src={thumbnailSrc}
-                width={56}
-              />
+              alt={title}
+              className="h-14 w-14 rounded-xl object-cover"
+              height={56}
+              loading="lazy"
+              sizes="56px"
+              src={thumbnailSrc}
+              width={56}
+            />
           ) : (
             <DefaultImage className="h-14 w-14" />
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold leading-tight">{title}</p>
-          <p className="mt-0.5 text-xs text-gray-500">
+          <p className="truncate text-base font-bold leading-tight">{title}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
             <span>{author}</span>
             {' · '}
             {formatDateToYMD(updatedAt)}
           </p>
         </div>
       </div>
-      <div className="mt-3 flex-1">
-        <span className="block text-3xl font-bold leading-none text-gold/30"></span>
-        <p className="line-clamp-2 text-sm text-gray-600">{content}</p>
-      </div>
-      <div className="mt-3 flex justify-end">
-        <svg
+      <p className="mt-4 line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">{content}</p>
+      <div className="mt-4 flex justify-end">
+        <PiArrowRight
           aria-hidden="true"
-          className="h-4 w-4 text-gold"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.6}
-          viewBox="0 0 24 24"
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
+          className="h-4 w-4 text-goldDeep transition-transform duration-300 group-hover:translate-x-1"
+        />
       </div>
     </button>
   );

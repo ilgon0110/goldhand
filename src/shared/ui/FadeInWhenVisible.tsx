@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -18,6 +18,7 @@ export default function FadeInWhenVisible({ children, delay = 0, yaxis = 0 }: TP
 
   const [triggerPoint, setTriggerPoint] = useState<number | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (inView && entry && triggerPoint === null) {
@@ -49,7 +50,7 @@ export default function FadeInWhenVisible({ children, delay = 0, yaxis = 0 }: TP
     <motion.div
       animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
       className="w-full"
-      initial={{ opacity: 0, y: 30 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 30 }}
       ref={ref}
       transition={{ duration: 0.6, delay, ease: 'easeOut' }}
     >

@@ -3,8 +3,9 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { cn } from '@/lib/utils';
 import { getReviewListData } from '@/src/entities/review';
 import { OAuthSuccessHandler } from '@/src/feature/auth';
-import { FaqSection, FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
+import { FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
 import { ReviewCarousel } from '@/src/feature/home/reviewCarousel/ui/ReviewCarousel';
+import { HOME_CONTAINER } from '@/src/feature/home/ui/homeContainer';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
 
@@ -23,16 +24,17 @@ export default async function Home() {
       <section>
         <ImageSlideList />
       </section>
-      <section>
-        <MainTitle />
+      <section className={cn('bg-muted/50 py-20', 'md:py-32')}>
+        <div className={HOME_CONTAINER}>
+          <MainTitle />
+        </div>
       </section>
-      <section className={cn('mx-auto mt-24 max-w-7xl space-y-24 px-4', 'sm:space-y-48')}>
+      <section className={cn(HOME_CONTAINER, 'space-y-24 py-24', 'md:space-y-36 md:py-32')}>
         <HydrationBoundary state={dehydrate(queryClient)}>
           <ReviewCarousel />
         </HydrationBoundary>
         <FranchiseeSheetList />
         <PriceList />
-        <FaqSection />
         <SponsorList />
       </section>
     </>

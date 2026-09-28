@@ -1,4 +1,3 @@
-export { FaqSection } from './faq/ui/FaqSection';
 export { FranchiseeSheetList } from './franchiseeSheetList/ui/FranchiseeSheetList';
 export { ImageSlideList } from './imageSlide/ui/ImageSlideList';
 export { MainTitle } from './mainTitle/ui/MainTitle';

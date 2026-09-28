@@ -61,3 +61,21 @@ export const etcInsertCheckList = [
   '저녁 7시 업무종료, 신생아 집중케어',
   '하루 3시간 휴게시간 포함',
 ];
+
+// 그 외 추가 요금: [출퇴근형, 입주형]
+export const childExtraFeeList = [
+  { label: '미취학 20개월 미만', values: [15000, 20000] },
+  { label: '미취학 20개월 이상', values: [10000, 15000] },
+  { label: '어린이집·유치원', values: [6000, 10000] },
+  { label: '어린이집 방학', values: [10000, 20000] },
+  { label: '초등학교 이상 학생', values: [5000, 8000] },
+  { label: '초등학교 이상 학생 방학', values: [6000, 10000] },
+];
+
+export const otherExtraFeeList = [
+  { label: '남편 재택근무 및 성인가족 추가', values: [5000, 6000] },
+  { label: '시간연장 (시간당)', values: [20000, 20000] },
+  { label: '명절 휴일 추가', values: [100000, 100000] },
+  { label: '관리사 지정 추가', values: [10000, 10000] },
+  { label: '쌍둥이 케어', values: [50000, 60000] },
+];

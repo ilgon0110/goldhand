@@ -11,8 +11,8 @@ import {
 
 import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/shared/ui/FadeInWhenVisible';
+import { FlowCards } from '@/shared/ui/FlowCards';
 
-import { FlowCards } from '../_ui/FlowCards';
 import { policyList, ruleGroups } from './config';
 
 // 좌우 여백은 app/manager/layout.tsx에서 한 번만 정의한다. 이 페이지는 별도 가로 padding을 두지 않는다.

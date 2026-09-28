@@ -11,8 +11,8 @@ import {
 
 import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/shared/ui/FadeInWhenVisible';
+import { FlowCards } from '@/shared/ui/FlowCards';
 
-import { FlowCards } from '../_ui/FlowCards';
 import { CARE_AREAS } from './config';
 
 // 좌우 여백은 app/manager/layout.tsx에서 한 번만 정의한다. 타입 스케일은 /manager/about과 동일하게 맞춘다.

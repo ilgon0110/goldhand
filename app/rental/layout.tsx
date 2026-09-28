@@ -12,5 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <section className="pb-28">{children}</section>;
+  // 좌우 여백은 이 레이아웃에서 한 번만 정의한다. (manager 레이아웃과 동일한 폭·여백)
+  return <section className="mx-auto max-w-6xl px-4 pb-28 md:px-9">{children}</section>;
 }

@@ -1,129 +1,153 @@
 import Link from 'next/link';
+import { PiArrowRight, PiCalendarCheck, PiInfo, PiPhone } from 'react-icons/pi';
+import { RiKakaoTalkFill } from 'react-icons/ri';
 
 import { cn } from '@/lib/utils';
-import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
+import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 
 import { orderCardList } from './config';
 
+// 좌우 여백은 app/reservation/layout.tsx가 정의한다(하위 form·list 페이지와 공유).
+// 이 페이지는 다른 안내 페이지와 같은 본문 폭(1080px)만 맞춘다. 타입 스케일은 /price·/voucher와 동일.
+const H2 = cn('break-keep text-xl font-bold leading-[1.35] text-foreground', 'md:text-2xl', 'xl:text-3xl');
+const CONTACT_BUTTON = cn(
+  'inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold transition-colors duration-200',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-goldDeep focus-visible:ring-offset-2',
+);
+
 export default function ReservationPage() {
   return (
-    <>
-      <SectionTitleHero description="모든 단계는 본점·지점 동일한 기준으로 운영됩니다." label="예약 상담" />
-      {/* 스텝 목록 */}
-      <div className="mx-auto max-w-[880px] pb-20">
-        <ol className="relative m-0 list-none p-0">
-          {orderCardList.map((step, index) => (
-            <li
+    <div className="mx-auto max-w-[1080px] break-keep pb-28">
+      {/* 1. 제목 + 연락 수단 */}
+      <div className={cn('pb-16 pt-16', 'md:pb-20 md:pt-24')}>
+        <FadeInWhenVisible>
+          <h1 className="space-y-4">
+            <span className="flex items-center gap-2 text-base font-bold text-goldDeep">
+              <PiCalendarCheck aria-hidden="true" className="h-5 w-5" />
+              예약 상담
+            </span>
+            <span
               className={cn(
-                'grid gap-7 py-7',
-                index === 0 ? 'pt-0' : 'border-t border-[#E8E1D2]',
-                index === orderCardList.length - 1 && 'border-b border-[#E8E1D2] pb-8',
-                'grid-cols-[48px_1fr]',
-                'md:grid-cols-[48px_1fr_auto]',
+                'block text-2xl font-bold leading-[1.3] tracking-[-0.01em] text-foreground [text-wrap:balance]',
+                'md:text-3xl md:leading-[1.3]',
+                'xl:text-4xl xl:leading-[1.3]',
               )}
-              key={step.title}
             >
-              {/* 숫자 원 */}
-              <div className="relative z-10 mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-[#A88547] bg-[#FBF8F1] text-sm text-[#8B6B30]">
-                {index + 1}
-              </div>
+              산후도우미 서비스 상담을 신청하세요
+            </span>
+          </h1>
+          <p className={cn('mt-6 text-base leading-relaxed text-muted-foreground', 'md:text-lg')}>
+            간단한 정보만 입력하시면, 가장 빠른 시간 내에 상담 연락을 드립니다.
+          </p>
 
-              {/* 내용 */}
-              <div className="pt-0.5">
-                <p className={cn('font-semibold tracking-tight text-[#1B1814]', 'text-base', 'md:text-lg')}>
-                  {step.title}
-                </p>
-                <p className="mt-1.5 max-w-lg whitespace-pre-line text-sm leading-relaxed text-[#5C5249]">
-                  {step.content}
-                </p>
-
-                {/* Step 1 연락 chip */}
-                {index === 0 && (
-                  <div className={cn('mt-3.5 flex flex-col gap-2', 'md:flex-row md:flex-wrap')}>
-                    <Link
-                      className={cn(
-                        'flex w-full items-center justify-center gap-2 rounded-full bg-[#728146] px-3.5 py-2 text-sm font-semibold text-white transition-colors',
-                        'hover:bg-[#062E16]',
-                        'md:inline-flex md:w-auto md:justify-start',
-                      )}
-                      href="/reservation/apply"
-                    >
-                      <svg fill="none" height={14} stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" width={14}>
-                        <path d="M5 12h14M13 6l6 6-6 6" />
-                      </svg>
-                      <span>예약상담 신청하기</span>
-                    </Link>
-                    <a
-                      className={cn(
-                        'flex w-full items-center justify-center gap-2 rounded-full border border-[#E8E1D2] bg-white px-3.5 py-2 text-sm text-[#1B1814] transition-all',
-                        'hover:border-[#A88547] hover:bg-[#F6F1E7]',
-                        'md:inline-flex md:w-auto md:justify-start',
-                      )}
-                      href="tel:01044370431"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        className="h-3.5 w-3.5 flex-shrink-0"
-                        fill="currentColor"
-                        viewBox="0 -960 960 960"
-                      >
-                        <path d="M795-120q-116 0-236.5-56T335-335Q232-438 176-558.5T120-795q0-19 13-32t32-13h140q14 0 24 10t14 25l27 126q2 13-1 22t-10 16L259-533q26 44 55 82t64 72q37 38 78 69t86 56l95-98q10-11 23-15t26-2l119 26q15 4 25 16t10 27v135q0 19-13 32t-32 13Z" />
-                      </svg>
-                      <span className="font-serif tracking-wide">010-4437-0431</span>
-                    </a>
-                    <a
-                      className={cn(
-                        'flex w-full items-center justify-center gap-2 rounded-full bg-[#FAE100] px-3.5 py-2 text-sm font-semibold text-[#3C1E1E] transition-all hover:bg-[#f0d600]',
-                        'md:inline-flex md:w-auto md:justify-start',
-                      )}
-                      href="https://pf.kakao.com/_cpdEX"
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        className="h-3.5 w-3.5 flex-shrink-0"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.7 1.78 5.07 4.45 6.43-.18.6-1.05 3.42-1.08 3.6 0 0-.02.18.1.24.12.07.27.02.27.02.18-.03 3.4-2.22 3.97-2.6.74.1 1.5.16 2.29.16 5.52 0 10-3.48 10-7.85S17.52 3 12 3z" />
-                      </svg>
-                      <span className="truncate">카카오톡 채널</span>
-                    </a>
-                  </div>
-                )}
-              </div>
-
-              {/* STEP 라벨 (데스크탑) */}
-              <div className="hidden pt-2.5 text-xs uppercase tracking-[0.18em] text-[#9A8F84] md:block">
-                STEP {String(index + 1).padStart(2, '0')}
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        {/* 참고 노트 */}
-        <div className="mt-7 border-l-2 border-[#A88547] bg-[#F6F1E7] px-5 py-4 text-xs leading-relaxed text-[#5C5249]">
-          <strong className="text-[#1B1814]">참고</strong> · 상담 시간 외 문의는 카카오톡 채널을 이용해 주세요. 빠른
-          시간 내에 답변드립니다.
-        </div>
-
-        {/* CTA */}
-        <div className="mt-7 text-center">
-          <Link
-            className={cn(
-              'inline-flex items-center gap-3 rounded-full bg-[#728146] px-14 py-4 text-sm font-semibold tracking-wide text-white transition-colors',
-              'hover:bg-[#062E16]',
-            )}
-            href="/reservation/apply"
-          >
-            예약상담 신청하기
-            <svg fill="none" height={14} stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" width={14}>
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </Link>
-        </div>
+          <div className={cn('mt-8 flex flex-col gap-3', 'sm:flex-row sm:flex-wrap')}>
+            <Link
+              className={cn(CONTACT_BUTTON, 'bg-goldDeep text-white', 'hover:bg-[#6B5224]')}
+              href="/reservation/apply"
+            >
+              예약상담 신청하기
+              <PiArrowRight aria-hidden="true" className="h-4 w-4" />
+            </Link>
+            <a
+              className={cn(
+                CONTACT_BUTTON,
+                'border border-border bg-background tabular-nums text-foreground',
+                'hover:border-gold/60 hover:text-goldDeep',
+              )}
+              href="tel:01044370431"
+            >
+              <PiPhone aria-hidden="true" className="h-5 w-5" />
+              010-4437-0431
+            </a>
+            <a
+              className={cn(CONTACT_BUTTON, 'bg-[#FAE100] text-[#3C1E1E]', 'hover:bg-[#f0d600]')}
+              href="https://pf.kakao.com/_cpdEX"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <RiKakaoTalkFill aria-hidden="true" className="h-5 w-5" />
+              카카오톡 채널
+              <span className="sr-only">(새 탭에서 열림)</span>
+            </a>
+          </div>
+          <p className="mt-4 flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+            <PiInfo aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
+            상담 시간 외 문의는 카카오톡 채널을 이용해 주세요. 빠른 시간 내에 답변드립니다.
+          </p>
+        </FadeInWhenVisible>
       </div>
-    </>
+
+      {/* 2. 예약 진행 절차: 단계 | 제목 | 설명 행 목록 (순서 자체가 정보이므로 단계 번호 유지) */}
+      <div className={cn('border-t-2 border-foreground pt-10', 'md:pt-12')}>
+        <div className="max-w-[65ch] space-y-3">
+          <h2 className={H2}>예약 진행 절차</h2>
+          <p className={cn('text-muted-foreground', 'md:text-lg')}>모든 단계는 본점·지점 동일한 기준으로 운영됩니다.</p>
+        </div>
+        <FadeInWhenVisible>
+          {/* 단계 | 타임라인 점 | 제목 | 설명 행 목록. hover 시 행이 흰 카드(rounded + shadow)로 떠오른다. */}
+          <ol className={cn('mt-10 rounded-2xl bg-muted/50 p-2', 'md:mt-12 md:p-3')}>
+            {orderCardList.map((step, index) => {
+              const isFirst = index === 0;
+              const isLast = index === orderCardList.length - 1;
+              return (
+                <li
+                  className={cn(
+                    'grid grid-cols-[1.5rem_1fr] gap-x-3 rounded-xl px-3 py-5 transition-[background-color,box-shadow] duration-200',
+                    'hover:bg-background hover:shadow-[0_12px_32px_-16px_rgba(139,107,48,0.35)]',
+                    'md:px-6 md:py-6',
+                    'lg:grid-cols-[4.5rem_1.5rem_14rem_1fr] lg:items-center lg:gap-x-4',
+                  )}
+                  key={step.title}
+                >
+                  {/* 단계 (lg 이상 첫 열). lg 미만은 제목 앞에 인라인으로 표기 */}
+                  <span className={cn('hidden text-sm font-semibold tabular-nums text-muted-foreground', 'lg:block')}>
+                    {index + 1}단계
+                  </span>
+
+                  {/* 타임라인: 행 사이를 잇는 세로선 + 점 */}
+                  <span
+                    aria-hidden="true"
+                    className={cn('relative row-span-2 flex justify-center', 'lg:row-span-1 lg:self-stretch')}
+                  >
+                    <span
+                      className={cn(
+                        'absolute w-px bg-border',
+                        isFirst ? 'top-7 lg:top-1/2' : '-top-5 md:-top-6',
+                        isLast ? 'h-7 lg:bottom-1/2 lg:h-auto' : '-bottom-5 md:-bottom-6',
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        'relative mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-goldDeep bg-background',
+                        'lg:mt-0 lg:self-center',
+                      )}
+                    />
+                  </span>
+
+                  {/* 제목 (모바일: 'N단계' 표기 포함) */}
+                  <h3 className={cn('text-base font-bold text-foreground', 'lg:text-lg')}>
+                    <span className={cn('mr-1.5 text-sm font-semibold text-muted-foreground', 'lg:sr-only')}>
+                      {index + 1}단계
+                    </span>
+                    {step.title}
+                  </h3>
+
+                  {/* 설명 */}
+                  <p
+                    className={cn(
+                      'col-start-2 mt-1.5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground',
+                      'md:text-[15px]',
+                      'lg:col-start-auto lg:mt-0',
+                    )}
+                  >
+                    {step.content}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        </FadeInWhenVisible>
+      </div>
+    </div>
   );
 }

@@ -37,7 +37,7 @@ const PLAN_LINKS = [
   { id: 'live-in', label: '입주형' },
   { id: 'half-day', label: '오전·오후 돌봄' },
   { id: 'one-day', label: '하루돌봄' },
-  { id: 'extra', label: '추가 요금' },
+  { id: 'extra', label: '부가서비스' },
 ];
 
 // 유형 하나: 좌측 이름·설명·유의사항, 우측 요금. 4개 유형 모두 같은 구조로 반복해 비교하기 쉽게 한다.
@@ -185,10 +185,10 @@ const PricePage = () => {
         </div>
       </div>
 
-      {/* 4. 그 외 요금 */}
+      {/* 4. 부가서비스 */}
       <div className={cn(SECTION, 'scroll-mt-16 pb-0 md:pb-0')} id="extra">
         <div className="max-w-[65ch] space-y-3">
-          <h2 className={H2}>그 외 요금 안내</h2>
+          <h2 className={H2}>부가서비스</h2>
           <p className={cn('text-muted-foreground', 'md:text-lg')}>
             기본 요금 외 추가되는 항목을 출퇴근형·입주형으로 나누어 안내드립니다.
           </p>
@@ -197,7 +197,7 @@ const PricePage = () => {
           <PlanBlock notes={[CHILD_EXTRA_NOTE]} title="큰아이 추가비용">
             <PriceTable
               caption="큰아이 추가비용: 출퇴근형 및 입주형 비교"
-              columns={['출퇴근형', '입주형']}
+              columns={['출퇴근형 (일당)', '입주형 (일당)']}
               labelHeader="항목"
               rows={childExtraFeeList}
             />
@@ -205,7 +205,7 @@ const PricePage = () => {
           <PlanBlock notes={[WORK_HOURS_NOTE]} title="기타 추가비용">
             <PriceTable
               caption="기타 추가비용: 출퇴근형 및 입주형 비교"
-              columns={['출퇴근형', '입주형']}
+              columns={['출퇴근형 (일당)', '입주형 (일당)']}
               labelHeader="항목"
               rows={otherExtraFeeList}
             />

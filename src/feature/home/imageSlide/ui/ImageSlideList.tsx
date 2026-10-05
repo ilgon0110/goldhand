@@ -8,8 +8,8 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { PiPause, PiPlay } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
-import imageSlideOne from '@/public/imageslide/goldhand_imageslide_0.png';
 import imageSlideTwo from '@/public/imageslide/goldhand_imageslide_1.png';
+import imageSlideOne from '@/public/imageslide/goldhand_imageslide_2.png';
 import { Button } from '@/src/shared/ui/button';
 import type { CarouselApi } from '@/src/shared/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/src/shared/ui/carousel';

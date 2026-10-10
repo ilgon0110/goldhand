@@ -5,6 +5,7 @@
 
 # dependencies
 /node_modules
+/docker/otel/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz

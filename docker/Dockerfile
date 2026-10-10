@@ -8,7 +8,15 @@ RUN corepack enable
 COPY package.json yarn.lock .yarnrc.yml ./
 RUN yarn install --immutable
 
-# ── Stage 2: builder ──────────────────────────────────────────────
+# ── Stage 2: OpenTelemetry runtime ───────────────────────────────
+FROM node:20-alpine AS otel
+WORKDIR /otel
+
+COPY docker/otel/package.json docker/otel/package-lock.json ./
+RUN npm ci --omit=dev
+COPY docker/otel/register.cjs ./register.cjs
+
+# ── Stage 3: builder ──────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -56,17 +64,19 @@ ENV NEXT_PUBLIC_VIEWER_SECRET=$NEXT_PUBLIC_VIEWER_SECRET
 
 RUN yarn build
 
-# ── Stage 3: runner ───────────────────────────────────────────────
+# ── Stage 4: runner ───────────────────────────────────────────────
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV NODE_OPTIONS="--require=/otel/register.cjs"
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
+COPY --from=otel /otel /otel
 
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs \

@@ -23,6 +23,15 @@ services:
     image: ${DOCKERHUB_USERNAME}/goldhand:${IMAGE_TAG:-latest}
     env_file:
       - .env.prod
+    environment:
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://host.docker.internal:4318/v1/traces
+      OTEL_LOG_LEVEL: warn
+      OTEL_RESOURCE_ATTRIBUTES: deployment.environment.name=production,service.namespace=goldhand,service.version=${IMAGE_TAG:-latest}
+      OTEL_SERVICE_NAME: goldhand-nextjs
+      OTEL_TRACES_SAMPLER: parentbased_traceidratio
+      OTEL_TRACES_SAMPLER_ARG: "1.0"
+    extra_hosts:
+      - host.docker.internal:host-gateway
     expose:
       - "3000"
     logging: *json-file-logging

@@ -2,6 +2,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IConsultPost {
@@ -71,7 +72,7 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error adding document: ', error);
+    logServerError('Error adding document:', error);
     return typedJson<IResponseBody>({ response: 'ng', message: '관리사 신청서 저장에 실패했습니다.' }, { status: 500 });
   }
 }

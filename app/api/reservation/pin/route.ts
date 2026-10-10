@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { togglePinAdmin } from '@/src/shared/lib/pin/toggleIsPinned';
 import { checkAdminAuth } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IPinRequestBody {
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error toggling reservation pin:', error);
+    logServerError('Error toggling reservation pin:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '고정 처리 중 오류가 발생하였습니다.' },
       { status: 500 },

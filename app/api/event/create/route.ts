@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IEventPost {
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
   try {
     return createEventPost(authResult.uid, body);
   } catch (error) {
-    console.error('Error creating event:', error);
+    logServerError('Error creating event:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '로그인 정보 확인 도중 오류가 발생하였습니다.', docId: '' },
       { status: 401 },
@@ -87,7 +88,7 @@ const createEventPost = async (uid: string, body: IEventPost) => {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error creating event post:', error);
+    logServerError('Error creating event post:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '소식 작성 도중 알 수 없는 오류가 발생하였습니다.', docId: '' },
       { status: 500 },

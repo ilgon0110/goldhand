@@ -6,6 +6,7 @@ import type { NextRequest } from 'next/server';
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
         { status: 200 },
       );
     } catch (error) {
-      console.error('Error updating event post:', error);
+      logServerError('Error updating event post:', error);
       return typedJson<IResponseBody>(
         { response: 'ng', message: '소식 수정에 실패했습니다.', docId },
         { status: 500 },
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'expired', docId }, { status: 401 });
     }
 
-    console.error('Error verifying token:', error);
+    logServerError('Error verifying token:', error);
     return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized', docId }, { status: 401 });
   }
 }

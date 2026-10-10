@@ -6,6 +6,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error getting document:', error);
+    logServerError('Error getting document:', error);
     const errorCode =
       error != null && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
         ? error.code

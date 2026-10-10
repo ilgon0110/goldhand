@@ -2,6 +2,7 @@ import { doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebas
 import type { NextRequest } from 'next/server';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IViewCountData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 import { isViewerIdValid } from '@/src/shared/utils/verifyViewId';
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error fetching view count:', error);
+    logServerError('Error fetching view count:', error);
     return typedJson<IResponseGetBody>(
       {
         response: 'ng',

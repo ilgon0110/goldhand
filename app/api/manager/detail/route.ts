@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IApplyDetailData, IManagerApplyDetailResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -82,7 +83,7 @@ export async function GET(request: NextRequest) {
         : null,
     });
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    logServerError('Error fetching user data:', error);
     return typedJson<IManagerApplyDetailResponseData>(
       { response: 'ng', message: '데이터를 가져오는 중 오류가 발생했습니다.', data: null },
       { status: 500 },

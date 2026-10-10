@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IReviewPost {
@@ -54,7 +55,7 @@ export async function saveReview(body: IReviewPost, owner: IReviewOwner) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error creating review post:', error);
+    logServerError('Error creating review post:', error);
     return typedJson<IReviewResponseBody>(
       { response: 'ng', message: '리뷰 작성에 실패했습니다.', docId },
       { status: 500 },

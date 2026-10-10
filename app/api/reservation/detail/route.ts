@@ -8,6 +8,7 @@ import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData, IReservationDetailData, TReservationDetailResponseCode } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -185,7 +186,7 @@ export async function GET(request: NextRequest) {
         { status: 401 },
       );
     }
-    console.error('Error getting document:', error);
+    logServerError('Error getting document:', error);
     return typedJson<IResponseBody>(
       {
         response: 'ng',

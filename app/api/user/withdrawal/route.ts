@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
 
     return typedJson<IResponsePostBody>({ response: 'ok', message: '회원탈퇴 성공!' }, { status: 200 });
   } catch (error) {
-    console.error('회원탈퇴 에러!! ', error);
+    logServerError('회원탈퇴 에러!!', error);
 
     const errorCode =
       error != null && typeof error === 'object' && 'code' in error && typeof error.code === 'string'

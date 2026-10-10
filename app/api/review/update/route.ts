@@ -8,6 +8,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -125,7 +126,7 @@ async function updateReviewPost(
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error updating review post:', error);
+    logServerError('Error updating review post:', error);
     return typedJson<IResponseBody>({ response: 'ng', message: '리뷰 수정에 실패했습니다.', docId }, { status: 500 });
   }
 }

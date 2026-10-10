@@ -4,8 +4,9 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/server';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
+import { checkAdminAuth } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData, IMyPageData, IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -160,7 +161,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    logServerError('Error fetching user data:', error);
     return typedJson<IResponseBody>({
       response: 'ng',
       message: '데이터를 가져오는 중 오류가 발생했습니다.',

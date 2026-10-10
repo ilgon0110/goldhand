@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IReservationCreatePostData {
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
       return typedJson<IResponseBody>({ response: 'ng', message: '토큰이 만료되었습니다.' }, { status: 401 });
     }
 
-    console.error('Error verifying token:', error);
+    logServerError('Error verifying token:', error);
     return typedJson<IResponseBody>({ response: 'ng', message: 'Unauthorized' }, { status: 401 });
   }
 }
@@ -140,7 +141,7 @@ async function createNonMemberPost(body: IReservationCreatePostData) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error adding document: ', error);
+    logServerError('Error adding document:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '비회원으로 데이터 저장에 실패했습니다.' },
       { status: 500 },
@@ -196,7 +197,7 @@ async function createMemberPost(uid: string, body: IReservationCreatePostData, a
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error adding document: ', error);
+    logServerError('Error adding document:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '회원으로 데이터 저장에 실패했습니다.' },
       { status: 500 },

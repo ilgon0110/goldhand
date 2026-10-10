@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server';
 
 import { getEventRowNumberMap } from '@/src/entities/event/api/getEventRowNumbers';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData, IEventDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -87,7 +88,7 @@ export async function GET(request: NextRequest) {
     };
     return typedJson<IResponseBody>(responseData, { status: 200 });
   } catch (error) {
-    console.error('Error getting document:', error);
+    logServerError('Error getting document:', error);
     return typedJson<IResponseBody>(
       {
         response: 'ng',

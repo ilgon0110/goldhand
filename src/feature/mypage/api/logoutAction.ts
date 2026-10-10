@@ -2,6 +2,8 @@
 
 import { cookies } from 'next/headers';
 
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+
 interface ILogoutResponse {
   response: 'ng' | 'ok';
   message: string;
@@ -24,7 +26,7 @@ export async function logoutAction(): Promise<ILogoutResponse> {
 
     return { response: 'ok', message: '로그아웃이 성공하였습니다.' };
   } catch (error) {
-    console.error('Logout error:', error);
+    logServerError('Logout error:', error);
     return { response: 'ng', message: '로그아웃 중 오류가 발생했습니다.' };
   }
 }

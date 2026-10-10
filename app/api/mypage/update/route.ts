@@ -5,6 +5,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IMyPageUpdatePost {
@@ -70,14 +71,14 @@ export async function POST(req: NextRequest) {
         { status: 200 },
       );
     } catch (error) {
-      console.error('Error updating user data:', error);
+      logServerError('Error updating user data:', error);
       return typedJson<IResponseBody>(
         { response: 'ng', message: '사용자 정보를 업데이트하는 데 실패했습니다.' },
         { status: 500 },
       );
     }
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    logServerError('Error fetching user data:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '사용자 정보를 가져오는 데 실패했습니다.' },
       { status: 500 },

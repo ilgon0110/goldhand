@@ -1,16 +1,11 @@
 import type { Timestamp } from 'firebase/firestore';
 import { useState } from 'react';
+import { PiCaretRight, PiTray } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 
 const PAGE_SIZE = 10;
-
-const ArrowRight = () => (
-  <svg className="block h-[14px] w-[14px]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </svg>
-);
 
 function formatDotDate(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null | undefined): string {
   if (timestamp == null) return '';
@@ -18,7 +13,7 @@ function formatDotDate(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'> | n
   const year = d.getFullYear();
   const month = `${d.getMonth() + 1}`.padStart(2, '0');
   const day = `${d.getDate()}`.padStart(2, '0');
-  return `${year} · ${month} · ${day}`;
+  return `${year}.${month}.${day}`;
 }
 
 interface IMyPageSectionProps<T> {
@@ -51,10 +46,15 @@ export const MyPageSection = <T,>({
 
   if (data == null || data.length === 0) {
     return (
-      <div className={cn('mt-4 border border-dashed border-stone-200 bg-white/60 px-6 py-20 text-center', className)}>
-        <div className="mb-3 font-serif text-3xl leading-none text-gold/50">○</div>
-        <h3 className="mb-1.5 font-serif text-lg font-medium text-stone-900">{emptyTitle}</h3>
-        {emptyDescription && <p className="text-[13px] text-stone-400">{emptyDescription}</p>}
+      <div
+        className={cn(
+          'mt-4 flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-16 text-center',
+          className,
+        )}
+      >
+        <PiTray aria-hidden="true" className="h-8 w-8 text-gold" />
+        <h3 className="mt-3 text-base font-bold text-foreground">{emptyTitle}</h3>
+        {emptyDescription && <p className="mt-1 text-sm text-muted-foreground">{emptyDescription}</p>}
       </div>
     );
   }
@@ -62,76 +62,53 @@ export const MyPageSection = <T,>({
   return (
     <div className={className}>
       {/* 패널 메타 */}
-      <div
-        className={cn(
-          'flex items-baseline justify-between px-1 py-3.5',
-          'text-[12px] tracking-[0.06em] text-stone-400',
-        )}
-      >
-        <span>총 {data.length}건</span>
-      </div>
+      <p className="px-1 py-4 text-sm text-muted-foreground">
+        총 <span className="font-semibold tabular-nums text-foreground">{data.length}</span>건
+      </p>
 
-      {/* 리스트 */}
-      <ul className="m-0 list-none border-t border-stone-100 p-0">
-        {pagedData?.map((item, index) => (
+      {/* 리스트: 행 hover 시 둥근 배경으로 떠오른다 */}
+      <ul className="m-0 list-none divide-y divide-border border-y border-border p-0">
+        {pagedData?.map(item => (
           <li key={getId(item)}>
             <button
               className={cn(
-                'grid w-full cursor-pointer items-center border-b border-stone-100 text-left transition-colors duration-150',
-                'grid-cols-[32px_1fr_auto] gap-3 px-1 py-4',
-                'md:grid-cols-[56px_1fr_auto] md:gap-5 md:px-2 md:py-5',
-                'hover:bg-stone-50 [&:hover_.row-arrow]:translate-x-1 [&:hover_.row-arrow]:text-gold',
+                'group my-1 grid w-full cursor-pointer grid-cols-[1fr_auto] items-center gap-3 rounded-xl px-3 py-3.5 text-left transition-colors duration-200',
+                'hover:bg-muted/60',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-goldDeep',
+                'md:gap-6 md:px-4',
               )}
               data-testid={getId(item)}
               type="button"
               onClick={() => onClickItem(item)}
             >
-              {/* 번호 */}
-              <span
-                className={cn(
-                  'font-serif text-[11px] tracking-[0.1em] text-gold',
-                  'md:text-[13px] md:tracking-[0.16em]',
-                )}
-              >
-                {String((page - 1) * PAGE_SIZE + index + 1).padStart(2, '0')}
-              </span>
-
-              {/* 라벨 */}
-              <span
-                className={cn(
-                  'flex min-w-0 items-center gap-2.5',
-                  'text-[14px] leading-relaxed tracking-[-0.005em] text-stone-700',
-                  'md:text-[15px]',
-                )}
-              >
+              {/* 유형 + 라벨 */}
+              <span className="flex min-w-0 items-center gap-2.5">
                 {tag && (
                   <span
                     className={cn(
-                      'hidden shrink-0 bg-stone-100 px-2 py-[3px]',
-                      'text-[10px] font-medium tracking-[0.14em] text-stone-500',
+                      'hidden shrink-0 rounded-md bg-gold/10 px-2 py-0.5 text-xs font-semibold text-goldDeep',
                       'md:inline',
                     )}
                   >
                     {tag}
                   </span>
                 )}
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap">{getLabel(item)}</span>
+                <span className={cn('truncate text-foreground', 'md:text-[15px]')}>{getLabel(item)}</span>
               </span>
 
               {/* 날짜 + 화살표 */}
-              <span className="flex items-center gap-4">
-                <span
-                  className={cn(
-                    'whitespace-nowrap font-serif tracking-[0.04em] text-stone-400',
-                    'text-[11px]',
-                    'md:text-[13px]',
-                  )}
-                >
+              <span className="flex items-center gap-3">
+                <span className="whitespace-nowrap text-sm tabular-nums text-muted-foreground">
                   {formatDotDate(getDate(item))}
                 </span>
-                <span className="row-arrow hidden text-stone-300 transition-all duration-200 md:block">
-                  <ArrowRight />
-                </span>
+                <PiCaretRight
+                  aria-hidden="true"
+                  className={cn(
+                    'hidden h-4 w-4 text-muted-foreground transition-transform duration-200',
+                    'group-hover:translate-x-0.5 group-hover:text-goldDeep',
+                    'md:block',
+                  )}
+                />
               </span>
             </button>
           </li>

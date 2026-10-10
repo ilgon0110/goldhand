@@ -31,10 +31,12 @@ interface INotifyRowProps {
 }
 
 const NotifyRow = ({ id, title, help, checked, onCheckedChange: handleCheckedChange }: INotifyRowProps) => (
-  <div className={cn('flex items-center justify-between gap-4 py-3.5', 'border-b border-stone-100 last:border-0')}>
+  <div className={cn('flex items-center justify-between gap-4 py-4', 'border-b border-border last:border-0')}>
     <div className="flex flex-col gap-0.5">
-      <span className="text-[15px] font-medium tracking-[-0.005em] text-stone-900" id={id}>{title}</span>
-      <span className="text-[13px] text-stone-500">{help}</span>
+      <span className="font-semibold text-foreground" id={id}>
+        {title}
+      </span>
+      <span className="text-sm text-muted-foreground">{help}</span>
     </div>
     <Switch
       aria-labelledby={id}
@@ -45,25 +47,30 @@ const NotifyRow = ({ id, title, help, checked, onCheckedChange: handleCheckedCha
   </div>
 );
 
+// 섹션 제목·설명은 다른 페이지의 h2 스케일(20/24)과 본문 스케일에 맞춘다.
+const SECTION = cn('mt-16 border-t border-border pt-10', 'md:mt-20 md:pt-12');
+const SectionHeader = () => (
+  <div className="mb-6">
+    <h2 className={cn('text-xl font-bold text-foreground', 'md:text-2xl')}>카카오톡 알림 설정</h2>
+    <p className="mt-2 text-muted-foreground">받고 싶은 알림만 켜고 끄세요. 변경 사항은 즉시 저장됩니다.</p>
+  </div>
+);
+
 const KakaoAlarmLinkFallback = () => (
-  <section aria-label="카카오톡 알림 설정" className={cn('mt-6 px-4', 'md:px-0')}>
-    <div className="mb-5">
-      <h2 className="text-[20px] font-bold tracking-[-0.02em] text-stone-900">카카오톡 알림 설정</h2>
-      <p className="mt-1 text-[13.5px] text-stone-500">받고 싶은 알림만 켜고 끄세요. 변경 사항은 즉시 저장됩니다.</p>
-    </div>
-    <div className="flex flex-col items-center gap-4 border border-stone-200 bg-white px-5 py-10 text-center">
+  <section aria-label="카카오톡 알림 설정" className={SECTION}>
+    <SectionHeader />
+    <div className="flex flex-col items-center gap-4 rounded-2xl bg-muted/50 px-5 py-10 text-center">
       <Image alt="카카오톡" height={40} src="/icon/kakaotalk.png" width={40} />
       <div className="flex flex-col gap-1">
-        <span className="text-[15px] font-semibold text-stone-900">전화번호 인증이 필요합니다</span>
-        <span className="text-[13px] text-stone-500">
+        <span className="font-bold text-foreground">전화번호 인증이 필요합니다</span>
+        <span className="text-sm text-muted-foreground">
           카카오톡 알림은 전화번호 인증을 완료한 회원에게만 제공됩니다.
         </span>
       </div>
       <Link
         className={cn(
-          'mt-2 inline-flex items-center justify-center px-6 py-2.5',
-          'bg-kakao text-[13.5px] font-semibold text-stone-900',
-          'transition-opacity hover:opacity-80',
+          'mt-2 inline-flex h-11 items-center justify-center rounded-full bg-[#FAE100] px-6 text-sm font-semibold text-[#3C1E1E] transition-colors duration-200',
+          'hover:bg-[#f0d600]',
         )}
         href="/signup/phone"
       >
@@ -71,6 +78,32 @@ const KakaoAlarmLinkFallback = () => (
       </Link>
     </div>
   </section>
+);
+
+// 알림 묶음 카드: 헤더(제목·설명·선택 배지) + 토글 행 목록
+const AlarmGroup = ({
+  title,
+  description,
+  badge,
+  children,
+}: {
+  title: string;
+  description: string;
+  badge?: string;
+  children: React.ReactNode;
+}) => (
+  <div className="overflow-hidden rounded-2xl border border-border">
+    <div className={cn('flex items-center justify-between gap-3 bg-muted/50 px-5 py-4', 'md:px-6')}>
+      <div className="flex flex-col gap-0.5">
+        <span className="font-bold text-foreground">{title}</span>
+        <span className="text-sm text-muted-foreground">{description}</span>
+      </div>
+      {badge && (
+        <span className="shrink-0 rounded-md bg-gold/10 px-2 py-0.5 text-xs font-semibold text-goldDeep">{badge}</span>
+      )}
+    </div>
+    <div className={cn('px-5', 'md:px-6')}>{children}</div>
+  </div>
 );
 
 export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSettingProps) => {
@@ -103,104 +136,57 @@ export const MyPageKaKaoAlarmSetting = ({ myPageData }: IMyPageKaKaoAlarmSetting
   }
 
   return (
-    <section aria-label="카카오톡 알림 설정" className={cn('mt-6 px-4', 'md:px-0')}>
-      {/* 섹션 헤더 */}
-      <div className="mb-5">
-        <h2 className="text-[20px] font-bold tracking-[-0.02em] text-stone-900">카카오톡 알림 설정</h2>
-        <p className="mt-1 text-[13.5px] text-stone-500">받고 싶은 알림만 켜고 끄세요. 변경 사항은 즉시 저장됩니다.</p>
-      </div>
-
-      {/* 카드 목록 */}
+    <section aria-label="카카오톡 알림 설정" className={SECTION}>
+      <SectionHeader />
       <div className="flex flex-col gap-5">
-        {/* 일반 알림 카드 */}
-        <div className="border border-stone-200 bg-white">
-          <div
-            className={cn('flex items-center justify-between border-b border-stone-200 px-5 py-3.5', 'bg-stone-50/60')}
-          >
-            <div className="flex flex-col gap-0.5">
-              <span className="inline-flex items-center gap-2 text-[14px] font-semibold text-stone-900">
-                <span className="h-2.5 w-2.5 rounded-full bg-kakao" />
-                일반 알림
-              </span>
-              <span className="text-[12px] text-stone-500">카카오 알림톡으로 발송</span>
-            </div>
-          </div>
-          <div className="px-5">
-            <NotifyRow
-              checked={alarms.alarmComment}
-              help="내 게시글이나 댓글에 누군가 댓글을 달면 알림을 보내드려요."
-              id="alarm-comment"
-              title="댓글 알림 받기"
-              onCheckedChange={handleToggle('alarmComment')}
-            />
-            <NotifyRow
-              checked={alarms.alarmNews}
-              help="새 소식, 공지사항을 알림으로 알려드려요."
-              id="alarm-news"
-              title="고운황금손 소식 받기"
-              onCheckedChange={handleToggle('alarmNews')}
-            />
-          </div>
-        </div>
+        <AlarmGroup description="카카오 알림톡으로 발송" title="일반 알림">
+          <NotifyRow
+            checked={alarms.alarmComment}
+            help="내 게시글이나 댓글에 누군가 댓글을 달면 알림을 보내드려요."
+            id="alarm-comment"
+            title="댓글 알림 받기"
+            onCheckedChange={handleToggle('alarmComment')}
+          />
+          <NotifyRow
+            checked={alarms.alarmNews}
+            help="새 소식, 공지사항을 알림으로 알려드려요."
+            id="alarm-news"
+            title="고운황금손 소식 받기"
+            onCheckedChange={handleToggle('alarmNews')}
+          />
+        </AlarmGroup>
 
-        {/* 운영 알림 카드 (관리자 전용) */}
         {isAdmin && (
-          <div className="border border-stone-200 bg-white">
-            <div
-              className={cn(
-                'flex items-center justify-between border-b border-stone-200 px-5 py-3.5',
-                'bg-stone-50/60',
-              )}
-            >
-              <div className="flex flex-col gap-0.5">
-                <span className="inline-flex items-center gap-2 text-[14px] font-semibold text-stone-900">
-                  <span className="h-2.5 w-2.5 rounded-full bg-kakao" />
-                  운영 알림
-                </span>
-                <span className="text-[12px] text-stone-500">관리자 등급에게만 노출됩니다</span>
-              </div>
-              <span
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1',
-                  'text-[10.5px] font-medium tracking-[0.04em]',
-                  'bg-purple-100 text-purple-800',
-                )}
-              >
-                <span className="h-[5px] w-[5px] rounded-full bg-purple-500" />
-                관리자 전용
-              </span>
-            </div>
-            <div className="px-5">
-              <NotifyRow
-                checked={alarms.alarmNewPost}
-                help="새 게시글이 등록되면 알림을 보내드려요."
-                id="alarm-new-post"
-                title="새 게시글 알림 받기"
-                onCheckedChange={handleToggle('alarmNewPost')}
-              />
-              <NotifyRow
-                checked={alarms.alarmEditPost}
-                help="게시글이 수정되면 알림을 보내드려요."
-                id="alarm-edit-post"
-                title="게시글 수정 알림 받기"
-                onCheckedChange={handleToggle('alarmEditPost')}
-              />
-              <NotifyRow
-                checked={alarms.alarmNewComment}
-                help="새 댓글이 생성되면 알림을 보내드려요."
-                id="alarm-new-comment"
-                title="댓글 생성 알림 받기"
-                onCheckedChange={handleToggle('alarmNewComment')}
-              />
-              <NotifyRow
-                checked={alarms.alarmEditComment}
-                help="댓글이 수정되면 알림을 보내드려요."
-                id="alarm-edit-comment"
-                title="댓글 수정 알림 받기"
-                onCheckedChange={handleToggle('alarmEditComment')}
-              />
-            </div>
-          </div>
+          <AlarmGroup badge="관리자 전용" description="관리자 등급에게만 노출됩니다" title="운영 알림">
+            <NotifyRow
+              checked={alarms.alarmNewPost}
+              help="새 게시글이 등록되면 알림을 보내드려요."
+              id="alarm-new-post"
+              title="새 게시글 알림 받기"
+              onCheckedChange={handleToggle('alarmNewPost')}
+            />
+            <NotifyRow
+              checked={alarms.alarmEditPost}
+              help="게시글이 수정되면 알림을 보내드려요."
+              id="alarm-edit-post"
+              title="게시글 수정 알림 받기"
+              onCheckedChange={handleToggle('alarmEditPost')}
+            />
+            <NotifyRow
+              checked={alarms.alarmNewComment}
+              help="새 댓글이 생성되면 알림을 보내드려요."
+              id="alarm-new-comment"
+              title="댓글 생성 알림 받기"
+              onCheckedChange={handleToggle('alarmNewComment')}
+            />
+            <NotifyRow
+              checked={alarms.alarmEditComment}
+              help="댓글이 수정되면 알림을 보내드려요."
+              id="alarm-edit-comment"
+              title="댓글 수정 알림 받기"
+              onCheckedChange={handleToggle('alarmEditComment')}
+            />
+          </AlarmGroup>
         )}
       </div>
     </section>

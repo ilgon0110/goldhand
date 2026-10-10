@@ -1,6 +1,7 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
+import { cn } from '@/lib/utils';
 import type { IMyPageResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/shared/ui/tabs';
@@ -21,7 +22,7 @@ export const MyPagePostList = ({ myPageData }: IMyPagePostListProps) => {
   return (
     <>
       {isPending && <LoadingSpinnerOverlay text="페이지 이동 중..." />}
-      <Tabs className="mt-4" defaultValue="CONSULT">
+      <Tabs className={cn('mt-10', 'md:mt-12')} defaultValue="CONSULT">
         <TabsList variant="line">
           <TabsTrigger value="CONSULT">상담</TabsTrigger>
           <TabsTrigger value="REVIEW">후기</TabsTrigger>

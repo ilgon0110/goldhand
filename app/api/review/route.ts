@@ -6,6 +6,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { checkAdminAuth } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error getting document:', error);
+    logServerError('Error getting document:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: 'Error getting document', reviewData: [], pageableDataLength: 0, totalDataLength: 0 },
       { status: 500 },

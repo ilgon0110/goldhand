@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { INotificationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -118,7 +119,7 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('알림 읽음처리 에러!! ', error);
+    logServerError('알림 읽음처리 에러!!', error);
 
     const errorCode =
       error != null && typeof error === 'object' && 'code' in error && typeof error.code === 'string'

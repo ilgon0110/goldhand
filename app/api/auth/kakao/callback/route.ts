@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { createSessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody, IUserDetailData } from '@/src/shared/types';
 
 import { expireOAuthStateCookie, resolveOAuthRedirectDestination, validateOAuthState } from '../../lib/oauthState';
@@ -141,7 +142,7 @@ export async function GET(request: Request) {
     res.cookies.set('session', newSessionCookie, SESSION_COOKIE_OPTIONS);
     return res;
   } catch (error) {
-    console.error('Error during Kakao OAuth callback:', error);
+    logServerError('Error during Kakao OAuth callback:', error);
     return redirect('/login?kakao_error=auth_failed');
   }
 }

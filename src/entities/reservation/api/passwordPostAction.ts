@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 
 import { apiUrl } from '@/src/shared/config';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReservationDetailData } from '@/src/shared/types';
 
 interface IResponse {
@@ -34,7 +35,7 @@ export async function passwordPostAction(docId: string, password: string): Promi
 
     return postData;
   } catch (error) {
-    console.error('Error fetching post password:', error);
+    logServerError('Error fetching post password:', error);
     throw error;
   }
 }

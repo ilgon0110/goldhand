@@ -5,6 +5,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -70,7 +71,7 @@ export async function DELETE(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message: 'expired' }, { status: 401 });
     }
 
-    console.error('Error deleting event document:', error);
+    logServerError('Error deleting event document:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '소식 삭제 중 서버 오류가 발생하였습니다.' },
       { status: 500 },

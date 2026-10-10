@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IKakaoAlarmSettings } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
 
     return typedJson<IResponseBody>({ response: 'ok', message: '알림 설정이 저장되었습니다.' }, { status: 200 });
   } catch (error) {
-    console.error('Error updating kakao alarm settings:', error);
+    logServerError('Error updating kakao alarm settings:', error);
     return typedJson<IResponseBody>({ response: 'ng', message: '알림 설정 저장에 실패했습니다.' }, { status: 500 });
   }
 }

@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
 
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+
 const BIZTALK_API_URL = 'https://www.biztalk-api.com';
 
 export const runtime = 'nodejs';
@@ -35,7 +37,7 @@ export async function GET(req: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error('[biztalk-proxy] GET error:', err);
+    logServerError('[biztalk-proxy] GET error:', err);
     return new Response('proxy error', { status: 502 });
   }
 }
@@ -82,7 +84,7 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error('[biztalk-proxy] error:', err);
+    logServerError('[biztalk-proxy] error:', err);
     return new Response('proxy error', { status: 502 });
   }
 }

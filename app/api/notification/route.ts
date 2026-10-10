@@ -5,6 +5,7 @@ import type { NextRequest } from 'next/server';
 import { NOTI_LIMIT } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { INotificationDetailData, INotificationResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('Error verifying token:', error);
+    logServerError('Error verifying token:', error);
     if (error != null && typeof error == 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
       return typedJson<INotificationResponseData>(
         {
@@ -151,7 +152,7 @@ export async function GET(request: NextRequest) {
       noReadCount,
     });
   } catch (error) {
-    console.error('Error fetching notification data:', error);
+    logServerError('Error fetching notification data:', error);
     return typedJson<INotificationResponseData>({
       response: 'ng',
       message: '알림 데이터를 가져오는 중 오류가 발생했습니다.',

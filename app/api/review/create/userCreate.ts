@@ -1,6 +1,7 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 import type { IReviewPost, IReviewResponseBody } from './lib';
@@ -23,7 +24,7 @@ export async function createUserReview(body: IReviewPost, uid: string) {
     const phoneNumber = userData?.phoneNumber ?? '';
     return saveReview(body, { userId: uid, phoneNumber, phoneHash: null });
   } catch (error) {
-    console.error('Error creating user review:', error);
+    logServerError('Error creating user review:', error);
     return typedJson<IReviewResponseBody>(
       { response: 'ng', message: '리뷰 작성 중 오류가 발생했습니다.', docId: '' },
       { status: 500 },

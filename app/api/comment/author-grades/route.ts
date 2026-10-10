@@ -1,6 +1,7 @@
 import { FieldPath, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IRequestBody {
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
 
     return typedJson<IResponseBody>({ response: 'ok', message: 'ok', adminUserIds }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching author grades:', error);
+    logServerError('Error fetching author grades:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '작성자 정보 조회 중 오류가 발생하였습니다.', adminUserIds: [] },
       { status: 500 },

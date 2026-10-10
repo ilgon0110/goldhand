@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 type TVerifyOwnerRequest = {
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
 
     return typedJson<TVerifyOwnerResponse>({ response: 'ok', message: '본인 확인이 완료되었습니다.' }, { status: 200 });
   } catch (error) {
-    console.error('Error verifying guest review owner:', error);
+    logServerError('Error verifying guest review owner:', error);
     return verificationFailedResponse(500);
   }
 }

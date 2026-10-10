@@ -3,6 +3,7 @@ import { getAuth, signOut } from 'firebase/auth';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import { PiEnvelopeSimple, PiPhone, PiShieldCheck } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
@@ -41,115 +42,99 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   const isLinked = myPageData.data.isLinked;
   const [isPending, startTransition] = useTransition();
 
+  const userData = myPageData.data.userData;
+  const ACTION_BUTTON = cn(
+    'inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-border bg-background px-4 text-sm font-semibold text-foreground transition-colors duration-200',
+    'hover:border-gold/60 hover:text-goldDeep',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-goldDeep',
+  );
+  const BADGE = 'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-semibold';
+
   return (
     <>
       {isPending && <LoadingSpinnerOverlay text="로딩 중..." />}
-      <section
-        aria-label="회원 정보"
-        className={cn(
-          'flex flex-wrap items-center gap-x-5 gap-y-2 border border-stone-200 bg-white px-6 py-[18px]',
-          'text-[13.5px] text-stone-700',
-        )}
-      >
-        {/* 이름 + 닉네임 */}
-        <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
-          <span className={cn('text-[15px] font-semibold tracking-[-0.005em] text-stone-900')}>
-            {myPageData.data.userData?.name || '이름'}
-          </span>
-          <span className="text-[13px] text-greenDeep">{myPageData.data.userData?.nickname || '닉네임'}</span>
-        </span>
+      <section aria-label="회원 정보" className={cn('rounded-2xl bg-muted/50 p-5', 'md:p-8')}>
+        <div className={cn('flex flex-col gap-6', 'md:flex-row md:items-start md:justify-between')}>
+          {/* 이름·닉네임 + 배지 */}
+          <div className="min-w-0">
+            <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <span className={cn('text-xl font-bold text-foreground', 'md:text-2xl')}>{userData?.name || '이름'}</span>
+              <span className="font-semibold text-goldDeep">{userData?.nickname || '닉네임'}</span>
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {/* 등급 */}
+              <span className={cn(BADGE, isAdmin ? 'bg-goldDeep text-white' : 'bg-background text-muted-foreground')}>
+                {isAdmin ? 'ADMIN' : 'BASIC'}
+              </span>
+              {/* 가입 경로 (브랜드 색 유지) */}
+              <span className={cn(BADGE, isNaver ? 'bg-naver text-white' : 'bg-kakao text-black')}>
+                <Image
+                  alt={`${userData?.provider} icon`}
+                  height={12}
+                  src={isNaver ? '/icon/naver.png' : '/icon/kakaotalk.png'}
+                  width={12}
+                />
+                {userData?.provider}
+              </span>
+              {/* 전화번호 인증 */}
+              <span
+                className={cn(BADGE, isLinked ? 'bg-gold/15 text-goldDeep' : 'bg-background text-muted-foreground')}
+              >
+                {isLinked && <PiShieldCheck aria-hidden="true" className="h-3.5 w-3.5" />}
+                {isLinked ? '인증완료' : '미인증'}
+              </span>
+            </div>
+          </div>
 
-        {/* 등급 pill */}
-        <span
-          className={cn(
-            'inline-flex items-center whitespace-nowrap rounded-full px-[9px] py-[3px] text-[10.5px] font-medium tracking-[0.06em]',
-            isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-700',
-          )}
-        >
-          {isAdmin ? 'ADMIN' : 'BASIC'}
-        </span>
+          {/* 연락처 */}
+          <dl className={cn('space-y-2 text-sm', 'md:min-w-[260px]')}>
+            <div className="flex items-center gap-3">
+              <dt className="flex w-16 shrink-0 items-center gap-1.5 text-muted-foreground">
+                <PiPhone aria-hidden="true" className="h-4 w-4" />
+                전화
+              </dt>
+              <dd className="tabular-nums text-foreground">{formatPhoneNumber(userData?.phoneNumber) || '미등록'}</dd>
+            </div>
+            <div className="flex items-center gap-3">
+              <dt className="flex w-16 shrink-0 items-center gap-1.5 text-muted-foreground">
+                <PiEnvelopeSimple aria-hidden="true" className="h-4 w-4" />
+                이메일
+              </dt>
+              <dd className="min-w-0 break-all text-foreground">{userData?.email}</dd>
+            </div>
+          </dl>
+        </div>
 
-        {/* 소셜 provider pill */}
-        <span
-          className={cn(
-            'inline-flex items-center gap-[5px] rounded-full px-[9px] py-[3px]',
-            'whitespace-nowrap text-[10.5px] font-medium tracking-[0.06em]',
-            isNaver ? 'bg-naver text-white' : 'bg-kakao text-black',
-          )}
-        >
-          <Image
-            alt={`${myPageData.data.userData?.provider} icon`}
-            height={12}
-            src={isNaver ? '/icon/naver.png' : '/icon/kakaotalk.png'}
-            width={12}
-          />
-          {myPageData.data.userData?.provider}
-        </span>
-
-        {/* 전화번호 인증 pill */}
-        <span
-          className={cn(
-            'inline-flex items-center gap-[5px] rounded-full px-[9px] py-[3px]',
-            'whitespace-nowrap text-[10.5px] font-medium tracking-[0.06em]',
-            isLinked ? 'bg-greenDeep/10 text-greenDeep' : 'bg-stone-100 text-stone-500',
-          )}
-        >
-          {isLinked && <span className="h-[5px] w-[5px] rounded-full bg-current" />}
-          {isLinked ? '인증완료' : '미인증'}
-        </span>
-
-        {/* 구분선 (태블릿 이상) */}
-        <span className={cn('hidden h-[18px] w-px bg-stone-200', 'md:block')} />
-
-        {/* 전화번호 */}
-        <span className="inline-flex items-center gap-2 whitespace-nowrap">
-          <span className="text-[11px] tracking-[0.1em] text-stone-400">전화</span>
-          <span className="text-stone-700">{formatPhoneNumber(myPageData.data.userData?.phoneNumber) || '미등록'}</span>
-        </span>
-
-        {/* 이메일 */}
-        <span className="inline-flex items-center gap-2 whitespace-nowrap">
-          <span className="text-[11px] tracking-[0.1em] text-stone-400">이메일</span>
-          <span className="text-stone-700">{myPageData.data.userData?.email}</span>
-        </span>
-
-        {/* 액션 링크 */}
-        <span
-          className={cn(
-            'inline-flex flex-wrap items-center gap-3.5 border-t border-stone-100 pt-2.5 text-xs',
-            'w-full',
-            'md:ml-auto md:w-auto md:flex-nowrap md:gap-[18px] md:border-t-0 md:pt-0 md:text-[12.5px]',
-          )}
-        >
+        {/* 액션: 주요 동작은 pill, 탈퇴는 조용한 텍스트 버튼으로 분리 */}
+        <div className={cn('mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-5', 'md:mt-8')}>
           <button
-            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-500 transition-colors hover:text-stone-900"
+            className={ACTION_BUTTON}
             type="button"
             onClick={() => startTransition(() => router.push('/mypage/edit'))}
           >
             정보 수정
           </button>
           <button
-            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-500 transition-colors hover:text-stone-900"
+            className={ACTION_BUTTON}
             type="button"
             onClick={() => startTransition(() => router.push('/signup/phone'))}
           >
             전화번호 인증
           </button>
-          <button
-            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-500 transition-colors hover:text-stone-900"
-            type="button"
-            onClick={() => startTransition(() => logout())}
-          >
+          <button className={ACTION_BUTTON} type="button" onClick={() => startTransition(() => logout())}>
             로그아웃
           </button>
           <button
-            className="whitespace-nowrap bg-transparent p-0 tracking-[-0.005em] text-stone-400 transition-colors hover:text-destructive"
+            className={cn(
+              'ml-auto px-2 text-sm text-muted-foreground underline-offset-4 transition-colors duration-200',
+              'hover:text-destructive hover:underline',
+            )}
             type="button"
             onClick={handleWithdrawModalOpen}
           >
             탈퇴
           </button>
-        </span>
+        </div>
       </section>
     </>
   );

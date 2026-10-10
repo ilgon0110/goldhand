@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -49,7 +50,7 @@ export async function GET() {
     // 의미는 동일하므로, 알려진 코드를 화이트리스트로 나열하지 않고 검증 실패 자체를 곧바로
     // 비로그인 상태로 처리한다. 진짜 서버 장애(500)는 이 단계가 아니라 검증 이후 DB 조회
     // 단계(아래 catch)에서만 판단한다.
-    console.error('Error verifying session cookie:', error);
+    logServerError('Error verifying session cookie:', error);
     return userJson(
       {
         response: 'ng',
@@ -108,7 +109,7 @@ export async function GET() {
       200,
     );
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    logServerError('Error fetching user data:', error);
 
     const errorCode =
       typeof error === 'object' && error != null && 'code' in error && typeof error.code === 'string'

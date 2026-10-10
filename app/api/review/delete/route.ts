@@ -4,9 +4,10 @@ import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { checkAdminAuth } from '@/src/shared/lib/server';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
+import { checkAdminAuth } from '@/src/shared/lib/server';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -75,7 +76,7 @@ export async function DELETE(req: NextRequest) {
 
     return deleteReviewDoc(reviewDocRef);
   } catch (error) {
-    console.error('Error deleting Document:', error);
+    logServerError('Error deleting Document:', error);
     return typedJson<IResponseBody>(
       { response: 'ng', message: '후기 삭제 중 서버 오류가 발생하였습니다.' },
       { status: 500 },

@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { createSessionCookie } from '@/src/shared/lib/server';
+import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IUserDetailData } from '@/src/shared/types';
 
 import { expireOAuthStateCookie, resolveOAuthRedirectDestination, validateOAuthState } from '../../lib/oauthState';
@@ -134,7 +135,7 @@ export async function GET(request: Request) {
     res.cookies.set('session', newSessionCookie, SESSION_COOKIE_OPTIONS);
     return res;
   } catch (error) {
-    console.error('Error during Naver OAuth callback:', error);
+    logServerError('Error during Naver OAuth callback:', error);
     return redirect('/login?naver_error=auth_failed');
   }
 }

@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { isOwnedPhoneNumber } from '@/src/shared/lib/verifyPhoneNumberOwnership';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -79,6 +79,8 @@ export async function POST(req: Request) {
       email: email || targetUserData?.email || '',
       updatedAt: new Date(),
     });
+
+    logBusinessEvent('account.registered', { actorType: 'member' });
 
     return typedJson<IResponsePostBody>({ response: 'ok', message: '회원가입 성공!' }, { status: 200 });
   } catch (error) {

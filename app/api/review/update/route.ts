@@ -8,7 +8,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         { status: 403 },
       );
     }
-    return updateReviewPost(reviewDocRef, body, targetData.thumbnail);
+    return updateReviewPost(reviewDocRef, body, targetData.thumbnail, authResult.isAdmin ? 'admin' : 'member');
   }
 
   if (authResult.reason !== 'no_token') {
@@ -100,13 +100,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return updateReviewPost(reviewDocRef, body, targetData.thumbnail);
+  return updateReviewPost(reviewDocRef, body, targetData.thumbnail, 'guest');
 }
 
 async function updateReviewPost(
   reviewDocRef: DocumentReference,
   body: IReviewRequestBody,
   previousThumbnail: string | null,
+  actorType: 'admin' | 'guest' | 'member',
 ): Promise<Response> {
   const { title, name, franchisee, htmlString, docId, images } = body;
   const imageFields = resolvePostImageFields({ htmlString, images, previousThumbnail });
@@ -121,6 +122,7 @@ async function updateReviewPost(
     });
 
     revalidatePath(`/review/${docId}`);
+    logBusinessEvent('review.updated', { actorType });
     return typedJson<IResponseBody>(
       { response: 'ok', message: '리뷰가 성공적으로 수정되었습니다.', docId },
       { status: 200 },

@@ -6,7 +6,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -67,6 +67,7 @@ export async function DELETE(req: NextRequest) {
       await consultDocRef.delete();
 
       revalidatePath('/reservation/list');
+      logBusinessEvent('reservation.deleted', { actorType: 'guest' });
       return typedJson<IResponseBody>(
         {
           response: 'ok',
@@ -99,6 +100,7 @@ export async function DELETE(req: NextRequest) {
       await consultDocRef.delete();
 
       revalidatePath('/reservation/list');
+      logBusinessEvent('reservation.deleted', { actorType: 'member' });
       return typedJson<IResponseBody>(
         {
           response: 'ok',

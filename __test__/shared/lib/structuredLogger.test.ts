@@ -1,4 +1,4 @@
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 
 describe('structuredLogger', () => {
   function captureLog(message: string, error: unknown) {
@@ -56,6 +56,31 @@ describe('structuredLogger', () => {
     expect(parsed.error).toEqual({
       type: 'Error',
       message: 'string failure',
+    });
+  });
+
+  it('writes privacy-safe business events as one physical JSON line', () => {
+    const write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+    logBusinessEvent('notification.read', {
+      actorType: 'member',
+      scope: 'single',
+    });
+
+    const output = String(write.mock.calls[0][0]);
+    write.mockRestore();
+
+    expect(output.endsWith('\n')).toBe(true);
+    expect(output.slice(0, -1)).not.toContain('\n');
+    expect(JSON.parse(output)).toEqual({
+      timestamp: expect.any(String),
+      level: 'info',
+      service: 'nextjs',
+      environment: expect.any(String),
+      event: 'notification.read',
+      actor_type: 'member',
+      resource_type: 'notification',
+      scope: 'single',
     });
   });
 });

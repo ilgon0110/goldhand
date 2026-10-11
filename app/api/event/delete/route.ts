@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -59,6 +59,7 @@ export async function DELETE(req: NextRequest) {
     await eventDocRef.delete();
 
     revalidatePath('/event');
+    logBusinessEvent('event.deleted', { actorType: 'admin' });
     return typedJson<IResponseBody>(
       {
         response: 'ok',

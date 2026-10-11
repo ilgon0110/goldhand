@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
       });
 
       revalidatePath(`/reservation/list/${docId}`);
+      logBusinessEvent('reservation.updated', { actorType: 'guest' });
       return typedJson<IResponseBody>(
         {
           response: 'ok',
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
       });
 
       revalidatePath(`/reservation/list/${docId}`);
+      logBusinessEvent('reservation.updated', { actorType: 'member' });
       return typedJson<IResponseBody>(
         {
           response: 'ok',

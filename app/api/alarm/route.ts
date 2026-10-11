@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { INotificationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -53,6 +53,11 @@ export async function POST(req: Request) {
         batch.update(doc.ref, { isRead: true });
       });
       await batch.commit();
+
+      logBusinessEvent('notification.read', {
+        actorType: 'member',
+        scope: 'all',
+      });
 
       return typedJson<IResponsePostBody>(
         {
@@ -112,6 +117,11 @@ export async function POST(req: Request) {
     await notificationDocRef.update({
       ...notificationData,
       isRead: true,
+    });
+
+    logBusinessEvent('notification.read', {
+      actorType: 'member',
+      scope: 'single',
     });
 
     return typedJson<IResponsePostBody>(

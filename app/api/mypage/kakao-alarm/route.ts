@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IKakaoAlarmSettings } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -61,6 +61,12 @@ export async function POST(req: NextRequest) {
     await userDocRef.update({
       [`kakaoAlarmSettings.${key}`]: value,
       updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    logBusinessEvent('account.notification_setting_updated', {
+      actorType: 'member',
+      setting: key,
+      enabled: value,
     });
 
     return typedJson<IResponseBody>({ response: 'ok', message: '알림 설정이 저장되었습니다.' }, { status: 200 });

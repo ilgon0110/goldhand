@@ -7,7 +7,7 @@ import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -48,7 +48,7 @@ export async function DELETE(req: NextRequest) {
       if (!authResult.isAdmin && authResult.uid !== targetData.userId) {
         return typedJson<IResponseBody>({ response: 'ng', message: '게시글 삭제 권한이 없습니다.' }, { status: 403 });
       }
-      return deleteReviewDoc(reviewDocRef);
+      return deleteReviewDoc(reviewDocRef, authResult.isAdmin ? 'admin' : 'member');
     }
 
     if (authResult.reason !== 'no_token') {
@@ -74,7 +74,7 @@ export async function DELETE(req: NextRequest) {
       return typedJson<IResponseBody>({ response: 'ng', message: '본인 확인에 실패했습니다.' }, { status: 403 });
     }
 
-    return deleteReviewDoc(reviewDocRef);
+    return deleteReviewDoc(reviewDocRef, 'guest');
   } catch (error) {
     logServerError('Error deleting Document:', error);
     return typedJson<IResponseBody>(
@@ -84,8 +84,12 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-async function deleteReviewDoc(reviewDocRef: DocumentReference): Promise<Response> {
+async function deleteReviewDoc(
+  reviewDocRef: DocumentReference,
+  actorType: 'admin' | 'guest' | 'member',
+): Promise<Response> {
   await reviewDocRef.delete();
   revalidatePath('/review');
+  logBusinessEvent('review.deleted', { actorType });
   return typedJson<IResponseBody>({ response: 'ok', message: '후기가 정상적으로 삭제되었습니다.' }, { status: 200 });
 }

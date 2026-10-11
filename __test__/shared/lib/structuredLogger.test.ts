@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 
 describe('structuredLogger', () => {
@@ -56,6 +58,24 @@ describe('structuredLogger', () => {
     expect(parsed.error).toEqual({
       type: 'Error',
       message: 'string failure',
+    });
+  });
+
+  it('adds the active trace and span IDs to server logs', () => {
+    const activeSpan = vi.spyOn(trace, 'getActiveSpan').mockReturnValue({
+      spanContext: () => ({
+        traceId: '0123456789abcdef0123456789abcdef',
+        spanId: '0123456789abcdef',
+        traceFlags: 1,
+      }),
+    } as never);
+
+    const { parsed } = captureLog('Traced failure', new Error('failed'));
+    activeSpan.mockRestore();
+
+    expect(parsed).toMatchObject({
+      trace_id: '0123456789abcdef0123456789abcdef',
+      span_id: '0123456789abcdef',
     });
   });
 

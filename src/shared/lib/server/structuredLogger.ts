@@ -1,9 +1,24 @@
+import { trace } from '@opentelemetry/api';
+
 interface IStructuredError {
   type: string;
   message: string;
   stack?: string;
   code?: string;
   digest?: string;
+}
+
+function activeTraceContext(): { trace_id?: string; span_id?: string } {
+  const spanContext = trace.getActiveSpan()?.spanContext();
+
+  if (spanContext == null || !spanContext.traceId || !spanContext.spanId) {
+    return {};
+  }
+
+  return {
+    trace_id: spanContext.traceId,
+    span_id: spanContext.spanId,
+  };
 }
 
 export interface IBusinessEventContext {
@@ -67,6 +82,7 @@ export function logServerError(message: string, error: unknown): void {
     event: 'application.error',
     message: truncate(message, MAX_MESSAGE_LENGTH),
     error: serializeError(error),
+    ...activeTraceContext(),
   };
 
   process.stderr.write(`${JSON.stringify(entry)}\n`);
@@ -85,6 +101,7 @@ export function logBusinessEvent(event: string, context: IBusinessEventContext =
     setting: context.setting,
     enabled: context.enabled,
     scope: context.scope,
+    ...activeTraceContext(),
   };
 
   process.stdout.write(`${JSON.stringify(entry)}\n`);

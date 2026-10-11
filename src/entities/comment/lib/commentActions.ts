@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
+import { CONTENT_TYPE_BY_COLLECTION, logBusinessEvent } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -35,7 +36,7 @@ async function verifyCommentAuthor(): Promise<Response | { uid: string }> {
 }
 
 export async function createComment(
-  firestoreCollection: string,
+  firestoreCollection: keyof typeof CONTENT_TYPE_BY_COLLECTION,
   docType: ICommentData['docType'],
   { docId, comment }: { docId: string; comment: string },
 ): Promise<Response> {
@@ -62,6 +63,11 @@ export async function createComment(
       docType,
     });
 
+    logBusinessEvent('comment.created', {
+      actorType: 'member',
+      contentType: CONTENT_TYPE_BY_COLLECTION[firestoreCollection],
+    });
+
     return typedJson<ICommentResponse>({ response: 'ok', message: '댓글이 생성되었습니다.' }, { status: 200 });
   } catch (error) {
     console.error(`Error creating comment in ${firestoreCollection}:`, error);
@@ -70,7 +76,7 @@ export async function createComment(
 }
 
 export async function updateComment(
-  firestoreCollection: string,
+  firestoreCollection: keyof typeof CONTENT_TYPE_BY_COLLECTION,
   { docId, commentId, comment }: { docId: string; commentId: string; comment: string },
 ): Promise<Response> {
   if (!docId) {
@@ -105,6 +111,11 @@ export async function updateComment(
 
     await commentDocRef.update({ comment, updatedAt: FieldValue.serverTimestamp() });
 
+    logBusinessEvent('comment.updated', {
+      actorType: 'member',
+      contentType: CONTENT_TYPE_BY_COLLECTION[firestoreCollection],
+    });
+
     return typedJson<ICommentResponse>({ response: 'ok', message: '댓글 수정 성공' }, { status: 200 });
   } catch (error) {
     console.error(`Error updating comment in ${firestoreCollection}:`, error);
@@ -116,7 +127,7 @@ export async function updateComment(
 }
 
 export async function deleteComment(
-  firestoreCollection: string,
+  firestoreCollection: keyof typeof CONTENT_TYPE_BY_COLLECTION,
   { docId, commentId }: { userId?: string; docId: string; commentId: string },
 ): Promise<Response> {
   if (!docId) {
@@ -150,6 +161,10 @@ export async function deleteComment(
     }
 
     await commentDocRef.delete();
+    logBusinessEvent('comment.deleted', {
+      actorType: 'member',
+      contentType: CONTENT_TYPE_BY_COLLECTION[firestoreCollection],
+    });
     return typedJson<ICommentResponse>({ response: 'ok', message: '댓글이 삭제되었습니다.' }, { status: 200 });
   } catch (error) {
     console.error(`Error deleting comment in ${firestoreCollection}:`, error);

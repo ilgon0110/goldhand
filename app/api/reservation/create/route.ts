@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IReservationCreatePostData {
@@ -132,6 +132,7 @@ async function createNonMemberPost(body: IReservationCreatePostData) {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+    logBusinessEvent('reservation.created', { actorType: 'guest' });
     return typedJson<IResponseBody>(
       {
         response: 'ok',
@@ -188,6 +189,7 @@ async function createMemberPost(uid: string, body: IReservationCreatePostData, a
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+    logBusinessEvent('reservation.created', { actorType: 'member' });
     return typedJson<IResponseBody>(
       {
         response: 'ok',

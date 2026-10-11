@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 export interface IReviewPost {
@@ -50,6 +50,9 @@ export async function saveReview(body: IReviewPost, owner: IReviewOwner) {
       });
 
     revalidatePath('/review');
+    logBusinessEvent('review.created', {
+      actorType: owner.userId ? 'member' : 'guest',
+    });
     return typedJson<IReviewResponseBody>(
       { response: 'ok', message: '리뷰가 성공적으로 작성되었습니다.', docId },
       { status: 200 },

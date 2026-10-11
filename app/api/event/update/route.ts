@@ -6,7 +6,7 @@ import type { NextRequest } from 'next/server';
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -107,6 +107,7 @@ export async function POST(req: NextRequest) {
       });
 
       revalidatePath(`/event/${docId}`);
+      logBusinessEvent('event.updated', { actorType: 'admin' });
       return typedJson<IResponseBody>(
         { response: 'ok', message: '소식이 성공적으로 수정되었습니다.', docId },
         { status: 200 },

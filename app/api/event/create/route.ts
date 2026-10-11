@@ -3,7 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IEventPost {
@@ -83,6 +83,7 @@ const createEventPost = async (uid: string, body: IEventPost) => {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+    logBusinessEvent('event.created', { actorType: 'admin' });
     return typedJson<IResponseBody>(
       { response: 'ok', message: '소식이 성공적으로 작성되었습니다.', docId },
       { status: 200 },

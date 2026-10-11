@@ -2,7 +2,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IConsultPost {
@@ -63,6 +63,9 @@ export async function POST(req: Request) {
       userId,
       createdAt: new Date(),
       updatedAt: new Date(),
+    });
+    logBusinessEvent('manager_application.created', {
+      actorType: userId ? 'member' : 'guest',
     });
     return typedJson<IResponseBody>(
       {

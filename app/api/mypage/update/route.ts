@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 
 interface IMyPageUpdatePost {
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
         email,
         updatedAt: FieldValue.serverTimestamp(),
       });
+      logBusinessEvent('account.profile_updated', { actorType: 'member' });
       return typedJson<IResponseBody>(
         { response: 'ok', message: '사용자 정보가 업데이트되었습니다.' },
         { status: 200 },

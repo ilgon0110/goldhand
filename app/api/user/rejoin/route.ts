@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import { logServerError } from '@/src/shared/lib/server/structuredLogger';
+import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
@@ -93,6 +93,8 @@ export async function POST() {
         isDeleted: false,
         updatedAt: Timestamp.now(),
       });
+
+      logBusinessEvent('account.rejoined', { actorType: 'member' });
 
       return typedJson<IResponsePostBody>({ response: 'ok', message: '재가입 성공!' }, { status: 200 });
     } catch (error) {

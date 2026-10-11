@@ -6,6 +6,22 @@ interface IStructuredError {
   digest?: string;
 }
 
+export interface IBusinessEventContext {
+  actorType?: 'admin' | 'guest' | 'member';
+  resourceType?: 'account' | 'comment' | 'event' | 'manager_application' | 'notification' | 'reservation' | 'review';
+  contentType?: 'event' | 'manager' | 'reservation' | 'review';
+  setting?: string;
+  enabled?: boolean;
+  scope?: 'all' | 'single';
+}
+
+export const CONTENT_TYPE_BY_COLLECTION = {
+  consults: 'reservation',
+  events: 'event',
+  managers: 'manager',
+  reviews: 'review',
+} as const;
+
 const MAX_ATTRIBUTE_LENGTH = 200;
 const MAX_MESSAGE_LENGTH = 2_000;
 const MAX_STACK_LENGTH = 16_000;
@@ -54,4 +70,22 @@ export function logServerError(message: string, error: unknown): void {
   };
 
   process.stderr.write(`${JSON.stringify(entry)}\n`);
+}
+
+export function logBusinessEvent(event: string, context: IBusinessEventContext = {}): void {
+  const entry = {
+    timestamp: new Date().toISOString(),
+    level: 'info',
+    service: 'nextjs',
+    environment: process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.NODE_ENV || 'unknown',
+    event,
+    actor_type: context.actorType,
+    resource_type: context.resourceType ?? event.split('.')[0],
+    content_type: context.contentType,
+    setting: context.setting,
+    enabled: context.enabled,
+    scope: context.scope,
+  };
+
+  process.stdout.write(`${JSON.stringify(entry)}\n`);
 }

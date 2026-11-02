@@ -27,7 +27,7 @@ export const onDayCheckList = [
   '1일부터 3일까지 이용 가능합니다.',
 ];
 
-export const premiumPriceList = [850000, 1640000, 2460000, 3280000];
+export const premiumPriceList = [850000, 1650000, 2460000, 3280000];
 
 export const premiumHouseFiveDayPriceList = [1450000, 2600000, 3900000, 5200000];
 
@@ -35,7 +35,7 @@ export const premiumHouseSixDayPriceList = [1670000, 3150000, 4650000, 6200000];
 
 export const premiumHouseSixDayCheckList = ['일요일 19시 출근 ~ 금요일 15시 퇴근', '주 6일제 이용시 토요일 15시 퇴근'];
 
-export const costEffectivenessPriceList = [620000, 1180000, 1770000, 2360000];
+export const costEffectivenessPriceList = [500000, 960000, 1450000, 1920000];
 
 export const costEffectivenessCheckList = [
   '점심식사 제공',

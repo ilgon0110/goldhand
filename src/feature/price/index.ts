@@ -1,2 +1,2 @@
-export * from './config/const';
-export { PriceTable } from './ui/PriceTable';
+export { PricePage } from './ui/PricePage';
+export { PricingForm } from './ui/PricingForm';

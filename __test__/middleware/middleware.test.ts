@@ -30,6 +30,15 @@ describe('middleware', () => {
     getUserData.mockReset();
   });
 
+  it.each(['guest', 'basic', 'admin'])('요금 관리는 관리자만 접근한다: %s', async grade => {
+    if (grade !== 'guest') {
+      cookieGet.mockReturnValue({ value: 'session' });
+      getUserData.mockResolvedValue({ response: 'ok', userData: { grade } });
+    }
+    const response = await middleware(makeRequest('/price/manage'));
+    expect(response.status).toBe(grade === 'admin' ? 200 : 307);
+  });
+
   it('session 쿠키가 없으면 getUserData를 호출하지 않고도 /manager/list에서 로그인으로 리다이렉트한다 (게스트가 그대로 통과해버리던 회귀 방지)', async () => {
     cookieGet.mockReturnValue(undefined);
 

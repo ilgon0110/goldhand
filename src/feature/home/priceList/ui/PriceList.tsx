@@ -1,18 +1,22 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import {
-  basicPriceList,
-  costEffectivenessPriceList,
-  oneDayPriceList,
-  premiumHouseFiveDayPriceList,
-  premiumHouseSixDayPriceList,
-  premiumPriceList,
-} from '@/src/feature/price';
+import { usePriceQuery } from '@/src/entities/price';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 
 import { HomeSectionHeading } from '../../ui/HomeSectionHeading';
 import { PriceSummaryCard } from './_PriceSummaryCard';
 
 export const PriceList = () => {
+  const { prices } = usePriceQuery().data;
+  const {
+    basicPriceList,
+    premiumPriceList,
+    premiumHouseFiveDayPriceList,
+    premiumHouseSixDayPriceList,
+    costEffectivenessPriceList,
+    oneDayPriceList,
+  } = prices;
   return (
     <FadeInWhenVisible delay={0.2}>
       <HomeSectionHeading description="고운황금손 이용요금을 안내합니다." title="고운황금손 이용요금" />

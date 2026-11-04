@@ -1,7 +1,9 @@
 import { cn } from '@/lib/utils';
 import { formatPrice } from '@/src/shared/utils';
 
-type TPriceRow = { label: string; values: number[] };
+import { MERGEABLE_FEE_IDS } from '../config/const';
+
+type TPriceRow = { id?: string; label: string; values: number[] };
 
 type TPriceTableProps = {
   caption: string;
@@ -10,6 +12,9 @@ type TPriceTableProps = {
   columns: string[];
   rows: TPriceRow[];
 };
+
+const cellsOf = ({ id, values }: TPriceRow) =>
+  id && MERGEABLE_FEE_IDS.includes(id) && values.every(value => value === values[0]) ? [values[0]] : values;
 
 // 가로 구분선만 사용하는 요금표. 금액은 우측 정렬 + tabular 숫자로 자릿수를 맞춘다.
 // 금액 열은 내용 폭(w-px)만 쓰고, 항목 열이 남은 폭을 가져가 모바일에서도 줄바꿈을 줄인다.
@@ -35,17 +40,18 @@ export const PriceTable = ({ caption, labelHeader, columns, rows }: TPriceTableP
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ label, values }) => (
-            <tr className="border-t border-border" key={label}>
+          {rows.map(row => (
+            <tr className="border-t border-border" key={row.id ?? row.label}>
               <th className={cn('break-keep px-3 py-3.5 text-left font-medium text-foreground', 'md:px-5')} scope="row">
-                {label}
+                {row.label}
               </th>
-              {values.map((value, index) => (
+              {cellsOf(row).map((value, index, cells) => (
                 <td
                   className={cn(
                     'w-px whitespace-nowrap px-3 py-3.5 text-right text-sm font-semibold tabular-nums text-foreground',
                     'md:px-5 md:text-base',
                   )}
+                  colSpan={cells.length === 1 ? columns.length : 1}
                   key={columns[index]}
                 >
                   {formatPrice(value)}

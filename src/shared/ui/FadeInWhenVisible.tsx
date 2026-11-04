@@ -1,60 +1,48 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { useInView } from 'react-intersection-observer';
+import { useEffect, useRef, useState } from 'react';
+
+import { cn } from '@/lib/utils';
 
 type TProps = {
   children: React.ReactNode;
-  delay?: number;
-  yaxis?: number; // in px
+  delay?: number; // in seconds
 };
 
-export default function FadeInWhenVisible({ children, delay = 0, yaxis = 0 }: TProps) {
-  const { ref, inView, entry } = useInView({
-    triggerOnce: true,
-    threshold: 0,
-  });
-
-  const [triggerPoint, setTriggerPoint] = useState<number | null>(null);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const reduceMotion = useReducedMotion();
+// 서버 HTML에서는 항상 보이게 렌더링한다. (opacity: 0으로 시작하면 하이드레이션 전까지 화면이 비어 보인다)
+// 하이드레이션 후 아직 화면 아래에 있는 섹션만 숨겼다가, 스크롤로 들어오면 페이드인한다.
+export default function FadeInWhenVisible({ children, delay = 0 }: TProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [phase, setPhase] = useState<'hidden' | 'shown' | 'static'>('static');
 
   useEffect(() => {
-    if (inView && entry && triggerPoint === null) {
-      const baseY = window.scrollY;
-      setTriggerPoint(baseY + yaxis);
-    }
-  }, [inView, entry, yaxis, triggerPoint]);
+    const element = ref.current;
+    if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // 이미 화면 안(또는 지나간 위치)에 있으면 사용자가 보고 있는 중이므로 건드리지 않는다.
+    if (element.getBoundingClientRect().top < window.innerHeight) return;
 
-  useEffect(() => {
-    if (triggerPoint === null || hasAnimated) return;
-
-    const handleScroll = () => {
-      if (window.scrollY >= triggerPoint) {
-        setHasAnimated(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [triggerPoint, hasAnimated]);
-
-  const shouldAnimate = yaxis === 0 ? inView : hasAnimated;
+    setPhase('hidden');
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setPhase('shown');
+      observer.disconnect();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <motion.div
-      animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
-      className="w-full"
-      initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+    <div
+      className={cn(
+        'w-full',
+        phase === 'hidden' && 'opacity-0',
+        phase === 'shown' && 'duration-[600ms] ease-out animate-in fade-in fill-mode-both slide-in-from-bottom-[30px]',
+      )}
+      data-phase={phase}
       ref={ref}
-      transition={{ duration: 0.6, delay, ease: 'easeOut' }}
+      style={phase === 'shown' ? { animationDelay: `${delay}s` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

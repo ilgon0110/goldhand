@@ -1,21 +1,22 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import { cn } from '@/lib/utils';
+import { getPriceData } from '@/src/entities/price';
 import { getReviewListData } from '@/src/entities/review';
 import { OAuthSuccessHandler } from '@/src/feature/auth';
 import { FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
 import { ReviewCarousel } from '@/src/feature/home/reviewCarousel/ui/ReviewCarousel';
 import { HOME_CONTAINER } from '@/src/feature/home/ui/homeContainer';
-import { reviewKeys } from '@/src/shared/config/queryKeys';
+import { priceKeys, reviewKeys } from '@/src/shared/config/queryKeys';
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
 
 export default async function Home() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: reviewKeys.carousel(),
-    queryFn: () => getReviewListData(1, '전체'),
-  });
+  await Promise.all([
+    queryClient.prefetchQuery({ queryKey: reviewKeys.carousel(), queryFn: () => getReviewListData(1, '전체') }),
+    queryClient.prefetchQuery({ queryKey: priceKeys.all, queryFn: getPriceData }),
+  ]);
 
   return (
     <>
@@ -34,7 +35,9 @@ export default async function Home() {
           <ReviewCarousel />
         </HydrationBoundary>
         <FranchiseeSheetList />
-        <PriceList />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <PriceList />
+        </HydrationBoundary>
         <SponsorList />
       </section>
     </>

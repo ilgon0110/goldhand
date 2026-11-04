@@ -1,3 +1,5 @@
+export const priceKeys = { all: ['prices'] as const };
+
 const notificationKeys = {
   all: ['notifications'] as const,
   lists: () => [...notificationKeys.all, 'list'] as const,

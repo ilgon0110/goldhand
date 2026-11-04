@@ -56,3 +56,4 @@ rule.mjs
 firestore.rules
 
 .vscode
+reports/

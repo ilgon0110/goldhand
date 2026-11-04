@@ -1,7 +1,7 @@
 'use client';
 
 import Autoplay from 'embla-carousel-autoplay';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
@@ -17,7 +17,10 @@ import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 
 import { HOME_CONTAINER } from '../../ui/homeContainer';
 
-const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+// 히어로 문구는 CSS 애니메이션으로 등장시킨다. JS(framer-motion) 초기값 opacity: 0을 쓰면
+// 하이드레이션이 끝날 때까지 SSR HTML에서 문구가 보이지 않아 첫 화면이 멈춘 것처럼 보인다.
+const REVEAL =
+  'motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-6 motion-safe:fill-mode-both motion-safe:duration-700 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)]';
 
 export function ImageSlideList() {
   const [isPending, startTransition] = useTransition();
@@ -54,12 +57,6 @@ export function ImageSlideList() {
   };
 
   const navigate = (href: string) => startTransition(() => router.push(href));
-
-  const reveal = (delay: number) => ({
-    initial: reduceMotion ? false : { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, delay, ease: EASE_OUT },
-  });
 
   return (
     <div className={cn('relative isolate h-[78dvh] min-h-[520px] overflow-hidden bg-stone-900', 'md:min-h-[600px]')}>
@@ -108,21 +105,28 @@ export function ImageSlideList() {
         className={cn(HOME_CONTAINER, 'relative flex h-full flex-col justify-end pb-24', 'md:justify-center md:pb-0')}
       >
         <div className="max-w-xl">
-          <motion.p
-            {...reveal(0)}
-            className={cn('break-keep text-3xl font-bold leading-tight text-white', 'md:text-5xl')}
+          <p
+            className={cn(
+              REVEAL,
+              'break-keep text-3xl font-bold leading-tight text-white',
+              'md:text-5xl',
+            )}
           >
             사랑의 마음으로,
             <br />
             고운황금손
-          </motion.p>
-          <motion.p
-            {...reveal(0.12)}
-            className={cn('mt-4 break-keep text-base leading-relaxed text-white/85', 'md:mt-5 md:text-lg')}
+          </p>
+          <p
+            className={cn(
+              REVEAL,
+              'motion-safe:delay-[120ms]',
+              'mt-4 break-keep text-base leading-relaxed text-white/85',
+              'md:mt-5 md:text-lg',
+            )}
           >
             아기를 맞이하는 순간 고운황금손이 기쁨으로 다가가겠습니다.
-          </motion.p>
-          <motion.div {...reveal(0.24)} className={cn('mt-8 flex flex-col gap-3', 'sm:flex-row')}>
+          </p>
+          <div className={cn(REVEAL, 'motion-safe:delay-[240ms]', 'mt-8 flex flex-col gap-3', 'sm:flex-row')}>
             <Button
               className={cn(
                 'h-12 rounded-full bg-goldDeep px-7 text-base font-semibold text-white transition-transform',
@@ -142,7 +146,7 @@ export function ImageSlideList() {
             >
               정부바우처 확인하기
             </Button>
-          </motion.div>
+          </div>
         </div>
       </div>
 

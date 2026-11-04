@@ -11,7 +11,7 @@ import { EventModal } from '@/src/widgets/event/ui/EventModal';
 describe('EventModal', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('keeps the modal closed while the dismissal window is active', () => {
+  it('오늘 하루 보지 않기 기간 중에는 모달을 열지 않는다', () => {
     storage.get.mockReturnValue(new Date(Date.now() + 60_000).toISOString());
 
     render(<EventModal />);
@@ -19,7 +19,7 @@ describe('EventModal', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('opens centered dialog with both close actions visible', async () => {
+  it('보지 않기 기록이 없으면 모달을 열고, 닫기 버튼 두 개만 보이며 포커스는 주지 않는다', async () => {
     storage.get.mockReturnValue(null);
 
     render(<EventModal />);
@@ -31,7 +31,7 @@ describe('EventModal', () => {
     expect(document.activeElement?.tagName).not.toBe('BUTTON');
   });
 
-  it('closes on 닫기 without storing a dismissal window', async () => {
+  it('닫기를 누르면 보지 않기 기록 없이 모달을 닫는다', async () => {
     storage.get.mockReturnValue(null);
     render(<EventModal />);
 
@@ -41,7 +41,7 @@ describe('EventModal', () => {
     expect(storage.set).not.toHaveBeenCalled();
   });
 
-  it('stores a dismissal window until tomorrow on 오늘 하루 보지 않기', async () => {
+  it('오늘 하루 보지 않기를 누르면 내일까지 보지 않기 기록을 저장하고 닫는다', async () => {
     storage.get.mockReturnValue(null);
     render(<EventModal />);
 

@@ -1,5 +1,6 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { verifyPhoneIdToken } from '@/src/shared/lib/server';
@@ -11,7 +12,11 @@ import { saveReview } from './lib';
 const DUPLICATE_SUBMISSION_MESSAGE = '동일한 대리점에는 24시간 내 1회만 후기를 작성할 수 있습니다.';
 
 export async function createGuestReview(body: IReviewPost) {
-  const { franchisee, phoneIdToken } = body;
+  const { name, franchisee, phoneIdToken } = body;
+
+  if (!canUseName(name, false)) {
+    return typedJson<IReviewResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' }, { status: 403 });
+  }
 
   if (!phoneIdToken) {
     return typedJson<IReviewResponseBody>(

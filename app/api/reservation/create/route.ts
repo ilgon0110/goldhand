@@ -3,6 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
@@ -82,6 +83,10 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!canUseName(name, targetUserData?.grade === 'admin')) {
+      return typedJson<IResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE }, { status: 403 });
+    }
+
     if (uid) {
       return createMemberPost(uid, body, targetUserData?.phoneNumber ?? '');
     }
@@ -98,6 +103,9 @@ export async function POST(req: Request) {
 // 비회원일 경우
 async function createNonMemberPost(body: IReservationCreatePostData) {
   const { title, name, password, secret, franchisee, phoneNumber, location, content, bornDate } = body;
+  if (!canUseName(name, false)) {
+    return typedJson<IResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE }, { status: 403 });
+  }
   // 비밀번호 검중 후 hash
   if (password == null || password.length < 4) {
     return typedJson<IResponseBody>(

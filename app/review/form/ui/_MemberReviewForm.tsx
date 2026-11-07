@@ -7,8 +7,8 @@ import { useReviewWriteForm } from '../model';
 import { ReviewFields } from './_ReviewFields';
 import { ReviewUploadProgress } from './_ReviewUploadProgress';
 
-export const MemberReviewForm = () => {
-  const writeForm = useReviewWriteForm({ isGuestPost: false });
+export const MemberReviewForm = ({ isAdmin }: { isAdmin: boolean }) => {
+  const writeForm = useReviewWriteForm({ isGuestPost: false, isAdmin });
 
   return (
     <>

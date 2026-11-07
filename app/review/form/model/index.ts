@@ -3,10 +3,12 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { reviewContentSchema, useReviewFormMutation } from '@/src/entities/review';
+import { refineAdminOnlyName } from '@/src/feature/auth';
 
 type TUseReviewWriteFormOptions = {
   isGuestPost: boolean;
   phoneIdToken?: string;
+  isAdmin?: boolean;
 };
 export type TGuestVerification = {
   phoneNumber: string;
@@ -15,9 +17,9 @@ export type TGuestVerification = {
 
 export type TReviewContentValues = z.infer<typeof reviewContentSchema>;
 
-export const useReviewWriteForm = ({ isGuestPost, phoneIdToken }: TUseReviewWriteFormOptions) => {
+export const useReviewWriteForm = ({ isGuestPost, phoneIdToken, isAdmin = false }: TUseReviewWriteFormOptions) => {
   const form = useForm<TReviewContentValues>({
-    resolver: zodResolver(reviewContentSchema),
+    resolver: zodResolver(reviewContentSchema.superRefine(refineAdminOnlyName(isAdmin))),
     defaultValues: { name: '', title: '', franchisee: '' },
     mode: 'onChange',
   });

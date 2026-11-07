@@ -1,5 +1,6 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
@@ -17,6 +18,13 @@ export async function createUserReview(body: IReviewPost, uid: string) {
     if (userData?.isDeleted) {
       return typedJson<IReviewResponseBody>(
         { response: 'ng', message: '탈퇴한 유저는 리뷰를 작성할 수 없습니다.', docId: '' },
+        { status: 403 },
+      );
+    }
+
+    if (!canUseName(body.name, userData?.grade === 'admin')) {
+      return typedJson<IReviewResponseBody>(
+        { response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' },
         { status: 403 },
       );
     }

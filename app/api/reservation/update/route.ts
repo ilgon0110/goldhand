@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
@@ -57,6 +58,10 @@ export async function POST(req: NextRequest) {
 
     // 비회원인 경우
     if (targetData.userId === null) {
+      if (!canUseName(name, false)) {
+        return typedJson<IResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE }, { status: 403 });
+      }
+
       if (password === undefined || oldPassword === undefined) {
         return typedJson<IResponseBody>({ response: 'ng', message: '비밀번호를 입력해주세요.' }, { status: 401 });
       }
@@ -110,6 +115,14 @@ export async function POST(req: NextRequest) {
 
       if (targetData.userId !== verifiedUid) {
         return typedJson<IResponseBody>({ response: 'ng', message: '게시글 수정 권한이 없습니다.' }, { status: 403 });
+      }
+
+      // 관리자 전용 이름일 때만 등급 조회 비용을 부과한다.
+      if (!canUseName(name, false)) {
+        const userSnap = await db.collection('users').doc(verifiedUid).get();
+        if (userSnap.data()?.grade !== 'admin') {
+          return typedJson<IResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE }, { status: 403 });
+        }
       }
 
       // 회원이면서 인증된 본인인 경우만 수정 가능

@@ -2,6 +2,7 @@ import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
@@ -59,6 +60,10 @@ export async function POST(req: Request) {
   }
 
   const { name, nickname, phoneNumber, email } = await req.json();
+
+  if (name && !canUseName(name, targetUserData?.grade === 'admin')) {
+    return typedJson<IResponsePostBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE }, { status: 403 });
+  }
 
   if (phoneNumber) {
     const userRecord = await getAdminAuth(firebaseAdminApp).getUser(uid);

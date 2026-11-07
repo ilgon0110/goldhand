@@ -12,6 +12,7 @@ import {
   PhoneAuthFields,
   usePhoneAuthLinkFlow,
 } from '@/src/entities/phoneAuth/client';
+import { refineAdminOnlyName } from '@/src/feature/auth';
 import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
@@ -30,7 +31,7 @@ interface ISignupPageProps {
 export const SignupPage = ({ userData }: ISignupPageProps) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof signUpFormSchema>>({
-    resolver: zodResolver(signUpFormSchema),
+    resolver: zodResolver(signUpFormSchema.superRefine(refineAdminOnlyName(userData?.grade === 'admin'))),
     defaultValues: {
       name: userData?.name || '',
       nickname: userData?.nickname || '',

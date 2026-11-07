@@ -146,7 +146,7 @@ function renderMemberReviewForm() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   queryClient.setQueryData(userKeys.all, mockUserData);
 
-  return renderWithQueryClient(<MemberReviewForm />, { queryClient });
+  return renderWithQueryClient(<MemberReviewForm isAdmin={false} />, { queryClient });
 }
 
 const GuestImagesHarness = ({ onRestartVerification }: { onRestartVerification: () => void }) => {

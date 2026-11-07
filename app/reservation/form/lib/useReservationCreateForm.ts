@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { passwordPostAction, reservationFormSchema } from '@/src/entities/reservation';
+import { refineAdminOnlyName } from '@/src/feature/auth';
 import type { IUserResponseData } from '@/src/shared/types';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
@@ -23,7 +24,7 @@ export const useReservationCreateForm = ({ userData, onSuccess, onError }: IUseR
   const router = useRouter();
 
   const form = useForm<z.infer<typeof reservationFormSchema>>({
-    resolver: zodResolver(reservationFormSchema),
+    resolver: zodResolver(reservationFormSchema.superRefine(refineAdminOnlyName(userData.userData?.grade === 'admin'))),
     defaultValues: {
       title: '',
       name: userData?.userData?.name || '',

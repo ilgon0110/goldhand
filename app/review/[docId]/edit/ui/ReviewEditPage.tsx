@@ -14,6 +14,7 @@ import {
   useReviewFormMutation,
 } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
+import { refineAdminOnlyName } from '@/src/feature/auth';
 import { franchiseeList } from '@/src/shared/config';
 import {
   AlertDialog,
@@ -60,7 +61,7 @@ export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   };
 
   const form = useForm<z.infer<typeof reviewContentSchema>>({
-    resolver: zodResolver(reviewContentSchema),
+    resolver: zodResolver(reviewContentSchema.superRefine(refineAdminOnlyName(isAdmin))),
     defaultValues: reviewDefaultValues,
     mode: 'onChange',
   });

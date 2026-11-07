@@ -3,6 +3,7 @@ import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/fi
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
@@ -44,6 +45,10 @@ export async function POST(req: NextRequest) {
 
     if (!userDocSnap.exists) {
       return typedJson<IResponseBody>({ response: 'ng', message: '사용자 정보가 존재하지 않습니다.' }, { status: 403 });
+    }
+
+    if (!canUseName(name, userDocSnap.data()?.grade === 'admin')) {
+      return typedJson<IResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE }, { status: 403 });
     }
 
     const userRecord = await getAdminAuth(firebaseAdminApp).getUser(userId);

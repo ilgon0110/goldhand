@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import type { NextRequest } from 'next/server';
 
 import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
 import { checkAdminAuth } from '@/src/shared/lib/server';
@@ -110,6 +111,10 @@ async function updateReviewPost(
   actorType: 'admin' | 'guest' | 'member',
 ): Promise<Response> {
   const { title, name, franchisee, htmlString, docId, images } = body;
+  if (!canUseName(name, actorType === 'admin')) {
+    return typedJson<IResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' }, { status: 403 });
+  }
+
   const imageFields = resolvePostImageFields({ htmlString, images, previousThumbnail });
 
   try {

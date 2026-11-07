@@ -37,7 +37,7 @@ export const ReviewFormPage = () => {
           )}
         </>
       ) : (
-        <MemberReviewForm />
+        <MemberReviewForm isAdmin={userData.userData?.grade === 'admin'} />
       )}
     </>
   );

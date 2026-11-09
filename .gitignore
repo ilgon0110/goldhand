@@ -54,6 +54,7 @@ rule.mjs
 /.worktrees
 비즈톡*
 firestore.rules
+observability.md
 
 .vscode
 reports/

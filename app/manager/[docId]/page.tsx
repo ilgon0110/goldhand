@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 
-import { getUserLoginData } from '@/src/shared/api/getUserData';
+import { GET as userGET } from '@/app/api/user/route';
+import { jsonOrThrow } from '@/src/shared/api/request';
+import type { IUserResponseData } from '@/src/shared/types';
 
 import { getManagerApplyDetailData } from './api';
 import { ManagerApplyDetailPage } from './ui/ManagerApplyDetailPage';
@@ -14,9 +16,9 @@ export default async function Page({ params }: TPageProps) {
 
   // 세션이 없거나 만료된 경우, 그리고 관리자가 아닌 경우 전역 에러 페이지 대신 로그인으로 보낸다.
   // 데이터 조회보다 먼저 검증해서, 인가 실패 시 상세 데이터를 아예 가져오지 않도록 한다.
-  let userData: Awaited<ReturnType<typeof getUserLoginData>>;
+  let userData: IUserResponseData;
   try {
-    userData = await getUserLoginData();
+    userData = await jsonOrThrow<IUserResponseData>(await userGET());
   } catch {
     redirect('/login');
   }

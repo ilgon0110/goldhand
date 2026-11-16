@@ -8,7 +8,16 @@ import { PRICES } from '../../fixtures/prices';
 const getPriceData = vi.hoisted(() => vi.fn());
 
 vi.mock('@/src/shared/lib/server', () => ({ checkAdminAuth: async () => ({ ok: false }) }));
-vi.mock('@/src/entities/price/api/getPriceData', () => ({ getPriceData }));
+// 실제 /api/price GET처럼 조회 실패 시 500 + message를 돌려준다.
+vi.mock('@/app/api/price/route', () => ({
+  GET: async () => {
+    try {
+      return Response.json(await getPriceData());
+    } catch (error) {
+      return Response.json({ message: (error as Error).message }, { status: 500 });
+    }
+  },
+}));
 vi.mock('@/src/shared/ui/FadeInWhenVisible', () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));

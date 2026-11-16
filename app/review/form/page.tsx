@@ -1,7 +1,8 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
-import { getUserData } from '@/src/shared/api/getUserData';
-import { userKeys } from '@/src/shared/config/queryKeys';
+import { GET as userGET } from '@/app/api/user/route';
+import { userQueryOptions } from '@/src/entities/user';
+import { routeGet } from '@/src/shared/lib/server/routeGet';
 import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import { ReviewFormPage } from './ui/ReviewFormPage';
@@ -9,10 +10,7 @@ import { ReviewFormPage } from './ui/ReviewFormPage';
 export default async function Page() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: userKeys.all,
-    queryFn: getUserData,
-  });
+  await queryClient.prefetchQuery(userQueryOptions(routeGet(userGET)));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

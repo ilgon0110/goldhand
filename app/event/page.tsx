@@ -1,10 +1,12 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { SearchParams } from 'nuqs/server';
 
-import { getEventListData } from '@/src/entities/event';
-import { getUserData } from '@/src/shared/api/getUserData';
-import { eventKeys, userKeys } from '@/src/shared/config/queryKeys';
+import { GET as eventListGET } from '@/app/api/event/route';
+import { GET as userGET } from '@/app/api/user/route';
+import { eventListQueryOptions } from '@/src/entities/event';
+import { userQueryOptions } from '@/src/entities/user';
 import { loadEventParams } from '@/src/shared/lib/nuqs/searchParams';
+import { routeGet } from '@/src/shared/lib/server/routeGet';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 import { EventPage } from './ui/EventPage';
@@ -18,11 +20,8 @@ export default async function Page({ searchParams }: TPageProps) {
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: eventKeys.list({ page, status }),
-      queryFn: () => getEventListData(page, status),
-    }),
-    queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData }),
+    queryClient.prefetchQuery(eventListQueryOptions({ page, status }, routeGet(eventListGET))),
+    queryClient.prefetchQuery(userQueryOptions(routeGet(userGET))),
   ]);
 
   return (

@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
-import type * as ReviewEntities from '@/src/entities/review';
 
 const reviewFixture = {
   comments: null,
@@ -21,19 +20,17 @@ const reviewFixture = {
   userId: null,
 };
 
-vi.mock('@/src/entities/review', async importOriginal => {
-  const actual = await importOriginal<typeof ReviewEntities>();
-
-  return {
-    ...actual,
-    getReviewListData: vi.fn(async () => ({
+vi.mock('@/app/api/review/route', () => ({
+  GET: vi.fn(async () =>
+    Response.json({
       message: '성공',
       response: 'ok',
       reviewData: [reviewFixture],
       totalDataLength: 1,
-    })),
-  };
-});
+    }),
+  ),
+}));
+vi.mock('@/app/api/price/route', () => ({ GET: vi.fn(async () => Response.json({}, { status: 500 })) }));
 vi.mock('@/src/feature/auth', () => ({ OAuthSuccessHandler: () => null }));
 vi.mock('@/src/feature/home', () => ({
   FranchiseeSheetList: () => null,

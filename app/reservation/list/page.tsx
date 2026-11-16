@@ -3,9 +3,10 @@ export const dynamic = 'force-dynamic';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { SearchParams } from 'nuqs/server';
 
-import { getReservationListData } from '@/src/entities/reservation';
-import { reservationKeys } from '@/src/shared/config/queryKeys';
+import { GET as reservationListGET } from '@/app/api/reservation/route';
+import { reservationListQueryOptions } from '@/src/entities/reservation';
 import { loadReservationParams } from '@/src/shared/lib/nuqs/searchParams';
+import { routeGet } from '@/src/shared/lib/server/routeGet';
 
 import { ReservationListPage } from './ui/ReservationListPage';
 
@@ -16,10 +17,7 @@ type TPageProps = {
 export default async function Page({ searchParams }: TPageProps) {
   const { page, hideSecret } = await loadReservationParams(searchParams);
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: reservationKeys.list({ page, hideSecret }),
-    queryFn: () => getReservationListData({ page, hideSecret }),
-  });
+  await queryClient.prefetchQuery(reservationListQueryOptions({ page, hideSecret }, routeGet(reservationListGET)));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

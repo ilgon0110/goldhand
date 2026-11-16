@@ -1,9 +1,12 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
-import { getEventDetailData } from '@/src/entities/event';
-import { getUserData } from '@/src/shared/api/getUserData';
-import { getViewCountData } from '@/src/shared/api/getViewCountData';
-import { eventKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
+import { GET as eventDetailGET } from '@/app/api/event/detail/route';
+import { GET as userGET } from '@/app/api/user/route';
+import { GET as viewCountGET } from '@/app/api/viewCount/route';
+import { eventDetailQueryOptions } from '@/src/entities/event';
+import { userQueryOptions } from '@/src/entities/user';
+import { viewCountQueryOptions } from '@/src/entities/viewCount';
+import { routeGet, throwNotFoundOn404 } from '@/src/shared/lib/server/routeGet';
 
 import { EventDetailPage } from './ui/EventDetailPage';
 
@@ -15,17 +18,11 @@ export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
   const queryClient = new QueryClient();
 
-  await queryClient.fetchQuery({
-    queryKey: eventKeys.detail(docId),
-    queryFn: () => getEventDetailData({ docId }),
-  });
+  await queryClient.fetchQuery(eventDetailQueryOptions(docId, routeGet(eventDetailGET))).catch(throwNotFoundOn404);
 
   await Promise.all([
-    queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData }),
-    queryClient.prefetchQuery({
-      queryKey: viewCountKeys.detail(docId),
-      queryFn: () => getViewCountData({ docId }),
-    }),
+    queryClient.prefetchQuery(userQueryOptions(routeGet(userGET))),
+    queryClient.prefetchQuery(viewCountQueryOptions(docId, routeGet(viewCountGET))),
   ]);
 
   return (

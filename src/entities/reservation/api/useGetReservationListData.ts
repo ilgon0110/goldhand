@@ -1,20 +1,25 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, type TGet } from '@/src/shared/api/request';
 import { reservationKeys } from '@/src/shared/config/queryKeys';
+import type { IReservationDetailData } from '@/src/shared/types';
 
-import { getReservationListData } from './getReservationListData';
+type TReservationListParams = { page: number; hideSecret: string };
 
-type TReservationListData = Awaited<ReturnType<typeof getReservationListData>>;
-type TUseGetReservationListDataQuery = Omit<UseQueryOptions<TReservationListData>, 'queryFn' | 'queryKey'>;
+interface IReservationListResponseData {
+  message: string;
+  consultData: (IReservationDetailData & { id: string })[];
+  pageableDataLength: number;
+  totalDataLength: number;
+}
 
-export const useGetReservationListData = (
-  params: { page: number; hideSecret: string },
-  options?: TUseGetReservationListDataQuery,
-) => {
-  return useSuspenseQuery({
+export const reservationListQueryOptions = (params: TReservationListParams, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: reservationKeys.list(params),
-    queryFn: () => getReservationListData(params),
-    ...options,
+    // 기존 동작 유지: 500이어도 빈 목록 body를 그대로 쓴다.
+    queryFn: async (): Promise<IReservationListResponseData> =>
+      (await get(`/api/reservation?page=${params.page}&hideSecret=${params.hideSecret}`)).json(),
   });
-};
+
+export const useGetReservationListData = (params: TReservationListParams) =>
+  useSuspenseQuery(reservationListQueryOptions(params));

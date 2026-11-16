@@ -1,16 +1,13 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { userKeys } from '@/src/shared/config/queryKeys';
 import type { IUserResponseData } from '@/src/shared/types';
-import { fetcher } from '@/src/shared/utils/fetcher.client';
 
-type TUseGetUserDataQuery = Omit<UseQueryOptions<IUserResponseData>, 'queryFn' | 'queryKey'>;
-
-export const useGetUserData = (options?: TUseGetUserDataQuery) => {
-  return useSuspenseQuery({
+export const userQueryOptions = (get: TGet = clientGet) =>
+  queryOptions({
     queryKey: userKeys.all,
-    queryFn: () => fetcher<IUserResponseData>('/api/user', { cache: 'no-store' }),
-    ...options,
+    queryFn: async () => jsonOrThrow<IUserResponseData>(await get('/api/user')),
   });
-};
+
+export const useGetUserData = () => useSuspenseQuery(userQueryOptions());

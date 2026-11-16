@@ -1,12 +1,14 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
-import { getReviewListData } from '@/src/entities/review';
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
+import type { IReviewListResponseData } from '@/src/shared/types';
 
-export const useReviewCarouselQuery = () => {
-  return useSuspenseQuery({
+export const reviewCarouselQueryOptions = (get: TGet = clientGet) =>
+  queryOptions({
     queryKey: reviewKeys.carousel(),
-    queryFn: () => getReviewListData(1, '전체'),
-    select: data => data.reviewData,
+    queryFn: async () => jsonOrThrow<IReviewListResponseData>(await get('/api/review?page=1&franchisee=전체')),
   });
-};
+
+export const useReviewCarouselQuery = () =>
+  useSuspenseQuery({ ...reviewCarouselQueryOptions(), select: data => data.reviewData });

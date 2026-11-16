@@ -2,9 +2,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/src/entities/review', () => ({
-  getReviewListData: vi.fn(async () => ({ message: '성공', reviewData: [], response: 'ok', totalDataLength: 0 })),
+vi.mock('@/app/api/review/route', () => ({
+  GET: vi.fn(async () => Response.json({ message: '성공', reviewData: [], response: 'ok', totalDataLength: 0 })),
 }));
+vi.mock('@/app/api/price/route', () => ({ GET: vi.fn(async () => Response.json({}, { status: 500 })) }));
 vi.mock('@/src/feature/auth', () => ({
   OAuthSuccessHandler: () => <div>OAUTH_SUCCESS_HANDLER_SENTINEL</div>,
 }));

@@ -1,17 +1,13 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
 import type { IReviewResponseData } from '@/src/shared/types';
 
-import { getReviewDetailData } from './getReviewDetailData';
-
-type TUseGetReviewDetailDataQuery = Omit<UseQueryOptions<IReviewResponseData>, 'queryFn' | 'queryKey'>;
-
-export const useGetReviewDetailData = (docId: string, options?: TUseGetReviewDetailDataQuery) => {
-  return useSuspenseQuery({
+export const reviewDetailQueryOptions = (docId: string, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: reviewKeys.detail(docId),
-    queryFn: () => getReviewDetailData({ docId }),
-    ...options,
+    queryFn: async () => jsonOrThrow<IReviewResponseData>(await get(`/api/review/detail?docId=${docId}`)),
   });
-};
+
+export const useGetReviewDetailData = (docId: string) => useSuspenseQuery(reviewDetailQueryOptions(docId));

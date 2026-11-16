@@ -3,10 +3,12 @@ export const dynamic = 'force-dynamic';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { SearchParams } from 'nuqs/server';
 
-import { getReviewListData } from '@/src/entities/review';
-import { getUserData } from '@/src/shared/api/getUserData';
-import { reviewKeys, userKeys } from '@/src/shared/config/queryKeys';
+import { GET as reviewListGET } from '@/app/api/review/route';
+import { GET as userGET } from '@/app/api/user/route';
+import { reviewListQueryOptions } from '@/src/entities/review';
+import { userQueryOptions } from '@/src/entities/user';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
+import { routeGet } from '@/src/shared/lib/server/routeGet';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 import { ReviewPage } from './ui/ReviewPage';
@@ -20,11 +22,8 @@ export default async function Page({ searchParams }: TPageProps) {
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: reviewKeys.list({ page, franchisee }),
-      queryFn: () => getReviewListData(page, franchisee),
-    }),
-    queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData }),
+    queryClient.prefetchQuery(reviewListQueryOptions({ page, franchisee }, routeGet(reviewListGET))),
+    queryClient.prefetchQuery(userQueryOptions(routeGet(userGET))),
   ]);
 
   return (

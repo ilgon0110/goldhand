@@ -1,24 +1,13 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { myPageKeys } from '@/src/shared/config/queryKeys';
 import type { IMyPageResponseData } from '@/src/shared/types';
-import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
-type TUseGetMyPageDataQuery = Omit<UseQueryOptions<IMyPageResponseData>, 'queryFn' | 'queryKey'>;
-
-export const getMyPageData = async () => {
-  const response = await authFetcher<IMyPageResponseData>(`/api/mypage`);
-
-  return response;
-};
-
-export const useGetMyPageData = (options?: TUseGetMyPageDataQuery) => {
-  const res = useSuspenseQuery({
+export const myPageQueryOptions = (get: TGet = clientGet) =>
+  queryOptions({
     queryKey: myPageKeys.all,
-    queryFn: getMyPageData,
-    ...options,
+    queryFn: async () => jsonOrThrow<IMyPageResponseData>(await get('/api/mypage')),
   });
 
-  return res;
-};
+export const useGetMyPageData = () => useSuspenseQuery(myPageQueryOptions());

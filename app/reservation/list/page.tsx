@@ -4,9 +4,9 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import type { SearchParams } from 'nuqs/server';
 
 import { GET as reservationListGET } from '@/app/api/reservation/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { reservationListQueryOptions } from '@/src/entities/reservation';
 import { loadReservationParams } from '@/src/shared/lib/nuqs/searchParams';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 
 import { ReservationListPage } from './ui/ReservationListPage';
 

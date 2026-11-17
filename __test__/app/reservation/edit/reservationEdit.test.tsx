@@ -5,12 +5,12 @@ import { Timestamp } from 'firebase/firestore';
 import { http, HttpResponse } from 'msw';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReservationEditPage } from '@/app/reservation/edit/ui/ReservationEditPage';
 import { server } from '@/src/__mock__/node';
 import { reservationKeys, userKeys } from '@/src/shared/config/queryKeys';
 import type { IReservationResponseData, IUserResponseData, TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

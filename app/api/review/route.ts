@@ -2,9 +2,9 @@ import type { WhereFilterOp } from 'firebase-admin/firestore';
 import { FieldPath, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { getPinnedFirstListAdmin } from '@/app/api/lib/pin/getPinnedFirstList';
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IReviewDetailData } from '@/src/shared/types';

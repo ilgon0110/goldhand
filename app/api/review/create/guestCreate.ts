@@ -1,9 +1,9 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { hashPhoneNumber } from '@/app/api/review/lib/hashPhoneNumber';
+import { verifyPhoneIdToken } from '@/app/api/review/lib/verifyPhoneIdToken';
 import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
-import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 import type { IReviewPost, IReviewResponseBody } from './lib';

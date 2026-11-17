@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { describe, expect, it } from 'vitest';
 
-import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
+import { verifyAndRotateGuestPassword } from '@/app/api/reservation/lib/verifyAndRotateGuestPassword';
 
 describe('verifyAndRotateGuestPassword', () => {
   it('기존 비밀번호가 일치하면 새 비밀번호의 해시를 반환한다', async () => {

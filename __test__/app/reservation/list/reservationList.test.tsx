@@ -6,13 +6,13 @@ import type { OnUrlUpdateFunction } from 'nuqs/adapters/testing';
 import { withNuqsTestingAdapter } from 'nuqs/adapters/testing';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReservationListPage } from '@/app/reservation/list/ui/ReservationListPage';
 import { server } from '@/src/__mock__/node';
 import { apiUrl } from '@/src/shared/config';
 import { reservationKeys } from '@/src/shared/config/queryKeys';
 import type { IReservationDetailData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 
 vi.mock('@/src/shared/utils/verifyViewId', () => ({

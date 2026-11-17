@@ -10,10 +10,10 @@ import {
 } from 'firebase/auth';
 import { http, HttpResponse } from 'msw';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { SignupPage } from '@/app/signup/ui/SignupPage';
 import { server } from '@/src/__mock__/node';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { SignupPhonePage } from '@/src/widgets/SignupPhone';
 
 const pushMock = vi.fn();

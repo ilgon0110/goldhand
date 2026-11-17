@@ -2,12 +2,12 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import LoginPage from '@/app/login/page';
 import { RejoinModal } from '@/app/login/ui/RejoinModal';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();

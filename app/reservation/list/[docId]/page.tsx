@@ -3,9 +3,9 @@ import { redirect } from 'next/navigation';
 
 import { GET as reservationDetailGET } from '@/app/api/reservation/detail/route';
 import { GET as userGET } from '@/app/api/user/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { reservationDetailQueryOptions } from '@/src/entities/reservation';
 import { userQueryOptions } from '@/src/entities/user';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 
 import { ReservationDetailPage } from './ui/ReservationDetailPage';
 

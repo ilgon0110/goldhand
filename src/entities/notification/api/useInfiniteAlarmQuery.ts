@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { clientGet, jsonOrThrow } from '../api/request';
-import { notificationKeys } from '../config/queryKeys';
-import type { INotificationResponseData } from '../types';
+import { clientGet, jsonOrThrow } from '@/src/shared/api/request';
+import { notificationKeys } from '@/src/shared/config/queryKeys';
+import type { INotificationResponseData } from '@/src/shared/types';
 
 export const useInfiniteAlarmQuery = (userId: string) => {
   return useInfiniteQuery({

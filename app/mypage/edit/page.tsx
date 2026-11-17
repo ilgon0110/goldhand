@@ -2,8 +2,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { redirect } from 'next/navigation';
 
 import { GET as myPageGET } from '@/app/api/mypage/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { myPageQueryOptions } from '@/src/entities/mypage';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 
 import { MyPageEditPage } from './ui/MyPageEditPage';
 

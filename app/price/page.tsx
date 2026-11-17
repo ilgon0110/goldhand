@@ -1,10 +1,10 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import { GET as priceGET } from '@/app/api/price/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { priceQueryOptions } from '@/src/entities/price';
 import { PricePage } from '@/src/feature/price';
 import { checkAdminAuth } from '@/src/shared/lib/server';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 
 export default async function Page() {
   const queryClient = new QueryClient();

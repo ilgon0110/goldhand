@@ -6,12 +6,12 @@ import { signInWithPhoneNumber } from 'firebase/auth';
 import { http, HttpResponse } from 'msw';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReviewDetailPage } from '@/app/review/[docId]/ui/ReviewDetailPage';
 import { server } from '@/src/__mock__/node';
 import { reviewKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
 import type { IReviewResponseData, IUserResponseData, IViewCountResponseData, TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();

@@ -1,8 +1,8 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { hashPhoneNumber } from '@/app/api/review/lib/hashPhoneNumber';
+import { verifyPhoneIdToken } from '@/app/api/review/lib/verifyPhoneIdToken';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
-import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';
 

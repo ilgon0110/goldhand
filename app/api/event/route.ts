@@ -1,8 +1,8 @@
 import type { WhereFilterOp } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { getPinnedFirstListAdmin } from '@/app/api/lib/pin/getPinnedFirstList';
 import { getEventRowNumberMap } from '@/src/entities/event/api/getEventRowNumbers';
-import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IEventDetailData, IEventListResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';

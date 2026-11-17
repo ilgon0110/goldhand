@@ -7,12 +7,12 @@ import { Timestamp } from 'firebase/firestore';
 import { http, HttpResponse } from 'msw';
 import { Suspense, useEffect } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReviewEditPage } from '@/app/review/[docId]/edit/ui/ReviewEditPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { reviewKeys, userKeys } from '@/src/shared/config/queryKeys';
 import type { IReviewResponseData, IUserResponseData, TAliasAny } from '@/src/shared/types';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

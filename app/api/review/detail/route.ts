@@ -2,8 +2,8 @@ import { Timestamp } from 'firebase/firestore';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData, IReviewDetailData } from '@/src/shared/types';

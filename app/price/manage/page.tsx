@@ -2,10 +2,10 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { redirect } from 'next/navigation';
 
 import { GET as priceGET } from '@/app/api/price/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { priceQueryOptions } from '@/src/entities/price';
 import { PricingForm } from '@/src/feature/price';
 import { checkAdminAuth } from '@/src/shared/lib/server';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 
 export const metadata = {
   title: '요금 관리',

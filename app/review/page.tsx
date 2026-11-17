@@ -5,10 +5,10 @@ import type { SearchParams } from 'nuqs/server';
 
 import { GET as reviewListGET } from '@/app/api/review/route';
 import { GET as userGET } from '@/app/api/user/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { reviewListQueryOptions } from '@/src/entities/review';
 import { userQueryOptions } from '@/src/entities/user';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 import { ReviewPage } from './ui/ReviewPage';

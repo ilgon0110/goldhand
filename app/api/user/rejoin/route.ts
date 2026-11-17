@@ -1,8 +1,8 @@
 import { getFirestore as getAdminFirestore, Timestamp } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { IUserDetailData } from '@/src/shared/types';

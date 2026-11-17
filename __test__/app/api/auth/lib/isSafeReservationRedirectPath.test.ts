@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isSafeReservationRedirectPath } from '@/src/shared/lib/isSafeReservationRedirectPath';
+import { isSafeReservationRedirectPath } from '@/app/api/auth/lib/isSafeReservationRedirectPath';
 
 describe('isSafeReservationRedirectPath', () => {
   it('예약 상세 경로는 허용한다', () => {

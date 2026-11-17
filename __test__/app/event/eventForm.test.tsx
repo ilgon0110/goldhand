@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { EventFormPage } from '@/app/event/form/ui/EventFormPage';
 import type { TAliasAny } from '@/src/shared/types';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 // useRouter 모킹
 const pushMock = vi.fn();

@@ -4,9 +4,9 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData, IReservationDetailData, TReservationDetailResponseCode } from '@/src/shared/types';

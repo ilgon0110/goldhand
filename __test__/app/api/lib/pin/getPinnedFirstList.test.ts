@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
+import { getPinnedFirstListAdmin } from '@/app/api/lib/pin/getPinnedFirstList';
 
 const { collectionMock, nonPinnedCountGetMock, pageGetMock, pinnedGetMock } = vi.hoisted(() => ({
   collectionMock: vi.fn(),

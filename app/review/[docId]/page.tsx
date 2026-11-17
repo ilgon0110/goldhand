@@ -3,10 +3,10 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { GET as reviewDetailGET } from '@/app/api/review/detail/route';
 import { GET as userGET } from '@/app/api/user/route';
 import { GET as viewCountGET } from '@/app/api/viewCount/route';
+import { routeGet, throwNotFoundOn404 } from '@/app/lib/routeGet';
 import { reviewDetailQueryOptions } from '@/src/entities/review';
 import { userQueryOptions } from '@/src/entities/user';
 import { viewCountQueryOptions } from '@/src/entities/viewCount';
-import { routeGet, throwNotFoundOn404 } from '@/src/shared/lib/server/routeGet';
 
 import { ReviewDetailPage } from './ui/ReviewDetailPage';
 

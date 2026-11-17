@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
+import { hashPhoneNumber } from '@/app/api/review/lib/hashPhoneNumber';
 
 describe('hashPhoneNumber', () => {
   afterEach(() => {

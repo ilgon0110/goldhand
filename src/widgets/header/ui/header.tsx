@@ -3,8 +3,8 @@
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
+import { useInfiniteAlarmQuery } from '@/src/entities/notification';
 import { useAuth } from '@/src/shared/hooks/useAuth';
-import { useInfiniteAlarmQuery } from '@/src/shared/hooks/useInfiniteAlarmQuery';
 
 import { MobileHeader } from './_MobileHeader';
 import { WebHeader } from './_WebHeader';

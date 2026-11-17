@@ -2,6 +2,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 
 import { GET as priceGET } from '@/app/api/price/route';
 import { GET as reviewListGET } from '@/app/api/review/route';
+import { routeGet } from '@/app/lib/routeGet';
 import { cn } from '@/lib/utils';
 import { priceQueryOptions } from '@/src/entities/price';
 import { OAuthSuccessHandler } from '@/src/feature/auth';
@@ -9,7 +10,6 @@ import { FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList 
 import { reviewCarouselQueryOptions } from '@/src/feature/home/reviewCarousel/api/useReviewCarouselQuery';
 import { ReviewCarousel } from '@/src/feature/home/reviewCarousel/ui/ReviewCarousel';
 import { HOME_CONTAINER } from '@/src/feature/home/ui/homeContainer';
-import { routeGet } from '@/src/shared/lib/server/routeGet';
 import { EventModal } from '@/src/widgets/event/ui/EventModal';
 
 export default async function Home() {

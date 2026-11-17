@@ -1,7 +1,7 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { togglePinAdmin } from '@/app/api/lib/pin/toggleIsPinned';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { togglePinAdmin } from '@/src/shared/lib/pin/toggleIsPinned';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';

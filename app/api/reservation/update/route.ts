@@ -3,11 +3,11 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
+import { verifyAndRotateGuestPassword } from '@/app/api/reservation/lib/verifyAndRotateGuestPassword';
 import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
-import { verifyAndRotateGuestPassword } from '@/src/shared/lib/verifyAndRotateGuestPassword';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 

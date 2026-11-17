@@ -2,9 +2,9 @@ import { collectionGroup, getDocs, getFirestore, query, where } from 'firebase/f
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import type { ICommentData, IMyPageData, IUserDetailData } from '@/src/shared/types';

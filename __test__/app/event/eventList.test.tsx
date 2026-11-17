@@ -3,10 +3,10 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { EventPage } from '@/app/event/ui/EventPage';
 import { eventKeys, userKeys } from '@/src/shared/config/queryKeys';
 import type { IEventListResponseData, IUserResponseData } from '@/src/shared/types';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 vi.mock('@/src/shared/utils/verifyViewId', () => ({
   sendViewLog: vi.fn(),

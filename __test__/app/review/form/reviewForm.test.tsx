@@ -7,6 +7,7 @@ import { signInWithPhoneNumber } from 'firebase/auth';
 import { http, HttpResponse } from 'msw';
 import { Suspense, useEffect } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { GuestConfirmationStep } from '@/app/review/form/ui/_GuestConfirmationStep';
 import { GuestReviewFormStep } from '@/app/review/form/ui/_GuestReviewFormStep';
 import { MemberReviewForm } from '@/app/review/form/ui/_MemberReviewForm';
@@ -15,7 +16,6 @@ import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { userKeys } from '@/src/shared/config/queryKeys';
 import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 import { ImagesContext, useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 const mockNonUserData: IUserResponseData = {

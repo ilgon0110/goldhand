@@ -11,7 +11,7 @@ const { getPinnedFirstListAdminMock, checkAdminAuthMock, usersWhereGetMock } = v
   usersWhereGetMock: vi.fn(() => Promise.resolve({ docs: [] })),
 }));
 
-vi.mock('@/src/shared/lib/pin/getPinnedFirstList', () => ({
+vi.mock('@/app/api/lib/pin/getPinnedFirstList', () => ({
   getPinnedFirstListAdmin: getPinnedFirstListAdminMock,
 }));
 

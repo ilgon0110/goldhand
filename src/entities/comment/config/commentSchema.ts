@@ -1,7 +1,7 @@
-import z from 'zod';
+import { z } from 'zod';
 
 // 회원만 댓글 달 수 있음
-export const managerCommentSchema = z.object({
+export const commentSchema = z.object({
   comment: z
     .string()
     .min(1, {

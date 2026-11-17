@@ -28,7 +28,8 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-vi.mock('@/src/entities/comment', () => ({
+vi.mock('@/src/entities/comment', async () => ({
+  ...(await vi.importActual('@/src/entities/comment/config/commentSchema')),
   Comment: () => <div>Comment Mock Component</div>,
   useComments: useCommentsMock,
 }));

@@ -1,4 +1,4 @@
-export type TPhoneAuthErrorKind =
+type TPhoneAuthErrorKind =
   | 'expired-code'
   | 'invalid-code'
   | 'linking-failed'

@@ -10,7 +10,7 @@ interface IResponseBody {
   message: string;
 }
 
-export interface IDeletePostPayload {
+interface IDeletePostPayload {
   docId: string;
   userId: string | null;
   password: string;

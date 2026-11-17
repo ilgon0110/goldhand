@@ -7,7 +7,7 @@ const ADMIN_NAME_KEYWORD = '관리자';
 
 export const ADMIN_NAME_ERROR_MESSAGE = `'${ADMIN_NAME_KEYWORD}'가 포함된 이름은 사용할 수 없습니다.`;
 
-export const isAdminOnlyName = (name: string) => name.replace(/[\s\u200B-\u200D\uFEFF]/g, '').includes(ADMIN_NAME_KEYWORD);
+const isAdminOnlyName = (name: string) => name.replace(/[\s\u200B-\u200D\uFEFF]/g, '').includes(ADMIN_NAME_KEYWORD);
 
 export const canUseName = (name: string, isAdmin: boolean) => isAdmin || !isAdminOnlyName(name);
 

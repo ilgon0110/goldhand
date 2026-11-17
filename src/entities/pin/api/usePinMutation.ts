@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { eventKeys, reservationKeys, reviewKeys } from '@/src/shared/config/queryKeys';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
-export type TPinDomain = 'event' | 'reservation' | 'review';
+type TPinDomain = 'event' | 'reservation' | 'review';
 
 interface IPinMutationVariables {
   docId: string;

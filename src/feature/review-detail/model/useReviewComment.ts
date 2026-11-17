@@ -4,15 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { useComments } from '@/src/entities/comment';
+import { commentSchema,useComments } from '@/src/entities/comment';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { useReviewDetailCommentMutation } from '../api/_useReviewDetailCommentMutation';
-import { reviewCommentSchema } from '../config/_reviewCommentSchema';
 
 export function useReviewComment(docId: string) {
-  const form = useForm<z.infer<typeof reviewCommentSchema>>({
-    resolver: zodResolver(reviewCommentSchema),
+  const form = useForm<z.infer<typeof commentSchema>>({
+    resolver: zodResolver(commentSchema),
     defaultValues: { comment: '' },
     mode: 'onChange',
   });
@@ -25,7 +24,7 @@ export function useReviewComment(docId: string) {
     onError: error => toastError('댓글 작성에 실패하였습니다.\n' + error.message),
   });
 
-  const handleSubmit = (values: z.infer<typeof reviewCommentSchema>) => submitComment(values.comment);
+  const handleSubmit = (values: z.infer<typeof commentSchema>) => submitComment(values.comment);
 
   return { comments, form, handleSubmit, isLoading };
 }

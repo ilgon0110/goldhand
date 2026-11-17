@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { GET as myPageGET } from '@/app/api/mypage/route';
 import { routeGet } from '@/app/lib/routeGet';
-import { myPageQueryOptions } from '@/src/entities/mypage';
+import { myPageQueryOptions } from '@/src/feature/mypage';
 
 import { MyPagePage } from './ui/MyPagePage';
 

@@ -1,8 +1,8 @@
-import type { IApplyDetailData } from '@/src/entities/manager/@x/mypage';
-import type { ICommentData } from '@/src/entities/comment/@x/mypage';
-import type { IReservationDetailData } from '@/src/entities/reservation/@x/mypage';
-import type { IReviewDetailData } from '@/src/entities/review/@x/mypage';
-import type { IUserDetailData } from '@/src/entities/user/@x/mypage';
+import type { ICommentData } from '@/src/entities/comment';
+import type { IApplyDetailData } from '@/src/entities/manager';
+import type { IReservationDetailData } from '@/src/entities/reservation';
+import type { IReviewDetailData } from '@/src/entities/review';
+import type { IUserDetailData } from '@/src/entities/user';
 
 // 마이페이지(MyPage) 관련 타입 정의
 export interface IMyPageData {

@@ -4,8 +4,8 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
 import type { ICommentData } from '@/src/entities/comment';
-import type { IMyPageData } from '@/src/entities/mypage';
 import type { IUserDetailData } from '@/src/entities/user';
+import type { IMyPageData } from '@/src/feature/mypage';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';

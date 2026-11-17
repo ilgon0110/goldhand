@@ -8,7 +8,7 @@ import { renderWithQueryClient } from '@/__test__/utils/render';
 import { MyPagePage } from '@/app/mypage/ui/MyPagePage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
-import type { IMyPageResponseData } from '@/src/entities/mypage/model/types';
+import type { IMyPageResponseData } from '@/src/feature/mypage/model/types';
 import { WithdrawalModal } from '@/src/feature/mypage/ui/WithdrawalModal';
 import { myPageKeys } from '@/src/shared/config/queryKeys';
 import { formatPhoneNumber } from '@/src/shared/utils';

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { useGetMyPageData } from '@/src/entities/mypage';
+import { useGetMyPageData } from '@/src/feature/mypage';
 import { MyPageInfoCard, MyPageKaKaoAlarmSetting, MyPagePostList, WithdrawalModal } from '@/src/feature/mypage';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 

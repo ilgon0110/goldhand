@@ -6,7 +6,7 @@ import { useTransition } from 'react';
 import { PiEnvelopeSimple, PiPhone, PiShieldCheck } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
-import type { IMyPageResponseData } from '@/src/entities/mypage';
+import type { IMyPageResponseData } from '@/src/feature/mypage/model/types';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { authKeys, userKeys } from '@/src/shared/config/queryKeys';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';

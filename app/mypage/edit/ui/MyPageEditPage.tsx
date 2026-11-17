@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { useGetMyPageData } from '@/src/entities/mypage';
 import { refineAdminOnlyName } from '@/src/feature/auth';
+import { useGetMyPageData } from '@/src/feature/mypage';
 import { useUpdateMyPageMutation } from '@/src/feature/mypage';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';

@@ -1,7 +1,7 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import type { IMyPageResponseData } from '@/src/entities/mypage';
+import type { IMyPageResponseData } from '@/src/feature/mypage/model/types';
 import { myPageKeys, userKeys } from '@/src/shared/config/queryKeys';
 import type { TAliasAny } from '@/src/shared/types';
 import { authFetcher } from '@/src/shared/utils/fetcher.server';

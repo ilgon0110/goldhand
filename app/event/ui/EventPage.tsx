@@ -3,7 +3,7 @@
 import { useQueryStates } from 'nuqs';
 
 import { useGetEventListData } from '@/src/entities/event';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
@@ -16,7 +16,7 @@ export const EventPage = () => {
   });
 
   const { data } = useGetEventListData({ page: eventParam.page, status: eventParam.status });
-  const { data: userResponse } = useGetUserData();
+  const { data: userResponse } = useUserSuspenseQuery();
 
   return (
     <>

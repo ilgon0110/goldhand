@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetReviewDetailData } from '@/src/entities/review';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import {
   ReviewDeleteDialog,
@@ -20,7 +20,7 @@ const handleEditorChange = () => {};
 
 export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
   const { data } = useGetReviewDetailData(docId);
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const { data: viewCountData } = useGetViewCountData(docId);
   const userId = userData.userData?.userId;
   const isAdmin = userData.userData?.grade === 'admin';

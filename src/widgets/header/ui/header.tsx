@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { useInfiniteAlarmQuery } from '@/src/entities/notification';
-import { useAuth } from '@/src/shared/hooks/useAuth';
+import { useHeaderUserQuery } from '@/src/entities/user';
 
 import { MobileHeader } from './_MobileHeader';
 import { WebHeader } from './_WebHeader';
@@ -42,7 +42,7 @@ const _DevBanner = () => {
 };
 
 export const Header = () => {
-  const { data: userData } = useAuth();
+  const { data: userData } = useHeaderUserQuery();
   const userId = userData?.userData?.userId;
   const { data: notificationData, isFetching, hasNextPage, fetchNextPage } = useInfiniteAlarmQuery(userId ?? '');
 

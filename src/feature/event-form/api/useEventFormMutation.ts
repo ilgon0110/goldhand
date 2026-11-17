@@ -11,8 +11,8 @@ import type z from 'zod';
 
 import type { eventFormSchema } from '@/src/entities/event';
 import { useImagesContext } from '@/src/entities/image/client';
+import { useUserQuery } from '@/src/entities/user';
 import { eventKeys } from '@/src/shared/config/queryKeys';
-import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
@@ -47,7 +47,7 @@ export const useEventFormMutation = (
   const queryClient = useQueryClient();
   const [eventFormEditor, setEventFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
-  const { data: userData } = useAuth();
+  const { data: userData } = useUserQuery();
   const router = useRouter();
 
   const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useEventImageUpload();

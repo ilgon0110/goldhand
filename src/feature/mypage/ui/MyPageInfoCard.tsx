@@ -9,7 +9,7 @@ import { PiEnvelopeSimple, PiPhone, PiShieldCheck } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { authKeys, userKeys } from '@/src/shared/config/queryKeys';
+import { userKeys } from '@/src/shared/config/queryKeys';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
 
@@ -28,7 +28,6 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   const { mutate: logout } = useLogoutMutation({
     onSuccess: data => {
       signOut(auth).then(() => {
-        queryClient.removeQueries({ queryKey: authKeys.all });
         queryClient.removeQueries({ queryKey: userKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
         router.replace('/');

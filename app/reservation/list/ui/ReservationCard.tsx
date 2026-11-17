@@ -10,7 +10,7 @@ import type { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { passwordPostAction } from '@/src/entities/reservation';
-import { useAuth } from '@/src/shared/hooks/useAuth';
+import { useUserQuery } from '@/src/entities/user';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,7 +74,7 @@ export const ReservationCard = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const { data: userData } = useAuth();
+  const { data: userData } = useUserQuery();
   const isAdmin = userData?.userData?.grade === 'admin';
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('reservation');
 

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import type { IReviewDetailData } from '@/src/entities/review';
 import { generateReviewDescription } from '@/src/entities/review';
-import { useAuth } from '@/src/shared/hooks/useAuth';
+import { useUserQuery } from '@/src/entities/user';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
@@ -22,7 +22,7 @@ export const ReviewCard = ({ review }: TReviewCardProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const { data: authData } = useAuth();
+  const { data: authData } = useUserQuery();
   const isAdmin = authData?.userData?.grade === 'admin';
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('review');
 

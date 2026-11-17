@@ -4,7 +4,7 @@
 import { useState } from 'react';
 
 import { ReviewStepIndicator } from '@/src/entities/review';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
 import type { TGuestVerification } from '../model';
@@ -13,7 +13,7 @@ import { GuestReviewFormStep } from './_GuestReviewFormStep';
 import { MemberReviewForm } from './_MemberReviewForm';
 
 export const ReviewFormPage = () => {
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const isGuest = userData.userData == null;
   const [guestVerification, setGuestVerification] = useState<TGuestVerification | null>(null);
 

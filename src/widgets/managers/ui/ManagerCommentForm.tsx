@@ -6,7 +6,7 @@ import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 import { commentSchema, useCommentCreateMutation, useComments } from '@/src/entities/comment';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserQuery } from '@/src/entities/user';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
@@ -19,8 +19,8 @@ type TManagerCommentFormProps = {
 
 export const ManagerCommentForm = ({ docId }: TManagerCommentFormProps) => {
   useComments({ docId, collectionName: 'managers' });
-  const { data: userData } = useGetUserData();
-  const isLoggedIn = userData.userData != null;
+  const { data: userData } = useUserQuery();
+  const isLoggedIn = userData?.userData != null;
 
   const form = useForm<z.infer<typeof commentSchema>>({
     resolver: zodResolver(commentSchema),

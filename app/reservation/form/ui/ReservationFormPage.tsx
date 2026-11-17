@@ -7,7 +7,7 @@ import { CalendarIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
 import { Button } from '@/src/shared/ui/button';
 import { Calendar } from '@/src/shared/ui/calendar';
@@ -23,7 +23,7 @@ import { Textarea } from '@/src/shared/ui/textarea';
 import { useReservationCreateForm } from '../lib';
 
 export const ReservationFormPage = () => {
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const {
     form,
     onSubmit,

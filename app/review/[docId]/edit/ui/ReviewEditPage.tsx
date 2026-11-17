@@ -9,7 +9,7 @@ import type { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { useImagesContext } from '@/src/entities/image/client';
 import { reviewContentSchema, ReviewStepIndicator, useGetReviewDetailData } from '@/src/entities/review';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
 import { useReviewFormMutation } from '@/src/feature/review-form';
 import { franchiseeList } from '@/src/shared/config';
@@ -42,7 +42,7 @@ const maskPhoneNumber = (phoneNumber: string) => phoneNumber.replace(/(\d{3})(\d
 
 export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   const { data } = useGetReviewDetailData(docId);
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const isAdmin = userData.userData?.grade === 'admin';
   const isGuestPost = data.data.userId == null;
   // 관리자가 비회원 글을 수정할 땐 SMS 재인증이 필요 없다.

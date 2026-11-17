@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
 import { useGetReservationDetailData } from '@/src/entities/reservation';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { franchiseeList } from '@/src/shared/config';
 import { Button } from '@/src/shared/ui/button';
 import { Calendar } from '@/src/shared/ui/calendar';
@@ -27,7 +27,7 @@ import { useReservationEditForm } from '../lib';
 
 export const ReservationEditPage = ({ docId }: { docId: string }) => {
   const { data: consultDetailData } = useGetReservationDetailData(docId);
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const router = useRouter();
 
   const {

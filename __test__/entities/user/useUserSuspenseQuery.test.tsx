@@ -3,10 +3,10 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import { server } from '@/src/__mock__/node';
-import { useGetUserData } from '@/src/entities/user/api/useGetUserData';
+import { useUserSuspenseQuery } from '@/src/entities/user/api/useUserQuery';
 import type { IUserResponseData } from '@/src/entities/user/model/types';
 
-describe('useGetUserData', () => {
+describe('useUserSuspenseQuery', () => {
   it('loads the current user from the client /api/user endpoint', async () => {
     const response: IUserResponseData = {
       response: 'ok',
@@ -30,7 +30,7 @@ describe('useGetUserData', () => {
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useGetUserData(), { wrapper });
+    const { result } = renderHook(() => useUserSuspenseQuery(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.data).toEqual(response);

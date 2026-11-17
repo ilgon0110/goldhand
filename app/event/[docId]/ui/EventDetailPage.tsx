@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
 import { PostDetailHeader } from '@/src/feature/post';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
@@ -31,7 +31,7 @@ type TEventDetailPageProps = {
 
 export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
   const { data } = useGetEventDetailData(docId);
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const { data: viewCountData } = useGetViewCountData(docId);
   const router = useRouter();
   const { comments } = useComments({

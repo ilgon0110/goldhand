@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-handler-names */
 'use client';
 
+import { useImagesContext } from '@/src/entities/image';
 import { Button } from '@/src/shared/ui/button';
 import { Form } from '@/src/shared/ui/form';
-import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import type { TGuestVerification } from '../model';
 import { useReviewWriteForm } from '../model';

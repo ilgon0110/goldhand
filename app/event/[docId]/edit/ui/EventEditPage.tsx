@@ -23,7 +23,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 
 type TEventEditPageProps = {
   docId: string;

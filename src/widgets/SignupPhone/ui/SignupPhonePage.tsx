@@ -21,7 +21,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useSignupPhoneMutation } from '../hooks/useSignupPhoneMutation';
+import { useSignupPhoneMutation } from '../hooks/_useSignupPhoneMutation';
 
 interface ISignupPhonePageProps {
   userData: IUserDetailData | null;

@@ -17,9 +17,9 @@ import {
 import { useEffect, useState } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import { ToolbarContext } from '@/src/widgets/editor/context/ToolbarState';
-import { $createImageNode, $isImageNode, ImageNode } from '@/src/widgets/editor/nodes/ImageNode';
-import { ToolbarPlugin } from '@/src/widgets/editor/plugins/ToolbarPlugin';
+import { ToolbarContext } from '@/src/widgets/editor/context/_ToolbarState';
+import { $createImageNode, $isImageNode, ImageNode } from '@/src/widgets/editor/nodes/_ImageNode';
+import { ToolbarPlugin } from '@/src/widgets/editor/plugins/_ToolbarPlugin';
 
 function createTestEditor() {
   return createEditor({

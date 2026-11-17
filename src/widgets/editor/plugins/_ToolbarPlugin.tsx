@@ -42,10 +42,10 @@ import * as React from 'react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
 
-import { SHORTCUTS } from '../config/shortcuts';
-import { blockTypeToBlockName, useToolbarState } from '../context/ToolbarState';
-import useModal from '../hooks/useModal';
-import DropDown, { DropDownItem } from '../ui/DropDown';
+import { SHORTCUTS } from '../config/_shortcuts';
+import { blockTypeToBlockName, useToolbarState } from '../context/_ToolbarState';
+import useModal from '../hooks/_useModal';
+import DropDown, { DropDownItem } from '../ui/_DropDown';
 import {
   formatBulletList,
   formatCheckList,
@@ -57,9 +57,9 @@ import {
   getSelectedNode,
   sanitizeUrl,
 } from '../utils';
-import FontSize from './FontSize';
-import type { InsertImagePayload } from './ImagesPlugin';
-import { INSERT_IMAGE_COMMAND, InsertImageDialog } from './ImagesPlugin';
+import FontSize from './_FontSize';
+import type { InsertImagePayload } from './_ImagesPlugin';
+import { INSERT_IMAGE_COMMAND, InsertImageDialog } from './_ImagesPlugin';
 
 const LowPriority = 1;
 

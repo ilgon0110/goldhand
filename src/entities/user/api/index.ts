@@ -1,2 +1,2 @@
 export * from './useGetUserData';
-export * from './useGetUserListData';
+export { useGetUserListData } from './useGetUserListData';

@@ -11,7 +11,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 
-import type { TPhoneAuthFlow } from '../model/usePhoneAuthFlowCore';
+import type { TPhoneAuthFlow } from '../model/_usePhoneAuthFlowCore';
 
 type TPhoneAuthFieldsProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>;

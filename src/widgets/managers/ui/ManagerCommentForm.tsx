@@ -13,7 +13,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { managerCommentSchema } from '../config/managerCommentSchema';
+import { managerCommentSchema } from '../config/_managerCommentSchema';
 
 type TManagerCommentFormProps = {
   docId: string;

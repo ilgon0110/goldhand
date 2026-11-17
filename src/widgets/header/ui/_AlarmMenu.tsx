@@ -3,13 +3,13 @@ import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 
 import { cn } from '@/lib/utils';
-import { useNotificationMutation } from '@/src/feature/notification/api/useNotificationMutation';
+import { useNotificationMutation } from '@/src/feature/notification';
 import type { INotificationResponseData } from '@/src/shared/types';
 import { NotificationType } from '@/src/shared/types';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { toastError } from '@/src/shared/utils';
 
-import { AlarmCard } from './AlarmCard';
+import { AlarmCard } from './_AlarmCard';
 
 interface IAlarmMenuProps {
   userId: string;

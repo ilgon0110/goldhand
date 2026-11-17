@@ -1,10 +1,10 @@
 import type { UserCredential } from 'firebase/auth';
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 
-import { useConfirmPhoneAuthCode } from '../api/useConfirmPhoneAuthCode';
+import { useConfirmPhoneAuthCode } from '../api/_useConfirmPhoneAuthCode';
 import { toPhoneAuthError } from '../lib/toPhoneAuthError';
-import type { TPhoneAuthFlow } from './usePhoneAuthFlowCore';
-import { usePhoneAuthFlowCore } from './usePhoneAuthFlowCore';
+import type { TPhoneAuthFlow } from './_usePhoneAuthFlowCore';
+import { usePhoneAuthFlowCore } from './_usePhoneAuthFlowCore';
 
 type TFieldNames<TFieldValues extends FieldValues> = {
   phoneNumberName: Path<TFieldValues>;

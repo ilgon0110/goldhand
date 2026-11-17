@@ -12,16 +12,16 @@ import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event'
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useGetUserData } from '@/src/entities/user';
 import { useGetViewCountData } from '@/src/entities/viewCount';
+import { PostDetailHeader } from '@/src/feature/post';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Label } from '@/src/shared/ui/label';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
-import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 
 import { useEventDeleteMutation } from '../api/useEventDeleteMutation';
 

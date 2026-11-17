@@ -12,9 +12,9 @@ import {
   usePhoneAuthVerifyFlow,
 } from '@/src/entities/phoneAuth/client';
 import { guestConfirmationSchema } from '@/src/entities/review';
+import { PrivacyModal } from '@/src/feature/privacy';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
-import { PrivacyModal } from '@/src/widgets/Privacy/ui/PrivacyModal';
 
 import type { TGuestVerification } from '../model';
 

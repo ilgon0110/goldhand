@@ -16,7 +16,7 @@ import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils';
 import type { LexicalEditor } from 'lexical';
 import { $createParagraphNode, $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
 
-import { DEFAULT_FONT_SIZE, MAX_ALLOWED_FONT_SIZE, MIN_ALLOWED_FONT_SIZE } from '../context/ToolbarState';
+import { DEFAULT_FONT_SIZE, MAX_ALLOWED_FONT_SIZE, MIN_ALLOWED_FONT_SIZE } from '../context/_ToolbarState';
 
 // eslint-disable-next-line no-shadow
 export enum UpdateFontSizeType {

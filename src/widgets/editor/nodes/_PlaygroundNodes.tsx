@@ -17,9 +17,9 @@ import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import type { Klass, LexicalNode } from 'lexical';
 
-import { EmojiNode } from './EmojiNode';
-import { ImageNode } from './ImageNode';
-import { KeywordNode } from './KeywordNode';
+import { EmojiNode } from './_EmojiNode';
+import { ImageNode } from './_ImageNode';
+import { KeywordNode } from './_KeywordNode';
 
 const PlaygroundNodes: Klass<LexicalNode>[] = [
   HeadingNode,

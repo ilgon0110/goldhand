@@ -32,7 +32,10 @@ vi.mock('@/app/api/review/route', () => ({
 }));
 vi.mock('@/app/api/price/route', () => ({ GET: vi.fn(async () => Response.json({}, { status: 500 })) }));
 vi.mock('@/src/feature/auth', () => ({ OAuthSuccessHandler: () => null }));
-vi.mock('@/src/feature/home', () => ({
+vi.mock('@/src/feature/home', async () => ({
+  ...(await vi.importActual('@/src/feature/home/reviewCarousel/api/useReviewCarouselQuery')),
+  ...(await vi.importActual('@/src/feature/home/reviewCarousel/ui/ReviewCarousel')),
+  ...(await vi.importActual('@/src/feature/home/ui/homeContainer')),
   FranchiseeSheetList: () => null,
   ImageSlideList: () => null,
   MainTitle: () => null,

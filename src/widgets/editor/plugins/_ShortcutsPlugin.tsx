@@ -46,8 +46,8 @@ import {
   isSubscript,
   isSuperscript,
   isUppercase,
-} from '../config/shortcuts';
-import { useToolbarState } from '../context/ToolbarState';
+} from '../config/_shortcuts';
+import { useToolbarState } from '../context/_ToolbarState';
 import { sanitizeUrl } from '../utils';
 import {
   clearFormatting,

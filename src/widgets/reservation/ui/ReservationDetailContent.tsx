@@ -1,5 +1,5 @@
 import { PinToggleButton } from '@/src/entities/pin';
-import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
+import { PostDetailHeader } from '@/src/feature/post';
 import type { IReservationDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { formatPhoneNumber } from '@/src/shared/utils';

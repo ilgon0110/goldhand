@@ -2,7 +2,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
 import { hashPhoneNumber } from '@/app/api/review/lib/hashPhoneNumber';
 import { verifyPhoneIdToken } from '@/app/api/review/lib/verifyPhoneIdToken';
-import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { typedJson } from '@/src/shared/utils';
 

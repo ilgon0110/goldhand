@@ -1,1 +1,1 @@
-export * from './consultCommentSchema';
+export * from './_consultCommentSchema';

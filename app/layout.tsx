@@ -10,7 +10,7 @@ import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
 import { localBusinessJsonLd } from '@/src/shared/seo/localBusinessJsonLd';
 import { websiteJsonLd } from '@/src/shared/seo/websiteJsonLd';
-import { Footer } from '@/src/widgets/footer/ui/footer';
+import { Footer } from '@/src/widgets/footer';
 import { Header } from '@/src/widgets/header';
 
 const pretendard = localFont({

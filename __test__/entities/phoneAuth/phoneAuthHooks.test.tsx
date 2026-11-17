@@ -10,7 +10,7 @@ import {
   updatePhoneNumber,
 } from 'firebase/auth';
 
-import { useLinkPhoneToCurrentUser } from '@/src/entities/phoneAuth/api/useLinkPhoneToCurrentUser';
+import { useLinkPhoneToCurrentUser } from '@/src/entities/phoneAuth/api/_useLinkPhoneToCurrentUser';
 import { usePhoneAuthCodeSendMutation } from '@/src/entities/phoneAuth/api/usePhoneAuthCodeSendMutation';
 import type { IUserDetailData } from '@/src/shared/types';
 

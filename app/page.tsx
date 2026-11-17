@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils';
 import { priceQueryOptions } from '@/src/entities/price';
 import { OAuthSuccessHandler } from '@/src/feature/auth';
 import { FranchiseeSheetList, ImageSlideList, MainTitle, PriceList, SponsorList } from '@/src/feature/home';
-import { reviewCarouselQueryOptions } from '@/src/feature/home/reviewCarousel/api/useReviewCarouselQuery';
-import { ReviewCarousel } from '@/src/feature/home/reviewCarousel/ui/ReviewCarousel';
-import { HOME_CONTAINER } from '@/src/feature/home/ui/homeContainer';
-import { EventModal } from '@/src/widgets/event/ui/EventModal';
+import { reviewCarouselQueryOptions } from '@/src/feature/home';
+import { ReviewCarousel } from '@/src/feature/home';
+import { HOME_CONTAINER } from '@/src/feature/home';
+import { EventModal } from '@/src/widgets/event';
 
 export default async function Home() {
   const queryClient = new QueryClient();

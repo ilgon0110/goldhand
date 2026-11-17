@@ -12,7 +12,7 @@ import { TextNode } from 'lexical';
 import type { JSX } from 'react';
 import { useEffect } from 'react';
 
-import { $createEmojiNode, EmojiNode } from '../nodes/EmojiNode';
+import { $createEmojiNode, EmojiNode } from '../nodes/_EmojiNode';
 
 const emojis: Map<string, [string, string]> = new Map([
   [':)', ['emoji happysmile', '🙂']],

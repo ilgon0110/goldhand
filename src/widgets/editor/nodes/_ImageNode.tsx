@@ -35,10 +35,10 @@ import {
 import type { JSX } from 'react';
 import * as React from 'react';
 
-import { EmojiNode } from './EmojiNode';
-import { KeywordNode } from './KeywordNode';
+import { EmojiNode } from './_EmojiNode';
+import { KeywordNode } from './_KeywordNode';
 
-const ImageComponent = React.lazy(() => import('./ImageComponent'));
+const ImageComponent = React.lazy(() => import('./_ImageComponent'));
 
 export interface ImagePayload {
   altText: string;

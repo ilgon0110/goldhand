@@ -2,10 +2,10 @@ import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 
 import type { IUserDetailData } from '@/src/shared/types';
 
-import { useLinkPhoneToCurrentUser } from '../api/useLinkPhoneToCurrentUser';
+import { useLinkPhoneToCurrentUser } from '../api/_useLinkPhoneToCurrentUser';
 import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
-import type { TPhoneAuthFlow } from './usePhoneAuthFlowCore';
-import { usePhoneAuthFlowCore } from './usePhoneAuthFlowCore';
+import type { TPhoneAuthFlow } from './_usePhoneAuthFlowCore';
+import { usePhoneAuthFlowCore } from './_usePhoneAuthFlowCore';
 
 type TFieldNames<TFieldValues extends FieldValues> = {
   phoneNumberName: Path<TFieldValues>;

@@ -41,15 +41,15 @@ import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/src/shared/hooks/useMediaQuery';
 
-import { useSettings } from '../context/SettingContext';
-import { useSharedHistoryContext } from '../context/SharedHistoryContext';
+import { useSettings } from '../context/_SettingContext';
+import { useSharedHistoryContext } from '../context/_SharedHistoryContext';
 import brokenImage from '../images/image-broken.svg';
-import EmojisPlugin from '../plugins/EmojisPlugin';
-import KeywordsPlugin from '../plugins/KeywordsPlugin';
-import LinkPlugin from '../plugins/LinkPlugin';
-import ContentEditable from '../ui/ContentEditable';
-import ImageResizer from '../ui/ImageResizer';
-import { $isImageNode } from './ImageNode';
+import EmojisPlugin from '../plugins/_EmojisPlugin';
+import KeywordsPlugin from '../plugins/_KeywordsPlugin';
+import LinkPlugin from '../plugins/_LinkPlugin';
+import ContentEditable from '../ui/_ContentEditable';
+import ImageResizer from '../ui/_ImageResizer';
+import { $isImageNode } from './_ImageNode';
 
 const imageCache = new Map<string, boolean | Promise<boolean>>();
 

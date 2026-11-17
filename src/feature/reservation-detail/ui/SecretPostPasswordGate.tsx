@@ -22,9 +22,9 @@ import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { toastError } from '@/src/shared/utils';
 
-import { detailPasswordFormSchema } from '../config/detailPasswordFormSchema';
-import { useAuthReturnRefresh } from '../model/useAuthReturnRefresh';
-import { SecretPostGateShell, SecretPostLoading } from './SecretPostGateShell';
+import { detailPasswordFormSchema } from '../config/_detailPasswordFormSchema';
+import { useAuthReturnRefresh } from '../model/_useAuthReturnRefresh';
+import { SecretPostGateShell, SecretPostLoading } from './_SecretPostGateShell';
 
 type TSecretPostPasswordGateProps = { docId: string };
 

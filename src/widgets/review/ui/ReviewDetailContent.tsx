@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
 import { PinToggleButton } from '@/src/entities/pin';
+import { PostDetailHeader } from '@/src/feature/post';
 import type { IReviewDetailData, IViewCountData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
-import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
 import { formatPhoneNumber } from '@/src/shared/utils';
 
 type TReviewDetailContentProps = {

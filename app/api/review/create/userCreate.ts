@@ -1,6 +1,6 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
-import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';

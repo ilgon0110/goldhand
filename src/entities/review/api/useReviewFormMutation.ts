@@ -8,13 +8,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { useImagesContext } from '@/src/entities/image';
 import { useGetUserData } from '@/src/entities/user';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
-import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
-import { useReviewImageUpload } from './useReviewImageUpload';
+import { useReviewImageUpload } from './_useReviewImageUpload';
 
 interface IReviewPostData {
   response: 'ng' | 'ok';

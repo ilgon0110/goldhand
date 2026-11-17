@@ -1,7 +1,7 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 
-import { resolvePostImageFields } from '@/src/entities/image/api/resolvePostImageFields';
+import { resolvePostImageFields } from '@/src/entities/image/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
 import { typedJson } from '@/src/shared/utils';

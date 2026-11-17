@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { Button } from '@/src/shared/ui/button';
 
-import { SecretPostGateShell } from './SecretPostGateShell';
+import { SecretPostGateShell } from './_SecretPostGateShell';
 
 export function SecretPostAccessDenied() {
   return (

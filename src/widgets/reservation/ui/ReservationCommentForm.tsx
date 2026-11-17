@@ -13,7 +13,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { consultCommentSchema } from '../config/consultCommentSchema';
+import { consultCommentSchema } from '../config/_consultCommentSchema';
 
 type TReservationCommentFormProps = {
   docId: string;

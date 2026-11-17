@@ -39,14 +39,14 @@ vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
 }));
 
 const logoutMock = vi.fn();
-vi.mock('@/src/feature/mypage/api/useLogoutMutation', () => ({
+vi.mock('@/src/feature/mypage/api/_useLogoutMutation', () => ({
   useLogoutMutation: () => ({
     mutate: logoutMock,
   }),
 }));
 
 const withdrawMock = vi.fn();
-vi.mock('@/src/feature/mypage/api/useWithdrawalMutation', () => ({
+vi.mock('@/src/feature/mypage/api/_useWithdrawalMutation', () => ({
   useWithdrawalMutation: () => ({
     mutate: withdrawMock,
   }),

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { usePriceQuery } from '@/src/entities/price';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 
-import { HomeSectionHeading } from '../../ui/HomeSectionHeading';
+import { HomeSectionHeading } from '../../ui/_HomeSectionHeading';
 import { PriceSummaryCard } from './_PriceSummaryCard';
 
 export const PriceList = () => {

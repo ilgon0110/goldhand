@@ -11,7 +11,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 
-import { HomeSectionHeading } from '../../ui/HomeSectionHeading';
+import { HomeSectionHeading } from '../../ui/_HomeSectionHeading';
 import { useReviewCarouselQuery } from '../api/useReviewCarouselQuery';
 import { ReviewSummaryCard } from './_ReviewSummaryCard';
 

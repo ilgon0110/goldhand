@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 
-import { HomeSectionHeading } from '../../ui/HomeSectionHeading';
+import { HomeSectionHeading } from '../../ui/_HomeSectionHeading';
 
 const SPONSORS = [
   { src: '/sponsor_1.png', fit: 'contain' },

@@ -1,7 +1,7 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { logoutAction } from './logoutAction';
+import { logoutAction } from './_logoutAction';
 
 interface IResponsePostBody {
   response: string;

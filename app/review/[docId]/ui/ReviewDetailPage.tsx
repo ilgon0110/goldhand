@@ -12,7 +12,7 @@ import {
 } from '@/src/feature/review-detail';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 import { ReviewCommentSection, ReviewDetailContent } from '@/src/widgets/review';
 
 type TReviewDetailPageProps = { docId: string };

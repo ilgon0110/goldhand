@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { GET as eventDetailGET } from '@/app/api/event/detail/route';
 import { routeGet, throwNotFoundOn404 } from '@/app/lib/routeGet';
 import { eventDetailQueryOptions } from '@/src/entities/event';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+import { ImagesContext } from '@/src/entities/image';
 
 import { EventEditPage } from './ui/EventEditPage';
 

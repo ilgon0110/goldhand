@@ -24,25 +24,24 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import type { TAliasAny } from '@/src/shared/types';
+import { useImagesContext } from '@/src/entities/image';
 
-import { useImagesContext } from '../context/ImagesContext';
-import { SettingsContext, useSettings } from '../context/SettingContext';
-import { SharedHistoryContext, useSharedHistoryContext } from '../context/SharedHistoryContext';
-import { ToolbarContext } from '../context/ToolbarState';
-import { ExtendedTextNode } from '../nodes/ExtendTextNode';
-import PlaygroundNodes from '../nodes/PlaygroundNodes';
-import AutoLinkPlugin from '../plugins/AutoLinkPlugin';
-import DragDropPaste from '../plugins/DragDropPastePlugin';
-import EmojiPickerPlugin from '../plugins/EmojiPickerPlugin';
-import EmojisPlugin from '../plugins/EmojisPlugin';
-import { ImagesPlugin } from '../plugins/ImagesPlugin';
-import KeywordsPlugin from '../plugins/KeywordsPlugin';
-import LinkPlugin from '../plugins/LinkPlugin';
-import ShortcutsPlugin from '../plugins/ShortcutsPlugin';
-import { ToolbarPlugin } from '../plugins/ToolbarPlugin';
-import PlaygroundEditorTheme from '../theme/PlaygroundEditorTheme';
-import ContentEditable from './ContentEditable';
+import { SettingsContext, useSettings } from '../context/_SettingContext';
+import { SharedHistoryContext, useSharedHistoryContext } from '../context/_SharedHistoryContext';
+import { ToolbarContext } from '../context/_ToolbarState';
+import { ExtendedTextNode } from '../nodes/_ExtendTextNode';
+import PlaygroundNodes from '../nodes/_PlaygroundNodes';
+import AutoLinkPlugin from '../plugins/_AutoLinkPlugin';
+import DragDropPaste from '../plugins/_DragDropPastePlugin';
+import EmojiPickerPlugin from '../plugins/_EmojiPickerPlugin';
+import EmojisPlugin from '../plugins/_EmojisPlugin';
+import { ImagesPlugin } from '../plugins/_ImagesPlugin';
+import KeywordsPlugin from '../plugins/_KeywordsPlugin';
+import LinkPlugin from '../plugins/_LinkPlugin';
+import ShortcutsPlugin from '../plugins/_ShortcutsPlugin';
+import { ToolbarPlugin } from '../plugins/_ToolbarPlugin';
+import PlaygroundEditorTheme from '../theme/_PlaygroundEditorTheme';
+import ContentEditable from './_ContentEditable';
 
 function MyOnChangePlugin(props: { onChange: (editorState: EditorState) => void }): null {
   const [editor] = useLexicalComposerContext();

@@ -14,9 +14,9 @@ import { MemberReviewForm } from '@/app/review/form/ui/_MemberReviewForm';
 import { ReviewFormPage } from '@/app/review/form/ui/ReviewFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
+import { ImagesContext, useImagesContext } from '@/src/entities/image/model/ImagesContext';
 import { userKeys } from '@/src/shared/config/queryKeys';
 import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
-import { ImagesContext, useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

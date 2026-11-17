@@ -22,7 +22,7 @@ vi.mock('firebase-admin/firestore', () => ({
 }));
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
 
-import { checkAdminAuth } from '@/src/shared/lib/server';
+import { checkAdminAuth } from '@/src/shared/lib/server/checkAdminAuth';
 
 describe('checkAdminAuth', () => {
   beforeEach(() => {

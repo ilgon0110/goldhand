@@ -10,7 +10,7 @@ import { phoneAuthFormSchema } from '@/src/entities/phoneAuth';
 import { usePhoneAuthVerifyFlow } from '@/src/entities/phoneAuth/client';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useReviewDeleteMutation } from '../api/useReviewDeleteMutation';
+import { useReviewDeleteMutation } from '../api/_useReviewDeleteMutation';
 
 export type TReviewDeleteDialogState = {
   open: boolean;

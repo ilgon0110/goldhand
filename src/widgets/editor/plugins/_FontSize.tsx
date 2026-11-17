@@ -9,8 +9,8 @@
 import type { LexicalEditor } from 'lexical';
 import * as React from 'react';
 
-import { SHORTCUTS } from '../config/shortcuts';
-import { MAX_ALLOWED_FONT_SIZE, MIN_ALLOWED_FONT_SIZE } from '../context/ToolbarState';
+import { SHORTCUTS } from '../config/_shortcuts';
+import { MAX_ALLOWED_FONT_SIZE, MIN_ALLOWED_FONT_SIZE } from '../context/_ToolbarState';
 import { updateFontSize, updateFontSizeInSelection, UpdateFontSizeType } from '../utils';
 
 export function parseAllowedFontSize(input: string): string {

@@ -12,7 +12,7 @@ import type { IMyPageResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useLogoutMutation } from '../api/useLogoutMutation';
+import { useLogoutMutation } from '../api/_useLogoutMutation';
 
 interface IMyPageInfoCardProps {
   myPageData: IMyPageResponseData;

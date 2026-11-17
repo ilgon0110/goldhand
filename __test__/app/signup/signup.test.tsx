@@ -14,7 +14,7 @@ import { renderWithQueryClient } from '@/__test__/utils/render';
 import { SignupPage } from '@/app/signup/ui/SignupPage';
 import { server } from '@/src/__mock__/node';
 import * as utils from '@/src/shared/utils';
-import { SignupPhonePage } from '@/src/widgets/SignupPhone';
+import { SignupPhonePage } from '@/src/widgets/SignupPhone/ui/SignupPhonePage';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();

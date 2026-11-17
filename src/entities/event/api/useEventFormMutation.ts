@@ -9,14 +9,14 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
+import { useImagesContext } from '@/src/entities/image';
 import { eventKeys } from '@/src/shared/config/queryKeys';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
-import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import type { eventFormSchema } from '../config';
-import { useEventImageUpload } from './useEventImageUpload';
+import { useEventImageUpload } from './_useEventImageUpload';
 
 interface IEventPostData {
   response: 'ng' | 'ok';

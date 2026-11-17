@@ -34,11 +34,12 @@ import {
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
-import { useImagesContext } from '../context/ImagesContext';
-import type { ImagePayload } from '../nodes/ImageNode';
-import { $createImageNode, $isImageNode, ImageNode } from '../nodes/ImageNode';
-import FileInput from '../ui/FileInput';
-import TextInput from '../ui/TextInput';
+import { useImagesContext } from '@/src/entities/image';
+
+import type { ImagePayload } from '../nodes/_ImageNode';
+import { $createImageNode, $isImageNode, ImageNode } from '../nodes/_ImageNode';
+import FileInput from '../ui/_FileInput';
+import TextInput from '../ui/_TextInput';
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 

@@ -15,9 +15,9 @@ import {
 } from '@/shared/ui/navigation-menu';
 import type { INotificationResponseData } from '@/src/shared/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
-import { AlarmMenu } from '@/src/widgets/AlarmMenu';
-import { URLS } from '@/src/widgets/header';
+import { URLS } from '@/src/widgets/header/config/_const';
 
+import { AlarmMenu } from './_AlarmMenu';
 import { UlButton } from './_UlButton';
 
 interface IWebHeaderProps {

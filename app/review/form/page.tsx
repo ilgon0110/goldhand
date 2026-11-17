@@ -2,8 +2,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 
 import { GET as userGET } from '@/app/api/user/route';
 import { routeGet } from '@/app/lib/routeGet';
+import { ImagesContext } from '@/src/entities/image';
 import { userQueryOptions } from '@/src/entities/user';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
 
 import { ReviewFormPage } from './ui/ReviewFormPage';
 

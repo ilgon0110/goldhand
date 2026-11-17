@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { PinToggleButton } from '@/src/entities/pin';
+import { PinToggleButton } from '@/src/entities/pin/ui/PinToggleButton';
 
 describe('PinToggleButton', () => {
   it('admin이 아니고 고정되지 않은 경우 아무것도 렌더링하지 않는다', () => {

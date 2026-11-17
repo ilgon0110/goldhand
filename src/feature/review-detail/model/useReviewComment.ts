@@ -7,8 +7,8 @@ import type { z } from 'zod';
 import { useComments } from '@/src/entities/comment';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useReviewDetailCommentMutation } from '../api/useReviewDetailCommentMutation';
-import { reviewCommentSchema } from '../config/reviewCommentSchema';
+import { useReviewDetailCommentMutation } from '../api/_useReviewDetailCommentMutation';
+import { reviewCommentSchema } from '../config/_reviewCommentSchema';
 
 export function useReviewComment(docId: string) {
   const form = useForm<z.infer<typeof reviewCommentSchema>>({

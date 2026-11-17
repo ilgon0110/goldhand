@@ -2,9 +2,9 @@
 
 import { useRef, useState } from 'react';
 
+import type { IImagesContextFile } from '@/src/entities/image';
 import { generateThumbnail, optimizeImage, uploadSingleImage } from '@/src/entities/image';
 import { toastError } from '@/src/shared/utils';
-import type { IImagesContextFile } from '@/src/widgets/editor/context/ImagesContext';
 
 export function useReviewImageUpload() {
   const [isUploading, setIsUploading] = useState(false);

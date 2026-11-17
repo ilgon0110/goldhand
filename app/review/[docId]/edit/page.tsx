@@ -2,7 +2,8 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import { GET as reviewDetailGET } from '@/app/api/review/detail/route';
-import { routeGet, throwNotFoundOn404 } from '@/app/lib/routeGet';
+import { routeGet } from '@/app/lib/routeGet';
+import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
 import { ImagesContext } from '@/src/entities/image';
 import { reviewDetailQueryOptions } from '@/src/entities/review';
 

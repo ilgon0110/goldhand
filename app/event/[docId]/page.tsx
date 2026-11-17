@@ -3,7 +3,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { GET as eventDetailGET } from '@/app/api/event/detail/route';
 import { GET as userGET } from '@/app/api/user/route';
 import { GET as viewCountGET } from '@/app/api/viewCount/route';
-import { routeGet, throwNotFoundOn404 } from '@/app/lib/routeGet';
+import { routeGet } from '@/app/lib/routeGet';
+import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
 import { eventDetailQueryOptions } from '@/src/entities/event';
 import { userQueryOptions } from '@/src/entities/user';
 import { viewCountQueryOptions } from '@/src/entities/viewCount';

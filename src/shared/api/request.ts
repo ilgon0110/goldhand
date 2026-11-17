@@ -13,10 +13,12 @@ export class HttpError extends Error {
   }
 }
 
-export async function jsonOrThrow<T>(res: Response): Promise<T> {
-  const body = await res.json();
+// okStatuses: 에러 status라도 body로 화면을 분기하는 API는 해당 status를 정상 응답으로 취급한다.
+export async function jsonOrThrow<T>(res: Response, okStatuses: number[] = []): Promise<T> {
+  // nginx 502 HTML·빈 body 등 JSON이 아닌 응답에서도 status를 잃지 않도록 파싱 실패는 null로 둔다.
+  const body = await res.json().catch(() => null);
 
-  if (!res.ok) {
+  if (!res.ok && !okStatuses.includes(res.status)) {
     throw new HttpError(body?.message || 'API 요청 실패', res.status);
   }
 

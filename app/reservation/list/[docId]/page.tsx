@@ -23,10 +23,6 @@ export default async function Page({ params }: TPageProps) {
     redirect('/reservation/list');
   }
 
-  if (reservationData.code === 'SERVER_ERROR') {
-    throw new Error('Error getting document');
-  }
-
   await queryClient.prefetchQuery(userQueryOptions(routeGet(userGET)));
 
   return (

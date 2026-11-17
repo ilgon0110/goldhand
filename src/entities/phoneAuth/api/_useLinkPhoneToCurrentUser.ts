@@ -8,17 +8,18 @@ import {
 } from 'firebase/auth';
 import { useRef, useState } from 'react';
 
-import type { IUserDetailData } from '@/src/entities/user/@x/phoneAuth';
-
 import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
 import { toPhoneAuthError } from '../lib/toPhoneAuthError';
+
+// user entity 타입을 참조하지 않도록 연결에 필요한 필드만 받는다. IUserDetailData를 그대로 넘겨도 된다.
+export type TPhoneLinkUser = { userId: string; email: string };
 
 /**
  * SMS 인증코드를 확인한 뒤, 현재 로그인된(이메일/OAuth) 계정에 전화번호를 연동한다.
  * SignUp 전용 - 로그인 세션이 없는 비회원 흐름에서는 사용하지 않는다.
  */
 export const useLinkPhoneToCurrentUser = (
-  userData: IUserDetailData | null,
+  userData: TPhoneLinkUser | null,
   options?: {
     onSuccess?: () => void;
     onError?: (error: Error) => void;

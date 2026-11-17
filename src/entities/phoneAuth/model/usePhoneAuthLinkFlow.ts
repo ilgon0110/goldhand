@@ -1,7 +1,6 @@
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 
-import type { IUserDetailData } from '@/src/entities/user/@x/phoneAuth';
-
+import type { TPhoneLinkUser } from '../api/_useLinkPhoneToCurrentUser';
 import { useLinkPhoneToCurrentUser } from '../api/_useLinkPhoneToCurrentUser';
 import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
 import type { TPhoneAuthFlow } from './_usePhoneAuthFlowCore';
@@ -18,7 +17,7 @@ type TFieldNames<TFieldValues extends FieldValues> = {
 export function usePhoneAuthLinkFlow<TFieldValues extends FieldValues>(
   form: UseFormReturn<TFieldValues>,
   { phoneNumberName, authCodeName }: TFieldNames<TFieldValues>,
-  userData: IUserDetailData | null,
+  userData: TPhoneLinkUser | null,
   options?: {
     onLinked?: () => void;
     onPhoneAlreadyInUse?: (error: IPhoneAuthError) => void;

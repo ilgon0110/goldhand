@@ -65,7 +65,9 @@ export function ReviewDetailContent({
           >
             수정하기
           </Button>
-          <Button variant="destructive" onClick={handleDelete}>삭제하기</Button>
+          <Button variant="destructive" onClick={handleDelete}>
+            삭제하기
+          </Button>
         </div>
       ) : null}
     </>

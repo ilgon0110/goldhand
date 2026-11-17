@@ -101,7 +101,11 @@ function clickEvent() {
   return { preventDefault: () => {} } as React.MouseEvent<HTMLButtonElement>;
 }
 
-function PhoneAuthFieldsHarness({ onConfirmed }: { onConfirmed?: (result: UserCredential) => Promise<unknown> | void }) {
+function PhoneAuthFieldsHarness({
+  onConfirmed,
+}: {
+  onConfirmed?: (result: UserCredential) => Promise<unknown> | void;
+}) {
   const form = useForm<TFormValues>({ defaultValues: { phoneNumber: '01012345678', authCode: '' } });
   const phoneAuth = usePhoneAuthVerifyFlow(
     form,
@@ -266,12 +270,9 @@ describe('usePhoneAuthLinkFlow', () => {
 
     const { result } = renderHook(() =>
       useHarness(form =>
-        usePhoneAuthLinkFlow(
-          form,
-          { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
-          linkAccount(),
-          { onPhoneAlreadyInUse },
-        ),
+        usePhoneAuthLinkFlow(form, { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' }, linkAccount(), {
+          onPhoneAlreadyInUse,
+        }),
       ),
     );
 

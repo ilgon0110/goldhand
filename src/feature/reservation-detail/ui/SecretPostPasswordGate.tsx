@@ -9,15 +9,7 @@ import type { z } from 'zod';
 
 import { passwordPostAction } from '@/src/entities/reservation';
 import { Button } from '@/src/shared/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/src/shared/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { toastError } from '@/src/shared/utils';

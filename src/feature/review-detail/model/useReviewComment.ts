@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { commentSchema,useComments } from '@/src/entities/comment';
+import { commentSchema, useComments } from '@/src/entities/comment';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
 import { useReviewDetailCommentMutation } from '../api/_useReviewDetailCommentMutation';

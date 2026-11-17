@@ -114,10 +114,7 @@ export async function POST(req: NextRequest) {
       );
     } catch (error) {
       logServerError('Error updating event post:', error);
-      return typedJson<IResponseBody>(
-        { response: 'ng', message: '소식 수정에 실패했습니다.', docId },
-        { status: 500 },
-      );
+      return typedJson<IResponseBody>({ response: 'ng', message: '소식 수정에 실패했습니다.', docId }, { status: 500 });
     }
   } catch (error) {
     if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {

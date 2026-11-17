@@ -102,9 +102,7 @@ afterAll(() => {
 describe('usePhoneAuthCodeSendMutation', () => {
   it('국내 전화번호를 국제 형식으로 변환해 정확한 Firebase 경계 인자로 전달하고 성공 상태를 갱신', async () => {
     let resolveRequest!: (value: ConfirmationResult) => void;
-    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(
-      () => new Promise(resolve => (resolveRequest = resolve)),
-    );
+    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(() => new Promise(resolve => (resolveRequest = resolve)));
     const onSuccess = vi.fn();
     const onSettled = vi.fn();
     const { result } = renderHook(() => usePhoneAuthCodeSendMutation({ onSuccess, onSettled }));
@@ -306,9 +304,7 @@ describe('useLinkPhoneToCurrentUser', () => {
     const onSuccess = vi.fn();
     const onError = vi.fn();
     const onSettled = vi.fn();
-    const { result } = renderHook(() =>
-      useLinkPhoneToCurrentUser(linkAccount(), { onSuccess, onError, onSettled }),
-    );
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount(), { onSuccess, onError, onSettled }));
 
     await act(() => result.current.mutate('123456', confirmationResult));
 

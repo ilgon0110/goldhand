@@ -23,7 +23,10 @@ export async function middleware(request: NextRequest) {
       ? process.env.NEXT_PUBLIC_API_URL
       : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
-  const requiresAdmin = url.pathname.startsWith('/price/manage') || url.pathname === '/manager/list' || isProtectedManagerPath(url.pathname);
+  const requiresAdmin =
+    url.pathname.startsWith('/price/manage') ||
+    url.pathname === '/manager/list' ||
+    isProtectedManagerPath(url.pathname);
   const requiresLogin = requiresAdmin || url.pathname === '/signup' || url.pathname.startsWith('/mypage');
 
   // session 쿠키가 아예 없으면 /api/user 호출을 건너뛰지만, 아래 라우팅 판단은 그대로 거친다

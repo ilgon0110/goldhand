@@ -31,7 +31,9 @@ export const MyPageEditPage = () => {
     },
   });
   const form = useForm<z.infer<typeof myPageFormSchema>>({
-    resolver: zodResolver(myPageFormSchema.superRefine(refineAdminOnlyName(myPageData?.data.userData?.grade === 'admin'))),
+    resolver: zodResolver(
+      myPageFormSchema.superRefine(refineAdminOnlyName(myPageData?.data.userData?.grade === 'admin')),
+    ),
     defaultValues: {
       name: myPageData?.data.userData?.name || '',
       nickname: myPageData?.data.userData?.nickname || '',

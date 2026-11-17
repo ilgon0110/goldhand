@@ -55,8 +55,7 @@ export function useReviewDeleteFlow({ docId, requiresPhoneAuth }: TUseReviewDele
   const isDeletePending = isDeleteSubmitting || isDeleteNavigating;
   const isDialogPending = isPhoneAuthPending || isDeletePending;
 
-  const handleOpen = () =>
-    setDialogState({ open: true, step: requiresPhoneAuth ? 'phone-auth' : 'delete-confirm' });
+  const handleOpen = () => setDialogState({ open: true, step: requiresPhoneAuth ? 'phone-auth' : 'delete-confirm' });
   const handleClose = () => {
     if (isDialogPending) return;
     phoneIdTokenRef.current = null;
@@ -66,8 +65,7 @@ export function useReviewDeleteFlow({ docId, requiresPhoneAuth }: TUseReviewDele
   const handleOpenChange = (open: boolean) => {
     if (!open) handleClose();
   };
-  const handleConfirmDelete = () =>
-    deleteReview({ docId, phoneIdToken: phoneIdTokenRef.current ?? undefined });
+  const handleConfirmDelete = () => deleteReview({ docId, phoneIdToken: phoneIdTokenRef.current ?? undefined });
 
   return {
     dialogState,

@@ -24,7 +24,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import { useImagesContext } from '@/src/entities/image';
+import { useImagesContext } from '@/src/entities/image/client';
 
 import { SettingsContext, useSettings } from '../context/_SettingContext';
 import { SharedHistoryContext, useSharedHistoryContext } from '../context/_SharedHistoryContext';

@@ -2,8 +2,8 @@
 
 import { useRef, useState } from 'react';
 
-import type { IImagesContextFile } from '@/src/entities/image';
 import { generateThumbnail, optimizeImage, uploadSingleImage } from '@/src/entities/image';
+import type { IImagesContextFile } from '@/src/entities/image/client';
 import { toastError } from '@/src/shared/utils';
 
 export function useEventImageUpload() {

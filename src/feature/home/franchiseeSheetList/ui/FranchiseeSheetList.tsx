@@ -2,10 +2,10 @@ import Image from 'next/image';
 import { PiArrowUpRight } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
-import { BRANCHES } from '@/src/feature/home/config/franchisee.config';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { formatPhoneNumber } from '@/src/shared/utils';
 
+import { BRANCHES } from '../../config/franchisee.config';
 import { HomeSectionHeading } from '../../ui/_HomeSectionHeading';
 
 type TBranch = (typeof BRANCHES)[number];

@@ -56,7 +56,12 @@ export async function checkAdminAuth(requireAdmin = false): Promise<TAdminAuthRe
     try {
       await verifySessionCookie(session.value, true);
     } catch (error) {
-      if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
+      if (
+        error != null &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'auth/session-cookie-expired'
+      ) {
         return { ok: false, reason: 'expired' };
       }
       return { ok: false, reason: 'invalid' };

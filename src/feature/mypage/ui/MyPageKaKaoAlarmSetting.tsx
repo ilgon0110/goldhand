@@ -5,10 +5,11 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import type { IKakaoAlarmSettings } from '@/src/entities/user';
-import { DEFAULT_ALARM_SETTINGS, useUpdateKakaoAlarmSettingMutation } from '@/src/feature/mypage/api/_useUpdateKakaoAlarmSettingMutation';
-import type { IMyPageResponseData } from '@/src/feature/mypage/model/types';
 import { Switch } from '@/src/shared/ui/switch';
 import { toastError, toastSuccess } from '@/src/shared/utils';
+
+import { DEFAULT_ALARM_SETTINGS, useUpdateKakaoAlarmSettingMutation } from '../api/_useUpdateKakaoAlarmSettingMutation';
+import type { IMyPageResponseData } from '../model/types';
 
 interface IMyPageKaKaoAlarmSettingProps {
   myPageData: IMyPageResponseData;

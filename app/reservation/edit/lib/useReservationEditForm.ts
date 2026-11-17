@@ -44,7 +44,9 @@ export const useReservationEditForm = ({
   const isGuestPost = consultDetailData.data.userId == null;
 
   const form = useForm<z.infer<typeof reservationEditFormSchema>>({
-    resolver: zodResolver(reservationEditFormSchema.superRefine(refineAdminOnlyName(userData?.userData?.grade === 'admin'))),
+    resolver: zodResolver(
+      reservationEditFormSchema.superRefine(refineAdminOnlyName(userData?.userData?.grade === 'admin')),
+    ),
     defaultValues: isGuestPost
       ? { ...commonDefaults, isGuestPost: true, oldPassword: '', password: '' }
       : { ...commonDefaults, isGuestPost: false, oldPassword: undefined, password: undefined },

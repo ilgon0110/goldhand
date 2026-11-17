@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 
 export type TVerifyAndRotateGuestPasswordResult =
-  { ok: false; reason: 'mismatch' } | { ok: true; newHashedPassword: string };
+  | { ok: false; reason: 'mismatch' }
+  | { ok: true; newHashedPassword: string };
 
 export async function verifyAndRotateGuestPassword(
   oldPassword: string,

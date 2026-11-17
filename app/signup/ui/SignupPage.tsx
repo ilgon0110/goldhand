@@ -131,7 +131,12 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
               </FormItem>
             )}
           />
-          <PhoneAuthFields authCodeName="authCode" control={form.control} phoneAuth={phoneAuth} phoneNumberName="phoneNumber" />
+          <PhoneAuthFields
+            authCodeName="authCode"
+            control={form.control}
+            phoneAuth={phoneAuth}
+            phoneNumberName="phoneNumber"
+          />
           <FormField
             control={form.control}
             defaultValue={userData?.email || ''}

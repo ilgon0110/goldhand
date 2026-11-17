@@ -17,7 +17,9 @@ export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
   const queryClient = new QueryClient();
 
-  const reservationData = await queryClient.fetchQuery(reservationDetailQueryOptions(docId, routeGet(reservationDetailGET)));
+  const reservationData = await queryClient.fetchQuery(
+    reservationDetailQueryOptions(docId, routeGet(reservationDetailGET)),
+  );
 
   if (reservationData.code === 'TOKEN_EXPIRED') {
     redirect('/reservation/list');

@@ -2,9 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
-
 const reviewFixture = {
-  comments: null,
   createdAt: { nanoseconds: 0, seconds: 0 },
   franchisee: '수원점',
   htmlString: '<p>산모와 아기 모두 편안하게 잘 돌봐주셔서 감사했습니다.</p>',
@@ -52,9 +50,7 @@ import Home from '@/app/page';
 describe('home page review carousel SEO rendering', () => {
   it('server-renders real review title, author, and content text (not a loading skeleton)', async () => {
     const element = await Home();
-    const html = renderToStaticMarkup(
-      <QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>,
-    );
+    const html = renderToStaticMarkup(<QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>);
 
     expect(html).toContain('너무 만족스러운 산후관리였어요');
     expect(html).toContain('김OO');

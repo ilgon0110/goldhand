@@ -202,7 +202,9 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('게시글 삭제가 성공하면 리뷰 목록 페이지로 이동한다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    server.use(http.delete('/api/review/delete', async () => HttpResponse.json({ response: 'ok', message: '삭제 성공' })));
+    server.use(
+      http.delete('/api/review/delete', async () => HttpResponse.json({ response: 'ok', message: '삭제 성공' })),
+    );
     await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));

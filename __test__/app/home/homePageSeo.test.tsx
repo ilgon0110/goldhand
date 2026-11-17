@@ -28,9 +28,7 @@ import Home from '@/app/page';
 describe('home page SEO rendering boundary', () => {
   it('server-renders the home content without depending on search parameters', async () => {
     const element = await Home();
-    const html = renderToStaticMarkup(
-      <QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>,
-    );
+    const html = renderToStaticMarkup(<QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>);
 
     expect(html).toContain('HOME_TITLE_SENTINEL');
     expect(html).toContain('REVIEW_CAROUSEL_SENTINEL');

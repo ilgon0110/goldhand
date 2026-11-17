@@ -7,12 +7,8 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { useImagesContext } from '@/src/entities/image';
-import {
-  reviewContentSchema,
-  ReviewStepIndicator,
-  useGetReviewDetailData,
-} from '@/src/entities/review';
+import { useImagesContext } from '@/src/entities/image/client';
+import { reviewContentSchema, ReviewStepIndicator, useGetReviewDetailData } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
 import { useReviewFormMutation } from '@/src/feature/review-form';

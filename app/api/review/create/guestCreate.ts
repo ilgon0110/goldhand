@@ -15,7 +15,10 @@ export async function createGuestReview(body: IReviewPost) {
   const { name, franchisee, phoneIdToken } = body;
 
   if (!canUseName(name, false)) {
-    return typedJson<IReviewResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' }, { status: 403 });
+    return typedJson<IReviewResponseBody>(
+      { response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' },
+      { status: 403 },
+    );
   }
 
   if (!phoneIdToken) {

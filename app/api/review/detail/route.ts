@@ -62,7 +62,6 @@ export async function GET(request: NextRequest) {
 
     const data = docSnap.data() as IReviewDetailData;
 
-
     // phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).
     const authResult = await checkAdminAuth();
     const isAdmin = authResult.ok && authResult.isAdmin;

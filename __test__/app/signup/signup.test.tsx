@@ -1,6 +1,13 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { Auth, ConfirmationResult, PhoneAuthCredential, RecaptchaVerifier, User, UserCredential } from 'firebase/auth';
+import type {
+  Auth,
+  ConfirmationResult,
+  PhoneAuthCredential,
+  RecaptchaVerifier,
+  User,
+  UserCredential,
+} from 'firebase/auth';
 import {
   getAuth,
   PhoneAuthProvider,
@@ -58,11 +65,12 @@ function asPhoneCredential(value: typeof firebaseFixtures.phoneCredential): Phon
 
 const confirmationResult = {
   verificationId: 'verification-id',
-  confirm: vi.fn<ConfirmationResult['confirm']>(async () => ({ user: asUser(firebaseFixtures.linkedUser) }) as UserCredential),
+  confirm: vi.fn<ConfirmationResult['confirm']>(
+    async () => ({ user: asUser(firebaseFixtures.linkedUser) }) as UserCredential,
+  ),
 } satisfies ConfirmationResult;
 
 vi.mock('firebase/auth', () => {
-
   return {
     getAuth: vi.fn(() => asAuth(firebaseFixtures.auth)),
     RecaptchaVerifier: vi.fn(() => ({
@@ -102,9 +110,13 @@ vi.mock('react-google-recaptcha-v3', () => ({
 
 beforeEach(() => {
   vi.mocked(getAuth).mockReturnValue(asAuth(firebaseFixtures.auth));
-  vi.mocked(FirebaseRecaptchaVerifier).mockImplementation(() => asRecaptchaVerifier(firebaseFixtures.recaptchaVerifier));
+  vi.mocked(FirebaseRecaptchaVerifier).mockImplementation(() =>
+    asRecaptchaVerifier(firebaseFixtures.recaptchaVerifier),
+  );
   vi.mocked(signInWithPhoneNumber).mockResolvedValue(confirmationResult);
-  vi.mocked(signInWithEmailAndPassword).mockResolvedValue({ user: asUser(firebaseFixtures.emailUser) } as UserCredential);
+  vi.mocked(signInWithEmailAndPassword).mockResolvedValue({
+    user: asUser(firebaseFixtures.emailUser),
+  } as UserCredential);
   vi.mocked(PhoneAuthProvider.credential).mockReturnValue(asPhoneCredential(firebaseFixtures.phoneCredential));
 });
 
@@ -215,9 +227,7 @@ describe('SignupPage 컴포넌트 테스트', () => {
 
   it('[휴대폰인증] 인증번호 전송 성공 후에만 인증코드 입력창 노출', async () => {
     let resolveSend!: (value: ConfirmationResult) => void;
-    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(
-      () => new Promise(resolve => (resolveSend = resolve)),
-    );
+    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(() => new Promise(resolve => (resolveSend = resolve)));
     const data = await (await fetch('/api/user')).json();
     renderWithQueryClient(<SignupPage userData={data.userData} />);
 

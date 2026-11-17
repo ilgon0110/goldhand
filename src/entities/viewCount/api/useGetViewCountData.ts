@@ -1,8 +1,9 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
-import type { IViewCountResponseData } from '@/src/entities/viewCount/model/types';
 import { clientGet, type TGet } from '@/src/shared/api/request';
 import { viewCountKeys } from '@/src/shared/config/queryKeys';
+
+import type { IViewCountResponseData } from '../model/types';
 
 export const viewCountQueryOptions = (docId: string, get: TGet = clientGet) =>
   queryOptions({

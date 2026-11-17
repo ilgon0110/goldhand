@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
 import type { eventFormSchema } from '@/src/entities/event';
-import { useImagesContext } from '@/src/entities/image';
+import { useImagesContext } from '@/src/entities/image/client';
 import { eventKeys } from '@/src/shared/config/queryKeys';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';

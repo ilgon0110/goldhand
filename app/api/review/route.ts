@@ -69,12 +69,7 @@ export async function GET(request: NextRequest) {
       franchisee !== '전체' ? [['franchisee', '==', franchisee]] : [];
 
     const { pinnedItems, pageItems, pageableDataLength, totalDataLength } =
-      await getPinnedFirstListAdmin<IReviewDetailData>(
-        'reviews',
-        extraWhere,
-        page,
-        PAGE_SIZE,
-      );
+      await getPinnedFirstListAdmin<IReviewDetailData>('reviews', extraWhere, page, PAGE_SIZE);
 
     const combined = [...pinnedItems, ...pageItems];
     const adminUserIds = await getAdminUserIdSet(

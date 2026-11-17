@@ -33,12 +33,16 @@ export const GuestConfirmationStep = ({ onConfirmed }: TGuestConfirmationStepPro
 
   const agreePersonalInfo = form.watch('agreePersonalInfo');
 
-  const phoneAuth = usePhoneAuthVerifyFlow(form, { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' }, {
-    onConfirmed: async result => {
-      const phoneIdToken = await result.user.getIdToken();
-      onConfirmed({ phoneNumber: form.getValues('phoneNumber'), phoneIdToken });
+  const phoneAuth = usePhoneAuthVerifyFlow(
+    form,
+    { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
+    {
+      onConfirmed: async result => {
+        const phoneIdToken = await result.user.getIdToken();
+        onConfirmed({ phoneNumber: form.getValues('phoneNumber'), phoneIdToken });
+      },
     },
-  });
+  );
 
   return (
     <>

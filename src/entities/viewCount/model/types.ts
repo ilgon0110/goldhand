@@ -1,5 +1,3 @@
-
-
 // viewCount 관련 타입 정의
 export interface IViewCountData {
   totalViewCount: number;

@@ -5,14 +5,13 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { commentSchema,useCommentCreateMutation, useComments } from '@/src/entities/comment';
+import { commentSchema, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { useGetUserData } from '@/src/entities/user';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-
 
 type TManagerCommentFormProps = {
   docId: string;

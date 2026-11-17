@@ -1,8 +1,9 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
-import type { IReservationDetailData } from '@/src/entities/reservation/model/types';
 import { clientGet, type TGet } from '@/src/shared/api/request';
 import { reservationKeys } from '@/src/shared/config/queryKeys';
+
+import type { IReservationDetailData } from '../model/types';
 
 type TReservationListParams = { page: number; hideSecret: string };
 

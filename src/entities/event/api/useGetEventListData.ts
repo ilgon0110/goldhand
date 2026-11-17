@@ -1,8 +1,9 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
-import type { IEventListResponseData } from '@/src/entities/event/model/types';
 import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { eventKeys } from '@/src/shared/config/queryKeys';
+
+import type { IEventListResponseData } from '../model/types';
 
 type TEventListParams = { page: number; status: string };
 

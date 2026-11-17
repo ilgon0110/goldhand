@@ -4,7 +4,7 @@ import { GET as eventDetailGET } from '@/app/api/event/detail/route';
 import { routeGet } from '@/app/lib/routeGet';
 import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
 import { eventDetailQueryOptions } from '@/src/entities/event';
-import { ImagesContext } from '@/src/entities/image';
+import { ImagesContext } from '@/src/entities/image/client';
 
 import { EventEditPage } from './ui/EventEditPage';
 

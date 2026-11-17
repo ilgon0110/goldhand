@@ -5,7 +5,6 @@ import { describe, expect, it, vi } from 'vitest';
 import type * as EventSearchParams from '@/src/shared/lib/nuqs/searchParams';
 
 const eventFixture = {
-  comments: null,
   createdAt: { nanoseconds: 0, seconds: 0 },
   htmlString: '<p>9월 한정 산후관리 상담 예약 시 사은품을 드립니다.</p>',
   id: 'event-1',

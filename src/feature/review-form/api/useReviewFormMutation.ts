@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useImagesContext } from '@/src/entities/image';
+import { useImagesContext } from '@/src/entities/image/client';
 import { useGetUserData } from '@/src/entities/user';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
 import { toastError, toastSuccess } from '@/src/shared/utils';

@@ -5,7 +5,6 @@ import { describe, expect, it, vi } from 'vitest';
 import type * as ReviewSearchParams from '@/src/shared/lib/nuqs/searchParams';
 
 const reviewFixture = {
-  comments: null,
   createdAt: { nanoseconds: 0, seconds: 0 },
   franchisee: '수원점',
   htmlString: '<p>산모와 아기 모두 편안하게 잘 돌봐주셔서 감사했습니다.</p>',

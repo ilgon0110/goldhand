@@ -34,7 +34,7 @@ import {
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 
-import { useImagesContext } from '@/src/entities/image';
+import { useImagesContext } from '@/src/entities/image/client';
 
 import type { ImagePayload } from '../nodes/_ImageNode';
 import { $createImageNode, $isImageNode, ImageNode } from '../nodes/_ImageNode';

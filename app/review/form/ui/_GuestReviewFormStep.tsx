@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 'use client';
 
-import { useImagesContext } from '@/src/entities/image';
+import { useImagesContext } from '@/src/entities/image/client';
 import { Button } from '@/src/shared/ui/button';
 import { Form } from '@/src/shared/ui/form';
 

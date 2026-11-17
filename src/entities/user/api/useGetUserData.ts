@@ -1,8 +1,9 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
-import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { userKeys } from '@/src/shared/config/queryKeys';
+
+import type { IUserResponseData } from '../model/types';
 
 export const userQueryOptions = (get: TGet = clientGet) =>
   queryOptions({

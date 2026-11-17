@@ -2,9 +2,9 @@
 
 import { cookies } from 'next/headers';
 
+import type { IReservationDetailData } from '@/src/entities/reservation/model/types';
 import { apiUrl } from '@/src/shared/config';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReservationDetailData } from '@/src/shared/types';
 
 interface IResponse {
   response: 'ng' | 'ok';

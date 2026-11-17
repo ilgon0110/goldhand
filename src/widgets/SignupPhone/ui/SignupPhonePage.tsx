@@ -14,7 +14,7 @@ import {
   PhoneAuthFields,
   usePhoneAuthLinkFlow,
 } from '@/src/entities/phoneAuth/client';
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user';
 import { Button } from '@/src/shared/ui/button';
 import { Form } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';

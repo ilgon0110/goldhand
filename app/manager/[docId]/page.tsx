@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
 import { GET as userGET } from '@/app/api/user/route';
+import type { IUserResponseData } from '@/src/entities/user';
 import { jsonOrThrow } from '@/src/shared/api/request';
-import type { IUserResponseData } from '@/src/shared/types';
 
 import { getManagerApplyDetailData } from './api';
 import { ManagerApplyDetailPage } from './ui/ManagerApplyDetailPage';

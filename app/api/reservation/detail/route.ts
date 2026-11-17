@@ -5,11 +5,12 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { ICommentData } from '@/src/entities/comment';
+import type { IReservationDetailData, TReservationDetailResponseCode } from '@/src/entities/reservation';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData, IReservationDetailData, TReservationDetailResponseCode } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {

@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import type { IMyPageResponseData } from '@/src/shared/types';
+import type { IMyPageResponseData } from '@/src/entities/mypage';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/shared/ui/tabs';
 

@@ -15,8 +15,9 @@ import { ReviewFormPage } from '@/app/review/form/ui/ReviewFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
 import { ImagesContext, useImagesContext } from '@/src/entities/image/model/ImagesContext';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { userKeys } from '@/src/shared/config/queryKeys';
-import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

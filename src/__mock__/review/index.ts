@@ -1,4 +1,4 @@
-import type { IReviewListResponseData, IReviewResponseData } from '@/src/shared/types';
+import type { IReviewListResponseData, IReviewResponseData } from '@/src/entities/review/model/types';
 
 export const mockReviewData: IReviewListResponseData = {
   response: 'ok',

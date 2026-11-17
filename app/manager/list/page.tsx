@@ -1,9 +1,9 @@
 import type { SearchParams } from 'nuqs/server';
 
 import { GET as userGET } from '@/app/api/user/route';
+import type { IUserResponseData } from '@/src/entities/user';
 import { jsonOrThrow } from '@/src/shared/api/request';
 import { loadManagerListParams } from '@/src/shared/lib/nuqs/searchParams';
-import type { IUserResponseData } from '@/src/shared/types';
 
 import { getManagerListData } from './api';
 import { ManagerListPage } from './ui/ManagerListPage';

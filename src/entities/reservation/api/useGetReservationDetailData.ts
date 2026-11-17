@@ -1,8 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import type { IReservationResponseData } from '@/src/entities/reservation/model/types';
 import { clientGet, type TGet } from '@/src/shared/api/request';
 import { reservationKeys } from '@/src/shared/config/queryKeys';
-import type { IReservationResponseData } from '@/src/shared/types';
 
 export const reservationDetailQueryOptions = (docId: string, get: TGet = clientGet) =>
   queryOptions({

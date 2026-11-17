@@ -1,10 +1,10 @@
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import type { IKakaoAlarmSettings } from '@/src/entities/user';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IKakaoAlarmSettings } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IKakaoAlarmUpdateBody {

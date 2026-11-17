@@ -2,8 +2,8 @@
 
 import { useQueryStates } from 'nuqs';
 
+import type { IApplyDetailData } from '@/src/entities/manager';
 import { managerListParams } from '@/src/shared/lib/nuqs/searchParams';
-import type { IApplyDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';

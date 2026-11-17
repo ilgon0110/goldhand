@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import { usePhoneAuthLinkFlow } from '@/src/entities/phoneAuth/model/usePhoneAuthLinkFlow';
 import { usePhoneAuthVerifyFlow } from '@/src/entities/phoneAuth/model/usePhoneAuthVerifyFlow';
 import { PhoneAuthFields } from '@/src/entities/phoneAuth/ui/PhoneAuthFields';
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user/model/types';
 import { Form } from '@/src/shared/ui/form';
 
 type TFormValues = { phoneNumber: string; authCode: string };

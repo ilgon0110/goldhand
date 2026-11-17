@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
+import type { IReservationDetailData } from '@/src/entities/reservation';
 import { useGetReservationListData } from '@/src/entities/reservation';
 import { reservationParams } from '@/src/shared/lib/nuqs/searchParams';
-import type { IReservationDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 

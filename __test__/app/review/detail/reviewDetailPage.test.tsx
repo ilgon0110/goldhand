@@ -9,8 +9,11 @@ import { Suspense } from 'react';
 import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReviewDetailPage } from '@/app/review/[docId]/ui/ReviewDetailPage';
 import { server } from '@/src/__mock__/node';
+import type { IReviewResponseData } from '@/src/entities/review/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
+import type { IViewCountResponseData } from '@/src/entities/viewCount/model/types';
 import { reviewKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
-import type { IReviewResponseData, IUserResponseData, IViewCountResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 
 const pushMock = vi.fn();

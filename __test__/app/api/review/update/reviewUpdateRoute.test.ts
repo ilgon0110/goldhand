@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { POST } from '@/app/api/review/update/route';
-import type { IReviewDetailData } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/entities/review/model/types';
 
 const { getDocMock, updateDocMock, checkAdminAuthMock } = vi.hoisted(() => ({
   getDocMock: vi.fn(),

@@ -12,7 +12,7 @@ import {
 
 import { useLinkPhoneToCurrentUser } from '@/src/entities/phoneAuth/api/_useLinkPhoneToCurrentUser';
 import { usePhoneAuthCodeSendMutation } from '@/src/entities/phoneAuth/api/usePhoneAuthCodeSendMutation';
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user/model/types';
 
 const fixtures = vi.hoisted(() => ({
   auth: { languageCode: null },

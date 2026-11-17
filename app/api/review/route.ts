@@ -4,10 +4,10 @@ import type { NextRequest } from 'next/server';
 
 import { getPinnedFirstListAdmin } from '@/app/api/lib/pin/getPinnedFirstList';
 import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { IReviewDetailData } from '@/src/entities/review';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 // phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).

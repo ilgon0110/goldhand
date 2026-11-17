@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import type { IUserResponseData } from './src/shared/types';
+import type { IUserResponseData } from './src/entities/user';
 import { fetcher } from './src/shared/utils/fetcher.client';
 
 // /manager/ 아래에서 로그인·admin 여부와 무관하게 공개되어야 하는 경로.

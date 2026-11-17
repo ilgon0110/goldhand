@@ -1,4 +1,4 @@
-import type { IEventListResponseData } from '@/src/shared/types';
+import type { IEventListResponseData } from '@/src/entities/event/model/types';
 
 export const mockEventListData: IEventListResponseData = {
   response: 'ok',

@@ -2,11 +2,11 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
+import type { INotificationDetailData, INotificationResponseData } from '@/src/entities/notification';
 import { NOTI_LIMIT } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { INotificationDetailData, INotificationResponseData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 const defaultData: INotificationDetailData[] = [];

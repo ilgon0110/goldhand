@@ -1,6 +1,6 @@
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user/@x/phoneAuth';
 
 import { useLinkPhoneToCurrentUser } from '../api/_useLinkPhoneToCurrentUser';
 import type { IPhoneAuthError } from '../lib/toPhoneAuthError';

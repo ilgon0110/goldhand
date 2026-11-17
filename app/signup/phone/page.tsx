@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 
 import { GET as userGET } from '@/app/api/user/route';
+import type { IUserResponseData } from '@/src/entities/user';
 import { jsonOrThrow } from '@/src/shared/api/request';
-import type { IUserResponseData } from '@/src/shared/types';
 import LoadingBar from '@/src/shared/ui/loadingBar';
 import { SignupPhonePage } from '@/src/widgets/SignupPhone';
 

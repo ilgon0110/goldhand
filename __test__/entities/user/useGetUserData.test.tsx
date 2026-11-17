@@ -4,7 +4,7 @@ import { http, HttpResponse } from 'msw';
 
 import { server } from '@/src/__mock__/node';
 import { useGetUserData } from '@/src/entities/user/api/useGetUserData';
-import type { IUserResponseData } from '@/src/shared/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 
 describe('useGetUserData', () => {
   it('loads the current user from the client /api/user endpoint', async () => {

@@ -12,8 +12,8 @@ import {
   PhoneAuthFields,
   usePhoneAuthLinkFlow,
 } from '@/src/entities/phoneAuth/client';
+import type { IUserDetailData } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
-import type { IUserDetailData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';

@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
 
 import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { IReservationDetailData } from '@/src/entities/reservation';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {

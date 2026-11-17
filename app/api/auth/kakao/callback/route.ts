@@ -3,11 +3,12 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody } from '@/app/api/auth/lib/kakaoTypes';
+import type { IUserDetailData } from '@/src/entities/user';
 import { apiUrl } from '@/src/shared/config';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { createSessionCookie } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IKakaoTokenResponseBody, IKakaoUserInfoResponseBody, IUserDetailData } from '@/src/shared/types';
 
 import { expireOAuthStateCookie, resolveOAuthRedirectDestination, validateOAuthState } from '../../lib/oauthState';
 import { checkUserDeletedStatus, signUpUser, trySignIn } from '../../lib/socialAuth';

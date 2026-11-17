@@ -1,4 +1,4 @@
-import type { IManagerApplyListData } from '@/src/shared/types';
+import type { IManagerApplyListData } from '@/src/entities/manager';
 import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
 export const getManagerListData = async (page: number) => {

@@ -1,9 +1,9 @@
 import { doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebase/firestore';
 import type { NextRequest } from 'next/server';
 
+import type { IViewCountData } from '@/src/entities/viewCount';
 import { firebaseApp } from '@/src/shared/config/firebase';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IViewCountData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 import { isViewerIdValid } from '@/src/shared/utils/verifyViewId';
 

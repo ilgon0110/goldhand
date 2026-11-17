@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { INotificationDetailData } from '@/src/shared/types';
+import type { INotificationDetailData } from '@/src/entities/notification';
 import { Badge } from '@/src/shared/ui/badge';
 import TruncateText from '@/src/shared/ui/TruncateText';
 import { formatDateToYMD } from '@/src/shared/utils';

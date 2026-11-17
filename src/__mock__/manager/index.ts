@@ -1,4 +1,4 @@
-import type { IApplyDetailData } from '@/src/shared/types';
+import type { IApplyDetailData } from '@/src/entities/manager/model/types';
 
 interface IMockApplyDetailData extends IApplyDetailData {
   id: string;

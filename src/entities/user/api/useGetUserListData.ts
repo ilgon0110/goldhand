@@ -1,8 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import type { IUserListResponseData } from '@/src/entities/user/model/types';
 import { clientGet, type TGet } from '@/src/shared/api/request';
 import { userListKeys } from '@/src/shared/config/queryKeys';
-import type { IUserListResponseData } from '@/src/shared/types';
 
 export const userListQueryOptions = (params: { page: number }, get: TGet = clientGet) =>
   queryOptions({

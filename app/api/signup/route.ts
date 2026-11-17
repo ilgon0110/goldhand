@@ -3,11 +3,11 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 import { isOwnedPhoneNumber } from '@/app/api/signup/lib/verifyPhoneNumberOwnership';
+import type { IUserDetailData } from '@/src/entities/user';
 import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IUserDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponsePostBody {

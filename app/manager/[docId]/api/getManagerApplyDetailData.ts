@@ -1,4 +1,4 @@
-import type { IManagerApplyDetailResponseData } from '@/src/shared/types';
+import type { IManagerApplyDetailResponseData } from '@/src/entities/manager';
 import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
 export const getManagerApplyDetailData = async ({ docId }: { docId: string }) => {

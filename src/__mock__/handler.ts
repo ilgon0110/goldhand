@@ -1,8 +1,10 @@
 import { Timestamp } from '@firebase/firestore';
 import { http, HttpResponse } from 'msw';
 
+import type { ICommentData } from '@/src/entities/comment/model/types';
+import type { IReviewDetailData } from '@/src/entities/review/model/types';
+
 import { apiUrl } from '../shared/config';
-import type { ICommentData, IReviewDetailData } from '../shared/types';
 import { mockEventListData } from './event';
 import { mockMypageData } from './mypage';
 import { mockReservationListData } from './reservation';

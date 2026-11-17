@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 
 import { PinToggleButton } from '@/src/entities/pin';
+import type { IReviewDetailData } from '@/src/entities/review';
+import type { IViewCountData } from '@/src/entities/viewCount';
 import { PostDetailHeader } from '@/src/feature/post';
-import type { IReviewDetailData, IViewCountData } from '@/src/shared/types';
 import { Button } from '@/src/shared/ui/button';
 import { formatPhoneNumber } from '@/src/shared/utils';
 

@@ -2,10 +2,10 @@
 import { FieldValue, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
+import type { ICommentData } from '@/src/entities/comment/model/types';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { CONTENT_TYPE_BY_COLLECTION, logBusinessEvent } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface ICommentResponse {

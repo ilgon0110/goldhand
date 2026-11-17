@@ -8,8 +8,10 @@ import { Suspense } from 'react';
 import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReservationEditPage } from '@/app/reservation/edit/ui/ReservationEditPage';
 import { server } from '@/src/__mock__/node';
+import type { IReservationResponseData } from '@/src/entities/reservation/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { reservationKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IReservationResponseData, IUserResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
 
 const mockNonUserData: IUserResponseData = {

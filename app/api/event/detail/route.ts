@@ -2,10 +2,11 @@ import { Timestamp } from 'firebase/firestore';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import type { ICommentData } from '@/src/entities/comment';
+import type { IEventDetailData } from '@/src/entities/event';
 import { getEventRowNumberMap } from '@/src/entities/event/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData, IEventDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {

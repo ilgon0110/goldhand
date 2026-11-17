@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { useRef, useState } from 'react';
 
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user/@x/phoneAuth';
 
 import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
 import { toPhoneAuthError } from '../lib/toPhoneAuthError';

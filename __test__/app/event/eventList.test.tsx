@@ -5,8 +5,9 @@ import { Suspense } from 'react';
 
 import { renderWithQueryClient } from '@/__test__/utils/render';
 import { EventPage } from '@/app/event/ui/EventPage';
+import type { IEventListResponseData } from '@/src/entities/event/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { eventKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IEventListResponseData, IUserResponseData } from '@/src/shared/types';
 
 vi.mock('@/src/shared/utils/verifyViewId', () => ({
   sendViewLog: vi.fn(),

@@ -3,9 +3,9 @@ import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 
 import { cn } from '@/lib/utils';
+import type { INotificationResponseData } from '@/src/entities/notification';
+import { NotificationType } from '@/src/entities/notification';
 import { useNotificationMutation } from '@/src/feature/notification';
-import type { INotificationResponseData } from '@/src/shared/types';
-import { NotificationType } from '@/src/shared/types';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { toastError } from '@/src/shared/utils';
 

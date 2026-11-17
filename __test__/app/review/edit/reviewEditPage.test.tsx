@@ -11,8 +11,10 @@ import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReviewEditPage } from '@/app/review/[docId]/edit/ui/ReviewEditPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
+import type { IReviewResponseData } from '@/src/entities/review/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { reviewKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IReviewResponseData, IUserResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

@@ -6,11 +6,11 @@ import type { NextRequest } from 'next/server';
 import { hashPhoneNumber } from '@/app/api/review/lib/hashPhoneNumber';
 import { verifyPhoneIdToken } from '@/app/api/review/lib/verifyPhoneIdToken';
 import { resolvePostImageFields } from '@/src/entities/image/server';
+import type { IReviewDetailData } from '@/src/entities/review';
 import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IReviewRequestBody {

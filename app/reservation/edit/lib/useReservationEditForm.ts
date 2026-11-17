@@ -4,9 +4,10 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
+import type { IReservationResponseData } from '@/src/entities/reservation';
 import { reservationEditFormSchema } from '@/src/entities/reservation';
+import type { IUserResponseData } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
-import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
 import { useReservationEditMutation } from '../api';

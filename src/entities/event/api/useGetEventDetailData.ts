@@ -1,8 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import type { IEventResponseData } from '@/src/entities/event/model/types';
 import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { eventKeys } from '@/src/shared/config/queryKeys';
-import type { IEventResponseData } from '@/src/shared/types';
 
 export const eventDetailQueryOptions = (docId: string, get: TGet = clientGet) =>
   queryOptions({

@@ -1,8 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import type { IReviewListResponseData } from '@/src/entities/review/model/types';
 import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
-import type { IReviewListResponseData } from '@/src/shared/types';
 
 type TReviewListParams = { page: number; franchisee: string };
 

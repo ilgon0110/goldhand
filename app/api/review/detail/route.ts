@@ -3,10 +3,11 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
 import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { ICommentData } from '@/src/entities/comment';
+import type { IReviewDetailData } from '@/src/entities/review';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData, IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {

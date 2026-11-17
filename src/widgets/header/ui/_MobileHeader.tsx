@@ -16,7 +16,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/shared/ui/drawer';
-import type { INotificationResponseData } from '@/src/shared/types';
+import type { INotificationResponseData } from '@/src/entities/notification';
 import { URLS } from '@/src/widgets/header/config/_const';
 
 import { AlarmMenu } from './_AlarmMenu';

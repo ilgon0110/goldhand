@@ -13,7 +13,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/shared/ui/navigation-menu';
-import type { INotificationResponseData } from '@/src/shared/types';
+import type { INotificationResponseData } from '@/src/entities/notification';
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/shared/ui/popover';
 import { URLS } from '@/src/widgets/header/config/_const';
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { useQueryClient } from '@tanstack/react-query';
 import { getAuth, signOut } from 'firebase/auth';
 import Image from 'next/image';

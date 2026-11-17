@@ -9,13 +9,13 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type z from 'zod';
 
+import type { eventFormSchema } from '@/src/entities/event';
 import { useImagesContext } from '@/src/entities/image';
 import { eventKeys } from '@/src/shared/config/queryKeys';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
 
-import type { eventFormSchema } from '../config';
 import { useEventImageUpload } from './_useEventImageUpload';
 
 interface IEventPostData {

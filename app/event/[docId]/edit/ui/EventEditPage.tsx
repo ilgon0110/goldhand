@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { cn } from '@/lib/utils';
-import { eventFormSchema, useEventFormMutation, useGetEventDetailData } from '@/src/entities/event';
+import { eventFormSchema, useGetEventDetailData } from '@/src/entities/event';
+import { useEventFormMutation } from '@/src/feature/event-form';
 import {
   AlertDialog,
   AlertDialogCancel,

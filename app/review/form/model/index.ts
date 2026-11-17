@@ -2,8 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
-import { reviewContentSchema, useReviewFormMutation } from '@/src/entities/review';
+import { reviewContentSchema } from '@/src/entities/review';
 import { refineAdminOnlyName } from '@/src/feature/auth';
+import { useReviewFormMutation } from '@/src/feature/review-form';
 
 type TUseReviewWriteFormOptions = {
   isGuestPost: boolean;

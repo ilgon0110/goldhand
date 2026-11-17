@@ -11,8 +11,8 @@ import {
   PhoneAuthFields,
   usePhoneAuthVerifyFlow,
 } from '@/src/entities/phoneAuth/client';
-import { guestConfirmationSchema } from '@/src/entities/review';
 import { PrivacyModal } from '@/src/feature/privacy';
+import { guestConfirmationSchema } from '@/src/feature/review-form';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 

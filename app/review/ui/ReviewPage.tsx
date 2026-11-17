@@ -2,11 +2,12 @@
 
 import { useQueryStates } from 'nuqs';
 
-import { ReviewCard, useGetReviewListData } from '@/src/entities/review';
+import { useGetReviewListData } from '@/src/entities/review';
 import { franchiseeList } from '@/src/shared/config';
 import { reviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
+import { ReviewCard } from '@/src/widgets/review';
 import { ReviewPageHeader } from '@/src/widgets/review';
 
 export const ReviewPage = () => {

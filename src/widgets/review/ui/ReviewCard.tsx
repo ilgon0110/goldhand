@@ -6,14 +6,13 @@ import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
+import { generateReviewDescription } from '@/src/entities/review';
 import { useAuth } from '@/src/shared/hooks/useAuth';
 import type { IReviewDetailData } from '@/src/shared/types';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
-
-import { generateReviewDescription } from '../lib/util';
 
 type TReviewCardProps = {
   review: IReviewDetailData & { id: string; isAuthorAdmin: boolean };

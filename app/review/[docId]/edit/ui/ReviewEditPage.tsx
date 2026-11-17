@@ -12,10 +12,10 @@ import {
   reviewContentSchema,
   ReviewStepIndicator,
   useGetReviewDetailData,
-  useReviewFormMutation,
 } from '@/src/entities/review';
 import { useGetUserData } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
+import { useReviewFormMutation } from '@/src/feature/review-form';
 import { franchiseeList } from '@/src/shared/config';
 import {
   AlertDialog,

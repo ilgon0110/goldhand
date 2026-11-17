@@ -117,7 +117,6 @@ function makeReviewData(userId: string | null): IReviewResponseData {
       userId,
       phoneNumber: null,
       phoneHash: 'deadbeef',
-      comments: [],
     },
   };
 }

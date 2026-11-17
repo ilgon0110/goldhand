@@ -1,13 +1,11 @@
-import { collection, getDocs, getFirestore, orderBy, query, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
 import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
-import type { ICommentData } from '@/src/entities/comment';
 import type { IReservationDetailData, TReservationDetailResponseCode } from '@/src/entities/reservation';
-import { firebaseApp } from '@/src/shared/config/firebase';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
@@ -35,7 +33,6 @@ const defaultData: IReservationDetailData = {
   title: '',
   updatedAt: Timestamp.now(),
   userId: null,
-  comments: null,
 };
 
 export async function GET(request: NextRequest) {
@@ -58,7 +55,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const db = getFirestore(firebaseApp);
     const adminDb = getAdminFirestore(firebaseAdminApp);
     const consultDocRef = adminDb.collection('consults').doc(docId);
     const docSnap = await consultDocRef.get();
@@ -154,15 +150,6 @@ export async function GET(request: NextRequest) {
     const isMemberOwner = data.userId != null && verifiedUid === data.userId;
     const canViewPhoneNumber = isAdmin || isMemberOwner;
 
-    const commentsRef = collection(db, 'consults', docId, 'comments');
-    const q = query(commentsRef, orderBy('createdAt', 'desc'));
-
-    const commentSnapshot = await getDocs(q);
-    const comments = commentSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as ICommentData[];
-
     // 비밀번호가 맞거나 비밀글이 아닐 경우
     const responseData: IResponseBody = {
       response: 'ok',
@@ -176,7 +163,6 @@ export async function GET(request: NextRequest) {
         phoneNumber: canViewPhoneNumber ? data.phoneNumber : '',
         // bcrypt 해시는 비밀번호 검증 서버 로직에서만 쓰며 클라이언트로 절대 내보내지 않는다.
         password: null,
-        comments,
       },
     };
     return typedJson<IResponseBody>(responseData, { status: 200 });

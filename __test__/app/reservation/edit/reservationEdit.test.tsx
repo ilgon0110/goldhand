@@ -42,7 +42,6 @@ const mockGuestReservationDetail: IReservationResponseData = {
     pinnedAt: null,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
-    comments: null,
   },
 };
 

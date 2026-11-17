@@ -47,7 +47,6 @@ const existingReview: IReviewDetailData = {
   userId: 'author-uid',
   phoneNumber: null,
   phoneHash: null,
-  comments: null,
 };
 
 function makeRequest(body: unknown): NextRequest {

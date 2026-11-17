@@ -1,5 +1,4 @@
 import type { Timestamp } from 'firebase/firestore';
-import type { ICommentData } from '@/src/entities/comment/@x/event';
 
 // event 관련 타입 정의
 export interface IEventResponseData {
@@ -21,7 +20,6 @@ export interface IEventDetailData {
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string | null;
   status: 'ENDED' | 'ONGOING' | 'UPCOMING';
-  comments: ICommentData[] | null;
 }
 
 export interface IEventListResponseData {

@@ -49,7 +49,6 @@ const guestReview: IReviewDetailData & { id: string } = {
   userId: null,
   phoneNumber: '+821012345678',
   phoneHash: 'deadbeef',
-  comments: null,
 };
 
 function makeRequest(): NextRequest {

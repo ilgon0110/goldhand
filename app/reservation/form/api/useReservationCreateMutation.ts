@@ -60,7 +60,6 @@ export const useReservationCreateMutation = (
         password: null,
         createdAt: { nanoseconds: 0, seconds: Math.floor(Date.now() / 1000) },
         updatedAt: { nanoseconds: 0, seconds: Math.floor(Date.now() / 1000) },
-        comments: null,
       };
 
       for (const [queryKey, previousData] of listQueriesData) {

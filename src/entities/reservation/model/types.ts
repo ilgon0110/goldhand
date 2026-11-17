@@ -1,5 +1,4 @@
 import type { Timestamp } from 'firebase/firestore';
-import type { ICommentData } from '@/src/entities/comment/@x/reservation';
 
 // 이용상담(Consult, Reservation) 관련 타입 정의
 export interface IReservationDetailData {
@@ -17,7 +16,6 @@ export interface IReservationDetailData {
   title: string;
   updatedAt: Pick<Timestamp, 'nanoseconds' | 'seconds'>;
   userId: string | null;
-  comments?: ICommentData[] | null;
 }
 
 export type TReservationDetailResponseCode =

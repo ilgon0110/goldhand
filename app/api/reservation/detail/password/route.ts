@@ -37,7 +37,6 @@ const defaultData: IReservationDetailData = {
   title: '',
   updatedAt: Timestamp.now(),
   userId: null,
-  comments: null,
 };
 
 export async function POST(request: NextRequest) {

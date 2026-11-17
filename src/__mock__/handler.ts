@@ -1,7 +1,6 @@
 import { Timestamp } from '@firebase/firestore';
 import { http, HttpResponse } from 'msw';
 
-import type { ICommentData } from '@/src/entities/comment/model/types';
 import type { IReviewDetailData } from '@/src/entities/review/model/types';
 
 import { apiUrl } from '../shared/config';
@@ -103,7 +102,6 @@ export const handlers = [
       userId: null,
       phoneNumber: null,
       phoneHash: null,
-      comments: [] as ICommentData[],
     };
 
     const url = new URL(request.url);

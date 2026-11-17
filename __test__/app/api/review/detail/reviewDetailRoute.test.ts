@@ -47,7 +47,6 @@ const reviewDoc: IReviewDetailData = {
   userId: null,
   phoneNumber: '+821012345678',
   phoneHash: 'deadbeef',
-  comments: null,
 };
 
 function makeRequest(docId: string): NextRequest {

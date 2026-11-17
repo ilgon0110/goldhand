@@ -49,7 +49,7 @@ export const SignupPage = ({ userData }: ISignupPageProps) => {
   const phoneAuth = usePhoneAuthLinkFlow(
     form,
     { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
-    userData,
+    { userId: userData?.userId, email: userData?.email },
     {
       onPhoneAlreadyInUse: () => {
         toastError(

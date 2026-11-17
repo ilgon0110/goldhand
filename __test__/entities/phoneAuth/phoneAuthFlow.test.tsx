@@ -14,7 +14,6 @@ import { useForm } from 'react-hook-form';
 import { usePhoneAuthLinkFlow } from '@/src/entities/phoneAuth/model/usePhoneAuthLinkFlow';
 import { usePhoneAuthVerifyFlow } from '@/src/entities/phoneAuth/model/usePhoneAuthVerifyFlow';
 import { PhoneAuthFields } from '@/src/entities/phoneAuth/ui/PhoneAuthFields';
-import type { IUserDetailData } from '@/src/entities/user/model/types';
 import { Form } from '@/src/shared/ui/form';
 
 type TFormValues = { phoneNumber: string; authCode: string };
@@ -46,8 +45,8 @@ function userCredential(user: User): UserCredential {
   return { user } as UserCredential;
 }
 
-function userData(): IUserDetailData {
-  return { email: 'test-user@example.com', provider: 'kakao', userId: 'email-user-id' } as IUserDetailData;
+function linkAccount() {
+  return { userId: 'email-user-id', email: 'test-user@example.com' };
 }
 
 function confirmationResult(): ConfirmationResult {
@@ -270,7 +269,7 @@ describe('usePhoneAuthLinkFlow', () => {
         usePhoneAuthLinkFlow(
           form,
           { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
-          userData(),
+          linkAccount(),
           { onPhoneAlreadyInUse },
         ),
       ),
@@ -289,7 +288,7 @@ describe('usePhoneAuthLinkFlow', () => {
   it('confirmedMessage가 주어지면 성공 시 기본 문구 대신 커스텀 문구를 사용', async () => {
     const { result } = renderHook(() =>
       useHarness(form =>
-        usePhoneAuthLinkFlow(form, { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' }, userData(), {
+        usePhoneAuthLinkFlow(form, { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' }, linkAccount(), {
           confirmedMessage: '커스텀 완료 문구',
         }),
       ),

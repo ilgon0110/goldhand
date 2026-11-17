@@ -45,7 +45,7 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   const phoneAuth = usePhoneAuthLinkFlow(
     form,
     { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
-    userData,
+    { userId: userData?.userId, email: userData?.email },
     {
       confirmedMessage: '인증코드가 확인되었습니다. 아래의 인증 완료하기 버튼을 클릭해주세요.',
       onPhoneAlreadyInUse: () => {

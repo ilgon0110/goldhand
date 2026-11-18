@@ -106,7 +106,7 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
         }
         title={data.data.title}
         updatedAt={data.data.updatedAt}
-        viewCount={viewCountData.data?.totalViewCount || 0}
+        viewCount={viewCountData?.data?.totalViewCount || 0}
       />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">

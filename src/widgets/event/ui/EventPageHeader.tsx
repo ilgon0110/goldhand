@@ -1,16 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useQueryStates } from 'nuqs';
 import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { Tabs, TabsList, TabsTrigger } from '@/src/shared/ui/tabs';
 
 type TEventPageHeaderProps = {
   isAdmin: boolean;
+  status: string;
+  handleStatusChange: (status: string) => void;
   totalDataLength: number;
 };
 
@@ -20,13 +20,9 @@ const PlusIcon = () => (
   </svg>
 );
 
-export const EventPageHeader = ({ isAdmin, totalDataLength }: TEventPageHeaderProps) => {
+export const EventPageHeader = ({ isAdmin, status, handleStatusChange, totalDataLength }: TEventPageHeaderProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [eventParam, setEventParam] = useQueryStates(eventParams, {
-    clearOnDefault: false,
-    shallow: false,
-  });
 
   return (
     <>
@@ -41,7 +37,7 @@ export const EventPageHeader = ({ isAdmin, totalDataLength }: TEventPageHeaderPr
             건
           </p>
           <span className="hidden h-3.5 w-px bg-stone-200 sm:block" />
-          <Tabs defaultValue={eventParam.status} onValueChange={status => setEventParam({ status, page: 1 })}>
+          <Tabs defaultValue={status} onValueChange={handleStatusChange}>
             <TabsList>
               <TabsTrigger value="ALL">전체</TabsTrigger>
               <TabsTrigger value="UPCOMING">예정</TabsTrigger>

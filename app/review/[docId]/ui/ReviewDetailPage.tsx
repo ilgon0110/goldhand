@@ -47,7 +47,7 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
         data={data.data}
         isAdmin={isAdmin}
         isPinToggling={actions.isPinToggling}
-        viewCountData={viewCountData.data}
+        viewCountData={viewCountData?.data ?? null}
         onDelete={deleteFlow.handleOpen}
         onEdit={actions.handleEdit}
         onTogglePin={actions.handleTogglePin}

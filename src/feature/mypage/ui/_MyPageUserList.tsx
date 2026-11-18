@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { useGetUserListData } from '@/src/entities/user';
@@ -99,10 +99,12 @@ const MyPageUserListEmptyState = ({ title, description }: { title: string; descr
 
 const MyPageUserListContent = () => {
   const [page, setPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
   const { data } = useGetUserListData({ page });
 
+  // transition으로 감싸 다음 page를 불러오는 동안 skeleton 대신 이전 목록을 유지한다.
   const handleChangePage = (nextPage: number) => {
-    setPage(nextPage);
+    startTransition(() => setPage(nextPage));
   };
 
   if (data.response === 'ng') {
@@ -115,7 +117,7 @@ const MyPageUserListContent = () => {
 
   return (
     <div>
-      <div className={cn('mt-4 overflow-x-auto border border-stone-200')}>
+      <div aria-busy={isPending} className={cn('mt-4 overflow-x-auto border border-stone-200 transition-opacity', isPending && 'opacity-50')}>
         <table className="w-full min-w-[960px] table-auto border-collapse text-left text-[13px]">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50 text-[11px] tracking-[0.08em] text-stone-500">

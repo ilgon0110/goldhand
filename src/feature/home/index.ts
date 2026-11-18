@@ -7,3 +7,4 @@ export { reviewCarouselQueryOptions } from './reviewCarousel/api/useReviewCarous
 export { ReviewCarousel } from './reviewCarousel/ui/ReviewCarousel';
 export { SponsorList } from './sponsorList/ui/SponsorList';
 export { HOME_CONTAINER } from './ui/homeContainer';
+export { PriceListSkeleton, ReviewCarouselSkeleton } from './ui/HomeSectionSkeletons';

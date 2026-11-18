@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
+
+import { renderToHtml } from '@/__test__/utils/renderToHtml';
 
 const reviewFixture = {
   createdAt: { nanoseconds: 0, seconds: 0 },
@@ -28,12 +29,13 @@ vi.mock('@/app/api/review/route', () => ({
     }),
   ),
 }));
-vi.mock('@/app/api/price/route', () => ({ GET: vi.fn(async () => Response.json({}, { status: 500 })) }));
+vi.mock('@/app/api/price/route', () => ({ GET: vi.fn(async () => Response.json({ prices: {} })) }));
 vi.mock('@/src/feature/auth', () => ({ OAuthSuccessHandler: () => null }));
 vi.mock('@/src/feature/home', async () => ({
   ...(await vi.importActual('@/src/feature/home/reviewCarousel/api/useReviewCarouselQuery')),
   ...(await vi.importActual('@/src/feature/home/reviewCarousel/ui/ReviewCarousel')),
   ...(await vi.importActual('@/src/feature/home/ui/homeContainer')),
+  ...(await vi.importActual('@/src/feature/home/ui/HomeSectionSkeletons')),
   FranchiseeSheetList: () => null,
   ImageSlideList: () => null,
   MainTitle: () => null,
@@ -49,8 +51,7 @@ import Home from '@/app/page';
 
 describe('home page review carousel SEO rendering', () => {
   it('server-renders real review title, author, and content text (not a loading skeleton)', async () => {
-    const element = await Home();
-    const html = renderToStaticMarkup(<QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>);
+    const html = await renderToHtml(<QueryClientProvider client={new QueryClient()}>{Home()}</QueryClientProvider>);
 
     expect(html).toContain('너무 만족스러운 산후관리였어요');
     expect(html).toContain('김OO');

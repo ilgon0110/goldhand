@@ -11,7 +11,7 @@ import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/c
 import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { useUserSuspenseQuery } from '@/src/entities/user';
-import { useGetViewCountData } from '@/src/entities/viewCount';
+import { ViewCount } from '@/src/entities/viewCount';
 import { PostDetailHeader } from '@/src/feature/post';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
@@ -32,7 +32,6 @@ type TEventDetailPageProps = {
 export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
   const { data } = useGetEventDetailData(docId);
   const { data: userData } = useUserSuspenseQuery();
-  const { data: viewCountData } = useGetViewCountData(docId);
   const router = useRouter();
   const { comments } = useComments({
     docId,
@@ -106,7 +105,7 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
         }
         title={data.data.title}
         updatedAt={data.data.updatedAt}
-        viewCount={viewCountData?.data?.totalViewCount || 0}
+        viewCount={<ViewCount docId={docId} />}
       />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">

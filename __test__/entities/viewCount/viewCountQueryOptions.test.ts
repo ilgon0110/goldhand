@@ -21,4 +21,11 @@ describe('viewCountQueryOptions', () => {
   ])('%s여도 throw하지 않고 data: null을 반환해 상세 페이지를 깨뜨리지 않는다', async (_, res) => {
     await expect(runQueryFn(res)).resolves.toMatchObject({ data: null });
   });
+
+  it('네트워크 에러여도 throw하지 않는다 (스트리밍 쿼리라 throw하면 Error Boundary가 필요해짐)', async () => {
+    const { queryFn } = viewCountQueryOptions('doc1', async () => {
+      throw new TypeError('fetch failed');
+    });
+    await expect((queryFn as () => Promise<unknown>)()).resolves.toMatchObject({ data: null });
+  });
 });

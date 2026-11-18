@@ -18,7 +18,8 @@ type TPostDetailHeaderProps = {
   author?: string | null;
   /** 이미 포맷된 전화번호. 노출 권한이 있을 때만 전달한다. */
   phoneNumber?: string | null;
-  viewCount?: number | null;
+  /** 조회수. 스트리밍되는 <Suspense><ViewCount/></Suspense>를 받을 수 있게 노드로 받는다. */
+  viewCount?: ReactNode;
   /** PinToggleButton 등 배지 옆에 놓이는 요소 */
   pin?: ReactNode;
 };

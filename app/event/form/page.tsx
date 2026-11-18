@@ -1,23 +1,19 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-
 import { GET as userGET } from '@/app/api/user/route';
-import { routeGet } from '@/app/lib/routeGet';
 import { ImagesContext } from '@/src/entities/image/client';
-import { userQueryOptions } from '@/src/entities/user';
+import type { IUserResponseData } from '@/src/entities/user';
+import { jsonOrThrow } from '@/src/shared/api/request';
 
 import { EventFormPage } from './ui/EventFormPage';
 
 export default async function Page() {
-  const queryClient = new QueryClient();
-
-  const result = await queryClient.fetchQuery(userQueryOptions(routeGet(userGET)));
+  // 로그인 검사만 한다. ['user'] 캐시는 루트 layout이 채우므로 여기서 dehydrate하지 않는다
+  // (안쪽 HydrationBoundary가 이미 있는 user 쿼리를 다시 넣으면 hydrate가 effect로 미뤄진다).
+  const result = await jsonOrThrow<IUserResponseData>(await userGET());
   if (result.userData == null) throw new Error('로그인이 필요합니다.');
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ImagesContext>
-        <EventFormPage />
-      </ImagesContext>
-    </HydrationBoundary>
+    <ImagesContext>
+      <EventFormPage />
+    </ImagesContext>
   );
 }

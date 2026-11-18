@@ -4,7 +4,7 @@ import { http, HttpResponse } from 'msw';
 
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
-import { useHeaderUserQuery, useUserQuery } from '@/src/entities/user/api/useUserQuery';
+import { useUserQuery } from '@/src/entities/user/api/useUserQuery';
 import { userKeys } from '@/src/shared/config/queryKeys';
 
 beforeAll(() => server.listen());
@@ -60,21 +60,6 @@ describe('useUserQuery', () => {
     const { result } = setup(queryClient);
     expect(result.current.data?.userData?.name).toBe('이전 이름');
     expect(requestCount).toBe(0);
-
-    await act(() => queryClient.invalidateQueries({ queryKey: userKeys.all }));
-    await waitFor(() => expect(result.current.data?.userData?.name).toBe('수정된 이름'));
-  });
-
-  // #111 A-1: 헤더는 하위 key(['user','header'])를 쓰므로, 마이페이지 수정 후 userKeys.all invalidate에 prefix로 함께 갱신돼야 한다.
-  it('헤더 쿼리도 userKeys.all invalidate로 새 값으로 갱신된다', async () => {
-    server.use(http.get('/api/user', () => HttpResponse.json(userResponse('수정된 이름'))));
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 20 * 1000 } } });
-    queryClient.setQueryData([...userKeys.all, 'header'], userResponse('이전 이름'));
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-    const { result } = renderHook(() => useHeaderUserQuery(), { wrapper });
-    expect(result.current.data?.userData?.name).toBe('이전 이름');
 
     await act(() => queryClient.invalidateQueries({ queryKey: userKeys.all }));
     await waitFor(() => expect(result.current.data?.userData?.name).toBe('수정된 이름'));

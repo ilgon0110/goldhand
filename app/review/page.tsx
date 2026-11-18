@@ -4,10 +4,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import type { SearchParams } from 'nuqs/server';
 
 import { GET as reviewListGET } from '@/app/api/review/route';
-import { GET as userGET } from '@/app/api/user/route';
 import { routeGet } from '@/app/lib/routeGet';
 import { reviewListQueryOptions } from '@/src/entities/review';
-import { userQueryOptions } from '@/src/entities/user';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 
@@ -21,10 +19,7 @@ export default async function Page({ searchParams }: TPageProps) {
   const { page, franchisee } = await loadReviewParams(searchParams);
   const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery(reviewListQueryOptions({ page, franchisee }, routeGet(reviewListGET))),
-    queryClient.prefetchQuery(userQueryOptions(routeGet(userGET))),
-  ]);
+  await queryClient.prefetchQuery(reviewListQueryOptions({ page, franchisee }, routeGet(reviewListGET)));
 
   return (
     <>

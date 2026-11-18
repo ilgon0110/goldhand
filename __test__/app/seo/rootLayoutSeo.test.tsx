@@ -1,3 +1,4 @@
+import type * as ReactQuery from '@tanstack/react-query';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -5,8 +6,17 @@ vi.mock('next/font/local', () => ({ default: () => ({ variable: '--font-pretenda
 vi.mock('next/script', () => ({ default: () => null }));
 vi.mock('nuqs/adapters/next/app', () => ({ NuqsAdapter: ({ children }: React.PropsWithChildren) => children }));
 vi.mock('react-toastify', () => ({ ToastContainer: () => <div data-testid="toast" /> }));
-vi.mock('@/src/app/providers/query-provider', () => ({
-  default: ({ children }: React.PropsWithChildren) => children,
+// layout이 HydrationBoundary로 user를 내려보내므로 실제 QueryClientProvider가 필요하다.
+vi.mock('@/src/app/providers/query-provider', async () => {
+  const { QueryClient, QueryClientProvider } = await vi.importActual<typeof ReactQuery>('@tanstack/react-query');
+  return {
+    default: ({ children }: React.PropsWithChildren) => (
+      <QueryClientProvider client={new QueryClient()}>{children}</QueryClientProvider>
+    ),
+  };
+});
+vi.mock('@/app/api/user/route', () => ({
+  GET: vi.fn(async () => Response.json({ isLinked: false, message: '성공', response: 'ng', userData: null })),
 }));
 vi.mock('@/src/app/providers/theme-provider', () => ({
   ThemeProvider: ({ children }: React.PropsWithChildren) => children,

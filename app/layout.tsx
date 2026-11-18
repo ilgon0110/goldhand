@@ -1,13 +1,18 @@
 import './globals.css';
 
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ToastContainer } from 'react-toastify';
 
+import { GET as userGET } from '@/app/api/user/route';
+import { routeGet } from '@/app/lib/routeGet';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
 import QueryProvider from '@/src/app/providers/query-provider';
 import { ThemeProvider } from '@/src/app/providers/theme-provider';
+import { userQueryOptions } from '@/src/entities/user';
 import { localBusinessJsonLd } from '@/src/shared/seo/localBusinessJsonLd';
 import { websiteJsonLd } from '@/src/shared/seo/websiteJsonLd';
 import { Footer } from '@/src/widgets/footer';
@@ -22,6 +27,10 @@ const pretendard = localFont({
   display: 'swap',
   variable: '--font-pretendard',
 });
+
+// layout이 요청 쿠키로 user를 prefetch하므로 모든 route가 요청마다 렌더돼야 한다. 정적 prerender되면 비로그인 user가
+// HTML에 박제된다. force-dynamic은 unstable_cache(가격)에 영향이 없다(fetchCache를 바꾸지 않음).
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nicegoldhand.com'),
@@ -70,6 +79,12 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // user는 await하지 않는다. pending으로 dehydrate돼 Header·page의 useUserSuspenseQuery가 스트리밍으로 받는다.
+  // (await하면 로그인 사용자의 TTFB가 모든 페이지에서 +300ms 이상 늘어남, #111 측정)
+  // page에서 ['user']를 다시 dehydrate하지 않는다: 안쪽 HydrationBoundary는 이미 있는 쿼리의 hydrate를 effect로 미룬다.
+  const queryClient = makeQueryClient();
+  void queryClient.prefetchQuery(userQueryOptions(routeGet(userGET)));
+
   return (
     <html className={`${pretendard.variable} font-pretendard`} lang="ko" suppressHydrationWarning>
       <body className="relative">
@@ -78,8 +93,10 @@ export default async function Layout({
         <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
           <NuqsAdapter>
             <QueryProvider>
-              <Header />
-              <main>{children}</main>
+              <HydrationBoundary state={dehydrate(queryClient)}>
+                <Header />
+                <main>{children}</main>
+              </HydrationBoundary>
             </QueryProvider>
           </NuqsAdapter>
           <Footer />

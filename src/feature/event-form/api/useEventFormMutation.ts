@@ -11,7 +11,7 @@ import type z from 'zod';
 
 import type { eventFormSchema } from '@/src/entities/event';
 import { useImagesContext } from '@/src/entities/image/client';
-import { useUserQuery } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { eventKeys } from '@/src/shared/config/queryKeys';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { fetcher } from '@/src/shared/utils/fetcher.client';
@@ -47,7 +47,8 @@ export const useEventFormMutation = (
   const queryClient = useQueryClient();
   const [eventFormEditor, setEventFormEditor] = useState<LexicalEditor>();
   const { images } = useImagesContext();
-  const { data: userData } = useUserQuery();
+  // user는 루트 layout이 스트리밍한다. suspense로 받아 user가 오기 전에 제출이 조용히 무시되지 않게 한다.
+  const { data: userData } = useUserSuspenseQuery();
   const router = useRouter();
 
   const { uploadImages, isUploading, isOptimizing, imageProgress, resetImageProgress } = useEventImageUpload();
@@ -77,7 +78,7 @@ export const useEventFormMutation = (
   const isSubmitting = isUploading || isPending;
 
   const onSubmit = async (values: z.infer<typeof eventFormSchema>) => {
-    if (!eventFormEditor || userData == null || userData.userData == null) return;
+    if (!eventFormEditor || userData.userData == null) return;
 
     let htmlString = '';
     eventFormEditor.read(() => {

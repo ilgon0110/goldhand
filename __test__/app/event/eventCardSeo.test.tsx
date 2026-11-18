@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
+import { userKeys } from '@/src/shared/config/queryKeys';
 import type * as EventSearchParams from '@/src/shared/lib/nuqs/searchParams';
 
 const eventFixture = {
@@ -53,9 +54,10 @@ import EventPageRoute from '@/app/event/page';
 describe('event list card SEO rendering', () => {
   it('server-renders real event title/content instead of a loading skeleton', async () => {
     const element = await EventPageRoute({ searchParams: Promise.resolve({}) });
-    const html = renderToStaticMarkup(
-      <QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>,
-    );
+    // user는 루트 layout이 스트리밍해 채운다. page 단독 렌더에서는 그 결과를 캐시에 미리 넣는다.
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(userKeys.all, { isLinked: false, message: '성공', response: 'ng', userData: null });
+    const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}>{element}</QueryClientProvider>);
 
     expect(html).toContain('9월 신규 회원 이벤트');
     expect(html).toContain('9월 한정 산후관리 상담 예약 시 사은품을 드립니다.');

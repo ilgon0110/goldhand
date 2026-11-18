@@ -28,7 +28,8 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   const { mutate: logout } = useLogoutMutation({
     onSuccess: data => {
       signOut(auth).then(() => {
-        queryClient.removeQueries({ queryKey: userKeys.all });
+        // remove하면 Header(layout이라 다시 mount되지 않음)가 지워진 쿼리를 계속 들고 있어 로그인 모양으로 남는다.
+        queryClient.invalidateQueries({ queryKey: userKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
         router.replace('/');
       });

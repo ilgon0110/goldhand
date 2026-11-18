@@ -1,9 +1,7 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 
 import { GET as userGET } from '@/app/api/user/route';
 import type { IUserResponseData } from '@/src/entities/user';
-import { userQueryOptions } from '@/src/entities/user';
 import { jsonOrThrow } from '@/src/shared/api/request';
 
 import { getManagerApplyDetailData } from './api';
@@ -31,13 +29,6 @@ export default async function Page({ params }: TPageProps) {
 
   const data = await getManagerApplyDetailData({ docId });
 
-  // 인가 확인에 쓴 user 응답을 user 쿼리 캐시에 넣어, 댓글 폼이 /api/user를 다시 호출하지 않게 한다.
-  const queryClient = new QueryClient();
-  queryClient.setQueryData(userQueryOptions().queryKey, userData);
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ManagerApplyDetailPage managerApplyDetailData={data.data} userId={userData.userData.userId} />
-    </HydrationBoundary>
-  );
+  // 댓글 폼의 user는 루트 layout이 스트리밍한 ['user'] 캐시를 쓴다.
+  return <ManagerApplyDetailPage managerApplyDetailData={data.data} userId={userData.userData.userId} />;
 }

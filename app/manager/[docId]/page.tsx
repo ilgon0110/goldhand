@@ -1,10 +1,12 @@
 import { redirect } from 'next/navigation';
 
+import { GET as managerDetailGET } from '@/app/api/manager/detail/route';
 import { GET as userGET } from '@/app/api/user/route';
+import { routeGet } from '@/app/lib/routeGet';
+import type { IManagerApplyDetailResponseData } from '@/src/entities/manager';
 import type { IUserResponseData } from '@/src/entities/user';
 import { jsonOrThrow } from '@/src/shared/api/request';
 
-import { getManagerApplyDetailData } from './api';
 import { ManagerApplyDetailPage } from './ui/ManagerApplyDetailPage';
 
 type TPageProps = {
@@ -27,7 +29,10 @@ export default async function Page({ params }: TPageProps) {
     redirect('/login');
   }
 
-  const data = await getManagerApplyDetailData({ docId });
+  // 자기 서버로 HTTP 요청(authFetcher)하지 않고 Route Handler를 같은 프로세스에서 호출한다.
+  const data = await jsonOrThrow<IManagerApplyDetailResponseData>(
+    await routeGet(managerDetailGET)(`/api/manager/detail?docId=${encodeURIComponent(docId)}`),
+  );
 
   // 댓글 폼의 user는 루트 layout이 스트리밍한 ['user'] 캐시를 쓴다.
   return <ManagerApplyDetailPage managerApplyDetailData={data.data} userId={userData.userData.userId} />;

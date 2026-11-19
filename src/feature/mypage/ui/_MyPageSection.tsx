@@ -4,16 +4,12 @@ import { PiCaretRight, PiTray } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
+import { formatDateToYMD } from '@/src/shared/utils';
 
 const PAGE_SIZE = 10;
 
 function formatDotDate(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null | undefined): string {
-  if (timestamp == null) return '';
-  const d = new Date(timestamp.seconds * 1000);
-  const year = d.getFullYear();
-  const month = `${d.getMonth() + 1}`.padStart(2, '0');
-  const day = `${d.getDate()}`.padStart(2, '0');
-  return `${year}.${month}.${day}`;
+  return formatDateToYMD(timestamp).replace(/-/g, '.');
 }
 
 interface IMyPageSectionProps<T> {

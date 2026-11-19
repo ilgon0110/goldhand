@@ -14,25 +14,33 @@ export function getWindowWidth(): number {
   return window.innerWidth;
 }
 
-export function getTodayDate(): string {
-  const today = new Date(); // 오늘 날짜 객체 생성
-  const year = today.getFullYear(); // 연도 가져오기
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // 월 가져오기 (0부터 시작하므로 +1) 및 2자리로 패딩
-  const day = String(today.getDate()).padStart(2, '0'); // 날짜 가져오기 및 2자리로 패딩
+// 날짜·시각은 실행 환경 timezone이 아니라 KST로 고정한다. 운영 서버(Docker)는 UTC, 브라우저는 KST라
+// getDate() 등을 쓰면 KST 00~09시 데이터가 서버와 브라우저에서 다른 날짜로 렌더돼 hydration 에러가 난다(#117).
+const KST_PARTS = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hourCycle: 'h23',
+});
 
-  return `${year}-${month}-${day}`; // "YYYY-MM-DD" 형식으로 반환
+const toKstParts = (date: Date) =>
+  Object.fromEntries(KST_PARTS.formatToParts(date).map(p => [p.type, p.value])) as Record<Intl.DateTimeFormatPartTypes, string>;
+
+/** Date(또는 ISO 문자열)를 KST 기준 "YYYY-MM-DD"로 만든다. */
+export function formatKstYMD(date: string | Date): string {
+  const { year, month, day } = toKstParts(new Date(date));
+  return `${year}-${month}-${day}`;
 }
 
 export function formatDateToYMD(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'> | null | undefined): string {
   if (timestamp == null) {
     return '';
   }
-  const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0'); // 0~11 → 1~12
-  const day = `${date.getDate()}`.padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
+  return formatKstYMD(new Date(timestamp.seconds * 1000));
 }
 
 export function isTimestampUpdated(
@@ -44,12 +52,8 @@ export function isTimestampUpdated(
 }
 
 export function formatDateToHMS(timestamp: { seconds: number; nanoseconds: number }): string {
-  const date = new Date(timestamp.seconds * 1000); // timestamp를 Date 객체로 변환
-  const hours = `${date.getHours()}`.padStart(2, '0');
-  const minutes = `${date.getMinutes()}`.padStart(2, '0');
-  const seconds = `${date.getSeconds()}`.padStart(2, '0');
-
-  return `${hours}:${minutes}:${seconds}`;
+  const { hour, minute, second } = toKstParts(new Date(timestamp.seconds * 1000));
+  return `${hour}:${minute}:${second}`;
 }
 
 export function formatPrice(price: number | string | undefined): string {
@@ -67,15 +71,12 @@ export function formatPrice(price: number | string | undefined): string {
 }
 
 export function getRelativeTimeFromTimestamp(timestamp: Pick<Timestamp, 'nanoseconds' | 'seconds'>): string {
-  const createdDate = new Date(timestamp.seconds * 1000);
-  const now = new Date();
-
-  // 시간 제거: 날짜만 비교하기 위해
-  const created = new Date(createdDate.getFullYear(), createdDate.getMonth(), createdDate.getDate());
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  const diffTime = today.getTime() - created.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  // KST 달력 날짜끼리 비교한다(시각은 버림).
+  const kstDayNumber = (date: Date) => {
+    const { year, month, day } = toKstParts(date);
+    return Date.UTC(Number(year), Number(month) - 1, Number(day)) / (1000 * 60 * 60 * 24);
+  };
+  const diffDays = kstDayNumber(new Date()) - kstDayNumber(new Date(timestamp.seconds * 1000));
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 

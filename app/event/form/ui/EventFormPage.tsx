@@ -2,13 +2,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-//import { Editor } from '@/src/widgets/editor/ui/Editor';
+//import { Editor } from '@/src/widgets/editor';
 import dynamic from 'next/dynamic';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { eventFormSchema, useEventFormMutation } from '@/src/entities/event';
+import { eventFormSchema } from '@/src/entities/event';
+import { useEventFormMutation } from '@/src/feature/event-form';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -25,7 +26,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
+const Editor = dynamic(() => import('@/src/widgets/editor').then(mod => mod.Editor), {
   ssr: false,
   loading: () => <LoadingSpinnerIcon />,
 });

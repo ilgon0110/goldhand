@@ -1,10 +1,10 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import type { IApplyDetailData, IManagerApplyListData } from '@/src/entities/manager';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IApplyDetailData, IManagerApplyListData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 export async function GET(request: NextRequest) {

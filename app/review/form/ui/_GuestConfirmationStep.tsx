@@ -11,10 +11,10 @@ import {
   PhoneAuthFields,
   usePhoneAuthVerifyFlow,
 } from '@/src/entities/phoneAuth/client';
-import { guestConfirmationSchema } from '@/src/entities/review';
+import { PrivacyModal } from '@/src/feature/privacy';
+import { guestConfirmationSchema } from '@/src/feature/review-form';
 import { Checkbox } from '@/src/shared/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
-import { PrivacyModal } from '@/src/widgets/Privacy/ui/PrivacyModal';
 
 import type { TGuestVerification } from '../model';
 
@@ -33,12 +33,16 @@ export const GuestConfirmationStep = ({ onConfirmed }: TGuestConfirmationStepPro
 
   const agreePersonalInfo = form.watch('agreePersonalInfo');
 
-  const phoneAuth = usePhoneAuthVerifyFlow(form, { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' }, {
-    onConfirmed: async result => {
-      const phoneIdToken = await result.user.getIdToken();
-      onConfirmed({ phoneNumber: form.getValues('phoneNumber'), phoneIdToken });
+  const phoneAuth = usePhoneAuthVerifyFlow(
+    form,
+    { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
+    {
+      onConfirmed: async result => {
+        const phoneIdToken = await result.user.getIdToken();
+        onConfirmed({ phoneNumber: form.getValues('phoneNumber'), phoneIdToken });
+      },
     },
-  });
+  );
 
   return (
     <>

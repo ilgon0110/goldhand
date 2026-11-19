@@ -1,4 +1,4 @@
-import type { IReservationDetailData } from '@/src/shared/types';
+import type { IReservationDetailData } from '@/src/entities/reservation/model/types';
 
 interface IConsultData extends IReservationDetailData {
   id: string;

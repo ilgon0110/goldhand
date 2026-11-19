@@ -3,10 +3,9 @@ import Link from 'next/link';
 import { PiArrowRight, PiArrowSquareOut, PiMapPin, PiPhone, PiStorefront } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
+import { BRANCHES } from '@/src/feature/home';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { formatPhoneNumber } from '@/src/shared/utils';
-
-import { BRANCHES } from './franchisee.config';
 
 // 타입 스케일·섹션 구분은 다른 안내 페이지와 동일: h1 24/30/36, h2 20/24/30
 const BUTTON = cn(

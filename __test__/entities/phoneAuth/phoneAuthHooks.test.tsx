@@ -10,9 +10,8 @@ import {
   updatePhoneNumber,
 } from 'firebase/auth';
 
-import { useLinkPhoneToCurrentUser } from '@/src/entities/phoneAuth/api/useLinkPhoneToCurrentUser';
+import { useLinkPhoneToCurrentUser } from '@/src/entities/phoneAuth/api/_useLinkPhoneToCurrentUser';
 import { usePhoneAuthCodeSendMutation } from '@/src/entities/phoneAuth/api/usePhoneAuthCodeSendMutation';
-import type { IUserDetailData } from '@/src/shared/types';
 
 const fixtures = vi.hoisted(() => ({
   auth: { languageCode: null },
@@ -59,12 +58,8 @@ function userCredential(user: User): UserCredential {
   return { user } as UserCredential;
 }
 
-function userData(): IUserDetailData {
-  return {
-    email: 'test-user@example.com',
-    provider: 'kakao',
-    userId: 'email-user-id',
-  } as IUserDetailData;
+function linkAccount() {
+  return { userId: 'email-user-id', email: 'test-user@example.com' };
 }
 
 const confirmationResult = {
@@ -107,9 +102,7 @@ afterAll(() => {
 describe('usePhoneAuthCodeSendMutation', () => {
   it('국내 전화번호를 국제 형식으로 변환해 정확한 Firebase 경계 인자로 전달하고 성공 상태를 갱신', async () => {
     let resolveRequest!: (value: ConfirmationResult) => void;
-    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(
-      () => new Promise(resolve => (resolveRequest = resolve)),
-    );
+    vi.mocked(signInWithPhoneNumber).mockImplementationOnce(() => new Promise(resolve => (resolveRequest = resolve)));
     const onSuccess = vi.fn();
     const onSettled = vi.fn();
     const { result } = renderHook(() => usePhoneAuthCodeSendMutation({ onSuccess, onSettled }));
@@ -200,7 +193,7 @@ describe('useLinkPhoneToCurrentUser', () => {
   it('phone provider가 없으면 로그인과 credential 생성 후 user에 credential을 연결', async () => {
     const onSuccess = vi.fn();
     const onSettled = vi.fn();
-    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData(), { onSuccess, onSettled }));
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount(), { onSuccess, onSettled }));
 
     await act(() => result.current.mutate('123456', confirmationResult));
 
@@ -230,7 +223,7 @@ describe('useLinkPhoneToCurrentUser', () => {
 
   it('phone provider가 있으면 기존 user 전화번호만 갱신', async () => {
     vi.mocked(signInWithEmailAndPassword).mockResolvedValueOnce(userCredential(toUser(fixtures.userWithPhone)));
-    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData()));
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount()));
 
     await act(() => result.current.mutate('654321', confirmationResult));
 
@@ -249,7 +242,7 @@ describe('useLinkPhoneToCurrentUser', () => {
   });
 
   it('confirmation result가 없으면 Firebase 후속 호출 없이 pending을 해제', async () => {
-    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData()));
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount()));
 
     await act(() => result.current.mutate('123456', null));
 
@@ -266,7 +259,7 @@ describe('useLinkPhoneToCurrentUser', () => {
     const loginError = new Error('login failed');
     vi.mocked(signInWithEmailAndPassword).mockRejectedValueOnce(loginError);
     const onError = vi.fn();
-    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData(), { onError }));
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount(), { onError }));
 
     await act(() => result.current.mutate('123456', confirmationResult));
 
@@ -288,7 +281,7 @@ describe('useLinkPhoneToCurrentUser', () => {
       throw credentialError;
     });
     const onError = vi.fn();
-    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData(), { onError }));
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount(), { onError }));
 
     await act(() => result.current.mutate('123456', confirmationResult));
 
@@ -311,9 +304,7 @@ describe('useLinkPhoneToCurrentUser', () => {
     const onSuccess = vi.fn();
     const onError = vi.fn();
     const onSettled = vi.fn();
-    const { result } = renderHook(() =>
-      useLinkPhoneToCurrentUser(userData(), { onSuccess, onError, onSettled }),
-    );
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount(), { onSuccess, onError, onSettled }));
 
     await act(() => result.current.mutate('123456', confirmationResult));
 
@@ -330,7 +321,7 @@ describe('useLinkPhoneToCurrentUser', () => {
   });
 
   it('reset 호출 시 성공 상태, 안내 메시지, 오류를 모두 초기화', async () => {
-    const { result } = renderHook(() => useLinkPhoneToCurrentUser(userData()));
+    const { result } = renderHook(() => useLinkPhoneToCurrentUser(linkAccount()));
 
     await act(() => result.current.mutate('123456', confirmationResult));
     expect(result.current.isSuccess).toBe(true);

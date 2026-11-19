@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { toastError } from '@/src/shared/utils';

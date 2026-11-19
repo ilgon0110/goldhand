@@ -1,9 +1,9 @@
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 
-import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
+import { hashPhoneNumber } from '@/app/api/review/lib/hashPhoneNumber';
+import { verifyPhoneIdToken } from '@/app/api/review/lib/verifyPhoneIdToken';
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { hashPhoneNumber } from '@/src/shared/lib/hashPhoneNumber';
-import { verifyPhoneIdToken } from '@/src/shared/lib/server';
 import { typedJson } from '@/src/shared/utils';
 
 import type { IReviewPost, IReviewResponseBody } from './lib';
@@ -15,7 +15,10 @@ export async function createGuestReview(body: IReviewPost) {
   const { name, franchisee, phoneIdToken } = body;
 
   if (!canUseName(name, false)) {
-    return typedJson<IReviewResponseBody>({ response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' }, { status: 403 });
+    return typedJson<IReviewResponseBody>(
+      { response: 'ng', message: ADMIN_NAME_ERROR_MESSAGE, docId: '' },
+      { status: 403 },
+    );
   }
 
   if (!phoneIdToken) {

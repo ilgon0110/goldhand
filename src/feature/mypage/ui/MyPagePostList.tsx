@@ -1,11 +1,13 @@
+'use client';
+
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
-import type { IMyPageResponseData } from '@/src/shared/types';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/shared/ui/tabs';
 
+import type { IMyPageResponseData } from '../model/types';
 import { MyPageSection } from './_MyPageSection';
 import { MyPageUserList } from './_MyPageUserList';
 

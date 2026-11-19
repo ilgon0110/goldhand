@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 import type { TReviewContentValues } from '../model';
 
-const Editor = dynamic(() => import('@/src/widgets/editor/ui/Editor').then(mod => mod.Editor), {
+const Editor = dynamic(() => import('@/src/widgets/editor').then(mod => mod.Editor), {
   ssr: false,
   loading: () => <LoadingSpinnerIcon />,
 });

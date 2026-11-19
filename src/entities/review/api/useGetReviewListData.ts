@@ -1,21 +1,19 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
-import type { TFranchiseeList } from '@/src/shared/config';
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { reviewKeys } from '@/src/shared/config/queryKeys';
-import type { IReviewListResponseData } from '@/src/shared/types';
 
-import { getReviewListData } from './getReviewListData';
+import type { IReviewListResponseData } from '../model/types';
 
-type TUseGetReviewListDataQuery = Omit<UseQueryOptions<IReviewListResponseData>, 'queryFn' | 'queryKey'>;
+type TReviewListParams = { page: number; franchisee: string };
 
-export const useGetReviewListData = (
-  params: { page: number; franchisee: string },
-  options?: TUseGetReviewListDataQuery,
-) => {
-  return useSuspenseQuery({
+export const reviewListQueryOptions = (params: TReviewListParams, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: reviewKeys.list(params),
-    queryFn: () => getReviewListData(params.page, params.franchisee as TFranchiseeList),
-    ...options,
+    queryFn: async () =>
+      jsonOrThrow<IReviewListResponseData>(
+        await get(`/api/review?page=${params.page}&franchisee=${params.franchisee}`),
+      ),
   });
-};
+
+export const useGetReviewListData = (params: TReviewListParams) => useSuspenseQuery(reviewListQueryOptions(params));

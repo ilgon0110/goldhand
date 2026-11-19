@@ -55,11 +55,11 @@ vi.mock('firebase/firestore', () => ({
 vi.mock('@/src/shared/config/firebase', () => ({ firebaseApp: {} }));
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
 
-vi.mock('@/src/shared/lib/server/verifyPhoneIdToken', () => ({
+vi.mock('@/app/api/review/lib/verifyPhoneIdToken', () => ({
   verifyPhoneIdToken: vi.fn().mockResolvedValue({ ok: true, phoneNumber: '01012345678' }),
 }));
 
-vi.mock('@/src/shared/lib/hashPhoneNumber', () => ({
+vi.mock('@/app/api/review/lib/hashPhoneNumber', () => ({
   hashPhoneNumber: vi.fn().mockReturnValue('phone-hash'),
 }));
 

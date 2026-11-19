@@ -1,8 +1,9 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-import { getReservationDetailData } from '@/src/entities/reservation';
-import { getUserData } from '@/src/shared/api/getUserData';
-import { reservationKeys, userKeys } from '@/src/shared/config/queryKeys';
+import { GET as reservationDetailGET } from '@/app/api/reservation/detail/route';
+import { routeGet } from '@/app/lib/routeGet';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
+import { reservationDetailQueryOptions } from '@/src/entities/reservation';
 import MyGoogleCaptcha from '@/src/shared/ui/GoogleRecaptcha';
 
 import { ReservationEditPage } from './ui/ReservationEditPage';
@@ -14,18 +15,10 @@ type TPageProps = {
 
 export default async function Page({ searchParams }: TPageProps) {
   const docId = (await searchParams).docId || '';
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
-  await queryClient.fetchQuery({
-    queryKey: reservationKeys.detail(docId),
-    queryFn: async () => {
-      const result = await getReservationDetailData({ docId });
-      if (result.response !== 'ok') throw new Error(result.message);
-      return result;
-    },
-  });
-
-  await queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData });
+  const result = await queryClient.fetchQuery(reservationDetailQueryOptions(docId, routeGet(reservationDetailGET)));
+  if (result.response !== 'ok') throw new Error(result.message);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

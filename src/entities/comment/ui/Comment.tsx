@@ -8,15 +8,15 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { commentEditSchema } from '@/src/entities/comment/config/commentEditSchema';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { formatDateToHMS, getRelativeTimeFromTimestamp, toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useCommentDeleteMutation } from '../api/useCommentDeleteMutation';
-import { useCommentUpdateMutation } from '../api/useCommentUpdateMutation';
+import { useCommentDeleteMutation } from '../api/_useCommentDeleteMutation';
+import { useCommentUpdateMutation } from '../api/_useCommentUpdateMutation';
+import { commentEditSchema } from '../config/_commentEditSchema';
 
 type TCommentProps = {
   userId: string;

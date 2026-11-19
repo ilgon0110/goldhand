@@ -14,14 +14,14 @@ import {
   PhoneAuthFields,
   usePhoneAuthLinkFlow,
 } from '@/src/entities/phoneAuth/client';
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user';
 import { Button } from '@/src/shared/ui/button';
 import { Form } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useSignupPhoneMutation } from '../hooks/useSignupPhoneMutation';
+import { useSignupPhoneMutation } from '../hooks/_useSignupPhoneMutation';
 
 interface ISignupPhonePageProps {
   userData: IUserDetailData | null;
@@ -45,7 +45,7 @@ export const SignupPhonePage = ({ userData }: ISignupPhonePageProps) => {
   const phoneAuth = usePhoneAuthLinkFlow(
     form,
     { phoneNumberName: 'phoneNumber', authCodeName: 'authCode' },
-    userData,
+    { userId: userData?.userId, email: userData?.email },
     {
       confirmedMessage: '인증코드가 확인되었습니다. 아래의 인증 완료하기 버튼을 클릭해주세요.',
       onPhoneAlreadyInUse: () => {

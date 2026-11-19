@@ -7,14 +7,11 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import {
-  reviewContentSchema,
-  ReviewStepIndicator,
-  useGetReviewDetailData,
-  useReviewFormMutation,
-} from '@/src/entities/review';
-import { useGetUserData } from '@/src/entities/user';
+import { useImagesContext } from '@/src/entities/image/client';
+import { reviewContentSchema, ReviewStepIndicator, useGetReviewDetailData } from '@/src/entities/review';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
+import { useReviewFormMutation } from '@/src/feature/review-form';
 import { franchiseeList } from '@/src/shared/config';
 import {
   AlertDialog,
@@ -32,8 +29,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-import { useImagesContext } from '@/src/widgets/editor/context/ImagesContext';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 
 import type { TGuestEditVerification } from './_GuestEditConfirmationStep';
 import { GuestEditConfirmationStep } from './_GuestEditConfirmationStep';
@@ -46,7 +42,7 @@ const maskPhoneNumber = (phoneNumber: string) => phoneNumber.replace(/(\d{3})(\d
 
 export const ReviewEditPage = ({ docId }: TReviewEditPageProps) => {
   const { data } = useGetReviewDetailData(docId);
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const isAdmin = userData.userData?.grade === 'admin';
   const isGuestPost = data.data.userId == null;
   // 관리자가 비회원 글을 수정할 땐 SMS 재인증이 필요 없다.

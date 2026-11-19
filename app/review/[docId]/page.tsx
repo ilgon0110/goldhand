@@ -1,9 +1,12 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-import { getReviewDetailData } from '@/src/entities/review';
-import { getUserData } from '@/src/shared/api/getUserData';
-import { getViewCountData } from '@/src/shared/api/getViewCountData';
-import { reviewKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
+import { GET as reviewDetailGET } from '@/app/api/review/detail/route';
+import { GET as viewCountGET } from '@/app/api/viewCount/route';
+import { routeGet } from '@/app/lib/routeGet';
+import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
+import { reviewDetailQueryOptions } from '@/src/entities/review';
+import { viewCountQueryOptions } from '@/src/entities/viewCount';
 
 import { ReviewDetailPage } from './ui/ReviewDetailPage';
 
@@ -13,20 +16,11 @@ type TPageProps = {
 
 export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
-  await queryClient.fetchQuery({
-    queryKey: reviewKeys.detail(docId),
-    queryFn: () => getReviewDetailData({ docId }),
-  });
-
-  await Promise.all([
-    queryClient.prefetchQuery({ queryKey: userKeys.all, queryFn: getUserData }),
-    queryClient.prefetchQuery({
-      queryKey: viewCountKeys.detail(docId),
-      queryFn: () => getViewCountData({ docId }),
-    }),
-  ]);
+  // 조회수는 await하지 않는다(pending으로 dehydrate돼 스트리밍). 본문은 404 판정을 위해 await한다.
+  void queryClient.prefetchQuery(viewCountQueryOptions(docId, routeGet(viewCountGET)));
+  await queryClient.fetchQuery(reviewDetailQueryOptions(docId, routeGet(reviewDetailGET))).catch(throwNotFoundOn404);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

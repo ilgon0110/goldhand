@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { formatPrice } from '@/src/shared/utils';
 
-import { MERGEABLE_FEE_IDS } from '../config/const';
+import { MERGEABLE_FEE_IDS } from '../config/_const';
 
 type TPriceRow = { id?: string; label: string; values: number[] };
 

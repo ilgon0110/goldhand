@@ -16,9 +16,10 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/shared/ui/drawer';
-import type { INotificationResponseData } from '@/src/shared/types';
-import { AlarmMenu } from '@/src/widgets/AlarmMenu';
-import { URLS } from '@/src/widgets/header';
+import type { INotificationResponseData } from '@/src/entities/notification';
+
+import { URLS } from '../config/_const';
+import { AlarmMenu } from './_AlarmMenu';
 
 interface IMobileHeader {
   userId: string | undefined;

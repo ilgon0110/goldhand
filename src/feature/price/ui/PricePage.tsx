@@ -7,8 +7,8 @@ import { usePriceQuery } from '@/src/entities/price';
 import FadeInWhenVisible from '@/src/shared/ui/FadeInWhenVisible';
 import { formatPrice } from '@/src/shared/utils';
 
-import { CHILD_EXTRA_NOTE, commuteCheckList, dayoffCheckList, inHouseCheckList, WEEKS } from '../config/const';
-import { getExtraNote, getHolidayNote, getOneDayNotes } from '../lib/notes';
+import { CHILD_EXTRA_NOTE, commuteCheckList, dayoffCheckList, inHouseCheckList, WEEKS } from '../config/_const';
+import { getExtraNote, getHolidayNote, getOneDayNotes } from '../lib/_notes';
 import { PlanBlock, PlanNav, PlanSection, PriceHero } from './_PlanLayout';
 import { PriceTable } from './_PriceTable';
 

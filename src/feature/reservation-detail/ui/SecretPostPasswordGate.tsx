@@ -9,22 +9,14 @@ import type { z } from 'zod';
 
 import { passwordPostAction } from '@/src/entities/reservation';
 import { Button } from '@/src/shared/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/src/shared/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Input } from '@/src/shared/ui/input';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { toastError } from '@/src/shared/utils';
 
-import { detailPasswordFormSchema } from '../config/detailPasswordFormSchema';
-import { useAuthReturnRefresh } from '../model/useAuthReturnRefresh';
-import { SecretPostGateShell, SecretPostLoading } from './SecretPostGateShell';
+import { detailPasswordFormSchema } from '../config/_detailPasswordFormSchema';
+import { useAuthReturnRefresh } from '../model/_useAuthReturnRefresh';
+import { SecretPostGateShell, SecretPostLoading } from './_SecretPostGateShell';
 
 type TSecretPostPasswordGateProps = { docId: string };
 

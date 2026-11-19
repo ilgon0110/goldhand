@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
+import type { IEventDetailData } from '@/src/entities/event';
 import { PINNED_CARD_CLASS, PinToggleButton, usePinMutation } from '@/src/entities/pin';
 import { generateReviewDescription } from '@/src/entities/review';
-import { useAuth } from '@/src/shared/hooks/useAuth';
-import type { IEventDetailData } from '@/src/shared/types';
+import { useUserQuery } from '@/src/entities/user';
 import DefaultImage from '@/src/shared/ui/DefaultImage';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
@@ -25,7 +25,7 @@ type TEventCardProps = {
 export const EventCard = ({ event }: TEventCardProps) => {
   const router = useRouter();
 
-  const { data: authData } = useAuth();
+  const { data: authData } = useUserQuery();
   const isAdmin = authData?.userData?.grade === 'admin';
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('event');
 

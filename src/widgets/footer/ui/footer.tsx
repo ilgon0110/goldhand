@@ -7,8 +7,8 @@ import { FaInstagram, FaYoutube } from 'react-icons/fa6';
 import { SiNaver } from 'react-icons/si';
 
 import { cn } from '@/lib/utils';
+import { PrivacyModal } from '@/src/feature/privacy';
 import { gowunDodumFont } from '@/src/shared/fonts';
-import { PrivacyModal } from '@/widgets/Privacy';
 
 const SOCIAL_LINKS = [
   {

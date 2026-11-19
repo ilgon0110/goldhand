@@ -1,12 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
+import type { IReservationDetailData } from '@/src/entities/reservation';
 import { useGetReservationListData } from '@/src/entities/reservation';
+import { useListQueryStates } from '@/src/feature/list-pagination';
 import { reservationParams } from '@/src/shared/lib/nuqs/searchParams';
-import type { IReservationDetailData } from '@/src/shared/types';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { formatDateToYMD, isTimestampUpdated } from '@/src/shared/utils';
 
@@ -46,10 +46,7 @@ const formatDotDate = (dateStr: string) => dateStr.replace(/-/g, ' · ');
 
 export const ReservationListPage = () => {
   const router = useRouter();
-  const [consultParam, setConsultParam] = useQueryStates(reservationParams, {
-    clearOnDefault: false,
-    shallow: false,
-  });
+  const [consultParam, setConsultParam, isPending] = useListQueryStates(reservationParams);
   const { data } = useGetReservationListData({ page: consultParam.page, hideSecret: consultParam.hideSecret });
 
   const isHideSecret = consultParam.hideSecret === 'true';
@@ -76,7 +73,7 @@ export const ReservationListPage = () => {
                 : 'border-stone-200 bg-white text-stone-600 hover:border-amber-300 hover:text-stone-900',
             )}
             type="button"
-            onClick={() => setConsultParam({ hideSecret: (!isHideSecret).toString() })}
+            onClick={() => setConsultParam({ hideSecret: (!isHideSecret).toString(), page: 1 })}
           >
             <span
               className={cn(
@@ -113,7 +110,7 @@ export const ReservationListPage = () => {
 
       {/* 리스트 */}
       {data.consultData != null && data.consultData.length > 0 ? (
-        <ul className="m-0 list-none p-0">
+        <ul aria-busy={isPending} className={cn('m-0 list-none p-0 transition-opacity', isPending && 'opacity-50')}>
           {(data.consultData as IConsultData[]).map(item => (
             <ReservationCard
               author={item.userId ? '회원' : '비회원'}

@@ -15,8 +15,8 @@ vi.mock('firebase-admin/firestore', () => ({
 }));
 
 vi.mock('@/src/shared/config/firebase-admin', () => ({ firebaseAdminApp: {} }));
-vi.mock('@/src/shared/lib/hashPhoneNumber', () => ({ hashPhoneNumber }));
-vi.mock('@/src/shared/lib/server/verifyPhoneIdToken', () => ({ verifyPhoneIdToken }));
+vi.mock('@/app/api/review/lib/hashPhoneNumber', () => ({ hashPhoneNumber }));
+vi.mock('@/app/api/review/lib/verifyPhoneIdToken', () => ({ verifyPhoneIdToken }));
 
 import { POST } from '@/app/api/review/verify-owner/route';
 

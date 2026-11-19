@@ -1,4 +1,4 @@
-import type { IEventListResponseData } from '@/src/shared/types';
+import type { IEventListResponseData } from '@/src/entities/event/model/types';
 
 export const mockEventListData: IEventListResponseData = {
   response: 'ok',
@@ -17,7 +17,6 @@ export const mockEventListData: IEventListResponseData = {
       updatedAt: { seconds: 1625097600, nanoseconds: 0 },
       userId: 'user1',
       status: 'ONGOING',
-      comments: null,
     },
     {
       id: 'event2',
@@ -32,7 +31,6 @@ export const mockEventListData: IEventListResponseData = {
       updatedAt: { seconds: 1625184000, nanoseconds: 0 },
       userId: 'user2',
       status: 'UPCOMING',
-      comments: null,
     },
     {
       id: 'event3',
@@ -47,7 +45,6 @@ export const mockEventListData: IEventListResponseData = {
       updatedAt: { seconds: 1625270400, nanoseconds: 0 },
       userId: 'user3',
       status: 'ENDED',
-      comments: null,
     },
   ],
   pageableDataLength: 2,

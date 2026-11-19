@@ -2,7 +2,8 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { getUserData } from './src/shared/api/getUserData';
+import type { IUserResponseData } from './src/entities/user';
+import { fetcher } from './src/shared/utils/fetcher.client';
 
 // /manager/ 아래에서 로그인·admin 여부와 무관하게 공개되어야 하는 경로.
 // (이 목록에 없는 /manager/* 는 전부 admin 전용 상세 페이지로 취급한다.)
@@ -22,12 +23,22 @@ export async function middleware(request: NextRequest) {
       ? process.env.NEXT_PUBLIC_API_URL
       : process.env.NEXT_PUBLIC_LOCAL_API_URL;
 
-  const requiresAdmin = url.pathname.startsWith('/price/manage') || url.pathname === '/manager/list' || isProtectedManagerPath(url.pathname);
+  const requiresAdmin =
+    url.pathname.startsWith('/price/manage') ||
+    url.pathname === '/manager/list' ||
+    isProtectedManagerPath(url.pathname);
   const requiresLogin = requiresAdmin || url.pathname === '/signup' || url.pathname.startsWith('/mypage');
 
   // session 쿠키가 아예 없으면 /api/user 호출을 건너뛰지만, 아래 라우팅 판단은 그대로 거친다
   // (여기서 바로 return하면 보호 경로를 게스트가 그대로 통과해버린다).
-  const response = session == null ? null : await getUserData();
+  // middleware는 Edge 런타임이라 firebase-admin을 쓰는 /api/user Route Handler를 import할 수 없어 HTTP로 조회한다.
+  const response =
+    session == null
+      ? null
+      : await fetcher<IUserResponseData>('/api/user', {
+          cache: 'no-store',
+          headers: { Cookie: cookieStore.toString() },
+        });
   const isLogin = response?.response === 'ok';
 
   if (!isLogin) {

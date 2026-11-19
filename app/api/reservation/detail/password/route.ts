@@ -4,10 +4,10 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import jwt from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
 
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { IReservationDetailData } from '@/src/entities/reservation';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
@@ -37,7 +37,6 @@ const defaultData: IReservationDetailData = {
   title: '',
   updatedAt: Timestamp.now(),
   userId: null,
-  comments: null,
 };
 
 export async function POST(request: NextRequest) {

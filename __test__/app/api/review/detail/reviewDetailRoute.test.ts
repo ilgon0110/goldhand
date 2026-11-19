@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GET } from '@/app/api/review/detail/route';
-import type { IReviewDetailData } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/entities/review/model/types';
 
 const { getDocMock, getDocsMock, checkAdminAuthMock } = vi.hoisted(() => ({
   getDocMock: vi.fn(),
@@ -47,7 +47,6 @@ const reviewDoc: IReviewDetailData = {
   userId: null,
   phoneNumber: '+821012345678',
   phoneHash: 'deadbeef',
-  comments: null,
 };
 
 function makeRequest(docId: string): NextRequest {

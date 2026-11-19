@@ -1,5 +1,5 @@
-import type { IApplyDetailData } from '@/src/shared/types';
-import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
+import type { IApplyDetailData } from '@/src/entities/manager';
+import { PostDetailHeader } from '@/src/feature/post';
 
 type TManagerDetailContentProps = {
   managerApplyDetailData: IApplyDetailData | null;

@@ -10,7 +10,7 @@ import { usePinMutation } from '@/src/entities/pin';
 import { passwordPostAction, useDeletePostMutation } from '@/src/entities/reservation';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { detailPasswordFormSchema } from '../config/detailPasswordFormSchema';
+import { detailPasswordFormSchema } from '../config/_detailPasswordFormSchema';
 export type TReservationManageDialogState =
   | { open: boolean; password: string; step: 'delete-confirm' }
   | { open: boolean; step: 'password' };

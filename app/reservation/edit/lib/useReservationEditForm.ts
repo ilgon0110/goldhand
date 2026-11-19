@@ -4,9 +4,10 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
+import type { IReservationResponseData } from '@/src/entities/reservation';
 import { reservationEditFormSchema } from '@/src/entities/reservation';
+import type { IUserResponseData } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
-import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import { toastError } from '@/src/shared/utils';
 
 import { useReservationEditMutation } from '../api';
@@ -43,7 +44,9 @@ export const useReservationEditForm = ({
   const isGuestPost = consultDetailData.data.userId == null;
 
   const form = useForm<z.infer<typeof reservationEditFormSchema>>({
-    resolver: zodResolver(reservationEditFormSchema.superRefine(refineAdminOnlyName(userData?.userData?.grade === 'admin'))),
+    resolver: zodResolver(
+      reservationEditFormSchema.superRefine(refineAdminOnlyName(userData?.userData?.grade === 'admin')),
+    ),
     defaultValues: isGuestPost
       ? { ...commonDefaults, isGuestPost: true, oldPassword: '', password: '' }
       : { ...commonDefaults, isGuestPost: false, oldPassword: undefined, password: undefined },

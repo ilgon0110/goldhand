@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 import { Button } from '@/src/shared/ui/button';
 
-import { useAuthReturnRefresh } from '../model/useAuthReturnRefresh';
-import { SecretPostGateShell, SecretPostLoading } from './SecretPostGateShell';
+import { useAuthReturnRefresh } from '../model/_useAuthReturnRefresh';
+import { SecretPostGateShell, SecretPostLoading } from './_SecretPostGateShell';
 
 type TSecretPostLoginGateProps = { docId: string };
 

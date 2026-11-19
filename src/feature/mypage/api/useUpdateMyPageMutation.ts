@@ -2,8 +2,10 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { myPageKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IMyPageResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 import { authFetcher } from '@/src/shared/utils/fetcher.server';
+
+import type { IMyPageResponseData } from '../model/types';
 
 interface IMyPageUpdateVariables {
   userId: string;
@@ -33,6 +35,9 @@ export function useUpdateMyPageMutation(
     IMyPageUpdateVariables,
     TContext
   >({
+    // options를 먼저 펼친다. 뒤에 펼치면 호출부의 onSuccess가 아래 onSuccess(캐시 invalidate)를 통째로 덮어쓴다.
+    // 아래 onMutate·onError·onSuccess가 options의 콜백을 직접 호출한다.
+    ...options,
     mutationFn: async (vars: IMyPageUpdateVariables) => {
       return authFetcher<IResponsePostBody>('/api/mypage/update', {
         method: 'POST',
@@ -79,8 +84,6 @@ export function useUpdateMyPageMutation(
         options.onSuccess(data as TAliasAny, vars as TAliasAny, context as TAliasAny);
       }
     },
-
-    ...options,
   });
 
   return { isPending, mutate, isSuccess, isError };

@@ -1,18 +1,19 @@
 import type { ReactNode } from 'react';
 
 import { PinToggleButton } from '@/src/entities/pin';
-import type { IReviewDetailData, IViewCountData } from '@/src/shared/types';
+import type { IReviewDetailData } from '@/src/entities/review';
+import { ViewCount } from '@/src/entities/viewCount';
+import { PostDetailHeader } from '@/src/feature/post';
 import { Button } from '@/src/shared/ui/button';
-import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
 import { formatPhoneNumber } from '@/src/shared/utils';
 
 type TReviewDetailContentProps = {
   canManage: boolean;
   children: ReactNode;
   data: IReviewDetailData;
+  docId: string;
   isAdmin: boolean;
   isPinToggling: boolean;
-  viewCountData: IViewCountData | null;
   onDelete: () => void;
   onEdit: () => void;
   onTogglePin: () => void;
@@ -22,9 +23,9 @@ export function ReviewDetailContent({
   canManage,
   children,
   data,
+  docId,
   isAdmin,
   isPinToggling,
-  viewCountData,
   onDelete: handleDelete,
   onEdit: handleEdit,
   onTogglePin: handleTogglePin,
@@ -46,7 +47,7 @@ export function ReviewDetailContent({
         }
         title={data.title}
         updatedAt={data.updatedAt}
-        viewCount={viewCountData?.totalViewCount || 0}
+        viewCount={<ViewCount docId={docId} />}
       />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">
@@ -64,7 +65,9 @@ export function ReviewDetailContent({
           >
             수정하기
           </Button>
-          <Button variant="destructive" onClick={handleDelete}>삭제하기</Button>
+          <Button variant="destructive" onClick={handleDelete}>
+            삭제하기
+          </Button>
         </div>
       ) : null}
     </>

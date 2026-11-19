@@ -1,17 +1,14 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { eventKeys } from '@/src/shared/config/queryKeys';
-import type { IEventResponseData } from '@/src/shared/types';
 
-import { getEventDetailData } from './loader';
+import type { IEventResponseData } from '../model/types';
 
-type TUseGetEventDetailDataQuery = Omit<UseQueryOptions<IEventResponseData>, 'queryFn' | 'queryKey'>;
-
-export const useGetEventDetailData = (docId: string, options?: TUseGetEventDetailDataQuery) => {
-  return useSuspenseQuery({
+export const eventDetailQueryOptions = (docId: string, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: eventKeys.detail(docId),
-    queryFn: () => getEventDetailData({ docId }),
-    ...options,
+    queryFn: async () => jsonOrThrow<IEventResponseData>(await get(`/api/event/detail?docId=${docId}`)),
   });
-};
+
+export const useGetEventDetailData = (docId: string) => useSuspenseQuery(eventDetailQueryOptions(docId));

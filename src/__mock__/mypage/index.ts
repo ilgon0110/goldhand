@@ -1,4 +1,4 @@
-import type { IMyPageData } from '@/src/shared/types';
+import type { IMyPageData } from '@/src/feature/mypage/model/types';
 
 import { mockManagerData } from '../manager';
 import { mockReservationListData } from '../reservation';

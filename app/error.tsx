@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 
+import { useErrorRetry } from '@/src/shared/hooks/useErrorRetry';
+
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  const handleRetry = useErrorRetry(reset);
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error(error);
@@ -28,7 +32,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           </Link>
           <button
             className="flex flex-row items-center gap-1 text-sm font-semibold text-gray-900"
-            onClick={() => reset()}
+            onClick={handleRetry}
           >
             새로고침
             <span aria-hidden="true">

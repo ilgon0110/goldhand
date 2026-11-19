@@ -3,7 +3,7 @@ import { PiCurrencyKrw } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 
-import { PLAN_LINKS } from '../config/const';
+import { PLAN_LINKS } from '../config/_const';
 
 // /price와 /price/manage가 같은 페이지 골격을 쓴다.
 // 타입 스케일은 /manager·/rental과 동일: h1 24/30/36, h2 20/24/30, h3 18/20

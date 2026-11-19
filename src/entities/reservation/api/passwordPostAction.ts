@@ -4,7 +4,8 @@ import { cookies } from 'next/headers';
 
 import { apiUrl } from '@/src/shared/config';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReservationDetailData } from '@/src/shared/types';
+
+import type { IReservationDetailData } from '../model/types';
 
 interface IResponse {
   response: 'ng' | 'ok';

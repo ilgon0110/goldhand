@@ -3,7 +3,7 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import type { NextResponse } from 'next/server';
 
-import { isSafeReservationRedirectPath } from '@/src/shared/lib/isSafeReservationRedirectPath';
+import { isSafeReservationRedirectPath } from '@/app/api/auth/lib/isSafeReservationRedirectPath';
 
 export type TOAuthProvider = 'kakao' | 'naver';
 

@@ -2,8 +2,8 @@ import { Timestamp } from '@firebase/firestore';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Comment } from '@/src/entities/comment';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
+import { renderWithQueryClient } from '@/__test__/utils/render';
+import { Comment } from '@/src/entities/comment/ui/Comment';
 
 vi.mock('@/src/shared/utils', async () => {
   // 원본 모듈 import

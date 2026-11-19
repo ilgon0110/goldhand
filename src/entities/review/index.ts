@@ -1,5 +1,5 @@
 export * from './api';
-export * from './config';
+export { reviewContentSchema } from './config';
 export * from './lib/util';
-export { ReviewCard } from './ui/ReviewCard';
+export type { IReviewDetailData, IReviewListResponseData } from './model/types';
 export { ReviewStepIndicator } from './ui/ReviewStepIndicator';

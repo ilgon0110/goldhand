@@ -2,11 +2,11 @@ import { Timestamp } from 'firebase/firestore';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { IReviewDetailData } from '@/src/entities/review';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData, IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
@@ -28,7 +28,6 @@ const defaultData: IReviewDetailData = {
   userId: null,
   phoneNumber: null,
   phoneHash: null,
-  comments: [] as ICommentData[],
 };
 
 export async function GET(request: NextRequest) {
@@ -63,14 +62,6 @@ export async function GET(request: NextRequest) {
 
     const data = docSnap.data() as IReviewDetailData;
 
-    const commentSnapshot = await reviewDocRef.collection('comments').orderBy('createdAt', 'desc').get();
-    const comments = commentSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: serializeAdminTimestamp(doc.data().createdAt)!,
-      updatedAt: serializeAdminTimestamp(doc.data().updatedAt)!,
-    })) as ICommentData[];
-
     // phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).
     const authResult = await checkAdminAuth();
     const isAdmin = authResult.ok && authResult.isAdmin;
@@ -85,7 +76,6 @@ export async function GET(request: NextRequest) {
         pinnedAt: serializeAdminTimestamp(data.pinnedAt),
         phoneNumber: isAdmin ? data.phoneNumber : null,
         phoneHash: null,
-        comments,
       },
     };
     return typedJson<IResponseBody>(responseData, { status: 200 });

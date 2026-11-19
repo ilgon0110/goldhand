@@ -1,6 +1,6 @@
 'use client';
 
-import type { IApplyDetailData } from '@/src/shared/types';
+import type { IApplyDetailData } from '@/src/entities/manager';
 
 interface IManagerApplyDetailPageProps {
   managerApplyDetailData: IApplyDetailData | null;

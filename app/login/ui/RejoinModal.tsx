@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 
-import type { IUserDetailData } from '@/src/shared/types';
+import type { IUserDetailData } from '@/src/entities/user';
 import { AnimateModal } from '@/src/shared/ui/AnimateModal';
 import { Button } from '@/src/shared/ui/button';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';

@@ -4,11 +4,13 @@ import { cookies } from 'next/headers';
 
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
-import type { IUserDetailData } from '@/src/shared/types';
 
 type TAdminAuthResult =
   | { ok: false; reason: 'deleted_rejoin' | 'deleted' | 'expired' | 'invalid' | 'no_token' | 'not_found' }
   | { ok: true; uid: string; isAdmin: boolean };
+
+// shared는 entity 타입을 참조할 수 없으므로 판정에 필요한 필드만 로컬로 정의한다.
+type TAdminCheckUser = { grade: 'admin' | 'basic'; isDeleted: boolean; deletedAt: { seconds: number } | null };
 
 export async function checkAdminAuth(requireAdmin = false): Promise<TAdminAuthResult> {
   const cookieStore = await cookies();
@@ -36,7 +38,7 @@ export async function checkAdminAuth(requireAdmin = false): Promise<TAdminAuthRe
     return { ok: false, reason: 'not_found' };
   }
 
-  const userData = userSnapshot.data() as IUserDetailData;
+  const userData = userSnapshot.data() as TAdminCheckUser;
   if (userData.isDeleted) {
     const oneYearAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
     if (userData.deletedAt && userData.deletedAt.seconds * 1000 > oneYearAgo) {
@@ -54,7 +56,12 @@ export async function checkAdminAuth(requireAdmin = false): Promise<TAdminAuthRe
     try {
       await verifySessionCookie(session.value, true);
     } catch (error) {
-      if (error != null && typeof error === 'object' && 'code' in error && error.code === 'auth/session-cookie-expired') {
+      if (
+        error != null &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'auth/session-cookie-expired'
+      ) {
         return { ok: false, reason: 'expired' };
       }
       return { ok: false, reason: 'invalid' };

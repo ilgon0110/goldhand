@@ -6,12 +6,15 @@ import { signInWithPhoneNumber } from 'firebase/auth';
 import { http, HttpResponse } from 'msw';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReviewDetailPage } from '@/app/review/[docId]/ui/ReviewDetailPage';
 import { server } from '@/src/__mock__/node';
+import type { IReviewResponseData } from '@/src/entities/review/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
+import type { IViewCountResponseData } from '@/src/entities/viewCount/model/types';
 import { reviewKeys, userKeys, viewCountKeys } from '@/src/shared/config/queryKeys';
-import type { IReviewResponseData, IUserResponseData, IViewCountResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -25,7 +28,8 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-vi.mock('@/src/entities/comment', () => ({
+vi.mock('@/src/entities/comment', async () => ({
+  ...(await vi.importActual('@/src/entities/comment/config/commentSchema')),
   Comment: () => <div>Comment Mock Component</div>,
   useComments: useCommentsMock,
 }));
@@ -198,7 +202,9 @@ describe('ReviewDetailPage 컴포넌트 테스트', () => {
   it('게시글 삭제가 성공하면 리뷰 목록 페이지로 이동한다.', async () => {
     const userData = await (await fetch('/api/user')).json();
     const reviewData = await (await fetch('/api/review/detail?docId=docId')).json();
-    server.use(http.delete('/api/review/delete', async () => HttpResponse.json({ response: 'ok', message: '삭제 성공' })));
+    server.use(
+      http.delete('/api/review/delete', async () => HttpResponse.json({ response: 'ok', message: '삭제 성공' })),
+    );
     await renderReviewDetail(reviewData, userData);
 
     await userEvent.click(screen.getByRole('button', { name: '삭제하기' }));

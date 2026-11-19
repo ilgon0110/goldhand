@@ -10,18 +10,18 @@ import { cn } from '@/lib/utils';
 import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
-import { useGetUserData } from '@/src/entities/user';
-import { useGetViewCountData } from '@/src/entities/viewCount';
+import { type IUserDetailData, WithOptionalUser } from '@/src/entities/user';
+import { ViewCount } from '@/src/entities/viewCount';
+import { PostDetailHeader } from '@/src/feature/post';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { Label } from '@/src/shared/ui/label';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
-import { PostDetailHeader } from '@/src/feature/post/ui/PostDetailHeader';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 
 import { useEventDeleteMutation } from '../api/useEventDeleteMutation';
 
@@ -29,10 +29,12 @@ type TEventDetailPageProps = {
   docId: string;
 };
 
-export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
+export const EventDetailPage = ({ docId }: TEventDetailPageProps) => (
+  <WithOptionalUser>{user => <EventDetailContent docId={docId} user={user} />}</WithOptionalUser>
+);
+
+const EventDetailContent = ({ docId, user }: TEventDetailPageProps & { user: IUserDetailData | null }) => {
   const { data } = useGetEventDetailData(docId);
-  const { data: userData } = useGetUserData();
-  const { data: viewCountData } = useGetViewCountData(docId);
   const router = useRouter();
   const { comments } = useComments({
     docId,
@@ -65,8 +67,8 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
   });
 
   const formValidation = form.formState.isValid;
-  const isOwner = data.data.userId === userData.userData?.userId;
-  const isAdmin = userData.userData?.grade === 'admin';
+  const isOwner = data.data.userId === user?.userId;
+  const isAdmin = user?.grade === 'admin';
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('event');
 
   const { mutate: submitComment, isPending: isCommentSubmitting } = useCommentCreateMutation('event', docId, {
@@ -106,7 +108,7 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
         }
         title={data.data.title}
         updatedAt={data.data.updatedAt}
-        viewCount={viewCountData.data?.totalViewCount || 0}
+        viewCount={<ViewCount docId={docId} />}
       />
       <div className="my-4 h-[1px] w-full bg-slate-300" />
       <div className="relative w-full">
@@ -158,14 +160,14 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
             <Button
               className={cn(
                 'transition-all duration-300',
-                formValidation && userData.userData != null ? '' : 'opacity-20 hover:cursor-not-allowed',
+                formValidation && user != null ? '' : 'opacity-20 hover:cursor-not-allowed',
               )}
-              disabled={!formValidation || userData.userData == null}
+              disabled={!formValidation || user == null}
               type="submit"
             >
               {isCommentSubmitting ? (
                 <LoadingSpinnerIcon />
-              ) : userData.userData == null ? (
+              ) : user == null ? (
                 '로그인 후 이용해주세요'
               ) : (
                 '댓글달기'
@@ -188,11 +190,11 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
               createdAt={item.createdAt}
               docId={docId}
               isAuthorAdmin={item.isAuthorAdmin}
-              isCommentOwner={item.userId === userData.userData?.userId}
+              isCommentOwner={item.userId === user?.userId}
               key={item.id}
               type="event"
               updatedAt={item.updatedAt}
-              userId={userData.userData?.userId || ''}
+              userId={user?.userId || ''}
             />
           );
         })}

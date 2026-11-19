@@ -3,10 +3,11 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReviewPage } from '@/app/review/ui/ReviewPage';
+import type { IReviewListResponseData } from '@/src/entities/review/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { reviewKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IReviewListResponseData, IUserResponseData } from '@/src/shared/types';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 vi.mock('@/src/shared/utils/verifyViewId', () => ({
   sendViewLog: vi.fn(),

@@ -1,8 +1,11 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-import { getEventDetailData } from '@/src/entities/event';
-import { eventKeys } from '@/src/shared/config/queryKeys';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+import { GET as eventDetailGET } from '@/app/api/event/detail/route';
+import { routeGet } from '@/app/lib/routeGet';
+import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
+import { eventDetailQueryOptions } from '@/src/entities/event';
+import { ImagesContext } from '@/src/entities/image/client';
 
 import { EventEditPage } from './ui/EventEditPage';
 
@@ -12,12 +15,9 @@ type TPageProps = {
 
 export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
-  await queryClient.fetchQuery({
-    queryKey: eventKeys.detail(docId),
-    queryFn: () => getEventDetailData({ docId }),
-  });
+  await queryClient.fetchQuery(eventDetailQueryOptions(docId, routeGet(eventDetailGET))).catch(throwNotFoundOn404);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

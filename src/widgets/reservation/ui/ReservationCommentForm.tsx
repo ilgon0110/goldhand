@@ -5,15 +5,13 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 
 import { cn } from '@/lib/utils';
-import { useCommentCreateMutation, useComments } from '@/src/entities/comment';
-import { useGetUserData } from '@/src/entities/user';
+import { commentSchema, useCommentCreateMutation, useComments } from '@/src/entities/comment';
+import { useUserQuery } from '@/src/entities/user';
 import { Button } from '@/src/shared/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { Textarea } from '@/src/shared/ui/textarea';
 import { toastError, toastSuccess } from '@/src/shared/utils';
-
-import { consultCommentSchema } from '../config/consultCommentSchema';
 
 type TReservationCommentFormProps = {
   docId: string;
@@ -21,11 +19,11 @@ type TReservationCommentFormProps = {
 
 export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) => {
   useComments({ docId, collectionName: 'consults' });
-  const { data: userData } = useGetUserData();
-  const isLoggedIn = userData.userData != null;
+  const { data: userData } = useUserQuery();
+  const isLoggedIn = userData?.userData != null;
 
-  const form = useForm<z.infer<typeof consultCommentSchema>>({
-    resolver: zodResolver(consultCommentSchema),
+  const form = useForm<z.infer<typeof commentSchema>>({
+    resolver: zodResolver(commentSchema),
     defaultValues: {
       comment: '',
     },
@@ -44,7 +42,7 @@ export const ReservationCommentForm = ({ docId }: TReservationCommentFormProps) 
     },
   });
 
-  const onSubmit = (values: z.infer<typeof consultCommentSchema>) => {
+  const onSubmit = (values: z.infer<typeof commentSchema>) => {
     submitComment(values.comment);
   };
 

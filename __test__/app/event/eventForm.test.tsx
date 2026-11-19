@@ -1,9 +1,11 @@
+import { QueryClient } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { EventFormPage } from '@/app/event/form/ui/EventFormPage';
+import { userKeys } from '@/src/shared/config/queryKeys';
 import type { TAliasAny } from '@/src/shared/types';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 // useRouter 모킹
 const pushMock = vi.fn();
@@ -43,9 +45,16 @@ beforeAll(() => {
   });
 });
 
+// user는 루트 layout이 스트리밍해 채운다. 폼 단독 렌더에서는 그 결과를 캐시에 미리 넣는다.
+const renderEventForm = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient.setQueryData(userKeys.all, { isLinked: false, message: '성공', response: 'ok', userData: null });
+  return renderWithQueryClient(<EventFormPage />, { queryClient });
+};
+
 describe('EventFormPage 컴포넌트 테스트', async () => {
   it('이름 validation 테스트. 2글자 이상 20글자 이하 string만 가능하다.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     // title은 제대로 입력
     await userEvent.type(screen.getByLabelText(/제목/), 'This is a valid title');
@@ -75,7 +84,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
   });
 
   it('title validation 테스트. 2자 이상 100자 이하로 입력해주세요.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     // name은 제대로 입력
     await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');
@@ -108,7 +117,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
   });
 
   it('소식 상태 Select 테스트. 올바르게 선택되는지 확인합니다.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     const eventStatusTrigger = screen.getByTestId('event-status-select-trigger');
     await userEvent.click(eventStatusTrigger);
@@ -121,7 +130,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
   });
 
   it('필수 입력값들을 제대로 입력했을 때 제출 버튼이 활성화 되는지 확인합니다.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     // 이름 입력
     await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');
@@ -140,7 +149,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
   });
 
   it('이름을 잘못 입력했을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     // 이름 입력 (잘못된 값)
     await userEvent.type(screen.getByLabelText(/이름/), 'A');
@@ -159,7 +168,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
   });
 
   it('제목을 잘못 입력했을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     // 이름 입력
     await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');
@@ -178,7 +187,7 @@ describe('EventFormPage 컴포넌트 테스트', async () => {
   });
 
   it('소식 상태를 선택하지 않았을 때 제출 버튼이 비활성화 되는지 확인합니다.', async () => {
-    renderWithQueryClient(<EventFormPage />);
+    renderEventForm();
 
     // 이름 입력
     await userEvent.type(screen.getByLabelText(/이름/), 'Valid Name');

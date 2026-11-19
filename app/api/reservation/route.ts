@@ -1,11 +1,11 @@
 import type { WhereFilterOp } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
-import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
+import { getPinnedFirstListAdmin } from '@/app/api/lib/pin/getPinnedFirstList';
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { IReservationDetailData } from '@/src/entities/reservation';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReservationDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {

@@ -5,8 +5,9 @@ import { cookies } from 'next/headers';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { CONTENT_TYPE_BY_COLLECTION, logBusinessEvent } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
+
+import type { ICommentData } from '../model/types';
 
 interface ICommentResponse {
   response: 'ng' | 'ok';

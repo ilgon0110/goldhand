@@ -8,12 +8,6 @@ const notificationKeys = {
     [...notificationKeys.list(userId), 'detail', { notificationId }] as const,
 };
 
-const authKeys = {
-  all: ['auth'] as const,
-  pathname: (pathname: string) => [...authKeys.all, { pathname }] as const,
-  searchParams: (pathname: string, searchParams: string) => [...authKeys.pathname(pathname), { searchParams }] as const,
-};
-
 const reviewKeys = {
   all: ['reviews'] as const,
   lists: () => [...reviewKeys.all, 'list'] as const,
@@ -56,7 +50,6 @@ const viewCountKeys = {
 };
 
 export {
-  authKeys,
   eventKeys,
   myPageKeys,
   notificationKeys,

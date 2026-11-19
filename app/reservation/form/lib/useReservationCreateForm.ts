@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { passwordPostAction, reservationFormSchema } from '@/src/entities/reservation';
+import type { IUserResponseData } from '@/src/entities/user';
 import { refineAdminOnlyName } from '@/src/feature/auth';
-import type { IUserResponseData } from '@/src/shared/types';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 import { sendViewLog } from '@/src/shared/utils/verifyViewId';
 

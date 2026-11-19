@@ -4,13 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReservationFormPage } from '@/app/reservation/form/ui/ReservationFormPage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { userKeys } from '@/src/shared/config/queryKeys';
-import type { IUserResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const mockNonUserData: IUserResponseData = {
   response: 'ok',

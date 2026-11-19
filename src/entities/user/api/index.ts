@@ -1,3 +1,2 @@
-export * from './getUserListData';
-export * from './useGetUserData';
-export * from './useGetUserListData';
+export { useGetUserListData } from './useGetUserListData';
+export * from './useUserQuery';

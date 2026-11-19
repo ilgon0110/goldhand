@@ -10,8 +10,8 @@ import { Form } from '@/src/shared/ui/form';
 import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { toastError, toastSuccess } from '@/src/shared/utils';
 
-import { CHILD_EXTRA_NOTE, commuteCheckList, dayoffCheckList, inHouseCheckList, WEEKS } from '../config/const';
-import { getExtraNote, getOneDayNotes } from '../lib/notes';
+import { CHILD_EXTRA_NOTE, commuteCheckList, dayoffCheckList, inHouseCheckList, WEEKS } from '../config/_const';
+import { getExtraNote, getOneDayNotes } from '../lib/_notes';
 import { PlanBlock, PlanNav, PlanSection, PriceHero } from './_PlanLayout';
 import { PriceInput } from './_PriceInput';
 

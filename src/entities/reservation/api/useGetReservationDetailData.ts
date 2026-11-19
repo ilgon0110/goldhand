@@ -1,17 +1,16 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { reservationKeys } from '@/src/shared/config/queryKeys';
-import type { IReservationResponseData } from '@/src/shared/types';
 
-import { getReservationDetailData } from './getReservationDetailData';
+import type { IReservationResponseData } from '../model/types';
 
-type TUseGetReservationDetailDataQuery = Omit<UseQueryOptions<IReservationResponseData>, 'queryFn' | 'queryKey'>;
-
-export const useGetReservationDetailData = (docId: string, options?: TUseGetReservationDetailDataQuery) => {
-  return useSuspenseQuery({
+export const reservationDetailQueryOptions = (docId: string, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: reservationKeys.detail(docId),
-    queryFn: () => getReservationDetailData({ docId }),
-    ...options,
+    // 400·401(TOKEN_EXPIRED)·403(NEEDS_PASSWORD/NEEDS_LOGIN/ACCESS_DENIED)·404는 code가 담긴 body로 화면을 분기하므로 throw하지 않는다. 5xx만 throw.
+    queryFn: async () =>
+      jsonOrThrow<IReservationResponseData>(await get(`/api/reservation/detail?docId=${docId}`), [400, 401, 403, 404]),
   });
-};
+
+export const useGetReservationDetailData = (docId: string) => useSuspenseQuery(reservationDetailQueryOptions(docId));

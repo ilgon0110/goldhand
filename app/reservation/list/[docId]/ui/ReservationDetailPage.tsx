@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetReservationDetailData } from '@/src/entities/reservation';
-import { useGetUserData } from '@/src/entities/user';
+import { useUserSuspenseQuery } from '@/src/entities/user';
 import {
   ReservationManageDialog,
   SecretPostAccessDenied,
@@ -17,7 +17,7 @@ type TReservationDetailPageProps = { docId: string };
 
 export const ReservationDetailPage = ({ docId }: TReservationDetailPageProps) => {
   const { data } = useGetReservationDetailData(docId);
-  const { data: userData } = useGetUserData();
+  const { data: userData } = useUserSuspenseQuery();
   const isAdmin = userData.userData?.grade === 'admin';
   const isOwner = data.data.userId ? data.data.userId === userData.userData?.userId : true;
   const actions = useReservationDetailActions({

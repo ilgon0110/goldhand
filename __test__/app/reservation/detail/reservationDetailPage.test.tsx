@@ -4,14 +4,15 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { ReservationDetailPage } from '@/app/reservation/list/[docId]/ui/ReservationDetailPage';
 import { server } from '@/src/__mock__/node';
 import { mockReservationListData } from '@/src/__mock__/reservation';
+import type { IReservationResponseData } from '@/src/entities/reservation/model/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 import { apiUrl } from '@/src/shared/config';
 import { reservationKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IReservationResponseData, IUserResponseData } from '@/src/shared/types';
 import * as utils from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const pushMock = vi.fn();
 const refreshMock = vi.fn();

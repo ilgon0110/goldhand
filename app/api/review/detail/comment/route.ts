@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 
-import { createComment } from '@/src/entities/comment/lib/commentActions';
+import { createComment } from '@/src/entities/comment/server';
 
 export async function POST(request: NextRequest) {
   const { docId, comment } = await request.json();

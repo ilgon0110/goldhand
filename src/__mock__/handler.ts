@@ -1,8 +1,9 @@
 import { Timestamp } from '@firebase/firestore';
 import { http, HttpResponse } from 'msw';
 
+import type { IReviewDetailData } from '@/src/entities/review/model/types';
+
 import { apiUrl } from '../shared/config';
-import type { ICommentData, IReviewDetailData } from '../shared/types';
 import { mockEventListData } from './event';
 import { mockMypageData } from './mypage';
 import { mockReservationListData } from './reservation';
@@ -101,7 +102,6 @@ export const handlers = [
       userId: null,
       phoneNumber: null,
       phoneHash: null,
-      comments: [] as ICommentData[],
     };
 
     const url = new URL(request.url);

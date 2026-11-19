@@ -2,10 +2,10 @@ import { Timestamp } from 'firebase/firestore';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
-import { getEventRowNumberMap } from '@/src/entities/event/api/getEventRowNumbers';
+import type { IEventDetailData } from '@/src/entities/event';
+import { getEventRowNumberMap } from '@/src/entities/event/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { ICommentData, IEventDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 interface IResponseBody {
@@ -27,7 +27,6 @@ const defaultData: IEventDetailData = {
   updatedAt: Timestamp.now(),
   userId: null,
   status: 'ONGOING',
-  comments: [] as ICommentData[],
 };
 
 export async function GET(request: NextRequest) {
@@ -62,12 +61,7 @@ export async function GET(request: NextRequest) {
 
     const data = eventDocSnap.data();
 
-    const commentsRef = adminDB.collection('events').doc(docId).collection('comments').orderBy('createdAt', 'desc');
-    const [commentSnapshot, rowNumberMap] = await Promise.all([commentsRef.get(), getEventRowNumberMap()]);
-    const comments = commentSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as ICommentData[];
+    const rowNumberMap = await getEventRowNumberMap();
 
     const responseData: IResponseBody = {
       response: 'ok',
@@ -83,7 +77,6 @@ export async function GET(request: NextRequest) {
           seconds: data?.updatedAt._seconds,
           nanoseconds: data?.updatedAt._nanoseconds,
         },
-        comments,
       } as IEventDetailData,
     };
     return typedJson<IResponseBody>(responseData, { status: 200 });

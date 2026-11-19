@@ -1,15 +1,8 @@
 'use client'; // QueryClientProvider가 useContext를 쓰므로 필수
 
-import { isServer, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { isServer, type QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      // hydration시 staleTime이 0이면 서버에서 가져온 데이터가 바로 stale이 되어버림 -> 20초로 설정
-      queries: { staleTime: 20 * 1000 },
-    },
-  });
-}
+import { makeQueryClient } from './get-query-client';
 
 let browserQueryClient: QueryClient | undefined = undefined;
 

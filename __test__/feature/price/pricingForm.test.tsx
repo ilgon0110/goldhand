@@ -3,11 +3,11 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { server } from '@/src/__mock__/node';
 import type { TPriceData } from '@/src/entities/price/model/prices';
 import { PricingForm } from '@/src/feature/price/ui/PricingForm';
 import { priceKeys } from '@/src/shared/config/queryKeys';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 import { PRICES } from '../../fixtures/prices';
 

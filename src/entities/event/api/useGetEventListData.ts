@@ -1,17 +1,17 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, jsonOrThrow, type TGet } from '@/src/shared/api/request';
 import { eventKeys } from '@/src/shared/config/queryKeys';
-import type { IEventListResponseData } from '@/src/shared/types';
 
-import { getEventListData } from './loader';
+import type { IEventListResponseData } from '../model/types';
 
-type TUseGetEventListDataQuery = Omit<UseQueryOptions<IEventListResponseData>, 'queryFn' | 'queryKey'>;
+type TEventListParams = { page: number; status: string };
 
-export const useGetEventListData = (params: { page: number; status: string }, options?: TUseGetEventListDataQuery) => {
-  return useSuspenseQuery({
+export const eventListQueryOptions = (params: TEventListParams, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: eventKeys.list(params),
-    queryFn: () => getEventListData(params.page, params.status),
-    ...options,
+    queryFn: async () =>
+      jsonOrThrow<IEventListResponseData>(await get(`/api/event?page=${params.page}&status=${params.status}`)),
   });
-};
+
+export const useGetEventListData = (params: TEventListParams) => useSuspenseQuery(eventListQueryOptions(params));

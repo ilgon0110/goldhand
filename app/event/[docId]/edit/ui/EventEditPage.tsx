@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import type z from 'zod';
 
 import { cn } from '@/lib/utils';
-import { eventFormSchema, useEventFormMutation, useGetEventDetailData } from '@/src/entities/event';
+import { eventFormSchema, useGetEventDetailData } from '@/src/entities/event';
+import { useEventFormMutation } from '@/src/feature/event-form';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -23,7 +24,7 @@ import { LoadingSpinnerIcon } from '@/src/shared/ui/loadingSpinnerIcon';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/ui/select';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 
 type TEventEditPageProps = {
   docId: string;

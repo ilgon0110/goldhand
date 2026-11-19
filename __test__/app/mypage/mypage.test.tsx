@@ -4,14 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { Suspense } from 'react';
 
+import { renderWithQueryClient } from '@/__test__/utils/render';
 import { MyPagePage } from '@/app/mypage/ui/MyPagePage';
 import { server } from '@/src/__mock__/node';
 import { mockUserData } from '@/src/__mock__/user';
+import type { IMyPageResponseData } from '@/src/feature/mypage/model/types';
 import { WithdrawalModal } from '@/src/feature/mypage/ui/WithdrawalModal';
 import { myPageKeys } from '@/src/shared/config/queryKeys';
-import type { IMyPageResponseData } from '@/src/shared/types';
 import { formatPhoneNumber } from '@/src/shared/utils';
-import { renderWithQueryClient } from '@/src/shared/utils/test/render';
 
 const pushMock = vi.fn();
 const replaceMock = vi.fn();
@@ -39,14 +39,14 @@ vi.mock('@/src/shared/hooks/useMediaQuery', () => ({
 }));
 
 const logoutMock = vi.fn();
-vi.mock('@/src/feature/mypage/api/useLogoutMutation', () => ({
+vi.mock('@/src/feature/mypage/api/_useLogoutMutation', () => ({
   useLogoutMutation: () => ({
     mutate: logoutMock,
   }),
 }));
 
 const withdrawMock = vi.fn();
-vi.mock('@/src/feature/mypage/api/useWithdrawalMutation', () => ({
+vi.mock('@/src/feature/mypage/api/_useWithdrawalMutation', () => ({
   useWithdrawalMutation: () => ({
     mutate: withdrawMock,
   }),

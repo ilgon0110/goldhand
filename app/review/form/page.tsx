@@ -1,24 +1,12 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-
-import { getUserData } from '@/src/shared/api/getUserData';
-import { userKeys } from '@/src/shared/config/queryKeys';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+import { ImagesContext } from '@/src/entities/image/client';
 
 import { ReviewFormPage } from './ui/ReviewFormPage';
 
-export default async function Page() {
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: userKeys.all,
-    queryFn: getUserData,
-  });
-
+// user는 루트 layout이 스트리밍한다(app/layout.tsx).
+export default function Page() {
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ImagesContext>
-        <ReviewFormPage />
-      </ImagesContext>
-    </HydrationBoundary>
+    <ImagesContext>
+      <ReviewFormPage />
+    </ImagesContext>
   );
 }

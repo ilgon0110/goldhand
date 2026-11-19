@@ -2,8 +2,8 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import type { IConsultPost } from '@/app/api/reservation/update/route';
+import type { IReservationResponseData } from '@/src/entities/reservation';
 import { reservationKeys } from '@/src/shared/config/queryKeys';
-import type { IReservationResponseData } from '@/src/shared/types';
 
 interface IResponseBody {
   response: 'ng' | 'ok';

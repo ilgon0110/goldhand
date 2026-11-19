@@ -2,12 +2,12 @@ import type { WhereFilterOp } from 'firebase-admin/firestore';
 import { FieldPath, getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import type { NextRequest } from 'next/server';
 
+import { getPinnedFirstListAdmin } from '@/app/api/lib/pin/getPinnedFirstList';
+import { serializeAdminTimestamp } from '@/app/api/lib/serializeAdminTimestamp';
+import type { IReviewDetailData } from '@/src/entities/review';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
-import { getPinnedFirstListAdmin } from '@/src/shared/lib/pin/getPinnedFirstList';
-import { serializeAdminTimestamp } from '@/src/shared/lib/serializeAdminTimestamp';
 import { checkAdminAuth } from '@/src/shared/lib/server';
 import { logServerError } from '@/src/shared/lib/server/structuredLogger';
-import type { IReviewDetailData } from '@/src/shared/types';
 import { typedJson } from '@/src/shared/utils';
 
 // phoneHash는 관리자에게도 노출하지 않는다. phoneNumber는 관리자만 조회 가능(비회원 본인 확인용).
@@ -69,12 +69,7 @@ export async function GET(request: NextRequest) {
       franchisee !== '전체' ? [['franchisee', '==', franchisee]] : [];
 
     const { pinnedItems, pageItems, pageableDataLength, totalDataLength } =
-      await getPinnedFirstListAdmin<IReviewDetailData>(
-        'reviews',
-        extraWhere,
-        page,
-        PAGE_SIZE,
-      );
+      await getPinnedFirstListAdmin<IReviewDetailData>('reviews', extraWhere, page, PAGE_SIZE);
 
     const combined = [...pinnedItems, ...pageItems];
     const adminUserIds = await getAdminUserIdSet(

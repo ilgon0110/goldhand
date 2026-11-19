@@ -1,4 +1,4 @@
-import type { IUserResponseData } from '@/src/shared/types';
+import type { IUserResponseData } from '@/src/entities/user/model/types';
 
 export const mockUserData: {
   response: 'ng' | 'ok';

@@ -1,9 +1,12 @@
 // app/review/[docId]/edit/page.tsx
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-import { getReviewDetailData } from '@/src/entities/review';
-import { reviewKeys } from '@/src/shared/config/queryKeys';
-import { ImagesContext } from '@/src/widgets/editor/context/ImagesContext';
+import { GET as reviewDetailGET } from '@/app/api/review/detail/route';
+import { routeGet } from '@/app/lib/routeGet';
+import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
+import { ImagesContext } from '@/src/entities/image/client';
+import { reviewDetailQueryOptions } from '@/src/entities/review';
 
 import { ReviewEditPage } from './ui/ReviewEditPage';
 
@@ -13,12 +16,9 @@ type TPageProps = {
 
 export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
-  await queryClient.fetchQuery({
-    queryKey: reviewKeys.detail(docId),
-    queryFn: () => getReviewDetailData({ docId }),
-  });
+  await queryClient.fetchQuery(reviewDetailQueryOptions(docId, routeGet(reviewDetailGET))).catch(throwNotFoundOn404);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

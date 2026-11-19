@@ -1,3 +1,5 @@
+'use client';
+
 import { useQueryClient } from '@tanstack/react-query';
 import { getAuth, signOut } from 'firebase/auth';
 import Image from 'next/image';
@@ -7,12 +9,12 @@ import { PiEnvelopeSimple, PiPhone, PiShieldCheck } from 'react-icons/pi';
 
 import { cn } from '@/lib/utils';
 import { firebaseApp } from '@/src/shared/config/firebase';
-import { authKeys, userKeys } from '@/src/shared/config/queryKeys';
-import type { IMyPageResponseData } from '@/src/shared/types';
+import { userKeys } from '@/src/shared/config/queryKeys';
 import { LoadingSpinnerOverlay } from '@/src/shared/ui/LoadingSpinnerOverlay';
 import { formatPhoneNumber, toastError, toastSuccess } from '@/src/shared/utils';
 
-import { useLogoutMutation } from '../api/useLogoutMutation';
+import { useLogoutMutation } from '../api/_useLogoutMutation';
+import type { IMyPageResponseData } from '../model/types';
 
 interface IMyPageInfoCardProps {
   myPageData: IMyPageResponseData;
@@ -26,8 +28,8 @@ export const MyPageInfoCard = ({ myPageData, handleWithdrawModalOpen }: IMyPageI
   const { mutate: logout } = useLogoutMutation({
     onSuccess: data => {
       signOut(auth).then(() => {
-        queryClient.removeQueries({ queryKey: authKeys.all });
-        queryClient.removeQueries({ queryKey: userKeys.all });
+        // remove하면 Header(layout이라 다시 mount되지 않음)가 지워진 쿼리를 계속 들고 있어 로그인 모양으로 남는다.
+        queryClient.invalidateQueries({ queryKey: userKeys.all });
         toastSuccess(data.message || '로그아웃 되었습니다.');
         router.replace('/');
       });

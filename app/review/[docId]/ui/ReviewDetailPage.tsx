@@ -1,8 +1,7 @@
 'use client';
 
 import { useGetReviewDetailData } from '@/src/entities/review';
-import { useGetUserData } from '@/src/entities/user';
-import { useGetViewCountData } from '@/src/entities/viewCount';
+import { type IUserDetailData, WithOptionalUser } from '@/src/entities/user';
 import {
   ReviewDeleteDialog,
   ReviewEditDialog,
@@ -12,18 +11,20 @@ import {
 } from '@/src/feature/review-detail';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
 import { MyAlertDialog } from '@/src/shared/ui/MyAlertDialog';
-import { Editor } from '@/src/widgets/editor/ui/Editor';
+import { Editor } from '@/src/widgets/editor';
 import { ReviewCommentSection, ReviewDetailContent } from '@/src/widgets/review';
 
 type TReviewDetailPageProps = { docId: string };
 const handleEditorChange = () => {};
 
-export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
+export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => (
+  <WithOptionalUser>{user => <ReviewDetailContentWithUser docId={docId} user={user} />}</WithOptionalUser>
+);
+
+const ReviewDetailContentWithUser = ({ docId, user }: TReviewDetailPageProps & { user: IUserDetailData | null }) => {
   const { data } = useGetReviewDetailData(docId);
-  const { data: userData } = useGetUserData();
-  const { data: viewCountData } = useGetViewCountData(docId);
-  const userId = userData.userData?.userId;
-  const isAdmin = userData.userData?.grade === 'admin';
+  const userId = user?.userId;
+  const isAdmin = user?.grade === 'admin';
   const actions = useReviewDetailActions({
     docId,
     isAdmin,
@@ -45,9 +46,9 @@ export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
       <ReviewDetailContent
         canManage={actions.canManage}
         data={data.data}
+        docId={docId}
         isAdmin={isAdmin}
         isPinToggling={actions.isPinToggling}
-        viewCountData={viewCountData.data}
         onDelete={deleteFlow.handleOpen}
         onEdit={actions.handleEdit}
         onTogglePin={actions.handleTogglePin}

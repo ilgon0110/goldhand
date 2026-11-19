@@ -1,17 +1,17 @@
 import type { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { cookieGet, getUserData } = vi.hoisted(() => ({
+const { cookieGet, fetchUser } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
-  getUserData: vi.fn(),
+  fetchUser: vi.fn(),
 }));
 
 vi.mock('next/headers', () => ({
   cookies: vi.fn(async () => ({ get: cookieGet })),
 }));
 
-vi.mock('@/src/shared/api/getUserData', () => ({
-  getUserData,
+vi.mock('@/src/shared/utils/fetcher.client', () => ({
+  fetcher: fetchUser,
 }));
 
 import { middleware } from '@/middleware';
@@ -27,31 +27,31 @@ describe('middleware', () => {
     vi.stubEnv('NEXT_PUBLIC_ENVIRONMENT', 'development');
     vi.stubEnv('NEXT_PUBLIC_LOCAL_API_URL', 'http://localhost:3000');
     cookieGet.mockReset().mockReturnValue(undefined);
-    getUserData.mockReset();
+    fetchUser.mockReset();
   });
 
   it.each(['guest', 'basic', 'admin'])('요금 관리는 관리자만 접근한다: %s', async grade => {
     if (grade !== 'guest') {
       cookieGet.mockReturnValue({ value: 'session' });
-      getUserData.mockResolvedValue({ response: 'ok', userData: { grade } });
+      fetchUser.mockResolvedValue({ response: 'ok', userData: { grade } });
     }
     const response = await middleware(makeRequest('/price/manage'));
     expect(response.status).toBe(grade === 'admin' ? 200 : 307);
   });
 
-  it('session 쿠키가 없으면 getUserData를 호출하지 않고도 /manager/list에서 로그인으로 리다이렉트한다 (게스트가 그대로 통과해버리던 회귀 방지)', async () => {
+  it('session 쿠키가 없으면 /api/user를 호출하지 않고도 /manager/list에서 로그인으로 리다이렉트한다 (게스트가 그대로 통과해버리던 회귀 방지)', async () => {
     cookieGet.mockReturnValue(undefined);
 
     const response = await middleware(makeRequest('/manager/list'));
 
-    expect(getUserData).not.toHaveBeenCalled();
+    expect(fetchUser).not.toHaveBeenCalled();
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe('http://localhost:3000/login');
   });
 
   it('session 쿠키가 있어도 검증에 실패하면(응답이 ok가 아니면) /manager/list에서 로그인으로 리다이렉트한다', async () => {
     cookieGet.mockReturnValue({ value: 'expired-session-cookie' });
-    getUserData.mockResolvedValue({ response: 'ng', userData: null });
+    fetchUser.mockResolvedValue({ response: 'ng', userData: null });
 
     const response = await middleware(makeRequest('/manager/list'));
 
@@ -64,14 +64,14 @@ describe('middleware', () => {
 
     const response = await middleware(makeRequest('/reservation/form'));
 
-    expect(getUserData).not.toHaveBeenCalled();
+    expect(fetchUser).not.toHaveBeenCalled();
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
   });
 
   it('session 쿠키가 있어도 관리자가 아니면 /manager/list에서 로그인으로 리다이렉트한다', async () => {
     cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
-    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
+    fetchUser.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
 
     const response = await middleware(makeRequest('/manager/list'));
 
@@ -81,7 +81,7 @@ describe('middleware', () => {
 
   it('session 쿠키가 있고 관리자면 /manager/list를 통과시킨다', async () => {
     cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
-    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'admin' } });
+    fetchUser.mockResolvedValue({ response: 'ok', userData: { grade: 'admin' } });
 
     const response = await middleware(makeRequest('/manager/list'));
 
@@ -99,7 +99,7 @@ describe('middleware', () => {
 
   it('이미 로그인한 상태로 /login에 접근하면 마이페이지로 리다이렉트한다', async () => {
     cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
-    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
+    fetchUser.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
 
     const response = await middleware(makeRequest('/login'));
 
@@ -112,7 +112,7 @@ describe('middleware', () => {
 
     const response = await middleware(makeRequest('/login'));
 
-    expect(getUserData).not.toHaveBeenCalled();
+    expect(fetchUser).not.toHaveBeenCalled();
     expect(response.headers.get('location')).toBeNull();
   });
 
@@ -145,7 +145,7 @@ describe('middleware', () => {
 
   it('세션이 있으면 /mypage를 통과시킨다 (admin 등급을 요구하지 않는다)', async () => {
     cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
-    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
+    fetchUser.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
 
     const response = await middleware(makeRequest('/mypage'));
 
@@ -163,7 +163,7 @@ describe('middleware', () => {
 
   it('세션이 있어도 admin이 아니면 /manager/[docId]에서 로그인으로 리다이렉트한다', async () => {
     cookieGet.mockReturnValue({ value: 'valid-session-cookie' });
-    getUserData.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
+    fetchUser.mockResolvedValue({ response: 'ok', userData: { grade: 'basic' } });
 
     const response = await middleware(makeRequest('/manager/some-application-id'));
 
@@ -178,7 +178,7 @@ describe('middleware', () => {
 
       const response = await middleware(makeRequest(pathname));
 
-      expect(getUserData).not.toHaveBeenCalled();
+      expect(fetchUser).not.toHaveBeenCalled();
       expect(response.headers.get('location')).toBeNull();
     },
   );

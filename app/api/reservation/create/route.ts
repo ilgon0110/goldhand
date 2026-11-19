@@ -3,7 +3,7 @@ import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/lib/adminName';
+import { ADMIN_NAME_ERROR_MESSAGE, canUseName } from '@/src/feature/auth/server';
 import { firebaseAdminApp } from '@/src/shared/config/firebase-admin';
 import { verifySessionCookie } from '@/src/shared/lib/server';
 import { logBusinessEvent, logServerError } from '@/src/shared/lib/server/structuredLogger';

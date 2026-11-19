@@ -1,17 +1,14 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
+import { clientGet, type TGet } from '@/src/shared/api/request';
 import { userListKeys } from '@/src/shared/config/queryKeys';
 
-import { getUserListData } from './getUserListData';
+import type { IUserListResponseData } from '../model/types';
 
-type TUserListData = Awaited<ReturnType<typeof getUserListData>>;
-type TUseGetUserListDataQuery = Omit<UseQueryOptions<TUserListData>, 'queryFn' | 'queryKey'>;
-
-export const useGetUserListData = (params: { page: number }, options?: TUseGetUserListDataQuery) => {
-  return useSuspenseQuery({
+export const userListQueryOptions = (params: { page: number }, get: TGet = clientGet) =>
+  queryOptions({
     queryKey: userListKeys.list(params),
-    queryFn: () => getUserListData(params),
-    ...options,
+    queryFn: async (): Promise<IUserListResponseData> => (await get(`/api/user/list?page=${params.page}`)).json(),
   });
-};
+
+export const useGetUserListData = (params: { page: number }) => useSuspenseQuery(userListQueryOptions(params));

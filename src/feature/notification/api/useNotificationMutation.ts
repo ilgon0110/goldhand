@@ -1,8 +1,9 @@
 import type { InfiniteData, UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import type { INotificationDetailData, INotificationResponseData } from '@/src/entities/notification';
 import { notificationKeys } from '@/src/shared/config/queryKeys';
-import type { INotificationDetailData, INotificationResponseData, TAliasAny } from '@/src/shared/types';
+import type { TAliasAny } from '@/src/shared/types';
 import { authFetcher } from '@/src/shared/utils/fetcher.server';
 
 interface IResponsePostBody {

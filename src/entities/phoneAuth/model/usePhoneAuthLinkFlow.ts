@@ -1,11 +1,9 @@
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 
-import type { IUserDetailData } from '@/src/shared/types';
-
-import { useLinkPhoneToCurrentUser } from '../api/useLinkPhoneToCurrentUser';
+import { useLinkPhoneToCurrentUser } from '../api/_useLinkPhoneToCurrentUser';
 import type { IPhoneAuthError } from '../lib/toPhoneAuthError';
-import type { TPhoneAuthFlow } from './usePhoneAuthFlowCore';
-import { usePhoneAuthFlowCore } from './usePhoneAuthFlowCore';
+import type { TPhoneAuthFlow } from './_usePhoneAuthFlowCore';
+import { usePhoneAuthFlowCore } from './_usePhoneAuthFlowCore';
 
 type TFieldNames<TFieldValues extends FieldValues> = {
   phoneNumberName: Path<TFieldValues>;
@@ -18,7 +16,7 @@ type TFieldNames<TFieldValues extends FieldValues> = {
 export function usePhoneAuthLinkFlow<TFieldValues extends FieldValues>(
   form: UseFormReturn<TFieldValues>,
   { phoneNumberName, authCodeName }: TFieldNames<TFieldValues>,
-  userData: IUserDetailData | null,
+  account: { userId?: string; email?: string },
   options?: {
     onLinked?: () => void;
     onPhoneAlreadyInUse?: (error: IPhoneAuthError) => void;
@@ -26,7 +24,7 @@ export function usePhoneAuthLinkFlow<TFieldValues extends FieldValues>(
     confirmedMessage?: string;
   },
 ): TPhoneAuthFlow {
-  const link = useLinkPhoneToCurrentUser(userData, { onSuccess: options?.onLinked });
+  const link = useLinkPhoneToCurrentUser(account, { onSuccess: options?.onLinked });
 
   const core = usePhoneAuthFlowCore(form, phoneNumberName, authCodeName, {
     isSuccess: link.isSuccess,

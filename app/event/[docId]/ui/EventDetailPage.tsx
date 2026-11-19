@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Comment, useCommentCreateMutation, useComments } from '@/src/entities/comment';
 import { eventCommentSchema, useGetEventDetailData } from '@/src/entities/event';
 import { PinToggleButton, usePinMutation } from '@/src/entities/pin';
-import { useUserSuspenseQuery } from '@/src/entities/user';
+import { type IUserDetailData, WithOptionalUser } from '@/src/entities/user';
 import { ViewCount } from '@/src/entities/viewCount';
 import { PostDetailHeader } from '@/src/feature/post';
 import { useScreenView } from '@/src/shared/hooks/useScreenView';
@@ -29,9 +29,12 @@ type TEventDetailPageProps = {
   docId: string;
 };
 
-export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
+export const EventDetailPage = ({ docId }: TEventDetailPageProps) => (
+  <WithOptionalUser>{user => <EventDetailContent docId={docId} user={user} />}</WithOptionalUser>
+);
+
+const EventDetailContent = ({ docId, user }: TEventDetailPageProps & { user: IUserDetailData | null }) => {
   const { data } = useGetEventDetailData(docId);
-  const { data: userData } = useUserSuspenseQuery();
   const router = useRouter();
   const { comments } = useComments({
     docId,
@@ -64,8 +67,8 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
   });
 
   const formValidation = form.formState.isValid;
-  const isOwner = data.data.userId === userData.userData?.userId;
-  const isAdmin = userData.userData?.grade === 'admin';
+  const isOwner = data.data.userId === user?.userId;
+  const isAdmin = user?.grade === 'admin';
   const { mutate: togglePin, isPending: isPinToggling } = usePinMutation('event');
 
   const { mutate: submitComment, isPending: isCommentSubmitting } = useCommentCreateMutation('event', docId, {
@@ -157,14 +160,14 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
             <Button
               className={cn(
                 'transition-all duration-300',
-                formValidation && userData.userData != null ? '' : 'opacity-20 hover:cursor-not-allowed',
+                formValidation && user != null ? '' : 'opacity-20 hover:cursor-not-allowed',
               )}
-              disabled={!formValidation || userData.userData == null}
+              disabled={!formValidation || user == null}
               type="submit"
             >
               {isCommentSubmitting ? (
                 <LoadingSpinnerIcon />
-              ) : userData.userData == null ? (
+              ) : user == null ? (
                 '로그인 후 이용해주세요'
               ) : (
                 '댓글달기'
@@ -187,11 +190,11 @@ export const EventDetailPage = ({ docId }: TEventDetailPageProps) => {
               createdAt={item.createdAt}
               docId={docId}
               isAuthorAdmin={item.isAuthorAdmin}
-              isCommentOwner={item.userId === userData.userData?.userId}
+              isCommentOwner={item.userId === user?.userId}
               key={item.id}
               type="event"
               updatedAt={item.updatedAt}
-              userId={userData.userData?.userId || ''}
+              userId={user?.userId || ''}
             />
           );
         })}

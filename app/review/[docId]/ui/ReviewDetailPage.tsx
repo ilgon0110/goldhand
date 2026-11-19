@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetReviewDetailData } from '@/src/entities/review';
-import { useUserSuspenseQuery } from '@/src/entities/user';
+import { type IUserDetailData, WithOptionalUser } from '@/src/entities/user';
 import {
   ReviewDeleteDialog,
   ReviewEditDialog,
@@ -17,11 +17,14 @@ import { ReviewCommentSection, ReviewDetailContent } from '@/src/widgets/review'
 type TReviewDetailPageProps = { docId: string };
 const handleEditorChange = () => {};
 
-export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => {
+export const ReviewDetailPage = ({ docId }: TReviewDetailPageProps) => (
+  <WithOptionalUser>{user => <ReviewDetailContentWithUser docId={docId} user={user} />}</WithOptionalUser>
+);
+
+const ReviewDetailContentWithUser = ({ docId, user }: TReviewDetailPageProps & { user: IUserDetailData | null }) => {
   const { data } = useGetReviewDetailData(docId);
-  const { data: userData } = useUserSuspenseQuery();
-  const userId = userData.userData?.userId;
-  const isAdmin = userData.userData?.grade === 'admin';
+  const userId = user?.userId;
+  const isAdmin = user?.grade === 'admin';
   const actions = useReviewDetailActions({
     docId,
     isAdmin,

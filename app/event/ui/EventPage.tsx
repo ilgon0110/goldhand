@@ -2,24 +2,27 @@
 
 import { cn } from '@/lib/utils';
 import { useGetEventListData } from '@/src/entities/event';
-import { useUserSuspenseQuery } from '@/src/entities/user';
+import { WithOptionalUser } from '@/src/entities/user';
 import { useListQueryStates } from '@/src/feature/list-pagination';
 import { eventParams } from '@/src/shared/lib/nuqs/searchParams';
 import CustomPagination from '@/src/shared/ui/CustomPagination/CustomPagination';
 import { EmptyState } from '@/src/shared/ui/empty-state';
 import { EventCard, EventPageHeader } from '@/src/widgets/event';
 
-export const EventPage = () => {
+export const EventPage = () => (
+  <WithOptionalUser>{user => <EventPageContent isAdmin={user?.grade === 'admin'} />}</WithOptionalUser>
+);
+
+const EventPageContent = ({ isAdmin }: { isAdmin: boolean }) => {
   const [eventParam, setEventParam, isPending] = useListQueryStates(eventParams);
 
   const { data } = useGetEventListData({ page: eventParam.page, status: eventParam.status });
-  const { data: userResponse } = useUserSuspenseQuery();
 
   return (
     <>
       <EventPageHeader
         handleStatusChange={status => setEventParam({ status, page: 1 })}
-        isAdmin={userResponse.userData?.grade === 'admin'}
+        isAdmin={isAdmin}
         status={eventParam.status}
         totalDataLength={data.totalDataLength}
       />

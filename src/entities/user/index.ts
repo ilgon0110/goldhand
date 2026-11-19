@@ -6,3 +6,4 @@ export type {
   IUserListResponseData,
   IUserResponseData,
 } from './model/types';
+export { WithOptionalUser } from './ui/WithOptionalUser';

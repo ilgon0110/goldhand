@@ -1,10 +1,11 @@
 export const dynamic = 'force-dynamic';
 
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { SearchParams } from 'nuqs/server';
 
 import { GET as reviewListGET } from '@/app/api/review/route';
 import { routeGet } from '@/app/lib/routeGet';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
 import { reviewListQueryOptions } from '@/src/entities/review';
 import { loadReviewParams } from '@/src/shared/lib/nuqs/searchParams';
 import SectionTitleHero from '@/src/shared/ui/SectionTitleHero';
@@ -17,7 +18,7 @@ type TPageProps = {
 
 export default async function Page({ searchParams }: TPageProps) {
   const { page, franchisee } = await loadReviewParams(searchParams);
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
   await queryClient.prefetchQuery(reviewListQueryOptions({ page, franchisee }, routeGet(reviewListGET)));
 

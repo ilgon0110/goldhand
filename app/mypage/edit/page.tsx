@@ -1,14 +1,15 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 
 import { GET as myPageGET } from '@/app/api/mypage/route';
 import { routeGet } from '@/app/lib/routeGet';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
 import { myPageQueryOptions } from '@/src/feature/mypage';
 
 import { MyPageEditPage } from './ui/MyPageEditPage';
 
 export default async function Page() {
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
   try {
     await queryClient.fetchQuery(myPageQueryOptions(routeGet(myPageGET)));

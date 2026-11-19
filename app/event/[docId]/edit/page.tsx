@@ -1,8 +1,9 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 import { GET as eventDetailGET } from '@/app/api/event/detail/route';
 import { routeGet } from '@/app/lib/routeGet';
 import { throwNotFoundOn404 } from '@/app/lib/throwNotFoundOn404';
+import { makeQueryClient } from '@/src/app/providers/get-query-client';
 import { eventDetailQueryOptions } from '@/src/entities/event';
 import { ImagesContext } from '@/src/entities/image/client';
 
@@ -14,7 +15,7 @@ type TPageProps = {
 
 export default async function Page({ params }: TPageProps) {
   const { docId } = await params;
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
   await queryClient.fetchQuery(eventDetailQueryOptions(docId, routeGet(eventDetailGET))).catch(throwNotFoundOn404);
 
